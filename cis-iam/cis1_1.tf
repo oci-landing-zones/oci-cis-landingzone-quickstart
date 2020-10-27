@@ -5,7 +5,7 @@ module "network_admins" {
   tenancy_ocid          = var.tenancy_ocid
   group_name            = "${var.service_label}-NetworkAdmins"
   group_description     = "Group responsible for managing networking in the tenancy."
-  user_ids              = ["ocid1.user.oc1..aaaaaaaalxqallveu54dikz2yvwztfa6aaonjyn7mopu2oyy4hqjjbbdukca"]
+  user_ids              = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-NetworkAdmins-Policy"
   policy_description    = "Policy allowing NetworkAdmins group to manage virtual-network-family in tenancy."

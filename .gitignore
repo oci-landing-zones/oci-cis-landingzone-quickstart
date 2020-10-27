@@ -1,6 +1,7 @@
 env-vars.*.*
-**/.tfstate*
-**/.tfstate.*
+**/*.tfstate*
+**/*.tfstate.*
 **/plan.out
 **/.terraform/*
+**/.DS_Store
 **/crash.log

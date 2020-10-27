@@ -1,0 +1,76 @@
+############################
+### Common variables
+############################
+
+# See https://github.com/oracle/terraform-provider-oci/blob/master/README.md for now to set up these credentials.
+export TF_VAR_tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaaky7j6f73vplozcnpl2ubmjs2r4dmegjtjupcozag7imhg6juvzq"
+export TF_VAR_user_ocid="ocid1.user.oc1..aaaaaaaa7fe3btg6yaadf6263oygujow3acqj3pb5buc3fddog6lxdw3iela"
+export TF_VAR_fingerprint="d6:28:b6:03:58:7b:c2:f4:4c:34:45:69:26:2d:65:a6"
+export TF_VAR_private_key_path="/Users/sbemarka/.oci/sbemarka.pem"
+# If private key is encrypted with a password, provide the password or can read from a file (as shown below)
+export TF_VAR_private_key_password=""
+
+# Example: us-phoenix-1, us-ashburn-1, etc..
+export TF_VAR_region="us-ashburn-1"
+
+# Example: phx, iad, fra, lhr, etc..
+export TF_VAR_region_key="iad"
+
+# Application tag - the name of your service/app. Please keep it short as this is appended to resource names  
+# example: fa (for fusion app) 
+export TF_VAR_app_tag="oitapp"
+
+# Environment: Must be one of prod, stage, dev, or test
+export TF_VAR_env=prod
+
+# Desired design pattern. Must be one of 1a, 1b, 2a, or 2b
+# Please review the 4 architecture design patterns at: 
+# https://confluence.oraclecorp.com/confluence/display/OCIID/Architecture+Patterns
+export TF_VAR_design_pattern=2a
+
+# Your LOB: use to tag the Fastconnect virtual circuit creation request to GIT
+export TF_VAR_lob="peo"
+
+# Whether the tenancy is connected to Oracle corp.
+# If connected and transport is fastconnect, tenancy must be whitelisted for GIT FC first.
+# Submit a SR to network team to whitelist GIT SP FastConnect provider  "Oracle Global I: GIT FastConnect"
+export TF_VAR_is_corp_net_connected=false
+
+# Transport between tenancy and Oracle corp network, must be either  "ipsec" or "fastconnect"
+# In most cases, it should be via fastconnect
+export TF_VAR_corp_connect_method="fastconnect"
+
+# If IPSEC, specify the remote vpn gateway ip
+# Note, should use fastconnect unless there's a valid reason why FC will not work
+# example: "156.151.4.5"
+export TF_VAR_ipsec_cpe_ip="156.151.4.5"
+
+# Example: "../../../config/test/common/.ssh/id_rsa.pub"
+export TF_VAR_ssh_public_key_path="/Users/sbemarka/.ssh/id_rsa.pub"
+
+# Example: "../../../config/test/common/.ssh/id_rsa"
+export TF_VAR_ssh_private_key_path="/Users/sbemarka/.ssh/id_rsa"
+
+############################
+### Needed for iam config
+############################
+
+# Example: us-phoenix-1
+export TF_VAR_home_region="us-ashburn-1"
+
+############################
+### VCN CIDR Ranges
+############################
+
+# It is highly recommended that multi vcn environment should not have any overlap in CIDR ranges between any of its VCNs across regions.
+# For an environment that does not need to connect to corp net, the recommendation is to set the first VCN CIDR to 10.0.0.0/16, and increment the
+# 2nd number with each new VCN: 10.0.0.0/16, 10.1.0.0/16, 10.2.0.0/16, ..
+# With this TF it's assumed the smallest vcn size is a /19 - You'd need need to tweak the subnet allocations if smaller
+# in file subnets.tf accordingly.
+export TF_VAR_vcn_cidr="10.0.0.0/16"
+export TF_VAR_cidr_offset="3"
+
+# In design pattern choosen is "2a", specify additional vcn cidr
+export TF_VAR_app_vcn_cidr="10.1.0.0/16"
+export TF_VAR_app_vcn_cidr_offset="3"
+

@@ -1,0 +1,6 @@
+env-vars.*.*
+**/.tfstate*
+**/.tfstate.*
+**/plan.out
+**/.terraform/*
+**/crash.log

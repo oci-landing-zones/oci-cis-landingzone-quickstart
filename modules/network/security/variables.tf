@@ -37,6 +37,15 @@ variable "default_freeform_tags" {
   default     = {}
 }
 
+variable "anywhere_cidr" {
+  default = "0.0.0.0/0"
+}
+
+variable "ports_not_allowed_from_anywhere_cidr" {
+  type    = list(number)
+  default = [22,3389] # By default, ssh and rdp standard ports are not allowed from anywhere cidr
+}
+
 variable "security_lists" {
   type = map(object({
     compartment_id  = string,

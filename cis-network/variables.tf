@@ -3,10 +3,9 @@ variable "user_ocid" {}
 variable "fingerprint" {}
 variable "private_key_path" {}
 variable "private_key_password" {}
-variable "home_region" {}
+variable "region" {}
+variable "region_key" {}
 variable "vcn_cidr" {}
-variable "vcn_internet_connected" {}
-variable "create_public_subnet" {}
 variable "public_subnet_cidr" {}
 variable "private_subnet_cidr" {}
 variable "public_src_cidr" {}

@@ -1,4 +1,4 @@
-variable "compartment_ocid" {
+variable "compartment_id" {
   description = "Compartment's OCID where VCN will be created."
 }
 
@@ -26,8 +26,14 @@ variable "service_label" {
   default     = "cis"
 }
 
-variable "vcn_internet_connected" {
-  description = "whether to connect the VCN to the Internet via an Internet Gateway and appropriate route table."
-  default     = true
+variable "block_nat_traffic" {
+  description = "Whether or not to block traffic through NAT gateway."
+  default     = false
   type        = bool
+}
+
+variable "service_gateway_cidr" {
+  description = "The OSN service cidr accessible through Service Gateway"
+  default     = ""
+  type        = string
 }

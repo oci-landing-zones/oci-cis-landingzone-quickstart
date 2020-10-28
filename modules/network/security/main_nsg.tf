@@ -84,7 +84,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port == null && i.dst_port != null && i.src != local.anywhere && !contains(range(i.dst_port.min,i.dst_port.max),local.ssh_port) && !contains(range(i.dst_port.min,i.dst_port.max),local.rdp_port)
+      } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) 
     ]
   ] )
   n_ingress_rules_tcp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -98,7 +98,7 @@ locals {
         src_type        = i.src_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port != null && i.src != local.anywhere && !contains(range(i.dst_port.min,i.dst_port.max),local.ssh_port) && !contains(range(i.dst_port.min,i.dst_port.max),local.rdp_port)
+      } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
     ]
   ] )
 
@@ -203,7 +203,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port == null && i.dst_port != null && i.src != local.anywhere && !contains(range(i.dst_port.min,i.dst_port.max),local.ssh_port) && !contains(range(i.dst_port.min,i.dst_port.max),local.rdp_port)
+    } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
   ] )
   s_ingress_rules_tcp_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -215,7 +215,7 @@ locals {
       src_type          = i.src_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port != null && i.src != local.anywhere && !contains(range(i.dst_port.min,i.dst_port.max),local.ssh_port) && !contains(range(i.dst_port.min,i.dst_port.max),local.rdp_port)
+    } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
   ] )
 
   s_ingress_rules_udp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :

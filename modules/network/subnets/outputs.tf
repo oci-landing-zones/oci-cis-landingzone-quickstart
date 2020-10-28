@@ -8,8 +8,9 @@ output "subnets" {
       x.display_name => x
   } : null
 }
-
+/*
 output "ads" {
   description = "The available Availability Domains."
   value       = data.oci_identity_availability_domains.this
 }
+*/

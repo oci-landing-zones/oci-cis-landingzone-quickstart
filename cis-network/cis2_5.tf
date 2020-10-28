@@ -1,7 +1,3 @@
-locals {
-    anywhere = "0.0.0.0/0"
-}
-
 ### Default security list. Only ICMP traffic is allowed.
 resource "oci_core_default_security_list" "default_security_list" {
   manage_default_resource_id = module.cis_vcn.default_security_list_id

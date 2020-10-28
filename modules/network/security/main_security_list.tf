@@ -383,7 +383,7 @@ resource "oci_core_security_list" "this" {
         stateless       : x.stateless
         dst_port_min    : x.dst_port.min
         dst_port_max    : x.dst_port.max
-      } if x.protocol == "6" && x.src_port == null && x.dst_port != null && x.src != local.anywhere && !contains(range(x.dst_port.min,x.dst_port.max),local.ssh_port) && !contains(range(x.dst_port.min,x.dst_port.max),local.rdp_port) ]
+      } if x.protocol == "6" && x.src_port == null && x.dst_port != null && (x.src != var.anywhere_cidr || (x.src == var.anywhere_cidr && length(setintersection(range(x.dst_port.min,x.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))]
       
     content {
       protocol          = rule.value.proto
@@ -411,7 +411,7 @@ resource "oci_core_security_list" "this" {
         src_port_max    : x.src_port.max
         dst_port_min    : x.dst_port.min
         dst_port_max    : x.dst_port.max
-      } if x.protocol == "6" && x.src_port != null && x.dst_port != null && x.src != local.anywhere && !contains(range(x.dst_port.min,x.dst_port.max),local.ssh_port) && !contains(range(x.dst_port.min,x.dst_port.max),local.rdp_port)]
+      } if x.protocol == "6" && x.src_port != null && x.dst_port != null && (x.src != var.anywhere_cidr || (x.src == var.anywhere_cidr && length(setintersection(range(x.dst_port.min,x.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))]
       
     content {
       protocol          = rule.value.proto

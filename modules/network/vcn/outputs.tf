@@ -13,12 +13,32 @@ output "default_dhcp_options_id" {
   value       = oci_core_vcn.this.default_dhcp_options_id
 }
 
-output "internet_route_table_id" {
-  description = "ocid of default route table. "
-  value       = oci_core_route_table.internet[0].id
+output "internet_gateway_id" {
+  description = "ocid of Internet gateway."
+  value       = oci_core_internet_gateway.this.id
 }
 
-output "internet_gateway_id" {
-  description = "ocid of internet gateway. "
-  value       = oci_core_internet_gateway.this[0].id
+output "nat_gateway_id" {
+  description = "ocid of NAT gateway."
+  value       = oci_core_nat_gateway.this.id
+}
+
+output "service_gateway_id" {
+  description = "ocid of Service gateway."
+  value       = oci_core_service_gateway.this.id
+}
+
+output "internet_route_table_id" {
+  description = "ocid of default route table."
+  value       = oci_core_route_table.internet.id
+}
+
+output "private_route_table_id" {
+  description = "ocid of private subnet route table."
+  value       = oci_core_route_table.private_subnet.id
+}
+
+output "all_services" {
+  description = "All services"
+  value       = data.oci_core_services.all_services
 }

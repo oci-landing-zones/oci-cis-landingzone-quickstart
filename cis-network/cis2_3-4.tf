@@ -13,12 +13,12 @@ module "cis_nsgs" {
           description   = "Ingress rules for network security group"
           stateless     = false
           protocol      = "6"
-          src           = var.public_subnet_cidr
+          src           = var.private_subnet_cidr
           src_type      = "CIDR_BLOCK"
           src_port      = null
           dst_port      = {
-            min = 21
-            max = 23
+            min = 22
+            max = 22
           }
           icmp_code     = null
           icmp_type     = null
@@ -29,12 +29,12 @@ module "cis_nsgs" {
           description   = "Egress rules for network security group"
           stateless     = false
           protocol      = "6"
-          dst           = "10.1.2.3/32"
-          dst_type      = "CIDR_BLOCK"
+          dst           = local.valid_service_gateway_cidrs[0]
+          dst_type      = "SERVICE_CIDR_BLOCK"
           src_port      = null
           dst_port      = {
-            min = 21
-            max = 23
+            min = 443
+            max = 443
           }
           icmp_code     = null
           icmp_type     = null

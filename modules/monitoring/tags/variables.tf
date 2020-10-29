@@ -28,6 +28,6 @@ variable "tags" {
     is_cost_tracking = bool,
     is_retired = bool,
     default_value = string,
-    is_required = bool
+    is_default_required = bool
   }))
 }    

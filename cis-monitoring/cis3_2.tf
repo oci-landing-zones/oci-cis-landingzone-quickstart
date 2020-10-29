@@ -1,3 +1,4 @@
+### Creates a tag namespace and tags *in* the specified compartment and tag defaults *for* the specified compartment
 module "cis_tags" {
   source             = "../modules/monitoring/tags"
   compartment_id     = var.tenancy_ocid
@@ -10,14 +11,14 @@ module "cis_tags" {
         is_cost_tracking = false
         is_retired = false
         default_value = "$${iam.principal.name}"
-        is_required = false
+        is_default_required = false
       },
       "CreatedOn" = {
         description = "Identifies when the resource was created."
         is_cost_tracking = false
         is_retired = false
         default_value = "$${oci.datetime}"
-        is_required = false
+        is_default_required = false
     }
   }
 }  

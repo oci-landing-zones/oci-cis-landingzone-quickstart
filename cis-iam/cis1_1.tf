@@ -53,7 +53,7 @@ module "database_admins" {
   policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name}."
   policy_statements     = ["Allow group ${module.database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name}"]
 }
-# Database service
+# Application Development services
 module "appdev_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid

@@ -4,7 +4,7 @@ module "iam_admins" {
   tenancy_ocid          = var.tenancy_ocid
   group_name            = "${var.service_label}-IAMAdmins"
   group_description     = "Group responsible for managing IAM resources in the tenancy."
-  user_ids              = ["ocid1.user.oc1..aaaaaaaafx2e6gpfqtetlree6vakgnuovutpggknfy4znl7ejt6hrdce5aiq"]
+  user_ids              = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-IAMAdmins-Policy"
   policy_description    = "Policy allowing IAMAdmins group to manage IAM resources in tenancy, except changing Administrators group assignments."

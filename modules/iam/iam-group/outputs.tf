@@ -1,5 +1,5 @@
 output "group_id" {
-  value = element(concat(oci_identity_group.this.*.id, list("")), 0)
+  value = oci_identity_group.this.id
 }
 
 output "group_name" {

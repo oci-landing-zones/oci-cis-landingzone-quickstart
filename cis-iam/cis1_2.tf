@@ -1,5 +1,6 @@
 data "oci_identity_policies" "all" {
   compartment_id = var.tenancy_ocid
+  /*
   depends_on = [
     module.network_admins,
     module.compute_storage_admins,
@@ -7,7 +8,7 @@ data "oci_identity_policies" "all" {
     module.database_admins,
     module.appdev_admins,
     module.iam_admins
-  ]
+  ]*/
 }
 
 locals {

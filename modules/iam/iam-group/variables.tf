@@ -10,8 +10,8 @@ variable "group_description" {
   description = "The description you assign to the Group. Does not have to be unique, and it's changeable. "
   default = ""
 }
-variable "user_ids" {
-  description = "List of users ocids. "
+variable "user_names" {
+  description = "List of user names. "
   default     = []
 }
 

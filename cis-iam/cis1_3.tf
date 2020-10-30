@@ -2,9 +2,9 @@
 module "iam_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-IAMAdmins"
+  group_name            = local.iam_admin_group_name
   group_description     = "Group responsible for managing IAM resources in the tenancy."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-IAMAdmins-Policy"
   policy_description    = "Policy allowing IAMAdmins group to manage IAM resources in tenancy, except changing Administrators group assignments."
@@ -21,4 +21,4 @@ module "iam_admins" {
                            "Allow group ${module.iam_admins.group_name} to manage tag-defaults in tenancy",
                            "Allow group ${module.iam_admins.group_name} to manage tag-namespaces in tenancy",
                            "Allow group ${module.iam_admins.group_name} to manage credentials in tenancy"]
-}
+} 

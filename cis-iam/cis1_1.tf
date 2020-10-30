@@ -4,9 +4,9 @@ module "network_admins" {
   #depends_on            = [module.compartments]
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-NetworkAdmins"
+  group_name            = local.network_admin_group_name
   group_description     = "Group responsible for managing networking in compartment ${local.network_compartment_name_output}."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-NetworkAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${local.network_compartment_name_output}."
@@ -16,9 +16,9 @@ module "network_admins" {
 module "security_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-SecurityAdmins"
+  group_name            = local.security_admin_group_name
   group_description     = "Group responsible for managing security services in compartment ${local.security_compartment_name_output}."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-SecurityAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${local.security_compartment_name_output}."
@@ -30,9 +30,9 @@ module "security_admins" {
 module "compute_storage_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-ComputeStorageAdmins"
+  group_name            = local.compute_storage_admin_group_name
   group_description     = "Group responsible for managing compute instances and storage resources in compartment ${local.compute_storage_compartment_name_output}."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-ComputeStorageAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-ComputeStorageAdmins group to manage instance-family and storage resources in compartment ${local.compute_storage_compartment_name_output}."
@@ -45,9 +45,9 @@ module "compute_storage_admins" {
 module "database_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-DatabaseAdmins"
+  group_name            = local.database_admin_group_name
   group_description     = "Group responsible for managing databases in compartment ${local.database_compartment_name_output}."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-DatabaseAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name_output}."
@@ -57,9 +57,9 @@ module "database_admins" {
 module "appdev_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
-  group_name            = "${var.service_label}-AppDevAdmins"
+  group_name            = local.appdev_admin_group_name
   group_description     = "Group responsible for managing app development related services in compartment ${local.appdev_compartment_name_output}."
-  user_ids              = []
+  user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-AppDevAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-AppDevAdmins group to manage app development related services in compartment ${local.appdev_compartment_name_output}."

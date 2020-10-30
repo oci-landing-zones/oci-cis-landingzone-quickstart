@@ -4,14 +4,21 @@ resource "oci_identity_group" "this" {
   description = var.group_description
 }
 
-### Add user to a group
-resource "oci_identity_user_group_membership" "this" {
-  count = length(var.user_ids)
-  user_id  = var.user_ids[count.index]
-  group_id = oci_identity_group.this.id
+data "oci_identity_users" "these" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = var.user_names
+  }
 }
+### Add users to group
+ resource "oci_identity_user_group_membership" "this" {
+  count = length(data.oci_identity_users.these.users)
+  user_id  = data.oci_identity_users.these.users[count.index].id
+  group_id = oci_identity_group.this.id
+} 
 
-### Group Policy
+### Group policy
 resource "oci_identity_policy" "this" {
   depends_on     = [oci_identity_group.this]
   name           = var.policy_name

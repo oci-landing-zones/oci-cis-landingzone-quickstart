@@ -1,3 +1,5 @@
+### This Terraform configuration identifies policies containing statements granting manage privilege on all-resources to groups other than Adminstrators.
+
 data "oci_identity_policies" "all" {
   compartment_id = var.tenancy_ocid
   /*

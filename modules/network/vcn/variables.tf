@@ -37,3 +37,36 @@ variable "service_gateway_cidr" {
   default     = ""
   type        = string
 }
+
+
+variable "subnets" {
+  description         = "Parameters for each subnet to be managed."
+  type                = map(object({
+    compartment_id    = string,
+    defined_tags      = map(string),
+    freeform_tags     = map(string),
+    dynamic_cidr      = bool,
+    cidr              = string,
+    cidr_len          = number,
+    cidr_num          = number,
+    enable_dns        = bool,
+    dns_label         = string,
+    private           = bool,
+    ad                = number,
+    dhcp_options_id   = string,
+    route_table_id    = string,
+    security_list_ids = list(string)
+  }))  
+}
+
+variable "route_tables" {
+  description = "Parameters for each route table to be managed."
+  type = map(object({
+    compartment_id = string
+    route_rules = list(object({
+      destination = string,
+      destination_type = string,
+      network_entity_id = string
+    }))
+  }))
+}

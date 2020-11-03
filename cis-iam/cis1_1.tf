@@ -1,5 +1,6 @@
-### Service level admins are created to manage resources of a particular service
-# Networking service
+### This Terraform configuration provisions groups and policies allowing the management of specific services by specific admins on specific compartments.
+
+### Networking service
 module "network_admins" {
   #depends_on            = [module.compartments]
   source                = "../modules/iam/iam-group"
@@ -12,7 +13,8 @@ module "network_admins" {
   policy_description    = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${local.network_compartment_name_output}."
   policy_statements     = ["Allow group ${module.network_admins.group_name} to manage virtual-network-family in compartment ${local.network_compartment_name_output}"]
 }
-# Security services
+
+### Security services
 module "security_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
@@ -26,7 +28,8 @@ module "security_admins" {
                            "Allow group ${module.security_admins.group_name} to manage keys in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.security_admins.group_name} to manage secret-family in compartment ${local.security_compartment_name_output}"]
 }
-# Compute and Storage services
+
+### Compute and Storage services
 module "compute_storage_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
@@ -41,7 +44,8 @@ module "compute_storage_admins" {
                            "Allow group ${module.compute_storage_admins.group_name} to manage object-family in compartment ${local.compute_storage_compartment_name_output}",
                            "Allow group ${module.compute_storage_admins.group_name} to manage file-family in compartment ${local.compute_storage_compartment_name_output}"]
 }
-# Database service
+
+### Database service
 module "database_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
@@ -53,7 +57,8 @@ module "database_admins" {
   policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name_output}."
   policy_statements     = ["Allow group ${module.database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name_output}"]
 }
-# Application Development services
+
+### Application Development services
 module "appdev_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid

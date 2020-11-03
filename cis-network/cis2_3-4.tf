@@ -24,7 +24,7 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "Ingress rule for ${local.bastion_nsg_name} network security group."
+          description   = "SSH ingress rule for ${var.public_src_cidr}."
           stateless     = false
           protocol      = "6"
           src           = var.public_src_cidr
@@ -40,7 +40,7 @@ module "cis_nsgs" {
       ]
       egress_rules        = [
         {
-          description   = "Egress rule for ${local.bastion_nsg_name} network security group."
+          description   = "SSH egress rule for ${local.app_nsg_name}."
           stateless     = false
           protocol      = "6"
           dst           = local.app_nsg_name
@@ -61,7 +61,7 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "Ingress rule for ${local.lbr_nsg_name} network security group."
+          description   = "HTTP ingress rule for ${var.public_src_cidr}."
           stateless     = false
           protocol      = "6"
           src           = var.public_src_cidr
@@ -77,7 +77,7 @@ module "cis_nsgs" {
       ]
       egress_rules        = [
         {
-          description   = "Egress rule for ${local.lbr_nsg_name} network security group."
+          description   = "HTTP egress rule for ${local.app_nsg_name}."
           stateless     = false
           protocol      = "6"
           dst           = local.app_nsg_name
@@ -98,7 +98,7 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "SSH ingress rule for ${local.app_nsg_name} network security group."
+          description   = "SSH ingress rule for ${local.bastion_nsg_name}."
           stateless     = false
           protocol      = "6"
           src           = local.bastion_nsg_name
@@ -112,7 +112,7 @@ module "cis_nsgs" {
           icmp_type     = null
         },
         {
-          description   = "HTTP ingress rule for ${local.app_nsg_name} network security group."
+          description   = "HTTP ingress rule for ${local.lbr_nsg_name}."
           stateless     = false
           protocol      = "6"
           src           = local.lbr_nsg_name
@@ -128,7 +128,7 @@ module "cis_nsgs" {
       ]
       egress_rules        = [
         {
-          description   = "SSH egress rule for ${local.app_nsg_name} network security group."
+          description   = "SSH egress rule for ${local.db_nsg_name}."
           stateless     = false
           protocol      = "6"
           dst           = local.db_nsg_name
@@ -142,7 +142,7 @@ module "cis_nsgs" {
           icmp_type     = null
         },
         {
-          description   = "DB egress rule for ${local.app_nsg_name} network security group."
+          description   = "DB egress rule for ${local.db_nsg_name}."
           stateless     = false
           protocol      = "6"
           dst           = local.db_nsg_name
@@ -156,7 +156,7 @@ module "cis_nsgs" {
           icmp_type     = null
         },
         {
-          description     = "OSN egress rule for ${local.app_nsg_name} network security group."
+          description     = "OSN egress rule for ${local.valid_service_gateway_cidrs[0]}."
           stateless     = false
           protocol      = "6"
           dst           = local.valid_service_gateway_cidrs[0]
@@ -177,7 +177,7 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "Ingress rule for ${local.db_nsg_name} network security group."
+          description   = "SSH ingress rule for ${local.app_nsg_name}."
           stateless     = false
           protocol      = "6"
           src           = local.app_nsg_name
@@ -189,11 +189,25 @@ module "cis_nsgs" {
           }
           icmp_code     = null
           icmp_type     = null
+        },
+        {
+          description   = "DB ingress rule for ${local.app_nsg_name}."
+          stateless     = false
+          protocol      = "6"
+          src           = local.app_nsg_name
+          src_type      = "NSG_NAME"
+          src_port      = null
+          dst_port      = {
+            min = 1521
+            max = 1521
+          }
+          icmp_code     = null
+          icmp_type     = null
         }
       ]
       egress_rules        = [
         {
-          description   = "Egress rule for ${local.db_nsg_name} network security group."
+          description   = "OSN egress rule for ${local.valid_service_gateway_cidrs[0]}."
           stateless     = false
           protocol      = "6"
           dst           = local.valid_service_gateway_cidrs[0]

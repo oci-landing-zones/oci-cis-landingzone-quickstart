@@ -1,9 +1,6 @@
-### This Terraform configuration creates three security lists: 
-### One security list to be attached to a public subnet.
-###   Ingress rule: port 22 from any source other than 0.0.0.0/0.
-###   Egress rule: port 22 on app private subnet cidr.
-### Two initially empty security lists to be attached to private subnets. 
-###   On these subnets, the security rules are driven by NSGs (Network Security Groups). See cis2_3-4.tf
+### This Terraform configuration creates three empty security lists.
+### The security rules are driven by NSGs (Network Security Groups). See cis2_3-4.tf
+### Add security rules as needed. See commented section as an example.
 
 module "cis_security_lists" {
   source                   = "../modules/network/security"
@@ -16,6 +13,9 @@ module "cis_security_lists" {
       compartment_id  = null
       defined_tags    = null
       freeform_tags   = null
+      ingress_rules   = null
+      egress_rules    = null
+    /*  
       ingress_rules   = [{
         stateless     = false
         protocol      = "6"
@@ -42,6 +42,7 @@ module "cis_security_lists" {
         icmp_type     = null
         icmp_code     = null
       }]
+    */  
     },
     (local.private_subnet_app_security_list_name) = { 
       compartment_id  = null

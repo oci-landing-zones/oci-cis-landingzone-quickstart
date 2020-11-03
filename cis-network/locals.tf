@@ -16,8 +16,10 @@ locals {
   private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
 
   # Network security groups names
-  app_nsg_name = "${var.service_label}-Network-Security-Group-App"
-  db_nsg_name  = "${var.service_label}-Network-Security-Group-Db"
+  bastion_nsg_name = "${var.service_label}-NSG-Bastion"
+  lbr_nsg_name = "${var.service_label}-NSG-LBR"
+  app_nsg_name = "${var.service_label}-NSG-App"
+  db_nsg_name  = "${var.service_label}-NSG-Db"
 
   # Route tables names
   public_subnet_route_table_name      = "${local.public_subnet_name}-Route"

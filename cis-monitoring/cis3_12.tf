@@ -1,6 +1,6 @@
 module "cis_notification_nsg_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = var.tenancy_ocid
+  compartment_id     = data.terraform_remote_state.iam.outputs.network_compartment_id
   rule_display_name  = "${var.service_label}-notify-on-nsg-changes"    
   rule_description   = "Sends notification when network security groups are created, updated, deleted, or moved."
   rule_is_enabled    = true

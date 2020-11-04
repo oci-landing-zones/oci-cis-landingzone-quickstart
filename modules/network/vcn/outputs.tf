@@ -28,14 +28,12 @@ output "service_gateway_id" {
   value       = oci_core_service_gateway.this.id
 }
 
-output "internet_route_table_id" {
-  description = "ocid of default route table."
-  value       = oci_core_route_table.internet.id
-}
-
-output "private_route_table_id" {
-  description = "ocid of private subnet route table."
-  value       = oci_core_route_table.private_subnet.id
+output "route_tables" {
+  description = "The managed route tables, indexed by display_name."
+  value = (oci_core_route_table.these != null && length(oci_core_route_table.these) > 0) ? {
+    for rt in oci_core_route_table.these : 
+      rt.display_name => rt
+    } : null
 }
 
 output "all_services" {

@@ -1,4 +1,5 @@
-### Restricting IAM admins from changing Administrators group assignments and tenancy level policies.
+### This Terraform configuration prevents IAMAdmins group from changing Administrators group assignments and tenancy level policies.
+
 module "iam_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid

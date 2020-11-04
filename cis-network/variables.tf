@@ -7,6 +7,7 @@ variable "region" {}
 variable "region_key" {}
 variable "vcn_cidr" {}
 variable "public_subnet_cidr" {}
-variable "private_subnet_cidr" {}
+variable "private_subnet_app_cidr" {}
+variable "private_subnet_db_cidr" {}
 variable "public_src_cidr" {}
 variable "service_label" {}

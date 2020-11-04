@@ -9,3 +9,19 @@ output "to_do" {
 output "network_compartment_id" {
   value = module.compartments.compartments[local.network_compartment_name].id
 }
+
+output "security_compartment_id" {
+  value = module.compartments.compartments[local.security_compartment_name].id
+}
+
+output "compute_storage_compartment_id" {
+  value = module.compartments.compartments[local.compute_storage_compartment_name].id
+}
+
+output "appdev_compartment_id" {
+  value = module.compartments.compartments[local.appdev_compartment_name].id
+}
+
+output "database_compartment_id" {
+  value = module.compartments.compartments[local.database_compartment_name].id
+}

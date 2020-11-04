@@ -6,14 +6,7 @@
 ######################
 # default values
 locals {
-  default_nsgs_opt      = {
-    display_name        = "unnamed"
-    compartment_id      = null
-    ingress_rules       = []
-    egress_rules        = []
-  }
-  nsgs_keys = keys(var.nsgs)
-  local_nsg_ids         = { for i in oci_core_network_security_group.this : i.display_name => i.id }
+  local_nsg_ids         = { for i in oci_core_network_security_group.these : i.display_name => i.id }
   remote_nsg_ids        = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
   nsg_ids               = merge(local.remote_nsg_ids, local.local_nsg_ids)
   nsg_ids_reversed      = { for k,v in local.nsg_ids : v => k }
@@ -25,14 +18,14 @@ data "oci_core_network_security_groups" "this" {
   vcn_id = var.vcn_id
 }
 
-# resource definitions
-resource "oci_core_network_security_group" "this" {
-  count                 = length(local.nsgs_keys)
-  compartment_id        = var.nsgs[local.nsgs_keys[count.index]].compartment_id != null ? var.nsgs[local.nsgs_keys[count.index]].compartment_id : var.default_compartment_id
-  vcn_id                = var.vcn_id
-  display_name          = local.nsgs_keys[count.index] != null ? local.nsgs_keys[count.index] : "${local.default_nsgs_opt.display_name}-${count.index}"
-  defined_tags          = var.nsgs[local.nsgs_keys[count.index]].defined_tags != null ? var.nsgs[local.nsgs_keys[count.index]].defined_tags : var.default_defined_tags
-  freeform_tags         = var.nsgs[local.nsgs_keys[count.index]].freeform_tags != null ? var.nsgs[local.nsgs_keys[count.index]].freeform_tags : var.default_freeform_tags
+# Network Security Groups
+resource "oci_core_network_security_group" "these" {
+  for_each = var.nsgs 
+    compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.default_compartment_id
+    vcn_id         = var.vcn_id
+    display_name   = each.key
+    defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 }
 
 ######################
@@ -544,7 +537,7 @@ locals {
 # ingress - other - any protocol, no src port, no dst port, no icmp_type, no icmp_code
 resource "oci_core_network_security_group_security_rule" "ingress_rules_other" {
   count                 = length(local.ingress_rules_other)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_other[count.index].nsg_id
   direction             = "INGRESS"
@@ -558,7 +551,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_other" {
 # ingress - tcp, src port, no dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_src_no_dst" {
   count                 = length(local.ingress_rules_tcp_src_no_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_tcp_src_no_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -579,7 +572,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_src_
 # ingress - tcp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_no_src_dst" {
   count                 = length(local.ingress_rules_tcp_no_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_tcp_no_src_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -600,7 +593,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_no_s
 # ingress - tcp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_src_dst" {
   count                 = length(local.ingress_rules_tcp_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_tcp_src_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -625,7 +618,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp_src_
 # ingress - udp, src port, no dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_src_no_dst" {
   count                 = length(local.ingress_rules_udp_src_no_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_udp_src_no_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -646,7 +639,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_src_
 # ingress - udp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_no_src_dst" {
   count                 = length(local.ingress_rules_udp_no_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_udp_no_src_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -667,7 +660,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_no_s
 # ingress - udp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_src_dst" {
   count                 = length(local.ingress_rules_udp_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_udp_src_dst[count.index].nsg_id
   direction             = "INGRESS"
@@ -692,7 +685,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_udp_src_
 # ingress - icmp, type, no code
 resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_type_no_code" {
   count                 = length(local.ingress_rules_icmp_type_no_code)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_icmp_type_no_code[count.index].nsg_id
   direction             = "INGRESS"
@@ -710,7 +703,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_typ
 # ingress - icmp, type, code
 resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_type_code" {
   count                 = length(local.ingress_rules_icmp_type_code)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.ingress_rules_icmp_type_code[count.index].nsg_id
   direction             = "INGRESS"
@@ -732,7 +725,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_typ
 # egress - other - any protocol, no src port, no dst port, no icmp_type, no icmp_code
 resource "oci_core_network_security_group_security_rule" "egress_rules_other" {
   count                 = length(local.egress_rules_other)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_other[count.index].nsg_id
   direction             = "EGRESS"
@@ -746,7 +739,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_other" {
 # egress - tcp, src port, no dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_src_no_dst" {
   count                 = length(local.egress_rules_tcp_src_no_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_tcp_src_no_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -767,7 +760,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_src_n
 # egress - tcp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_no_src_dst" {
   count                 = length(local.egress_rules_tcp_no_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_tcp_no_src_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -788,7 +781,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_no_sr
 # egress - tcp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_src_dst" {
   count                 = length(local.egress_rules_tcp_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_tcp_src_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -813,7 +806,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_tcp_src_d
 # egress - udp, src port, no dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_udp_src_no_dst" {
   count                 = length(local.egress_rules_udp_src_no_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_udp_src_no_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -834,7 +827,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_udp_src_n
 # egress - udp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_udp_no_src_dst" {
   count                 = length(local.egress_rules_udp_no_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_udp_no_src_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -855,7 +848,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_udp_no_sr
 # egress - udp, no src port, dst port
 resource "oci_core_network_security_group_security_rule" "egress_rules_udp_src_dst" {
   count                 = length(local.egress_rules_udp_src_dst)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_udp_src_dst[count.index].nsg_id
   direction             = "EGRESS"
@@ -880,7 +873,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_udp_src_d
 # egress - icmp, type, no code
 resource "oci_core_network_security_group_security_rule" "egress_rules_icmp_type_no_code" {
   count                 = length(local.egress_rules_icmp_type_no_code)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_icmp_type_no_code[count.index].nsg_id
   direction             = "EGRESS"
@@ -898,7 +891,7 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_icmp_type
 # egress - icmp, type, code
 resource "oci_core_network_security_group_security_rule" "egress_rules_icmp_type_code" {
   count                 = length(local.egress_rules_icmp_type_code)
-  depends_on            = [ oci_core_network_security_group.this ]
+  depends_on            = [ oci_core_network_security_group.these ]
 
   network_security_group_id = local.egress_rules_icmp_type_code[count.index].nsg_id
   direction             = "EGRESS"

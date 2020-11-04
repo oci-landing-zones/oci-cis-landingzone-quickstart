@@ -18,7 +18,7 @@ module "cis_nsgs" {
   vcn_id                  = module.cis_vcn.vcn_id
   
   nsgs                  = {
-    (local.bastion_nsg_name) = {
+    (local.bastion_nsg_name) = { # Bastion NSG
       compartment_id    = null
       defined_tags      = null
       freeform_tags     = null
@@ -55,7 +55,7 @@ module "cis_nsgs" {
         }
       ]
     },
-    (local.lbr_nsg_name) = {
+    (local.lbr_nsg_name) = { # LBR NSG
       compartment_id    = null
       defined_tags      = null
       freeform_tags     = null
@@ -92,7 +92,7 @@ module "cis_nsgs" {
         }
       ]
     }
-    (local.app_nsg_name) = {
+    (local.app_nsg_name) = { # App NSG
       compartment_id    = null
       defined_tags      = null
       freeform_tags     = null
@@ -171,7 +171,7 @@ module "cis_nsgs" {
         }
       ]
     },
-    (local.db_nsg_name) = {
+    (local.db_nsg_name) = { # DB NSG
       compartment_id    = null
       defined_tags      = null
       freeform_tags     = null

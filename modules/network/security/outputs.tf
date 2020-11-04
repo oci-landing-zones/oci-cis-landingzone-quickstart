@@ -8,7 +8,7 @@
 output "security_lists" {
   description = "The security list(s) created/managed."
   value = {
-    for i in oci_core_security_list.this:
+    for i in oci_core_security_list.these:
       i.display_name => i
   }
 }
@@ -16,7 +16,7 @@ output "security_lists" {
 output "nsgs" {
   description = "The Network Security Group(s) (NSGs) created/managed."
   value = {
-    for i in oci_core_network_security_group.this:
+    for i in oci_core_network_security_group.these:
       i.display_name => i
   }
 }

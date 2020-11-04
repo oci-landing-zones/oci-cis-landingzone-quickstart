@@ -8,7 +8,7 @@ provider "oci" {
 }
 
 ### This data source is used to read configuration from the cis-iam configuration state.
-### Specifically, this configuration provisions resources in the Network compartment, for which the compartment's ocid is required.
+### Specifically, this configuration provisions resources in compartments managed by the cis-iam configuration.
 data "terraform_remote_state" "iam" {
   backend = "local"
   config = {

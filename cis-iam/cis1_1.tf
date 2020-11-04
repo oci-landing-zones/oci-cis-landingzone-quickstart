@@ -26,7 +26,8 @@ module "security_admins" {
   policy_description    = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${local.security_compartment_name_output}."
   policy_statements     = ["Allow group ${module.security_admins.group_name} to manage vaults in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.security_admins.group_name} to manage keys in compartment ${local.security_compartment_name_output}",
-                           "Allow group ${module.security_admins.group_name} to manage secret-family in compartment ${local.security_compartment_name_output}"]
+                           "Allow group ${module.security_admins.group_name} to manage secret-family in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage cloud-guard-family in tenancy"]
 }
 
 ### Compute and Storage services

@@ -1,6 +1,6 @@
 module "cis_notification_iam_policy_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = var.tenancy_ocid
+  compartment_id     = data.terraform_remote_state.iam.outputs.security_compartment_id
   rule_display_name  = "${var.service_label}-notify-on-iam-policy-changes"    
   rule_description   = "Sends notification when IAM policies are created, updated or deleted."
   rule_is_enabled    = true

@@ -19,9 +19,9 @@ variable "target_resources" {
         log_type                      = string
         log_config_source_resource    = string
         log_config_source_category    = string
-        log_config_source_compartment = string
         log_config_source_service     = string
         log_config_source_source_type = string
+        log_config_compartment        = string
         log_is_enabled                = bool
         log_retention_duration        = number
         defined_tags                  = map(string)

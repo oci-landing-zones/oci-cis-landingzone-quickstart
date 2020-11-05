@@ -32,7 +32,7 @@ output "subnets" {
   description = "The managed subnets, indexed by display_name."
   value = (oci_core_subnet.these != null && length(oci_core_subnet.these) > 0) ? {
     for s in oci_core_subnet.these : 
-      s.display_name => {display_name = s.display_name, id = s.id, compartment_id = s.compartment_id}
+      s.display_name => {display_name = s.display_name, id = s.id}
     } : null
 }
 

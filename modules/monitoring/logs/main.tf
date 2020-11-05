@@ -17,7 +17,7 @@ resource "oci_logging_log" "these" {
                 service     = each.value.log_config_source_service
                 source_type = each.value.log_config_source_source_type
             }
-            compartment_id = each.value.log_config_source_compartment
+            compartment_id = each.value.log_config_compartment
         }
 
         is_enabled         = each.value.log_is_enabled

@@ -52,6 +52,20 @@ module "cis_nsgs" {
           }
           icmp_code     = null
           icmp_type     = null
+        },
+        {
+          description   = "SSH egress rule for ${local.db_nsg_name}."
+          stateless     = false
+          protocol      = "6"
+          dst           = local.db_nsg_name
+          dst_type      = "NSG_NAME"
+          src_port      = null
+          dst_port      = {
+            min = 22
+            max = 22
+          }
+          icmp_code     = null
+          icmp_type     = null
         }
       ]
     },
@@ -128,20 +142,6 @@ module "cis_nsgs" {
       ]
       egress_rules        = [
         {
-          description   = "SSH egress rule for ${local.db_nsg_name}."
-          stateless     = false
-          protocol      = "6"
-          dst           = local.db_nsg_name
-          dst_type      = "NSG_NAME"
-          src_port      = null
-          dst_port      = {
-            min = 22
-            max = 22
-          }
-          icmp_code     = null
-          icmp_type     = null
-        },
-        {
           description   = "DB egress rule for ${local.db_nsg_name}."
           stateless     = false
           protocol      = "6"
@@ -177,10 +177,10 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "SSH ingress rule for ${local.app_nsg_name}."
+          description   = "SSH ingress rule for ${local.bastion_nsg_name}."
           stateless     = false
           protocol      = "6"
-          src           = local.app_nsg_name
+          src           = local.bastion_nsg_name
           src_type      = "NSG_NAME"
           src_port      = null
           dst_port      = {

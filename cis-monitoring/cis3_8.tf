@@ -18,5 +18,5 @@ module "cis_notification_iam_user_changes" {
   rule_actions_actions_is_enabled  = true
   rule_actions_actions_description = "Sends notification via ONS"
 
-  topic_id = module.cis_topics.topic_id
+  topic_id = module.cis_security_topic.topic_id
 }  

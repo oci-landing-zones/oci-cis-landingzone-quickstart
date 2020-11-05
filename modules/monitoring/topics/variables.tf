@@ -16,7 +16,14 @@ variable "notification_topic_description" {
   default     = ""
 }
 
-variable "subscription_protocol" {
+variable "subscriptions" {
+  type = map(object({
+    protocol = string
+    endpoint = string
+  }))
+}  
+
+/* variable "subscription_protocol" {
   type        = string
   description = "The subscription protocol."
   default     = ""
@@ -26,4 +33,4 @@ variable "subscription_endpoint" {
   type        = string
   description = "The subscription endpoint."
   default     = ""
-}
+} */

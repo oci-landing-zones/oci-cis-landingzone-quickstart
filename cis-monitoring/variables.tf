@@ -5,3 +5,5 @@ variable "private_key_path" {}
 variable "private_key_password" {}
 variable "region" {}
 variable "service_label" {}
+variable "network_admin_email_endpoint" {}
+variable "security_admin_email_endpoint" {}

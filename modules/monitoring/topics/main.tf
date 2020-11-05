@@ -4,10 +4,11 @@ resource "oci_ons_notification_topic" "this" {
     description    = var.notification_topic_description
 }
 
-resource "oci_ons_subscription" "this" {
-    compartment_id = var.compartment_id
-    endpoint       = var.subscription_endpoint
-    protocol       = var.subscription_protocol
-    topic_id       = oci_ons_notification_topic.this.id
+resource "oci_ons_subscription" "these" {
+    for_each = var.subscriptions
+        compartment_id = var.compartment_id
+        endpoint       = each.value.endpoint
+        protocol       = each.value.protocol
+        topic_id       = oci_ons_notification_topic.this.id
 }
 

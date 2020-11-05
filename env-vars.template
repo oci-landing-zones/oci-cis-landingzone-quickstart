@@ -20,7 +20,11 @@ export TF_VAR_service_label="cis"
 export TF_VAR_vcn_cidr="10.0.0.0/16"
 export TF_VAR_vcn_internet_connected=true
 
-export TF_VAR_create_public_subnet=true
+export TF_VAR_vcn_cidr="10.0.0.0/16"
 export TF_VAR_public_src_cidr="0.0.0.0/0"
 export TF_VAR_public_subnet_cidr="10.0.1.0/24"
-export TF_VAR_private_subnet_cidr="10.0.2.0/24"
+export TF_VAR_private_subnet_app_cidr="10.0.2.0/24"
+export TF_VAR_private_subnet_db_cidr="10.0.3.0/24"
+
+export TF_VAR_network_admin_email_endpoint="<email_address>"
+export TF_VAR_security_admin_email_endpoint="<email_address>"

@@ -24,10 +24,10 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "SSH ingress rule for ${var.public_src_cidr}."
+          description   = "SSH ingress rule for ${var.public_src_bastion_cidr}."
           stateless     = false
           protocol      = "6"
-          src           = var.public_src_cidr
+          src           = var.public_src_bastion_cidr
           src_type      = "CIDR_BLOCK"
           src_port      = null
           dst_port      = {
@@ -61,10 +61,10 @@ module "cis_nsgs" {
       freeform_tags     = null
       ingress_rules     = [
         {
-          description   = "HTTP ingress rule for ${var.public_src_cidr}."
+          description   = "HTTP ingress rule for ${var.public_src_lbr_cidr}."
           stateless     = false
           protocol      = "6"
-          src           = var.public_src_cidr
+          src           = var.public_src_lbr_cidr
           src_type      = "CIDR_BLOCK"
           src_port      = null
           dst_port      = {

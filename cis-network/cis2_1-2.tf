@@ -19,7 +19,7 @@ module "cis_security_lists" {
       ingress_rules   = [{
         stateless     = false
         protocol      = "6"
-        src           = var.public_src_cidr
+        src           = var.public_src_bastion_cidr
         src_type      = "CIDR_BLOCK"
         src_port      = null
         dst_port      = {

@@ -75,3 +75,24 @@ module "appdev_admins" {
                            "Allow group ${module.appdev_admins.group_name} to manage streams in compartment ${local.appdev_compartment_name_output}",
                            "Allow group ${module.appdev_admins.group_name} to manage cluster-family in compartment ${local.appdev_compartment_name_output}"]
 }
+
+module "tenancy_auditors" {
+  source                = "../modules/iam/iam-group"
+  tenancy_ocid          = var.tenancy_ocid
+  group_name            = local.auditor_group_name
+  group_description     = "Group responsible for Auditing the tenancy"
+  user_names            = []
+  policy_compartment_id = var.tenancy_ocid
+  policy_name           = "${var.service_label}-AuditorAccess-Policy"
+  policy_description    = "Policy allowing ${var.service_label}-Auditors group to audit tenancy."
+  policy_statements     = ["Allow group ${module.tenancy_auditors.group_name} to inspect all-resources in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read instances in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read load-balancers in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read buckets in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read nat-gateways in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read public-ips in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read file-family in tenancy",
+                          "Allow group ${module.tenancy_auditors.group_name} to read instance-configurations in tenancy",
+                          "Allow Group ${module.tenancy_auditors.group_name} to read network-security-groups in tenancy",
+                          "Allow Group ${module.tenancy_auditors.group_name} to read resource-availability in tenancy"]
+}

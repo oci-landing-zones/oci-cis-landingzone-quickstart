@@ -1,28 +1,15 @@
-# Object Storage Namespace
+# Getting Object Storage Namespace
 data "oci_objectstorage_namespace" "bucket_namespace" {
 
     #Optional
-    compartment_id = var.compartment_id
+    compartment_id = var.tenancy_ocid
 }
 
-resource "oci_objectstorage_bucket" "storage_bucket" {
-    compartment_id = var.compartment_id
-    name = var.bucket_name
-    namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
-    
-    #Fill in with Vault
-    kms_key_id = var.kms_key_id
-
-    # Check Get the tag and namespace
-    #defined_tags = {"Operations.CostCenter"= "42"}
-    #freeform_tags = {"Department"= "Finance"}
+# Creates a buckets from a map where the key is the bucket name
+resource "oci_objectstorage_bucket" "these" {
+    for_each = var.buckets
+        namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace 
+        name             = each.key
+        compartment_id   = each.value.compartment_id
+        kms_key_id       = var.kms_key_id
 }
-
-/*
-data "terraform_remote_state" "object-storage" {
-  backend = "local"
-  config = {
-    path = "../cis-object-storage/terraform.tfstate"
-  }
-}
-*/

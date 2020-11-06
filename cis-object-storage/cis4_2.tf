@@ -13,14 +13,24 @@ module "cis_vault" {
     region = var.region
 }  
 
+
+
 ### Creates a bucket *in* the specified compartment 
 module "cis_buckets" {
     source             = "../modules/object-storage/bucket"
-    compartment_id     = data.terraform_remote_state.iam.outputs.compute_storage_compartment_id
     region = var.region
-    bucket_name = local.bucket_name
+    tenancy_ocid = var.tenancy_ocid
     depends_on = [module.cis_vault]
     kms_key_id = module.cis_vault.key_id
+    buckets = {
+        "${var.service_label}-ComputeBucket" = {
+            compartment_id = data.terraform_remote_state.iam.outputs.compute_storage_compartment_id
+        },
+        "${var.service_label}-AppDevBucket" = {
+            compartment_id = data.terraform_remote_state.iam.outputs.appdev_compartment_id
+        }
+    }
+
     
 }  
 

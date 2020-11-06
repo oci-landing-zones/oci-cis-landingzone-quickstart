@@ -1,4 +1,4 @@
-output "object_storage_bucket" {
-    value = module.cis_buckets.object_storage_bucket
-    sensitive = true
+output "oci_objectstorage_buckets" {
+     value = module.cis_buckets.oci_objectstorage_buckets
+     sensitive = true
 }

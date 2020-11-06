@@ -1,3 +1,8 @@
-output "object_storage_bucket" {
-    value = oci_objectstorage_bucket.storage_bucket
+# Output Buckets indexed by bucket name
+output "oci_objectstorage_buckets" {
+  description = "The buckets, indexed by bucket name."
+  value = {
+    for bkt in oci_objectstorage_bucket.these:
+      bkt.name => bkt
+}
 }

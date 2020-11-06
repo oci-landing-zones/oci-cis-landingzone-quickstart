@@ -3,9 +3,10 @@ variable "region" {
   description = "Region"
   default     = ""
 } 
-variable "compartment_id" {
+
+variable "tenancy_ocid" {
   type        = string
-  description = "The default compartment OCID to use for resources (unless otherwise specified)."
+  description = "Tenancy OCID"
   default     = ""
 } 
 
@@ -15,14 +16,16 @@ variable "compartment_name" {
   default     = ""
 }  
 
-variable "bucket_name" {
-  type        = string
-  description = "Bucket Name"
-  default     = ""
-}  
-
 variable "kms_key_id" {
   type        = string
   description = "KMS Key ID"
   default     = ""
 }  
+
+
+variable "buckets" {
+  type = map(object({
+    compartment_id = string,
+  }))
+}
+  

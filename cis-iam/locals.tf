@@ -17,4 +17,6 @@ locals {
     database_admin_group_name        = "${var.service_label}-DatabaseAdmins"
     appdev_admin_group_name          = "${var.service_label}-AppDevAdmins"
     iam_admin_group_name             = "${var.service_label}-IAMAdmins"
+    auditor_group_name               = "${var.service_label}-Auditors"
+
 }

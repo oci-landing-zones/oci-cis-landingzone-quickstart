@@ -16,9 +16,11 @@ data "terraform_remote_state" "iam" {
   }
 }
 
+/*
 data "terraform_remote_state" "object-storage" {
   backend = "local"
   config = {
     path = "../cis-object-storage/terraform.tfstate"
   }
 }
+*/

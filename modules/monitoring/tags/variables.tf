@@ -1,6 +1,12 @@
-variable "compartment_id" {
+variable "tag_namespace_compartment_id" {
   type        = string
-  description = "The default compartment OCID to use for resources (unless otherwise specified)."
+  description = "The default compartment ocid for tag namespace."
+  default     = ""
+} 
+
+variable "tag_defaults_compartment_id" {
+  type        = string
+  description = "The default compartment ocid for tag defaults."
   default     = ""
 } 
 
@@ -24,10 +30,10 @@ variable "is_namespace_retired" {
 
 variable "tags" {
   type = map(object({
-    description  = string,
-    is_cost_tracking = bool,
-    is_retired = bool,
-    default_value = string,
-    is_default_required = bool
+    tag_description         = string,
+    tag_is_cost_tracking    = bool,
+    tag_is_retired          = bool,
+    tag_default_value       = string,
+    tag_default_is_required = bool
   }))
 }    

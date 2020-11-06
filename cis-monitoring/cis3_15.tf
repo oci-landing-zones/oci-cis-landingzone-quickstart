@@ -13,7 +13,7 @@ variable "cloud_guard_configuration_self_manage_resources" {
 }
 
 //CloudGuard enabling and disabling is a tenant-level operation 
-resource "oci_cloud_guard_cloud_guard_configuration" "test_cloud_guard_configuration" {
+resource "oci_cloud_guard_cloud_guard_configuration" "cloud_guard_configuration" {
   #Required
   compartment_id   = var.tenancy_ocid
   reporting_region = var.region

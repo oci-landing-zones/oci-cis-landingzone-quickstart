@@ -28,6 +28,12 @@ variable "is_namespace_retired" {
   default     = false
 }
 
+variable "force" {  
+  type        = bool
+  description = "Forces tag defaults creation even if tag defaults for tags in Oracle-Tags namespace exists."
+  default     = false
+}
+
 variable "tags" {
   type = map(object({
     tag_description         = string,

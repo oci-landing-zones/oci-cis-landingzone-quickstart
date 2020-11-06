@@ -18,9 +18,11 @@ resource "oci_objectstorage_bucket" "storage_bucket" {
     #freeform_tags = {"Department"= "Finance"}
 }
 
+/*
 data "terraform_remote_state" "object-storage" {
   backend = "local"
   config = {
     path = "../cis-object-storage/terraform.tfstate"
   }
 }
+*/

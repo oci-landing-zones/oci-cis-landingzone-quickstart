@@ -7,5 +7,5 @@ locals {
     key_key_shape_algorithm = "AES"
     key_key_shape_length = 32
     security_compartment_name        = "${var.service_label}-Security"
-    service_label = "${var.service_label}"
+    service_label = var.service_label
 }

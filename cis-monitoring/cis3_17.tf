@@ -1,8 +1,8 @@
 locals {
-    oss_bucket_logs = {"cis-bucket" = {
-            log_display_name              = "${data.terraform_remote_state.object_storage.outputs.object_storage_bucket.name}-ObjectStorageLog",
+    oss_bucket_logs = {for bkt in data.terraform_remote_state.object_storage.outputs.oci_objectstorage_buckets : bkt.name => {
+            log_display_name              = "${bkt.name}-ObjectStorageLog",
             log_type                      = "SERVICE",
-            log_config_source_resource    = data.terraform_remote_state.object_storage.outputs.object_storage_bucket.name,
+            log_config_source_resource    = bkt.name,
             log_config_source_category    = "write",
             log_config_source_service     = "objectstorage",
             log_config_source_source_type = "OCISERVICE",

@@ -1,7 +1,11 @@
-output oracle_tag_defaults {
-    value = local.oracle_tag_defaults_map
+locals {
+    custom_tags = {for tag in oci_identity_tag.these : tag.name => tag}
 }
 
-output custom_tag_defaults {
-    value = oci_identity_tag_default.these
+output custom_tags {
+    value = local.custom_tags
+}
+
+output custom_tag_namespace_name {
+    value = oci_identity_tag_namespace.namespace[0].name
 }

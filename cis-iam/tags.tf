@@ -26,7 +26,7 @@ module "tags" {
         tag_default_value       = "$${oci.datetime}"
         tag_default_is_required = false
       },
-      "RotateBy" = {
+      (local.rotateby_tag_name) = {
         tag_description         = "Identifies when the resource should be rotated by."
         tag_is_cost_tracking    = false
         tag_is_retired          = false

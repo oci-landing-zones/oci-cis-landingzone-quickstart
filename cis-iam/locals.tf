@@ -19,4 +19,6 @@ locals {
     iam_admin_group_name             = "${var.service_label}-IAMAdmins"
     auditor_group_name               = "${var.service_label}-Auditors"
 
+    rotateby_tag_name                = "RotateBy"
+
 }

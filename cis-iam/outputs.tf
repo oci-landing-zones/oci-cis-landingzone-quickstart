@@ -32,5 +32,5 @@ output "database_compartment_id" {
 }
 
 output "rotateby_full_tag_name" {
-    value = "${module.tags.custom_tag_namespace_name}.${module.tags.custom_tags["RotateBy"].name}"
+    value = "${module.tags.custom_tag_namespace_name}.${module.tags.custom_tags[local.rotateby_tag_name].name}"
 }

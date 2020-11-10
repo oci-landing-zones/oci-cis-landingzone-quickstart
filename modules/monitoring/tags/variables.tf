@@ -28,10 +28,10 @@ variable "is_namespace_retired" {
   default     = false
 }
 
-variable "force" {  
-  type        = bool
-  description = "Forces tag defaults creation even if tag defaults for tags in Oracle-Tags namespace exists."
-  default     = false
+variable "oracle_default_namespace_name" {
+  type        = string
+  description = "The Oracle default tag namespace name"
+  default     = "Oracle-Tags"
 }
 
 variable "tags" {
@@ -39,6 +39,7 @@ variable "tags" {
     tag_description         = string,
     tag_is_cost_tracking    = bool,
     tag_is_retired          = bool,
+    make_tag_default        = bool,
     tag_default_value       = string,
     tag_default_is_required = bool
   }))

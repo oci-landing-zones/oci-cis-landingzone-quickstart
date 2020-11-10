@@ -9,11 +9,30 @@ output "keys_requiring_rotation" {
 }  
 */
 
-output "key_time_created" {
-    value = data.oci_kms_keys.these.keys[0].time_created
+terraform {
+  required_providers {
+    time = {
+      source = "hashicorp/time"
+      version = "0.6.0"
+    }
+  }
 }
+/*
+output "key_time_created" {
+    #value = time_offset.time_created.unix
+    value = data.oci_kms_keys.these.keys[0].time_created
+}    
+
 
 data "oci_kms_keys" "these" {
     compartment_id      = data.terraform_remote_state.iam.outputs.security_compartment_id
     management_endpoint = "https://bbp2f47gaacuu-management.kms.${var.region}.oraclecloud.com/20180608/keys"
 }
+*/
+output "key_time_created" {
+    #value = time_offset.time_created.unix
+    value = time_rotating.this.rotation_rfc3339
+} 
+resource "time_rotating" "this" {
+    rotation_days = 365
+}    

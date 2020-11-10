@@ -11,9 +11,21 @@ module "cis_vault" {
     key_key_shape_length = local.key_key_shape_length
     service_label = local.service_label
     region = var.region
+    defined_tags = {(data.terraform_remote_state.iam.outputs.rotateby_full_tag_name) = time_offset.expiry_time.rfc3339}
 }  
 
+terraform {
+  required_providers {
+    time = {
+      source = "hashicorp/time"
+      version = "0.6.0"
+    }
+  }
+}
 
+resource "time_offset" "expiry_time" {
+  offset_days = 7
+}
 
 ### Creates a bucket *in* the specified compartment 
 module "cis_buckets" {

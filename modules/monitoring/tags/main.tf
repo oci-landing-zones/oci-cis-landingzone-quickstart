@@ -1,34 +1,30 @@
 ### This module creates a tag namespace, tags and tag defaults 
-### only if tag defaults for tags in the Oracle-Tags namespace do not exist in the informed compartment.
+### only if tag defaults for tags in the oracle default tag namespace (typically 'Oracle-Tags') do not exist in the informed compartment.
 
 locals {
-    lowercase_tags_list           = [for tag in keys(var.tags) : lower(tag)]
-    oracle_default_namespace_name = "Oracle-Tags"
+    actual_tags = {for k, v in var.tags : k => v 
+                            if !contains(data.oci_identity_tag_defaults.these.tag_defaults[*].tag_definition_name,k)} 
 
-    # This local captures the tags in Oracle-Tags default namespace that are tag defaults. 
-    # If we find such occurrences and custom tag defaults are not being forced, it means we don't need to create custom tag defaults.
-    oracle_tag_defaults_map = (!var.force && data.oci_identity_tags.these.tags != null) ? {
-                                for tag in data.oci_identity_tags.these.tags : tag.name => tag 
-                                    if contains(data.oci_identity_tag_defaults.these.tag_defaults[*].tag_definition_id,tag.id) /*&& 
-                                       contains(local.lowercase_tags_list,lower(tag.name))*/
-                              } : null
+    actual_tag_defaults = {for k, v in var.tags : k => v 
+                            if v.make_tag_default == true && !contains(data.oci_identity_tag_defaults.these.tag_defaults[*].tag_definition_name,k)}                          
 }
 
+## Looking for the oracle default tag namespace
 data "oci_identity_tag_namespaces" "this" {
     compartment_id = var.tag_namespace_compartment_id
     filter {
         name  = "name"
-        values = [local.oracle_default_namespace_name]
+        values = [var.oracle_default_namespace_name]
     }    
 }
 
 data "oci_identity_tags" "these" {
-    ## Looking for tags in Oracle-Tags tag namespace
+    ## Looking for tags in the oracle default tag namespace
     tag_namespace_id = length(data.oci_identity_tag_namespaces.this.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.this.tag_namespaces[0].id : "null"
 }
 
 data "oci_identity_tag_defaults" "these" {
-    ## Looking for tag defaults for tags in the Oracle-Tags tag namespace
+    ## Looking for tag defaults for tags in the oracle default tag namespace
     compartment_id = var.tag_defaults_compartment_id
     filter {
         name = "tag_namespace_id"
@@ -37,7 +33,7 @@ data "oci_identity_tag_defaults" "these" {
 }
 
 resource "oci_identity_tag_namespace" "namespace" {
-    count = (local.oracle_tag_defaults_map == null) ? 1 : 0
+    count = (local.actual_tags != null) ? 1 : 0
     compartment_id = var.tag_namespace_compartment_id
     name           = var.tag_namespace_name
     description    = var.tag_namespace_description
@@ -45,7 +41,7 @@ resource "oci_identity_tag_namespace" "namespace" {
 }
 
 resource "oci_identity_tag" "these" {
-    for_each = (local.oracle_tag_defaults_map == null) ? var.tags : {}
+    for_each = (local.actual_tags != null) ? local.actual_tags : {}
         tag_namespace_id = oci_identity_tag_namespace.namespace[0].id 
         name             = each.key
         description      = each.value.tag_description
@@ -54,9 +50,9 @@ resource "oci_identity_tag" "these" {
 }
 
 resource "oci_identity_tag_default" "these" {
-    for_each = (local.oracle_tag_defaults_map == null) ? toset(keys(var.tags)) : []
+    for_each = (local.actual_tag_defaults != null) ? toset(keys(local.actual_tag_defaults)) : []
         compartment_id    = var.tag_defaults_compartment_id
-        tag_definition_id = oci_identity_tag.these[each.value].id        # the tag id that has been just created
-        value             = var.tags[each.value].tag_default_value       # the tag default value
-        is_required       = var.tags[each.value].tag_default_is_required # whether the tag default value is required
+        tag_definition_id = oci_identity_tag.these[each.value].id                         # the tag id that has been just created
+        value             = local.actual_tag_defaults[each.value].tag_default_value       # the tag default value
+        is_required       = local.actual_tag_defaults[each.value].tag_default_is_required # whether the tag default value is required
 }

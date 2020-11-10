@@ -1,4 +1,3 @@
-
 resource "oci_kms_vault" "this" {
     compartment_id = var.compartment_id
     display_name = var.vault_name
@@ -15,6 +14,7 @@ resource "oci_kms_key" "this" {
     algorithm = var.key_key_shape_algorithm
     length    = var.key_key_shape_length
   }
+  defined_tags = var.defined_tags
 }
 
 resource  "oci_identity_policy" "OCI_Services_Key_Access" {

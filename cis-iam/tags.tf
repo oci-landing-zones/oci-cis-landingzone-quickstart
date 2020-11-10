@@ -1,7 +1,6 @@
 ### Creates a custom tag namespace and tags in the specified tag_namespace_compartment_id 
 ### and tag defaults in the specified tag_defaults_compartment_id. 
-### But only if there are no tag defaults for the default Oracle-Tags namespace in the tag_defaults_compartment_id (checked by module).
-### To change this behavior, set the force property to true and the custom resources will be created regardless of the Oracle-Tags namespace.
+### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
 
 module "tags" {
   source                       = "../modules/monitoring/tags"
@@ -31,7 +30,7 @@ module "tags" {
         tag_description         = "Identifies when the resource should be rotated by."
         tag_is_cost_tracking    = false
         tag_is_retired          = false
-        make_tag_default        = false # let's not make this a tag default, as we don't want to apply it to any resource.
+        make_tag_default        = false # let's not make this a tag default, as we don't want to apply it automatically to all resources.
         tag_default_value       = null
         tag_default_is_required = false
       }

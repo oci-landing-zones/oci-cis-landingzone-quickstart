@@ -20,5 +20,7 @@ locals {
     auditor_group_name               = "${var.service_label}-Auditors"
 
     rotateby_tag_name                = "RotateBy"
+    createdby_tag_name               = "CreatedBy"
+    createdon_tag_name               = "CreatedOn"
 
 }

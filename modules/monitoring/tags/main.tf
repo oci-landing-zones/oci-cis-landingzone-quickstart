@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 ### This module creates a tag namespace, tags and tag defaults 
 ### only if tag defaults for tags in the oracle default tag namespace (typically 'Oracle-Tags') do not exist in the informed compartment.
 

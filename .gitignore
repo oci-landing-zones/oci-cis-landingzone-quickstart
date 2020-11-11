@@ -4,3 +4,8 @@ env-vars.*.*
 **/.terraform/*
 **/.DS_Store
 **/crash.log
+cis-iam/*
+cis-monitoring/*
+cis-network/*
+cis-object-storage/*
+cis-tenancy.sh

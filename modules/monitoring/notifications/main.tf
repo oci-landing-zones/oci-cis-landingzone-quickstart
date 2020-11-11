@@ -1,13 +1,12 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 resource "oci_events_rule" "this" {
-    #Required
     actions {
-        #Required
         actions {
-            #Required
             action_type = var.rule_actions_actions_action_type
             is_enabled  = var.rule_actions_actions_is_enabled
 
-            #Optional
             description = var.rule_actions_actions_description
             topic_id    = var.topic_id
         }
@@ -17,6 +16,5 @@ resource "oci_events_rule" "this" {
     display_name   = var.rule_display_name
     is_enabled     = var.rule_is_enabled
 
-    #Optional
     description = var.rule_description
 }

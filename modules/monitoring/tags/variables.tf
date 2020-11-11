@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 variable "tag_namespace_compartment_id" {
   type        = string
   description = "The default compartment ocid for tag namespace."

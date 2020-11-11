@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 ### This Terraform configuration identifies policies containing statements granting manage privilege on all-resources to groups other than Adminstrators.
 
 data "oci_identity_policies" "all" {

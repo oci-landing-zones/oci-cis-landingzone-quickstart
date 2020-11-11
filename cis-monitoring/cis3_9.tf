@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 module "cis_notification_vcn_changes" {
   source             = "../modules/monitoring/notifications"
   compartment_id     = data.terraform_remote_state.iam.outputs.security_compartment_id

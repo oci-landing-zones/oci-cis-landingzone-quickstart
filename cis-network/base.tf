@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 ### This Terraform configuration provisions a VCN, an Internet Gateway, a NAT Gateway, a Service Gateway, three subnets and three route tables.
 ### Among the subnets, one is public and two are private (meant to host app and db hosts). Each subnet is attached a different route table, with distinct route rules.
 ### The route table attached to the public subnet has a rule for the Internet Gateway with 0.0.0.0/0 destination 
@@ -99,62 +102,3 @@ module "cis_vcn" {
     }
   }
 }
-/*
-module "cis_subnets" {
-  source                  = "../modules/network/subnets"
-  default_compartment_id  = var.tenancy_ocid
-  vcn_id                  = module.cis_vcn.vcn_id
-  vcn_cidr                = var.vcn_cidr
-
-  subnets = {
-    (local.public_subnet_name) = {
-      compartment_id    = null
-      defined_tags      = null
-      freeform_tags     = null
-      dynamic_cidr      = false
-      cidr              = var.public_subnet_cidr
-      cidr_len          = null
-      cidr_num          = null
-      enable_dns        = true
-      dns_label         = "public"
-      private           = false
-      ad                = null
-      dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.public_subnet_route_table_name].id
-      security_list_ids = [module.cis_security_lists.security_lists[local.public_subnet_security_list_name].id]
-    }, 
-    (local.private_subnet_app_name) = {
-      compartment_id    = null
-      defined_tags      = null
-      freeform_tags     = null
-      dynamic_cidr      = false
-      cidr              = var.private_subnet_app_cidr
-      cidr_len          = null
-      cidr_num          = null
-      enable_dns        = true
-      dns_label         = "appsubnet"
-      private           = true
-      ad                = null
-      dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_app_route_table_name].id
-      security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_app_security_list_name].id]
-    },
-    (local.private_subnet_db_name) = {
-      compartment_id    = null
-      defined_tags      = null
-      freeform_tags     = null
-      dynamic_cidr      = false
-      cidr              = var.private_subnet_db_cidr
-      cidr_len          = null
-      cidr_num          = null
-      enable_dns        = true
-      dns_label         = "dbsubnet"
-      private           = true
-      ad                = null
-      dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_db_route_table_name].id
-      security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_db_security_list_name].id]
-    }
-  } 
-}
-*/

@@ -1,9 +1,11 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 resource "oci_kms_vault" "this" {
     compartment_id = var.compartment_id
     display_name = var.vault_name
     vault_type = var.vault_type
 }
-
 
 resource "oci_kms_key" "this" {
   compartment_id      = var.compartment_id
@@ -23,7 +25,5 @@ resource  "oci_identity_policy" "OCI_Services_Key_Access" {
     description = "Policy for Cloud Guard to be able to review a tenancy"
   statements = [
     "Allow service blockstorage, objectstorage-${var.region}, FssOc1Prod, oke, streaming to use keys in compartment ${var.compartment_name} where target.key.id = '${oci_kms_key.this.id}'"
-
   ]
-
 }

@@ -1,10 +1,9 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-# Global variables
 variable "default_compartment_id" {
-  type                = string
-  description         = "The default compartment OCID to use for resources (unless otherwise specified)."
+  type        = string
+  description = "The default compartment OCID to use for resources (unless otherwise specified)."
 }
 
 variable "vcn_id" {

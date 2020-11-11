@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 ### This Terraform configuration creates three empty security lists.
 ### The security rules are driven by NSGs (Network Security Groups). See cis2_3-4.tf
 ### Add security rules as needed. See commented section as an example.

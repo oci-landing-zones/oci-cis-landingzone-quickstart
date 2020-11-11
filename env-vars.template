@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 # See https://github.com/oracle/terraform-provider-oci/blob/master/README.md for now to set up these credentials.
 export TF_VAR_tenancy_ocid="<tenancy_ocid>"
 export TF_VAR_user_ocid="<user_ocid>"

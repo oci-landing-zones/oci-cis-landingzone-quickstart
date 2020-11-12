@@ -1,7 +1,7 @@
 # OCI CIS 1.1 Foundations
 
 # Overview
-This Terraform configuration provisions a tenancy in Oracle Cloud Infrastructure (OCI) according to the CIS 1.1 OCI Security Foundation Benchmark. 
+This Terraform configuration provisions a tenancy in Oracle Cloud Infrastructure (OCI) according to the CIS 1.1 OCI Security Foundation Benchmark.
 ...
 
 ## Architecture 
@@ -27,17 +27,19 @@ There are multiple ways of achieving this, all documented in https://www.terrafo
 
 For environment variables, please see the provided env-vars.template. Once the correct values are provided, make sure to run 'source env-vars.template' to export those variables before executing Terraform.
 
-If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). terraform.tfvars is automatically loaded when Terraform executes.
-	- tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
-	- user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"
-	- fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
-	- private_key_path="/home/users/private_key.pem"
-	- private_key_password=""
+If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). 
+terraform.tfvars is automatically loaded when Terraform executes.
+
+	tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
+	user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"
+	fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
+	private_key_path="/home/users/private_key.pem"
+	private_key_password=""
 
 With variable values provided, execute:
-	- terraform init
-	- terraform plan -out plan.out
-	- terraform apply plan.out
+	terraform init
+	terraform plan -out plan.out
+	terraform apply plan.out
 
 ## How to run this Terraform Configuration using OCI Resource Manager
 ...

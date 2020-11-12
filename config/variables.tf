@@ -3,23 +3,56 @@
 
 # General
 variable "tenancy_ocid" {}
-variable "user_ocid" {}
-variable "fingerprint" {}
-variable "private_key_path" {}
-variable "private_key_password" {}
-variable "home_region" {}
-variable "region" {}
-variable "region_key" {}
-variable "service_label" {}
+variable "user_ocid" {
+    default = ""
+}
+variable "fingerprint" {
+    default = ""
+}
+variable "private_key_path" {
+    default = ""
+}
+variable "private_key_password" {
+    default = ""
+}
+
+variable "home_region" {
+    default = "us-ashburn-1"
+}
+variable "region" {
+    default = "us-ashburn-1"
+}
+variable "region_key" {
+    default = "iad"
+}
+variable "service_label" {
+    default = "cis"
+}
 
 # Networking
-variable "vcn_cidr" {}
-variable "public_subnet_cidr" {}
-variable "private_subnet_app_cidr" {}
-variable "private_subnet_db_cidr" {}
-variable "public_src_bastion_cidr" {}
-variable "public_src_lbr_cidr" {}
+variable "vcn_cidr" {
+    default = "10.0.0.0/16"
+}
+variable "public_subnet_cidr" {
+    default = "10.0.1.0/24"
+}
+variable "private_subnet_app_cidr" {
+    default = "10.0.2.0/24"
+}
+variable "private_subnet_db_cidr" {
+    default = "10.0.3.0/24"
+}
+variable "public_src_bastion_cidr" {
+    default = "177.235.205.77/32"
+}
+variable "public_src_lbr_cidr" {
+    default = "0.0.0.0/0"
+}
 
 # Monitoring
-variable "network_admin_email_endpoint" {}
-variable "security_admin_email_endpoint" {}
+variable "network_admin_email_endpoint" {
+    default = "andre.correa@oracle.com"
+}
+variable "security_admin_email_endpoint" {
+    default = "andremo_br@yahoo.com"
+}

@@ -3,8 +3,9 @@
 
 ### Group
 resource "oci_identity_group" "this" {
-  name        = var.group_name
-  description = var.group_description
+  name           = var.group_name
+  description    = var.group_description
+  compartment_id = var.tenancy_ocid
 }
 
 data "oci_identity_users" "these" {

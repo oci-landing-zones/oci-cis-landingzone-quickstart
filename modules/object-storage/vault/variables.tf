@@ -59,10 +59,5 @@ variable "region" {
   default     = ""
 }  
 
-variable "defined_tags" {
-  type        = map(string)
-  default     = {}
-}
-
 
 

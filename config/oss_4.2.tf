@@ -14,7 +14,6 @@ module "cis_vault" {
     key_key_shape_length    = local.key_key_shape_length
     service_label           = local.service_label
     region                  = var.region
-    defined_tags            = {("${module.tags.custom_tag_namespace_name}.${module.tags.custom_tags[local.rotateby_tag_name].name}") = time_offset.expiry_time.rfc3339}
 }  
 
 terraform {

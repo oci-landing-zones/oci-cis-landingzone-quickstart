@@ -2,6 +2,7 @@
 
 # Overview
 This Terraform configuration provisions a tenancy in Oracle Cloud Infrastructure (OCI) according to the CIS 1.1 OCI Security Foundation Benchmark.
+
 ...
 
 ## Architecture 
@@ -37,6 +38,7 @@ terraform.tfvars is automatically loaded when Terraform executes.
 	private_key_password=""
 
 With variable values provided, execute:
+
 	terraform init
 	terraform plan -out plan.out
 	terraform apply plan.out

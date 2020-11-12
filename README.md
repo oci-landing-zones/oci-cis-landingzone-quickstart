@@ -34,7 +34,7 @@ terraform.tfvars is automatically loaded when Terraform executes.
 	tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
 	user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"
 	fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
-	private_key_path="/home/users/private_key.pem"
+	private_key_path="/home/users/myself/private_key.pem"
 	private_key_password=""
 
 With variable values provided, execute:

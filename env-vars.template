@@ -1,37 +1,10 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-# See https://github.com/oracle/terraform-provider-oci/blob/master/README.md for now to set up these credentials.
-export TF_VAR_tenancy_ocid="<tenancy_ocid>"
-export TF_VAR_user_ocid="<user_ocid>"
-export TF_VAR_fingerprint="<fingerprint>"
-export TF_VAR_private_key_path="<private_key_path>"
-# If private key is encrypted with a password, provide the password or can read from a file (as shown below)
+# See https://github.com/oracle/terraform-provider-oci/blob/master/README.md for now to set up these credentials. The following are sample values:
+export TF_VAR_tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
+export TF_VAR_user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"
+export TF_VAR_fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
+export TF_VAR_private_key_path="/home/users/myself/private_key.pem"
+# If private key is encrypted with a password, provide the password read from a file
 export TF_VAR_private_key_password=""
-
-# Needed for iam config
-export TF_VAR_home_region="us-ashburn-1"
-
-# Example: us-phoenix-1, us-ashburn-1, sa-saopaulo-1
-export TF_VAR_region="us-ashburn-1"
-
-# Example: phx, iad, fra, lhr, gru
-export TF_VAR_region_key="iad"
-
-export TF_VAR_service_label="cis"
-
-export TF_VAR_vcn_cidr="10.0.0.0/16"
-export TF_VAR_vcn_internet_connected=true
-
-export TF_VAR_vcn_cidr="10.0.0.0/16"
-export TF_VAR_private_subnet_app_cidr="10.0.2.0/24"
-export TF_VAR_private_subnet_db_cidr="10.0.3.0/24"
-
-# This is the source cidr block allowed ssh/rdp access through bastions. 0.0.0.0/0 is not allowed.
-export TF_VAR_public_src_bastion_cidr="<restricted_cidr_block_do_not_use_0.0.0.0/0>"
-
-# This is the source cidr block allowed https access through public https listeners in the public subnet. 
-export TF_VAR_public_src_lbr_cidr="<any_cidr_block>"
-
-export TF_VAR_network_admin_email_endpoint="<email_address>"
-export TF_VAR_security_admin_email_endpoint="<email_address>"

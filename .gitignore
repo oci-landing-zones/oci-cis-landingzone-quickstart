@@ -4,6 +4,9 @@ env-vars.*.*
 **/.terraform/*
 **/.DS_Store
 **/crash.log
+private_key.pem
+config/terraform.tfvars
+
 cis-iam/*
 cis-monitoring/*
 cis-network/*

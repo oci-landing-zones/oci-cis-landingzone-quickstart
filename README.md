@@ -1,16 +1,34 @@
 # OCI CIS 1.1 Foundations
 
 # Overview
-This Terraform configuration provisions a tenancy in Oracle Cloud Infrastructure (OCI) according to the CIS 1.1 OCI Security Foundation Benchmark.
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1. 
 
-...
+The Landing Zone template deploys a standard three-tier web architecture using a single VCN with multiple compartments to segregate access to various resources. The template configures the OCI tenancy to meet CIS OCI Foundations Benchmark settings related to:
 
-## Architecture 
+- Networking
+- IAM
+- Monitoring
+ 
+ ## Architecture 
+ The Landing Zone template creates a three-tier web architecture in single VCN. The three tiers are divided into:
+ 
+ - One (1) Public Subnet (for load balancers and the OCI bastion host service)
+ - Two (2) Private Subnets (one for the application tier/servers and one for the database tier)
+ 
+ The Landing Zone template also creates five (5) compartments in the tenancy:
+ 
+ - A network compartment: A compartment for all networking resources.
+ - A security compartment: A compartment for all logging, key management, and notifications resources and services. 
+ - A compute and storage compartment: A compartment for all compute and storage (including object storage) resources
+ - A database compartment: A compartment for a database resources and services. 
+ - An application development compartment: A compartment for application services, such as functions and API Gateway. 
+
+The network diagram below does not show the database and application development compartments, because no resources are initially provisioned into these compartments. 
 
 ![Architecture](images/Architecture.png)
 
 ## How this Terraform Configuration is organized 
-...
+[Andre to add]
 
 ## How to run this Terraform Configuration using Terraform CLI
 You MUST provide values for the following variable names:
@@ -44,4 +62,4 @@ With variable values provided, execute:
 	terraform apply plan.out
 
 ## How to run this Terraform Configuration using OCI Resource Manager
-...
+[Andre to add]

@@ -64,3 +64,14 @@ With variable values provided, execute:
 
 ## How to run this Terraform Configuration using OCI Resource Manager
 [Andre to add]
+
+
+
+# Known Issues
+## Deployment via Resource Manager or Terraform
+- Destroying the stack
+	- Vaults have a delayed delete of 7 days
+	- Compartments may not delete 
+	- Tag namespace fails to delete on the first destroy.  Run destroy again to remove
+## Deployment via Resourece Manager
+- Variable syntax errors are not detected during the planning

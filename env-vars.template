@@ -24,7 +24,7 @@ export TF_VAR_private_subnet_app_cidr="10.0.2.0/24"
 export TF_VAR_private_subnet_db_cidr="10.0.3.0/24"
 
 # This is the source cidr block allowed ssh/rdp access through bastions. 0.0.0.0/0 is not allowed.
-export TF_VAR_public_src_bastion_cidr="<valid_cidr_range>"
+export TF_VAR_public_src_bastion_cidr="<valid_cidr_block_or_ip_address>"
 
 # This is the source cidr block allowed https access through public https listeners in the public subnet. 
 export TF_VAR_public_src_lbr_cidr="0.0.0.0/0"

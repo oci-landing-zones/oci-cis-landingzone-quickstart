@@ -28,14 +28,6 @@ module "tags" {
         make_tag_default        = true
         tag_default_value       = "$${oci.datetime}"
         tag_default_is_required = false
-      },
-      (local.rotateby_tag_name) = {
-        tag_description         = "Identifies when the resource should be rotated by."
-        tag_is_cost_tracking    = false
-        tag_is_retired          = false
-        make_tag_default        = false # let's not make this a tag default, as we don't want to apply it automatically to all resources.
-        tag_default_value       = null
-        tag_default_is_required = false
       }
   }
 } 

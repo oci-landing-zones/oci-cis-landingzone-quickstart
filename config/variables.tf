@@ -56,3 +56,11 @@ variable "network_admin_email_endpoint" {
 variable "security_admin_email_endpoint" {
     default = "andremo_br@yahoo.com"
 }
+variable "cloud_guard_configuration_status" {
+  default = "ENABLED"
+}
+# Setting this variable to true lets the user seed the oracle managed entities with minimal changes to the original entities.
+# False will delegate this responsibility to CloudGuard for seeding the oracle managed entities.
+variable "cloud_guard_configuration_self_manage_resources" {
+  default = false
+}

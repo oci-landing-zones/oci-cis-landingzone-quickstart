@@ -16,19 +16,6 @@ module "cis_vault" {
     region                  = var.region
 }  
 
-terraform {
-  required_providers {
-    time = {
-      source = "hashicorp/time"
-      version = "0.6.0"
-    }
-  }
-}
-
-resource "time_offset" "expiry_time" {
-  offset_days = 7
-}
-
 ### Creates a bucket *in* the specified compartment 
 module "cis_buckets" {
     source       = "../modules/object-storage/bucket"

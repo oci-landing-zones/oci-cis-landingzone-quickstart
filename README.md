@@ -110,7 +110,7 @@ The only required input variable for the OCI provider is the **region**. Fortuna
 
 There are a few different ways of running Terraform code in ORM. Here we describe two of them: creating an ORM stack by uploading a folder to ORM or creating an ORM stack by integrating with GitLab. A stack is the ORM term to refer to a Terraform configuration.
 
-For OCI Resource Manager details, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Tasks/managingstacksandjobs.htm.
+For OCI Resource Manager details, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
 ### Stack from Folder
 Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this repository. 
@@ -132,7 +132,7 @@ Using OCI Console, navigate to Resource Manager service page and create a connec
 
 In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
 
-![GitLab connection](images/GitLabConnection.png)
+![Stack from GitLab](images/GitLabConnection.png)
 
 **Note:** the GitLab URL must be accessible over the Internet.
 
@@ -147,7 +147,7 @@ For the Working Directory, select the config folder.
 4. In **Create in Compartment** dropdown, select the compartment to store the Stack.
 5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
-![GitLab connection](images/GitLabStack.png)
+![Stack from GitLab](images/GitLabStack.png)
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 

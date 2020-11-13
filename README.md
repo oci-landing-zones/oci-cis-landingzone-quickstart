@@ -142,10 +142,9 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 	- The configured GitLab provider
 	- The repository name
 	- The repository branch
-
-For the **Working Directory**, select the config folder.	 
+	- For the **Working Directory**, select the 'config' folder.	 
 3. In **Name**, give the stack a name or accept the default.
-4. In **Create in Compartment** dropdown, select the compartment to store the Stack.
+4. In **Create in Compartment** dropdown, select the compartment to store the stack.
 5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
 ![GitLab Stack](images/GitLabStack.PNG)

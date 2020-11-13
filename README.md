@@ -28,51 +28,53 @@ The network diagram below does not show the database and application development
 
 ![Architecture](images/Architecture.png)
 
-## How the code is organized 
+## How the Code is Organized 
 The code consists of a single Terraform configuration defined within the config folder along with a few modules within the modules folder.
+
+Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
 
 ## Input Variables
 Input variables used in the configuration are all defined (and defaulted) in config/variables.tf:
-- tenancy_ocid: the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console.
+- **tenancy_ocid**: the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console.
 	- Required, no default
-- user_ocid: the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources.
+- **user_ocid**: the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources.
 	- Required, no default
-- fingerprint: the user's public key fingerprint. This information can be obtained in OCI Console.
+- **fingerprint**: the user's public key fingerprint. This information can be obtained in OCI Console.
 	- Required, no default
-- private_key_path: the local path to the user private key.
+- **private_key_path**: the local path to the user private key.
 	- Required, no default
-- private_key_password: the private key password, if any.
+- **private_key_password**: the private key password, if any.
 	- Optional, no default
-- home_region: the tenancy home region identifier where Terraform should provision IAM resources (for a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)
+- **home_region**: the tenancy home region identifier where Terraform should provision IAM resources (for a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)
 	- Required, default us-ashburn-1
-- region: the tenancy region identifier where the Terraform should provision the resources.
+- **region**: the tenancy region identifier where the Terraform should provision the resources.
 	- Required, default us-ashburn-1
-- region_key: the 3-letter region key
+- **region_key**: the 3-letter region key
 	- Required, default iad
-- service_label: a label that is used as a prefix when naming provisioned resources.
+- **service_label**: a label that is used as a prefix when naming provisioned resources.
 	- Required, default cis
-- vcn_cidr: the VCN CIDR block
+- **vcn_cidr**: the VCN CIDR block
 	- Required, default 10.0.0.0/16
-- public_subnet_cidr: the public subnet CIDR block.
+- **public_subnet_cidr**: the public subnet CIDR block.
 	- Required, default 10.0.1.0/24
-- private_subnet_app_cidr: the App private subnet CIDR block.
+- **private_subnet_app_cidr**: the App private subnet CIDR block.
 	- Required, default 10.0.2.0/24
-- private_subnet_db_cidr: the DB private subnet CIDR block.
+- **private_subnet_db_cidr**: the DB private subnet CIDR block.
 	- Required, default 10.0.3.0/24
-- public_src_bastion_cidr: the external CIDR block that is allowed to ingress into the bastions servers in the public subnet.
+- **public_src_bastion_cidr**: the external CIDR block that is allowed to ingress into the bastions servers in the public subnet.
 	- Required, no default
-- public_src_lbr_cidr: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
+- **public_src_lbr_cidr**: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
 	- Required, default 0.0.0.0/0
-- network_admin_email_endpoint: an email to receive notifications for network related events.
+- **network_admin_email_endpoint**: an email to receive notifications for network related events.
 	- Required, no default
-- security_admin_email_endpoint: an email to receive notifications for security related events.
+- **security_admin_email_endpoint**: an email to receive notifications for security related events.
 	- Required, no default
-- cloud_guard_configuration_status: whether Cloud Guard is enabled or not.
+- **cloud_guard_configuration_status**: whether Cloud Guard is enabled or not.
 	- Required, default ENABLED
-- cloud_guard_configuration_self_manage_resources: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities.
+- **cloud_guard_configuration_self_manage_resources**: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities.
 	- Required, default false
 
-## How to execute the code using Terraform CLI
+## How to Execute the Code Using Terraform CLI
 You MUST provide values for the following variable names: tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password (if any)
 
 There are multiple ways of achieving this, all documented in https://www.terraform.io/docs/configuration/variables.html:
@@ -97,14 +99,47 @@ terraform.tfvars is automatically loaded when Terraform executes.
 
 With variable values provided, execute:
 
+	cd config
 	terraform init
 	terraform plan -out plan.out
 	terraform apply plan.out
 
-## How to execute the code using OCI Resource Manager
-[Andre to add]
+## How to Execute the Code Using OCI Resource Manager
+OCI Resource Manager (ORM) has slightly different requirements than Terraform CLI. First and foremost, there is no need to provide tenancy connection and user authentication input variables for the OCI provider, as Resource Manager being an OCI service, uses the service connection information itself.
+The only required input variable for the OCI provider is the **region**. Fortunately, the provided Terraform code, by not providing defaults to tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password is already adequate and no changes are required.
 
+There are a few different ways of running Terraform code in ORM. Here we describe two of them: creating an ORM stack by uploading a folder to ORM or creating an ORM stack by integrating with GitLab. A stack is the ORM term to refer to a Terraform configuration.
 
+### Stack from Folder
+Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this repository. 
+
+Using OCI Console, navigate to Resource Manager and create a stack based on a folder. In the **Create Stack** page:
+1. Select **My Configuration** option as the origin of the Terraform configuration.
+2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
+3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
+4. In **Name**, give the stack a name or accept the default.
+5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
+6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+
+Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
+
+### Stack from GitLab
+Using OCI Console, navigate to Resource Manager and first create a connection to your GitLab repository.
+
+[To do]
+
+Next, create a stack based on a source code control system. In the **Create Stack** page:
+1. Select **Source Code Control System** option as the origin of the Terraform configuration.
+2. In the **Stack Configuration** area, select the configured GitLab repository details:
+	- The configured GitLab provider
+	- The repository name
+	- The repository branch
+For the Working Directory, select the config folder.	 
+3. In **Name**, give the stack a name or accept the default.
+4. In **Create in Compartment** dropdown, select the compartment to store the Stack.
+5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+
+Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 # Known Issues
 ## Deployment via Resource Manager or Terraform

@@ -132,7 +132,7 @@ Using OCI Console, navigate to Resource Manager service page and create a connec
 
 In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
 
-![Stack from GitLab](images/GitLabConnection.png)
+![GitLab Connection](images/GitLabConnection.PNG)
 
 **Note:** the GitLab URL must be accessible over the Internet.
 
@@ -147,7 +147,7 @@ For the Working Directory, select the config folder.
 4. In **Create in Compartment** dropdown, select the compartment to store the Stack.
 5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
-![Stack from GitLab](images/GitLabStack.png)
+![GitLab Stack](images/GitLabStack.PNG)
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 

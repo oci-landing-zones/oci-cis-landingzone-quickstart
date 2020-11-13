@@ -33,13 +33,6 @@ variable "region" {
 variable "region_key" {
     default = "iad"
 }
-variable "service_label" {
-    default = "cis"
-    validation {
-        condition     = length(regexall("_",var.service_label)) == 0
-        error_message = "The service_label variable value must not contain the character _."
-    }
-}
 
 # Networking
 variable "vcn_cidr" {

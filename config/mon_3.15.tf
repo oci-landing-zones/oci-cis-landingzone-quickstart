@@ -1,17 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-variable "cloud_guard_configuration_status" {
-  default = "ENABLED"
-}
-
-//Setting this variable to true lets the user seed the oracle managed entities with minimal changes to the original entities.
-//False will delegate this responsibility to CloudGuard for seeding the oracle managed entities.
-variable "cloud_guard_configuration_self_manage_resources" {
-  default = false
-}
-
-//CloudGuard enabling and disabling is a tenant-level operation 
+# CloudGuard enabling and disabling is a tenant-level operation 
 resource "oci_cloud_guard_cloud_guard_configuration" "cloud_guard_configuration" {
   #Required
   compartment_id   = var.tenancy_ocid

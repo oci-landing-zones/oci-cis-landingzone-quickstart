@@ -105,8 +105,8 @@ With variable values provided, execute:
 	terraform apply plan.out
 
 ## How to Execute the Code Using OCI Resource Manager
-OCI Resource Manager (ORM) has slightly different requirements than Terraform CLI. First and foremost, there is no need to provide tenancy connection and user authentication input variables for the OCI provider, as Resource Manager being an OCI service, uses the service connection information itself.
-The only required input variable for the OCI provider is the **region**. Fortunately, the provided Terraform code, by not providing defaults to tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password is already adequate and no changes are required.
+OCI Resource Manager (ORM) has slightly different requirements than Terraform CLI. First and foremost, there is no need to provide tenancy connection and user authentication input variables for the OCI provider, as Resource Manager, being an OCI service, uses the service connection information itself.
+The only required input variable for the OCI provider is the **region**. Fortunately, the provided Terraform code, by not having defaults to tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password is already adequate and no changes are required.
 
 There are a few different ways of running Terraform code in ORM. Here we describe two of them: creating an ORM stack by uploading a folder to ORM or creating an ORM stack by integrating with GitLab. A stack is the ORM term to refer to a Terraform configuration.
 
@@ -142,7 +142,8 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 	- The configured GitLab provider
 	- The repository name
 	- The repository branch
-For the Working Directory, select the config folder.	 
+
+For the **Working Directory**, select the config folder.	 
 3. In **Name**, give the stack a name or accept the default.
 4. In **Create in Compartment** dropdown, select the compartment to store the Stack.
 5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.

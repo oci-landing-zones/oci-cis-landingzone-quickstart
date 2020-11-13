@@ -2,6 +2,14 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # General
+variable "service_label" {
+    default = "cis"
+    validation {
+        condition     = length(regexall("_",var.service_label)) == 0
+        error_message = "The service_label variable value must not contain the character _."
+    }
+}
+
 variable "tenancy_ocid" {}
 variable "user_ocid" {
     default = ""

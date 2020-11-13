@@ -28,16 +28,52 @@ The network diagram below does not show the database and application development
 
 ![Architecture](images/Architecture.png)
 
-## How this Terraform Configuration is organized 
-[Andre to add]
+## How the code is organized 
+The code consists of a single Terraform configuration defined within the config folder along with a few modules within the modules folder.
 
-## How to run this Terraform Configuration using Terraform CLI
-You MUST provide values for the following variable names:
+## Input Variables
+Input variables used in the configuration are all defined (and defaulted) in config/variables.tf:
 - tenancy_ocid: the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console.
+	- Required, no default
 - user_ocid: the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources.
+	- Required, no default
 - fingerprint: the user's public key fingerprint. This information can be obtained in OCI Console.
+	- Required, no default
 - private_key_path: the local path to the user private key.
+	- Required, no default
 - private_key_password: the private key password, if any.
+	- Optional, no default
+- home_region: the tenancy home region identifier where Terraform should provision IAM resources (for a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)
+	- Required, default us-ashburn-1
+- region: the tenancy region identifier where the Terraform should provision the resources.
+	- Required, default us-ashburn-1
+- region_key: the 3-letter region key
+	- Required, default iad
+- service_label: a label that is used as a prefix when naming provisioned resources.
+	- Required, default cis
+- vcn_cidr: the VCN CIDR block
+	- Required, default 10.0.0.0/16
+- public_subnet_cidr: the public subnet CIDR block.
+	- Required, default 10.0.1.0/24
+- private_subnet_app_cidr: the App private subnet CIDR block.
+	- Required, default 10.0.2.0/24
+- private_subnet_db_cidr: the DB private subnet CIDR block.
+	- Required, default 10.0.3.0/24
+- public_src_bastion_cidr: the external CIDR block that is allowed to ingress into the bastions servers in the public subnet.
+	- Required, no default
+- public_src_lbr_cidr: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
+	- Required, default 0.0.0.0/0
+- network_admin_email_endpoint: an email to receive notifications for network related events.
+	- Required, no default
+- security_admin_email_endpoint: an email to receive notifications for security related events.
+	- Required, no default
+- cloud_guard_configuration_status: whether Cloud Guard is enabled or not.
+	- Required, default ENABLED
+- cloud_guard_configuration_self_manage_resources: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities.
+	- Required, default false
+
+## How to execute the code using Terraform CLI
+You MUST provide values for the following variable names: tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password (if any)
 
 There are multiple ways of achieving this, all documented in https://www.terraform.io/docs/configuration/variables.html:
 - Environment variables
@@ -47,7 +83,7 @@ There are multiple ways of achieving this, all documented in https://www.terrafo
 
 For environment variables, please see the provided env-vars.template. Once the correct values are provided, make sure to run 'source env-vars.template' to export those variables before executing Terraform.
 
-If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). 
+If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). Also add any custom values for the defaulted variables defined in config/variables.tf
 terraform.tfvars is automatically loaded when Terraform executes.
 
 	tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
@@ -55,6 +91,9 @@ terraform.tfvars is automatically loaded when Terraform executes.
 	fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
 	private_key_path="/home/users/myself/private_key.pem"
 	private_key_password=""
+	public_src_bastion_cidr="a_valid_cidr_block"
+	network_admin_email_endpoint="a_valid_email@your_domain.com"
+	security_admin_email_endpoint="a_valid_email@your_domain.com"
 
 With variable values provided, execute:
 
@@ -62,7 +101,7 @@ With variable values provided, execute:
 	terraform plan -out plan.out
 	terraform apply plan.out
 
-## How to run this Terraform Configuration using OCI Resource Manager
+## How to execute the code using OCI Resource Manager
 [Andre to add]
 
 

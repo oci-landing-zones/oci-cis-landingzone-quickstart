@@ -128,7 +128,7 @@ Using OCI Console, navigate to Resource Manager and first create a connection to
 
 [To do]
 
-Next, create a stack based on a source code control system. In the **Create Stack** page:
+Next, create a stack based on a source code control system. Using OCI Console, in the **Create Stack** page:
 1. Select **Source Code Control System** option as the origin of the Terraform configuration.
 2. In the **Stack Configuration** area, select the configured GitLab repository details:
 	- The configured GitLab provider

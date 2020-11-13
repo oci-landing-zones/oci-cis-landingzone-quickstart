@@ -113,7 +113,7 @@ There are a few different ways of running Terraform code in ORM. Here we describ
 ### Stack from Folder
 Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this repository. 
 
-Using OCI Console, navigate to Resource Manager and create a stack based on a folder. In the **Create Stack** page:
+Using OCI Console, navigate to Resource Manager service page and create a stack based on a folder. In the **Create Stack** page:
 1. Select **My Configuration** option as the origin of the Terraform configuration.
 2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
 3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
@@ -124,9 +124,11 @@ Using OCI Console, navigate to Resource Manager and create a stack based on a fo
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ### Stack from GitLab
-Using OCI Console, navigate to Resource Manager and first create a connection to your GitLab repository.
+Using OCI Console, navigate to Resource Manager service page and first create a connection to your GitLab repository.
 
-[To do]
+In the Configuration Source Providers page, provide the required connection details to your GitLab, the **GitLab URL** and your GitLab **Personal Access Token**. 
+
+**Note:** the GitLab URL must be accessible over the Internet.
 
 Next, create a stack based on a source code control system. Using OCI Console, in the **Create Stack** page:
 1. Select **Source Code Control System** option as the origin of the Terraform configuration.
@@ -146,6 +148,4 @@ Once the stack is created, navigate to the stack page and use the **Terraform Ac
 - Destroying the stack
 	- Vaults have a delayed delete of 7 days
 	- Compartments may not delete 
-	- Tag namespace fails to delete on the first destroy.  Run destroy again to remove
-## Deployment via Resourece Manager
-- Variable syntax errors are not detected during the planning
+	- Tag namespace fails to delete on the first destroy.  Run destroy again to remove.

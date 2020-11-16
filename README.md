@@ -1,4 +1,4 @@
-# OCI CIS 1.1 Foundations
+# CIS 1.1 OCI Landing Zone Template
 
 ## Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1. 

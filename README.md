@@ -119,18 +119,18 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 1. Select **My Configuration** option as the origin of the Terraform configuration.
 2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
 
-![Folder Stack](images/FolderStack_1.PNG)
+![Folder Stack](images/FolderStack_1.png)
 
 3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
 6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
-![Folder Stack](images/FolderStack_2.PNG)
+![Folder Stack](images/FolderStack_2.png)
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
-![Folder Stack](images/RunStack.PNG)
+![Folder Stack](images/RunStack.png)
 
 ### Stack from GitLab
 First make sure to create a GitLab project out of this repository. 
@@ -139,7 +139,7 @@ Using OCI Console, navigate to Resource Manager service page and create a connec
 
 In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
 
-![GitLab Connection](images/GitLabConnection.PNG)
+![GitLab Connection](images/GitLabConnection.png)
 
 **Note:** the GitLab URL must be accessible over the Internet.
 
@@ -154,7 +154,7 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 4. In **Create in Compartment** dropdown, select the compartment to store the stack.
 5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
-![GitLab Stack](images/GitLabStack.PNG)
+![GitLab Stack](images/GitLabStack.png)
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 

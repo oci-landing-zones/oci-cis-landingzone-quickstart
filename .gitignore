@@ -6,6 +6,7 @@ env-vars.*.*
 **/crash.log
 private_key.pem
 config/terraform.tfvars
+config/iam_1.2.tf
 
 cis-iam/*
 cis-monitoring/*

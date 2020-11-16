@@ -33,6 +33,8 @@ The code consists of a single Terraform configuration defined within the config 
 
 Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
 
+**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
+
 ## Input Variables
 Input variables used in the configuration are all defined (and defaulted) in config/variables.tf:
 - **tenancy_ocid**: the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console.
@@ -130,7 +132,7 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
-![Folder Stack](images/RunStack.png)
+![Run Stack](images/RunStack.png)
 
 ### Stack from GitLab
 First make sure to create a GitLab project out of this repository. 

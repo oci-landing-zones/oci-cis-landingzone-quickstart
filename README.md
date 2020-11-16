@@ -118,12 +118,19 @@ Create a folder in your local computer (name it say 'cis-oci') and paste there t
 Using OCI Console, navigate to Resource Manager service page and create a stack based on a folder. In the **Create Stack** page:
 1. Select **My Configuration** option as the origin of the Terraform configuration.
 2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
+
+![Folder Stack](images/FolderStack_1.PNG)
+
 3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
 6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
 
+![Folder Stack](images/FolderStack_2.PNG)
+
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
+
+![Folder Stack](images/RunStack.PNG)
 
 ### Stack from GitLab
 First make sure to create a GitLab project out of this repository. 

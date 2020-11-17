@@ -13,7 +13,12 @@ module "network_admins" {
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-NetworkAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${local.network_compartment_name_output}."
-  policy_statements     = ["Allow group ${module.network_admins.group_name} to manage virtual-network-family in compartment ${local.network_compartment_name_output}"]
+  policy_statements     = ["Allow group ${module.network_admins.group_name} to manage virtual-network-family in compartment ${local.network_compartment_name_output}",
+                          "Allow group ${module.network_admins.group_name} to manage dns in compartment ${local.network_compartment_name_output}",
+                          "Allow group ${module.network_admins.group_name} to manage load-balancers in compartment ${local.network_compartment_name_output}",
+                          "Allow group ${module.network_admins.group_name} to manage alarms in compartment ${local.network_compartment_name_output}",
+                          "Allow group ${module.network_admins.group_name} to manage metrics in compartment ${local.network_compartment_name_output}"
+                          ]
 }
 
 ### Security services
@@ -29,8 +34,15 @@ module "security_admins" {
   policy_statements     = ["Allow group ${module.security_admins.group_name} to manage vaults in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.security_admins.group_name} to manage keys in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.security_admins.group_name} to manage secret-family in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage logs in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage cloudevents-rules in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage serviceconnectors in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage streams in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage ons-family in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.security_admins.group_name} to manage functions-family in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.security_admins.group_name} to manage cloud-guard-family in tenancy"]
 }
+
 
 ### Compute and Storage services
 module "compute_storage_admins" {
@@ -44,11 +56,16 @@ module "compute_storage_admins" {
   policy_description    = "Policy allowing ${var.service_label}-ComputeStorageAdmins group to manage instance-family and storage resources in compartment ${local.compute_storage_compartment_name_output}."
   policy_statements     = ["Allow group ${module.compute_storage_admins.group_name} to manage instance-family in compartment ${local.compute_storage_compartment_name_output}",
                            "Allow group ${module.compute_storage_admins.group_name} to manage volume-family in compartment ${local.compute_storage_compartment_name_output}",
-                           "Allow group ${module.compute_storage_admins.group_name} to manage object-family in compartment ${local.compute_storage_compartment_name_output}",
+                           "Allow group ${module.compute_storage_admins.group_name} to manage object-family in compartment ${local.compute_storage_compartment_name_output}",                           
+                           "Allow group ${module.compute_storage_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.compute_storage_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.compute_storage_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.compute_storage_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.compute_storage_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.compute_storage_admins.group_name} to manage file-family in compartment ${local.compute_storage_compartment_name_output}"]
 }
 
-### Database service
+### Database service - group for managing DBaaS and Autonomous Database.
 module "database_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
@@ -58,10 +75,23 @@ module "database_admins" {
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-DatabaseAdmins-Policy"
   policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name_output}."
-  policy_statements     = ["Allow group ${module.database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name_output}"]
+  policy_statements     = ["Allow group ${module.database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name_output}",
+                          "Allow group ${module.database_admins.group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name_output}",
+                          "Allow group ${module.database_admins.group_name} to manage alarms in compartment ${local.database_compartment_name_output}",
+                          "Allow group ${module.database_admins.group_name} to manage metrics in compartment ${local.database_compartment_name_output}",
+                          "Allow group ${module.database_admins.group_name} to use vnics in compartment ${local.database_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to use subnets in compartment ${local.database_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to read virtual-network-family in compartment ${local.network_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}", 
+                          "Allow group ${module.database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
+                          "Allow group ${module.compute_storage_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
+                          "Allow group ${module.compute_storage_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}", 
+                          ]
 }
 
-### Application Development services
+### Application Development services - Combined AppDev with Compute and storage
 module "appdev_admins" {
   source                = "../modules/iam/iam-group"
   tenancy_ocid          = var.tenancy_ocid
@@ -75,7 +105,19 @@ module "appdev_admins" {
                            "Allow group ${module.appdev_admins.group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name_output}",
                            "Allow group ${module.appdev_admins.group_name} to manage ons-family in compartment ${local.appdev_compartment_name_output}",
                            "Allow group ${module.appdev_admins.group_name} to manage streams in compartment ${local.appdev_compartment_name_output}",
-                           "Allow group ${module.appdev_admins.group_name} to manage cluster-family in compartment ${local.appdev_compartment_name_output}"]
+                           "Allow group ${module.appdev_admins.group_name} to manage cluster-family in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage alarms in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage metrics in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage logs in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage instance-family in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage volume-family in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage object-family in compartment ${local.appdev_compartment_name_output}",                           
+                           "Allow group ${module.appdev_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.appdev_admins.group_name} to manage file-family in compartment ${local.compute_storage_compartment_name_output}"]
 }
 
 ### Auditors

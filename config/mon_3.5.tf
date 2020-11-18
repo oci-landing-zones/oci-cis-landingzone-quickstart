@@ -3,7 +3,7 @@
 
 module "cis_notification_idp_group_mappings_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = module.compartments.compartments[local.security_compartment_name].id
+  compartment_id     = module.cis_compartments.compartments[local.security_compartment_name].id
   rule_display_name  = "${var.service_label}-notify-on-idp-group-mapping-changes"    
   rule_description   = "Sends notification when Identity Provider Group Mappings are created, updated or deleted."
   rule_is_enabled    = true

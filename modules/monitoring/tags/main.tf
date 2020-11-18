@@ -36,7 +36,7 @@ data "oci_identity_tag_defaults" "these" {
 }
 
 resource "oci_identity_tag_namespace" "namespace" {
-    count = (local.actual_tags != null) ? 1 : 0
+    count = length(local.actual_tags) > 0 ? 1 : 0
     compartment_id = var.tag_namespace_compartment_id
     name           = var.tag_namespace_name
     description    = var.tag_namespace_description
@@ -44,7 +44,7 @@ resource "oci_identity_tag_namespace" "namespace" {
 }
 
 resource "oci_identity_tag" "these" {
-    for_each = (local.actual_tags != null) ? local.actual_tags : {}
+    for_each = length(local.actual_tags) > 0 ? local.actual_tags : {}
         tag_namespace_id = oci_identity_tag_namespace.namespace[0].id 
         name             = each.key
         description      = each.value.tag_description
@@ -53,7 +53,7 @@ resource "oci_identity_tag" "these" {
 }
 
 resource "oci_identity_tag_default" "these" {
-    for_each = (local.actual_tag_defaults != null) ? toset(keys(local.actual_tag_defaults)) : []
+    for_each = length(local.actual_tag_defaults) > 0 ? toset(keys(local.actual_tag_defaults)) : []
         compartment_id    = var.tag_defaults_compartment_id
         tag_definition_id = oci_identity_tag.these[each.value].id                         # the tag id that has been just created
         value             = local.actual_tag_defaults[each.value].tag_default_value       # the tag default value

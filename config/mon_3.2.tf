@@ -5,7 +5,7 @@
 ### and tag defaults in the specified tag_defaults_compartment_id. 
 ### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
 
-module "tags" {
+module "cis_tags" {
   source                       = "../modules/monitoring/tags"
   tag_namespace_compartment_id = var.tenancy_ocid
   tag_namespace_name           = var.service_label

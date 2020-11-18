@@ -3,7 +3,7 @@
 
 module "cis_security_topic" {
   source                        = "../modules/monitoring/topics"
-  compartment_id                 = module.compartments.compartments[local.security_compartment_name].id
+  compartment_id                 = module.cis_compartments.compartments[local.security_compartment_name].id
   notification_topic_name        = "${var.service_label}-SecurityTopic"
   notification_topic_description = "Topic for security related notifications."
   subscriptions = {
@@ -22,7 +22,7 @@ module "cis_security_topic" {
 
 module "cis_network_topic" {
   source                        = "../modules/monitoring/topics"
-  compartment_id                 = module.compartments.compartments[local.security_compartment_name].id
+  compartment_id                 = module.cis_compartments.compartments[local.security_compartment_name].id
   notification_topic_name        = "${var.service_label}-NetworkTopic"
   notification_topic_description = "Topic for network related notifications."
 

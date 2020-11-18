@@ -3,7 +3,7 @@
 
 ### This Terraform configuration provisions compartments in the tenancy.
 
-module "compartments" {
+module "cis_compartments" {
   source       = "../modules/iam/iam-compartment"
   tenancy_ocid = var.tenancy_ocid        
   compartments = {

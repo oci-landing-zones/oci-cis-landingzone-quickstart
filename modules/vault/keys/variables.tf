@@ -43,24 +43,5 @@ variable "keys" {
     key_shape_length = string
   }))
 }
-/*
-variable "key_display_name" {
-  type        = string
-  description = "Key Display name"
-  default     = ""
-}  
-
-variable "key_key_shape_algorithm" {
-  type        = string
-  description = "Key Algorithm"
-  default     = ""
-}  
-
-variable "key_key_shape_length" {
-  type        = string
-  description = "Key Length"
-  default     = ""
-}  
-*/
 
 

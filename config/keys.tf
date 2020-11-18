@@ -4,12 +4,9 @@
 ### Creates a vault and multiple keys in the vault.
 module "cis_keys" {
     source            = "../modules/vault/keys"
-    tenancy_ocid      = var.tenancy_ocid
     compartment_id    = module.cis_compartments.compartments[local.security_compartment_name].id
-    compartment_name  = local.security_compartment_name
     vault_name        = local.vault_name
     vault_type        = local.vault_type
-    region            = var.region
     keys              = {
         (local.oss_key_name) = {
             key_shape_algorithm = "AES"

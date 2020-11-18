@@ -18,11 +18,3 @@ resource "oci_kms_key" "these" {
       length    = each.value.key_shape_length
   }
 }
-
-resource  "oci_identity_policy" "these" {
-    for_each = var.keys
-      name           = "${each.key}-Policy"
-      compartment_id = var.tenancy_ocid
-      description    = "Policy allowing OCI services to access ${each.key} in the Vault service."
-      statements     = ["Allow service blockstorage, objectstorage-${var.region}, FssOc1Prod, oke, streaming to use keys in compartment ${var.compartment_name} where target.key.id = ${oci_kms_key.these[each.key].id}"]
-}

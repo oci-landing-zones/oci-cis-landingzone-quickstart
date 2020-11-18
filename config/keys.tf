@@ -24,7 +24,8 @@ module "cis_keys_policies" {
             description = "Policy allowing OCI services to access ${module.cis_keys.keys[local.oss_key_name].display_name} in the Vault service."
             statements = [
                 "Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment_name} where target.key.id = ${module.cis_keys.keys[local.oss_key_name].id}",
-                "Allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.security_compartment_name} where target.key.id = ${module.cis_keys.keys[local.oss_key_name].id}"
+                "Allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.security_compartment_name} where target.key.id = ${module.cis_keys.keys[local.oss_key_name].id}",
+                "Allow group ${local.appdev_admin_group_name} to use key-delegate in compartment ${local.security_compartment_name} where target.key.id = ${module.cis_keys.keys[local.oss_key_name].id}"
             ]
         }
     } 

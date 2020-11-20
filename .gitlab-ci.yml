@@ -1,0 +1,40 @@
+image:
+  name: hashicorp/terraform:light
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+before_script:
+  - rm -rf config/.terraform
+  - terraform --version
+  - echo tenancy $TF_VAR_tenancy_ocid
+  - echo user $TF_VAR_user_ocid
+  - terraform init config
+
+stages:
+  - validate
+  - plan
+  - apply
+
+validate:
+  stage: validate
+  script:
+    - terraform validate config
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "planfile" config
+  dependencies:
+    - validate
+  artifacts:
+    paths:
+      - planfile
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "planfile" config
+  dependencies:
+    - plan
+  when: manual

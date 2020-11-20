@@ -10,11 +10,12 @@ locals {
     ingress_rules   = []
     egress_rules    = []
   }
+  actual_security_lists = {for k,v in var.security_lists: k => v if v.is_create == true}
 }
 
 # Security lists
 resource "oci_core_security_list" "these" {
-  for_each = var.security_lists
+  for_each = local.actual_security_lists
     compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.default_compartment_id
     vcn_id         = var.vcn_id
     display_name   = each.key

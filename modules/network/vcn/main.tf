@@ -1,6 +1,8 @@
 locals {
   #anywhere = "0.0.0.0/0"
   osn_cidrs = {for x in data.oci_core_services.all_services.services : x.cidr_block => x.id}
+  actual_subnets = {for k,v in var.subnets: k => v if v.is_create == true}
+  actual_route_tables = {for k,v in var.route_tables: k => v if v.is_create == true}
 }
 
 data "oci_core_services" "all_services" {
@@ -26,7 +28,6 @@ resource "oci_core_nat_gateway" "this" {
     compartment_id = var.compartment_id
     display_name  = "${var.service_label}-NAT-Gateway"
     vcn_id         = oci_core_vcn.this.id
-
     block_traffic = var.block_nat_traffic
 }
 
@@ -40,9 +41,24 @@ resource "oci_core_service_gateway" "this" {
     }
 }
 
+### DRG - Dynamic Routing Gateway
+resource "oci_core_drg" "this" {
+  count          = var.is_create_drg == true ? 1 : 0
+  compartment_id = var.compartment_id
+  display_name   = "${var.service_label}-DRG"
+}
+
+### DRG attachment to VCN
+resource "oci_core_drg_attachment" "this" {
+  count        = var.is_create_drg == true ? 1 : 0
+  drg_id       = oci_core_drg.this[0].id
+  vcn_id       = oci_core_vcn.this.id
+  display_name = "${var.service_label}-DRG-Attachment"
+}
+
 ### Subnets
 resource "oci_core_subnet" "these" {
-  for_each = var.subnets
+  for_each = local.actual_subnets
     vcn_id                      = oci_core_vcn.this.id
     cidr_block                  = each.value.cidr
     compartment_id              = each.value.compartment_id != null ? each.value.compartment_id : var.compartment_id
@@ -58,7 +74,7 @@ resource "oci_core_subnet" "these" {
 
 ### Route tables
 resource "oci_core_route_table" "these" {
-  for_each = var.route_tables
+  for_each = local.actual_route_tables
     display_name   = each.key
     vcn_id         = oci_core_vcn.this.id
     compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.compartment_id

@@ -2,13 +2,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### Network Security Group(s) - NSGs
-# default values
 locals {
-  local_nsg_ids         = { for i in oci_core_network_security_group.these : i.display_name => i.id }
-  remote_nsg_ids        = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
-  nsg_ids               = merge(local.remote_nsg_ids, local.local_nsg_ids)
-  nsg_ids_reversed      = { for k,v in local.nsg_ids : v => k }
-
+  local_nsg_ids     = { for i in oci_core_network_security_group.these : i.display_name => i.id }
+  remote_nsg_ids    = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
+  nsg_ids           = merge(local.remote_nsg_ids, local.local_nsg_ids)
+  nsg_ids_reversed  = { for k,v in local.nsg_ids : v => k }
+  actual_nsgs       = { for k,v in var.nsgs : k => v if v.is_create == true }
 }
 
 data "oci_core_network_security_groups" "this" {
@@ -18,7 +17,7 @@ data "oci_core_network_security_groups" "this" {
 
 # Network Security Groups
 resource "oci_core_network_security_group" "these" {
-  for_each = var.nsgs 
+  for_each = local.actual_nsgs 
     compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.default_compartment_id
     vcn_id         = var.vcn_id
     display_name   = each.key
@@ -46,7 +45,7 @@ locals {
         stateless       = i.stateless
         src             = i.src
         src_type        = i.src_type
-      } if i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
+      } if i.is_create == true && i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
     ]
   ] )
   
@@ -60,7 +59,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         src_port        = i.src_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port == null
+      } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port == null
     ]
   ] )
   n_ingress_rules_tcp_no_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -73,7 +72,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) 
+      } if i.is_create == true && i.is_create == true && i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) 
     ]
   ] )
   n_ingress_rules_tcp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -87,7 +86,7 @@ locals {
         src_type        = i.src_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+      } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
     ]
   ] )
 
@@ -101,7 +100,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         src_port        = i.src_port
-      } if i.protocol == "17" && i.src_port != null && i.dst_port == null
+      } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port == null
     ]
   ] )
   n_ingress_rules_udp_no_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -114,7 +113,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         dst_port        = i.dst_port
-      } if i.protocol == "17" && i.src_port == null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "17" && i.src_port == null && i.dst_port != null
     ]
   ] )
   n_ingress_rules_udp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -128,7 +127,7 @@ locals {
         src_type        = i.src_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "17" && i.src_port != null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port != null
     ]
   ] )
   
@@ -143,7 +142,7 @@ locals {
         src_type        = i.src_type
         icmp_code       = i.icmp_code
         icmp_type       = i.icmp_type
-      } if i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
+      } if i.is_create == true && i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
     ]
   ] )
   n_ingress_rules_icmp_type_no_code = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -156,7 +155,7 @@ locals {
         src             = i.src
         src_type        = i.src_type
         icmp_type       = i.icmp_type
-      } if i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
+      } if i.is_create == true && i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
     ]
   ] )
 
@@ -169,7 +168,7 @@ locals {
       stateless         = i.stateless
       src               = i.src
       src_type          = i.src_type
-    } if i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
+    } if i.is_create == true && i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
   ] )
   
   s_ingress_rules_tcp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
@@ -181,7 +180,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       src_port          = i.src_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port == null
+    } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port == null
   ] )
   s_ingress_rules_tcp_no_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -192,7 +191,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+    } if i.is_create == true && i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
   ] )
   s_ingress_rules_tcp_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -204,7 +203,7 @@ locals {
       src_type          = i.src_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+    } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
   ] )
 
   s_ingress_rules_udp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
@@ -216,7 +215,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       src_port          = i.src_port
-    } if i.protocol == "17" && i.src_port != null && i.dst_port == null
+    } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port == null
   ] )
   s_ingress_rules_udp_no_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -227,7 +226,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       dst_port          = i.dst_port
-    } if i.protocol == "17" && i.src_port == null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "17" && i.src_port == null && i.dst_port != null
   ] )
   s_ingress_rules_udp_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -239,7 +238,7 @@ locals {
       src_type          = i.src_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "17" && i.src_port != null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port != null
   ] )
   
   s_ingress_rules_icmp_type_code = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
@@ -252,7 +251,7 @@ locals {
       src_type          = i.src_type
       icmp_code         = i.icmp_code
       icmp_type         = i.icmp_type
-    } if i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
+    } if i.is_create == true && i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
   ] )
   s_ingress_rules_icmp_type_no_code = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -263,7 +262,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       icmp_type         = i.icmp_type
-    } if i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
+    } if i.is_create == true && i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
   ] )
 
   #######################
@@ -294,7 +293,7 @@ locals {
         stateless       = i.stateless
         dst             = i.dst
         dst_type        = i.dst_type
-      } if i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
+      } if i.is_create == true && i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
     ]
   ] )
   
@@ -308,7 +307,7 @@ locals {
         dst             = i.dst
         dst_type        = i.dst_type
         src_port        = i.src_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port == null
+      } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port == null
     ]
   ] )
   n_egress_rules_tcp_no_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -321,7 +320,7 @@ locals {
         dst             = i.dst
         dst_type        = i.dst_type
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port == null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "6" && i.src_port == null && i.dst_port != null
     ]
   ] )
   n_egress_rules_tcp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -335,7 +334,7 @@ locals {
         dst_type        = i.dst_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port != null
     ]
   ] )
 
@@ -349,7 +348,7 @@ locals {
         dst             = i.dst
         dst_type        = i.dst_type
         src_port        = i.src_port
-      } if i.protocol == "17" && i.src_port != null && i.dst_port == null
+      } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port == null
     ]
   ] )
   n_egress_rules_udp_no_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -362,7 +361,7 @@ locals {
         dst             = i.dst
         dst_type        = i.dst_type
         dst_port        = i.dst_port
-      } if i.protocol == "17" && i.src_port == null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "17" && i.src_port == null && i.dst_port != null
     ]
   ] )
   n_egress_rules_udp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -376,7 +375,7 @@ locals {
         dst_type        = i.dst_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "17" && i.src_port != null && i.dst_port != null
+      } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port != null
     ]
   ] )
   
@@ -391,7 +390,7 @@ locals {
         dst_type        = i.dst_type
         icmp_code       = i.icmp_code
         icmp_type       = i.icmp_type
-      } if i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
+      } if i.is_create == true && i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
     ]
   ] )
   n_egress_rules_icmp_type_no_code = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -404,7 +403,7 @@ locals {
         dst             = i.dst
         dst_type        = i.dst_type
         icmp_type       = i.icmp_type
-      } if i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
+      } if i.is_create == true && i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
     ]
   ] )
 
@@ -417,7 +416,7 @@ locals {
       stateless         = i.stateless
       dst               = i.dst
       dst_type          = i.dst_type
-    } if i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
+    } if i.is_create == true && i.src_port == null && i.dst_port == null && i.icmp_type == null && i.icmp_code == null
   ] )
   
   s_egress_rules_tcp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
@@ -429,7 +428,7 @@ locals {
       dst               = i.dst
       dst_type          = i.dst_type
       src_port          = i.src_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port == null
+    } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port == null
   ] )
   s_egress_rules_tcp_no_src_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
     {
@@ -440,7 +439,7 @@ locals {
       dst               = i.dst
       dst_type          = i.dst_type
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port == null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "6" && i.src_port == null && i.dst_port != null
   ] )
   s_egress_rules_tcp_src_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
     {
@@ -452,7 +451,7 @@ locals {
       dst_type          = i.dst_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "6" && i.src_port != null && i.dst_port != null
   ] )
 
   s_egress_rules_udp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
@@ -464,7 +463,7 @@ locals {
       dst               = i.dst
       dst_type          = i.dst_type
       src_port          = i.src_port
-    } if i.protocol == "17" && i.src_port != null && i.dst_port == null
+    } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port == null
   ] )
   s_egress_rules_udp_no_src_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
     {
@@ -475,7 +474,7 @@ locals {
       dst               = i.dst
       dst_type          = i.dst_type
       dst_port          = i.dst_port
-    } if i.protocol == "17" && i.src_port == null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "17" && i.src_port == null && i.dst_port != null
   ] )
   s_egress_rules_udp_src_dst = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
     {
@@ -487,7 +486,7 @@ locals {
       dst_type          = i.dst_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "17" && i.src_port != null && i.dst_port != null
+    } if i.is_create == true && i.protocol == "17" && i.src_port != null && i.dst_port != null
   ] )
   
   s_egress_rules_icmp_type_code = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
@@ -500,7 +499,7 @@ locals {
       dst_type          = i.dst_type
       icmp_code         = i.icmp_code
       icmp_type         = i.icmp_type
-    } if i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
+    } if i.is_create == true && i.protocol == "1" && i.icmp_code != null && i.icmp_type != null
   ] )
   s_egress_rules_icmp_type_no_code = flatten( [ for i in var.standalone_nsg_rules.egress_rules :
     {
@@ -511,7 +510,7 @@ locals {
       dst               = i.dst
       dst_type          = i.dst_type
       icmp_type         = i.icmp_type
-    } if i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
+    } if i.is_create == true && i.protocol == "1" && i.icmp_code == null && i.icmp_type != null
   ] )
 
   # EGRESS rules - merged

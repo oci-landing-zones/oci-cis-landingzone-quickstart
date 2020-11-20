@@ -3,6 +3,7 @@
 
 ### Creates a bucket in the specified compartment 
 module "cis_buckets" {
+    depends_on = [ module.cis_keys_policies ]
     source       = "../modules/object-storage/bucket"
     region       = var.region
     tenancy_ocid = var.tenancy_ocid

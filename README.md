@@ -1,4 +1,4 @@
-# CIS 1.1 OCI Landing Zone Template
+# CIS OCI Landing Zone Template
 
 ## Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1. 
@@ -67,6 +67,10 @@ Input variables used in the configuration are all defined (and defaulted) in con
 	- Required, no default
 - **public_src_lbr_cidr**: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
 	- Required, default 0.0.0.0/0
+- **is_vcn_onprem_connected**: whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN.
+	- Required, default false	
+- **onprem_cidr**: the on-premises CIDR block. Only used if is_vcn_onprem_connected == true
+	- Optional, default 192.168.0.0/16	
 - **network_admin_email_endpoint**: an email to receive notifications for network related events.
 	- Required, no default
 - **security_admin_email_endpoint**: an email to receive notifications for security related events.
@@ -95,6 +99,8 @@ terraform.tfvars is automatically loaded when Terraform executes.
 	fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
 	private_key_path="/home/users/myself/private_key.pem"
 	private_key_password=""
+	is_vcn_onprem_connected="true" # if you want to provision a DRG
+	onprem_cidr="a_valid_cidr_block"
 	public_src_bastion_cidr="a_valid_cidr_block"
 	network_admin_email_endpoint="a_valid_email@your_domain.com"
 	security_admin_email_endpoint="a_valid_email@your_domain.com"

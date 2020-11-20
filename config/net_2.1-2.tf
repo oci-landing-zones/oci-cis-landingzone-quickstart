@@ -63,14 +63,6 @@ module "cis_security_lists" {
       freeform_tags   = null
       ingress_rules   = null
       egress_rules    = null
-    },
-    (local.onprem_connected_subnet_security_list_name) = {
-      is_create       = tobool(var.is_vcn_onprem_connected)
-      compartment_id  = null
-      defined_tags    = null
-      freeform_tags   = null
-      ingress_rules   = null
-      egress_rules    = null
     } 
   }
 }  

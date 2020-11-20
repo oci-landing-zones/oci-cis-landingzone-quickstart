@@ -7,7 +7,6 @@ locals {
   remote_nsg_ids    = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
   nsg_ids           = merge(local.remote_nsg_ids, local.local_nsg_ids)
   nsg_ids_reversed  = { for k,v in local.nsg_ids : v => k }
-  actual_nsgs       = { for k,v in var.nsgs : k => v if v.is_create == true }
 }
 
 data "oci_core_network_security_groups" "this" {
@@ -17,7 +16,7 @@ data "oci_core_network_security_groups" "this" {
 
 # Network Security Groups
 resource "oci_core_network_security_group" "these" {
-  for_each = local.actual_nsgs 
+  for_each = var.nsgs 
     compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.default_compartment_id
     vcn_id         = var.vcn_id
     display_name   = each.key

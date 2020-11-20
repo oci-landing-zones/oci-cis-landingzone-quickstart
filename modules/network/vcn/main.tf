@@ -1,8 +1,6 @@
 locals {
   #anywhere = "0.0.0.0/0"
   osn_cidrs = {for x in data.oci_core_services.all_services.services : x.cidr_block => x.id}
-  actual_subnets = {for k,v in var.subnets: k => v if v.is_create == true}
-  actual_route_tables = {for k,v in var.route_tables: k => v if v.is_create == true}
 }
 
 data "oci_core_services" "all_services" {
@@ -58,7 +56,7 @@ resource "oci_core_drg_attachment" "this" {
 
 ### Subnets
 resource "oci_core_subnet" "these" {
-  for_each = local.actual_subnets
+  for_each = var.subnets
     vcn_id                      = oci_core_vcn.this.id
     cidr_block                  = each.value.cidr
     compartment_id              = each.value.compartment_id != null ? each.value.compartment_id : var.compartment_id
@@ -74,7 +72,7 @@ resource "oci_core_subnet" "these" {
 
 ### Route tables
 resource "oci_core_route_table" "these" {
-  for_each = local.actual_route_tables
+  for_each = var.route_tables
     display_name   = each.key
     vcn_id         = oci_core_vcn.this.id
     compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.compartment_id
@@ -85,11 +83,11 @@ resource "oci_core_route_table" "these" {
         dst : r.destination
         dst_type : r.destination_type
         ntwk_entity_id : r.network_entity_id
-      }]
+      } if r.is_create == true]
 
       content {
-        destination = rule.value.dst
-        destination_type = rule.value.dst_type
+        destination       = rule.value.dst
+        destination_type  = rule.value.dst_type
         network_entity_id = rule.value.ntwk_entity_id
       }
     }

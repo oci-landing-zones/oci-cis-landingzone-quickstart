@@ -48,7 +48,6 @@ variable "ports_not_allowed_from_anywhere_cidr" {
 
 variable "security_lists" {
   type = map(object({
-    is_create       = bool,
     compartment_id  = string,
     defined_tags    = map(string),
     freeform_tags   = map(string),
@@ -92,7 +91,6 @@ variable "security_lists" {
 
 variable "nsgs" {
   type = map(object({
-    is_create       = bool,
     compartment_id  = string,
     defined_tags    = map(string),
     freeform_tags   = map(string),

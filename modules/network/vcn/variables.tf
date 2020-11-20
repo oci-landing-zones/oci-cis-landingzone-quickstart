@@ -47,7 +47,6 @@ variable "is_create_drg" {
 variable "subnets" {
   description         = "Parameters for each subnet to be managed."
   type                = map(object({
-    is_create         = bool,
     compartment_id    = string,
     defined_tags      = map(string),
     freeform_tags     = map(string),
@@ -68,9 +67,9 @@ variable "subnets" {
 variable "route_tables" {
   description = "Parameters for each route table to be managed."
   type = map(object({
-    is_create      = bool, 
     compartment_id = string
     route_rules    = list(object({
+      is_create         = bool
       destination       = string,
       destination_type  = string,
       network_entity_id = string

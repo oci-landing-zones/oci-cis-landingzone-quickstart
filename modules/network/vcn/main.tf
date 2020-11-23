@@ -40,6 +40,21 @@ resource "oci_core_service_gateway" "this" {
     }
 }
 
+### DRG - Dynamic Routing Gateway
+resource "oci_core_drg" "this" {
+  count          = var.is_create_drg == true ? 1 : 0
+  compartment_id = var.compartment_id
+  display_name   = "${var.service_label}-DRG"
+}
+
+### DRG attachment to VCN
+resource "oci_core_drg_attachment" "this" {
+  count        = var.is_create_drg == true ? 1 : 0
+  drg_id       = oci_core_drg.this[0].id
+  vcn_id       = oci_core_vcn.this.id
+  display_name = "${var.service_label}-DRG-Attachment"
+}
+
 ### Subnets
 resource "oci_core_subnet" "these" {
   for_each = var.subnets
@@ -69,61 +84,12 @@ resource "oci_core_route_table" "these" {
         dst : r.destination
         dst_type : r.destination_type
         ntwk_entity_id : r.network_entity_id
-      }]
+      } if r.is_create == true]
 
       content {
-        destination = rule.value.dst
-        destination_type = rule.value.dst_type
+        destination       = rule.value.dst
+        destination_type  = rule.value.dst_type
         network_entity_id = rule.value.ntwk_entity_id
       }
     }
 }
-
-/*
-### Internet Route Table
-resource "oci_core_route_table" "internet" {
-  compartment_id = var.compartment_id
-  display_name   = "${var.service_label}-Internet-Route"
-  vcn_id         = oci_core_vcn.this.id
-  
-  route_rules {
-    destination       = local.anywhere
-    destination_type  = "CIDR_BLOCK"
-    network_entity_id = oci_core_internet_gateway.this.id
-  }
-}
-
-### Private App Subnet Route Table
-resource "oci_core_route_table" "private_subnet_app" {
-  compartment_id = var.compartment_id
-  display_name   = "${var.service_label}-Private-Subnet-App-Route"
-  vcn_id         = oci_core_vcn.this.id
-  
-  route_rules {
-    destination       = var.service_gateway_cidr
-    destination_type  = "SERVICE_CIDR_BLOCK"
-    network_entity_id = oci_core_service_gateway.this.id
-  } 
-
-  route_rules {
-    destination       = local.anywhere
-    destination_type  = "CIDR_BLOCK"
-    network_entity_id = oci_core_nat_gateway.this.id
-  }
-
-}
-
-### Private Db Subnet Route Table
-resource "oci_core_route_table" "private_subnet_db" {
-  compartment_id = var.compartment_id
-  display_name   = "${var.service_label}-Private-Subnet-Db-Route"
-  vcn_id         = oci_core_vcn.this.id
-  
-  route_rules {
-    destination       = var.service_gateway_cidr
-    destination_type  = "SERVICE_CIDR_BLOCK"
-    network_entity_id = oci_core_service_gateway.this.id
-  } 
-
-}
-*/

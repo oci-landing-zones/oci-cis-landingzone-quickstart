@@ -589,11 +589,45 @@ class CIS_Report:
                             "lifecycle_state" : security_list.lifecycle_state,
                             "time_created" : security_list.time_created,
                             "vcn_id" : security_list.vcn_id,
+<<<<<<< Updated upstream
                             "egress_security_rules" : security_list.egress_security_rules,
                             "ingress_security_rules" : security_list.ingress_security_rules
                         }
 
                         # Append NSG to list of NSGs
+=======
+                            "egress_security_rules" : [],
+                            "ingress_security_rules" : []
+                        }
+
+                        for egress_rule in record.egress_security_rules:
+                            erule = {
+                                "description" : egress_rule.description,
+                                "destination_type": egress_rule.destination_type,
+                                "icmp_options": egress_rule.icmp_options,
+                                "is_stateless": egress_rule.is_stateless,
+                                "protocol": egress_rule.protocol,
+                                "tcp_options": egress_rule.tcp_options,
+                                "udp_options": egress_rule.udp_options
+                            }
+
+
+                            record['egress_security_rules'].append(erule)
+
+                        for ingress_rule in record.egress_security_rules:
+                            irule = {
+                                "description" : ingress_rule.description,
+                                "destination_type": ingress_rule.destination_type,
+                                "icmp_options": ingress_rule.icmp_options,
+                                "is_stateless": ingress_rule.is_stateless,
+                                "protocol": ingress_rule.protocol,
+                                "tcp_options": ingress_rule.tcp_options,
+                                "udp_options": ingress_rule.udp_options
+                            }
+                            record['ingress_security_rules'].append(irule)
+
+                        # Append Security List to list of NSGs
+>>>>>>> Stashed changes
                         self.network_security_lists.append(record)
 
             return self.network_security_lists
@@ -956,7 +990,12 @@ users = report.identity_read_users()
 print(users)
 
 sls = report.network_read_network_security_lists()
+<<<<<<< Updated upstream
 print(type(sls[0]['ingress_security_rules'][0]))
+=======
+for sl in sls:
+    print(sl)
+>>>>>>> Stashed changes
 
 # compartments = []
 # tenancy = None

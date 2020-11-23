@@ -39,6 +39,21 @@ module "cis_nsgs" {
           }
           icmp_code     = null
           icmp_type     = null
+        },
+        { # Bastion NSG from on-prem CIDR for SSH
+          is_create     = tobool(var.is_vcn_onprem_connected)
+          description   = "SSH ingress rule for ${var.onprem_cidr}."
+          stateless     = false
+          protocol      = "6"
+          src           = var.onprem_cidr
+          src_type      = "CIDR_BLOCK"
+          src_port      = null
+          dst_port      = {
+            min = 22
+            max = 22
+          }
+          icmp_code     = null
+          icmp_type     = null
         }
       ]
       egress_rules        = [
@@ -77,11 +92,27 @@ module "cis_nsgs" {
       defined_tags      = null
       freeform_tags     = null
       ingress_rules     = [
-        {
-          description   = "HTTP ingress rule for ${var.public_src_lbr_cidr}."
+        { # LBR NSG from external CIDR for HTTPS
+          is_create     = true
+          description   = "HTTPS ingress rule for ${var.public_src_lbr_cidr}."
           stateless     = false
           protocol      = "6"
           src           = var.public_src_lbr_cidr
+          src_type      = "CIDR_BLOCK"
+          src_port      = null
+          dst_port      = {
+            min = 443
+            max = 443
+          }
+          icmp_code     = null
+          icmp_type     = null
+        },
+        { # LBR NSG from on-prem CIDR for HTTPS
+          is_create     = tobool(var.is_vcn_onprem_connected)
+          description   = "HTTPS ingress rule for ${var.onprem_cidr}."
+          stateless     = false
+          protocol      = "6"
+          src           = var.onprem_cidr
           src_type      = "CIDR_BLOCK"
           src_port      = null
           dst_port      = {
@@ -202,14 +233,15 @@ module "cis_nsgs" {
           src_port      = null
           dst_port      = {
             min = 1521
-            max = 1521
+            max = 1522
           }
           icmp_code     = null
           icmp_type     = null
         }
       ]
       egress_rules        = [
-        {
+        { # DB NSG to OSN
+          is_create     = true
           description   = "OSN egress rule for ${local.valid_service_gateway_cidrs[0]}."
           stateless     = false
           protocol      = "6"

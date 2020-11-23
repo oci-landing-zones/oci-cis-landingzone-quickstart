@@ -4,11 +4,10 @@
 ### Network Security Group(s) - NSGs
 # default values
 locals {
-  local_nsg_ids         = { for i in oci_core_network_security_group.these : i.display_name => i.id }
-  remote_nsg_ids        = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
-  nsg_ids               = merge(local.remote_nsg_ids, local.local_nsg_ids)
-  nsg_ids_reversed      = { for k,v in local.nsg_ids : v => k }
-
+  local_nsg_ids     = { for i in oci_core_network_security_group.these : i.display_name => i.id }
+  remote_nsg_ids    = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
+  nsg_ids           = merge(local.remote_nsg_ids, local.local_nsg_ids)
+  nsg_ids_reversed  = { for k,v in local.nsg_ids : v => k }
 }
 
 data "oci_core_network_security_groups" "this" {

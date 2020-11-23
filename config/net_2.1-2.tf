@@ -60,6 +60,6 @@ module "cis_security_lists" {
       freeform_tags   = null
       ingress_rules   = null
       egress_rules    = null
-    }
+    } 
   }
 }  

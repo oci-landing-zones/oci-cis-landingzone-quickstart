@@ -76,6 +76,20 @@ variable "public_src_lbr_cidr" {
         error_message = "Invalid cidr block value provided for public_src_lbr_cidr variable."
     }
 }
+variable "is_vcn_onprem_connected" {
+    default = false
+    validation {
+      condition = can(tobool(var.is_vcn_onprem_connected))
+      error_message = "Invalid value provided for is_vcn_onprem_connected. Valid values: true or false."
+    }
+}
+variable "onprem_cidr" {
+    default = "192.168.0.0/16"
+    validation { 
+        condition = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",var.onprem_cidr)) > 0
+        error_message = "Invalid cidr block value provided for onprem_cidr variable."
+    }
+}
 
 # Monitoring
 variable "network_admin_email_endpoint" {

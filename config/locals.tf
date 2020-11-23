@@ -35,29 +35,25 @@ locals {
     vcn_display_name = "${var.service_label}-VCN"
   
     # Subnet names
-    public_subnet_name           = "${var.service_label}-Public-Subnet"
-    private_subnet_app_name      = "${var.service_label}-Private-Subnet-App"
-    private_subnet_db_name       = "${var.service_label}-Private-Subnet-DB"
-    onprem_connected_subnet_name = "${var.service_label}-OnPrem-Subnet"
+    public_subnet_name      = "${var.service_label}-Public-Subnet"
+    private_subnet_app_name = "${var.service_label}-Private-Subnet-App"
+    private_subnet_db_name  = "${var.service_label}-Private-Subnet-DB"
   
     # Security lists names
-    public_subnet_security_list_name           = "${local.public_subnet_name}-Security-List"
-    private_subnet_app_security_list_name      = "${local.private_subnet_app_name}-Security-List"
-    private_subnet_db_security_list_name       = "${local.private_subnet_db_name}-Security-List"
-    onprem_connected_subnet_security_list_name = "${local.onprem_connected_subnet_name}-Security-List"
+    public_subnet_security_list_name      = "${local.public_subnet_name}-Security-List"
+    private_subnet_app_security_list_name = "${local.private_subnet_app_name}-Security-List"
+    private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
 
     # Network security groups names
-    bastion_nsg_name           = "${var.service_label}-NSG-Bastion"
-    lbr_nsg_name               = "${var.service_label}-NSG-LBR"
-    app_nsg_name               = "${var.service_label}-NSG-App"
-    db_nsg_name                = "${var.service_label}-NSG-DB"
-    onprem_connected_nsg_name  = "${var.service_label}-NSG-OnPrem"
+    bastion_nsg_name = "${var.service_label}-NSG-Bastion"
+    lbr_nsg_name = "${var.service_label}-NSG-LBR"
+    app_nsg_name = "${var.service_label}-NSG-App"
+    db_nsg_name  = "${var.service_label}-NSG-DB"
 
     # Route tables names
-    public_subnet_route_table_name           = "${local.public_subnet_name}-Route"
-    private_subnet_app_route_table_name      = "${local.private_subnet_app_name}-Route"
-    private_subnet_db_route_table_name       = "${local.private_subnet_db_name}-Route"
-    onprem_connected_subnet_route_table_name = "${local.onprem_connected_subnet_name}-Route"
+    public_subnet_route_table_name      = "${local.public_subnet_name}-Route"
+    private_subnet_app_route_table_name = "${local.private_subnet_app_name}-Route"
+    private_subnet_db_route_table_name  = "${local.private_subnet_db_name}-Route"
 
     ### Object Storage
     oss_key_name = "${var.service_label}-oss-key"

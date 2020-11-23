@@ -28,11 +28,6 @@ output "service_gateway_id" {
   value       = oci_core_service_gateway.this.id
 }
 
-output "drg_id" {
-  description = "DRG's ocid."
-  value       = length(oci_core_drg.this) > 0 ? oci_core_drg.this[0].id : null
-}
-
 output "subnets" {
   description = "The managed subnets, indexed by display_name."
   value = (oci_core_subnet.these != null && length(oci_core_subnet.these) > 0) ? {

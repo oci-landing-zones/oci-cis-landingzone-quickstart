@@ -38,16 +38,10 @@ variable "service_gateway_cidr" {
   type        = string
 }
 
-variable "is_create_drg" {
-  description = "Whether a DRG is to be created."
-  default     = false
-  type        = bool
-}
 
 variable "subnets" {
   description         = "Parameters for each subnet to be managed."
   type                = map(object({
-    is_create         = bool,
     compartment_id    = string,
     defined_tags      = map(string),
     freeform_tags     = map(string),
@@ -68,11 +62,10 @@ variable "subnets" {
 variable "route_tables" {
   description = "Parameters for each route table to be managed."
   type = map(object({
-    is_create      = bool, 
     compartment_id = string
-    route_rules    = list(object({
-      destination       = string,
-      destination_type  = string,
+    route_rules = list(object({
+      destination = string,
+      destination_type = string,
       network_entity_id = string
     }))
   }))

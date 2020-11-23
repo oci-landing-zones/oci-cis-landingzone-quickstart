@@ -48,7 +48,6 @@ variable "ports_not_allowed_from_anywhere_cidr" {
 
 variable "security_lists" {
   type = map(object({
-    is_create       = bool,
     compartment_id  = string,
     defined_tags    = map(string),
     freeform_tags   = map(string),
@@ -86,18 +85,15 @@ variable "security_lists" {
     }))
   }))
   description = "Parameters for customizing Security List(s)."
-  default = {
-  }
+  default = {}
 }
 
 variable "nsgs" {
   type = map(object({
-    is_create       = bool,
     compartment_id  = string,
     defined_tags    = map(string),
     freeform_tags   = map(string),
     ingress_rules   = list(object({
-      is_create     = bool,
       description   = string,
       stateless     = bool,
       protocol      = string,
@@ -116,7 +112,6 @@ variable "nsgs" {
       icmp_code     = number
     })),
     egress_rules    = list(object({
-      is_create     = bool,
       description   = string,
       stateless     = bool,
       protocol      = string,
@@ -142,7 +137,6 @@ variable "nsgs" {
 variable "standalone_nsg_rules" {
   type = object({
     ingress_rules   = list(object({
-      is_create     = bool,
       nsg_id        = string,
       description   = string,
       stateless     = bool,
@@ -162,7 +156,6 @@ variable "standalone_nsg_rules" {
       icmp_code     = number
     })),
     egress_rules    = list(object({
-      is_create     = bool,
       nsg_id        = string,
       description   = string,
       stateless     = bool,

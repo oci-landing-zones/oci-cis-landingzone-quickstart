@@ -13,7 +13,6 @@ module "cis_security_lists" {
   
   security_lists = { 
     (local.public_subnet_security_list_name) = { 
-      is_create       = true
       compartment_id  = null
       defined_tags    = null
       freeform_tags   = null
@@ -49,7 +48,6 @@ module "cis_security_lists" {
     */  
     },
     (local.private_subnet_app_security_list_name) = { 
-      is_create       = true
       compartment_id  = null
       defined_tags    = null
       freeform_tags   = null
@@ -57,20 +55,11 @@ module "cis_security_lists" {
       egress_rules    = null
     },
     (local.private_subnet_db_security_list_name) = { 
-      is_create       = true
       compartment_id  = null
       defined_tags    = null
       freeform_tags   = null
       ingress_rules   = null
       egress_rules    = null
-    },
-    (local.onprem_connected_subnet_security_list_name) = {
-      is_create       = tobool(var.is_vcn_onprem_connected)
-      compartment_id  = null
-      defined_tags    = null
-      freeform_tags   = null
-      ingress_rules   = null
-      egress_rules    = null
-    } 
+    }
   }
 }  

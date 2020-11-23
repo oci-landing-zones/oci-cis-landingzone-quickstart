@@ -43,28 +43,6 @@ module "cis_security_admins" {
                            "Allow group ${module.cis_security_admins.group_name} to manage cloud-guard-family in tenancy"]
 }
 
-
-### Compute and Storage services
-module "cis_compute_storage_admins" {
-  source                = "../modules/iam/iam-group"
-  tenancy_ocid          = var.tenancy_ocid
-  group_name            = local.compute_storage_admin_group_name
-  group_description     = "Group responsible for managing compute instances and storage resources in compartment ${local.compute_storage_compartment_name_output}."
-  user_names            = []
-  policy_compartment_id = var.tenancy_ocid
-  policy_name           = "${var.service_label}-ComputeStorageAdmins-Policy"
-  policy_description    = "Policy allowing ${var.service_label}-ComputeStorageAdmins group to manage instance-family and storage resources in compartment ${local.compute_storage_compartment_name_output}."
-  policy_statements     = ["Allow group ${module.cis_compute_storage_admins.group_name} to manage instance-family in compartment ${local.compute_storage_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to manage volume-family in compartment ${local.compute_storage_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to manage object-family in compartment ${local.compute_storage_compartment_name_output}",                           
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}",
-                           "Allow group ${module.cis_compute_storage_admins.group_name} to manage file-family in compartment ${local.compute_storage_compartment_name_output}"]
-}
-
 ### Database service - group for managing DBaaS and Autonomous Database.
 module "cis_database_admins" {
   source                = "../modules/iam/iam-group"
@@ -86,8 +64,6 @@ module "cis_database_admins" {
                           "Allow group ${module.cis_database_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}", 
                           "Allow group ${module.cis_database_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}", 
                           "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
-                          "Allow group ${module.cis_compute_storage_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
-                          "Allow group ${module.cis_compute_storage_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}", 
                           ]
 }
 
@@ -117,7 +93,7 @@ module "cis_appdev_admins" {
                            "Allow group ${module.cis_appdev_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}",
                            "Allow group ${module.cis_appdev_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.cis_appdev_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}",
-                           "Allow group ${module.cis_appdev_admins.group_name} to manage file-family in compartment ${local.compute_storage_compartment_name_output}"]
+                           "Allow group ${module.cis_appdev_admins.group_name} to manage file-family in compartment ${local.appdev_compartment_name_output}"]
 }
 
 ### Auditors

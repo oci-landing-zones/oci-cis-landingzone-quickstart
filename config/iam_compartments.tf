@@ -13,9 +13,6 @@ module "cis_compartments" {
       (local.network_compartment_name) = {
         description = "Compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs."
       },
-      (local.compute_storage_compartment_name) = {
-        description = "Compartment for all resources related to compute and storage: compute, block volumes, file storage, object storage."
-      },
       (local.appdev_compartment_name) = {
         description = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming, notifications."
       },

@@ -55,6 +55,7 @@ module "cis_security_lists" {
       egress_rules    = null
     },
     (local.private_subnet_db_security_list_name) = { 
+      is_create       = true
       compartment_id  = null
       defined_tags    = null
       freeform_tags   = null

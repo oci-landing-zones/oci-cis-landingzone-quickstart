@@ -23,7 +23,8 @@ The Landing Zone template deploys a standard three-tier web architecture using a
  - An application development compartment: A compartment for application development related services, including compute, storage, functions, streams, Kubernetes and API Gateway. 
  - A database compartment: A compartment for a database resources and services. 
 
-The network diagram below does not show the database compartment, because no resources are initially provisioned into that compartment. 
+The architecture diagram below does not show the database compartment, because no resources are initially provisioned into that compartment.
+The greyed out icons in the AppDev compartment means those services are not provisioned by this template.
 
 ![Architecture](images/Architecture.png)
 
@@ -90,8 +91,7 @@ There are multiple ways of achieving this, all documented in https://www.terrafo
 
 For environment variables, please see the provided env-vars.template. Once the correct values are provided, make sure to run 'source env-vars.template' to export those variables before executing Terraform.
 
-If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). Also add any custom values for the defaulted variables defined in config/variables.tf
-terraform.tfvars is automatically loaded when Terraform executes.
+If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). Also add any custom values for the default variables defined in config/variables.tf.The terraform.tfvars file is automatically loaded when Terraform executes.
 
 	tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
 	user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"

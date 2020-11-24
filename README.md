@@ -29,7 +29,7 @@ The greyed out icons in the AppDev compartment indicate services not provisioned
 ![Architecture](images/Architecture.png)
 
 ## How the Code is Organized 
-The code consists of a single Terraform configuration defined within the config folder along with a few children modules within the modules folder.
+The code consists of a single Terraform root module configuration defined within the *config* folder along with a few children modules within the *modules* folder.
 
 Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
 

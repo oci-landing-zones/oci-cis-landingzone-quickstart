@@ -112,9 +112,13 @@ With variable values provided, execute:
 	terraform apply plan.out
 
 ## How to Execute the Code Using OCI Resource Manager
-There are a few different ways of running Terraform code in ORM. Here we describe two of them: creating an ORM stack by uploading a folder to ORM or creating an ORM stack by integrating with GitLab. A stack is the ORM term to refer to a Terraform configuration.
+There are a few different ways of running Terraform code in OCI Resource Manager (ORM). Here we describe two of them: 
+- creating an ORM stack by uploading a folder to ORM;
+- creating an ORM stack by integrating with GitLab. 
 
-For OCI Resource Manager details, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
+A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not be contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
+
+For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
 ### Stack from Folder
 Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this project. 

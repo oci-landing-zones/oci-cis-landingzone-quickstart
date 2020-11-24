@@ -24,7 +24,7 @@ The Landing Zone template deploys a standard three-tier web architecture using a
  - A database compartment: A compartment for a database resources and services. 
 
 The architecture diagram below does not show the database compartment, because no resources are initially provisioned into that compartment.
-The greyed out icons in the AppDev compartment means those services are not provisioned by this template.
+The greyed out icons in the AppDev compartment indicate services not provisioned by this template.
 
 ![Architecture](images/Architecture.png)
 

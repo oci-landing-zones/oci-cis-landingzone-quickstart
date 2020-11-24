@@ -42,6 +42,8 @@ module "cis_security_admins" {
                            "Allow group ${module.cis_security_admins.group_name} to manage streams in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.cis_security_admins.group_name} to manage ons-family in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.cis_security_admins.group_name} to manage functions-family in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.cis_security_admins.group_name} to manage waas-family in compartment ${local.security_compartment_name_output}",
+                           "Allow group ${module.cis_security_admins.group_name} to manage security-zone in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.cis_security_admins.group_name} to manage cloud-guard-family in tenancy"]
 }
 
@@ -66,8 +68,7 @@ module "cis_database_admins" {
                            "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}", 
                            "Allow group ${module.cis_database_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}", 
                            "Allow group ${module.cis_database_admins.group_name} to use subnets in compartment ${local.network_compartment_name_output}", 
-                           "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}",
-                          ]
+                           "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name_output}"]
 }
 
 ### Application Development services - Combined AppDev with Compute and storage
@@ -97,7 +98,8 @@ module "cis_appdev_admins" {
                            "Allow group ${module.cis_appdev_admins.group_name} to use vnics in compartment ${local.network_compartment_name_output}",
                            "Allow group ${module.cis_appdev_admins.group_name} to read vaults in compartment ${local.security_compartment_name_output}",
                            "Allow group ${module.cis_appdev_admins.group_name} to inspect keys in compartment ${local.security_compartment_name_output}",
-                           "Allow group ${module.cis_appdev_admins.group_name} to manage file-family in compartment ${local.appdev_compartment_name_output}"]
+                           "Allow group ${module.cis_appdev_admins.group_name} to manage file-family in compartment ${local.appdev_compartment_name_output}",
+                           "Allow group ${module.cis_appdev_admins.group_name} to manage repos in tenancy"]
 }
 
 ### Auditors

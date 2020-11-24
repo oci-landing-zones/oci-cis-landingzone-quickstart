@@ -13,18 +13,17 @@ The Landing Zone template deploys a standard three-tier web architecture using a
  ## Architecture 
  The Landing Zone template creates a three-tier web architecture in a single VCN. The three tiers are divided into:
  
- - One (1) Public Subnet (for load balancers and the OCI bastion host service)
+ - One (1) Public Subnet (for load balancers and bastion servers)
  - Two (2) Private Subnets (one for the application tier/servers and one for the database tier)
  
- The Landing Zone template also creates five (5) compartments in the tenancy:
+ The Landing Zone template also creates four (4) compartments in the tenancy:
  
  - A network compartment: A compartment for all networking resources.
  - A security compartment: A compartment for all logging, key management, and notifications resources and services. 
- - A compute and storage compartment: A compartment for all compute and storage (including object storage) resources
+ - An application development compartment: A compartment for application development related services, including compute, storage, functions, streams, Kubernetes and API Gateway. 
  - A database compartment: A compartment for a database resources and services. 
- - An application development compartment: A compartment for application services, such as functions and API Gateway. 
 
-The network diagram below does not show the database and application development compartments, because no resources are initially provisioned into these compartments. 
+The network diagram below does not show the database compartment, because no resources are initially provisioned into that compartment. 
 
 ![Architecture](images/Architecture.png)
 
@@ -113,15 +112,12 @@ With variable values provided, execute:
 	terraform apply plan.out
 
 ## How to Execute the Code Using OCI Resource Manager
-OCI Resource Manager (ORM) has slightly different requirements than Terraform CLI. First and foremost, there is no need to provide tenancy connection and user authentication input variables for the OCI provider, as Resource Manager, being an OCI service, uses the service connection information itself.
-The only required input variable for the OCI provider is the **region**. Fortunately, the provided Terraform code, by not having defaults to tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password is already adequate and no changes are required.
-
 There are a few different ways of running Terraform code in ORM. Here we describe two of them: creating an ORM stack by uploading a folder to ORM or creating an ORM stack by integrating with GitLab. A stack is the ORM term to refer to a Terraform configuration.
 
 For OCI Resource Manager details, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
 ### Stack from Folder
-Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this repository. 
+Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this project. 
 
 Using OCI Console, navigate to Resource Manager service page and create a stack based on a folder. In the **Create Stack** page:
 1. Select **My Configuration** option as the origin of the Terraform configuration.
@@ -141,15 +137,13 @@ Once the stack is created, navigate to the stack page and use the **Terraform Ac
 ![Run Stack](images/RunStack.png)
 
 ### Stack from GitLab
-First make sure to create a GitLab project out of this repository. 
+**Note:** ORM requires the GitLab instance accessible over the Internet.
 
-Using OCI Console, navigate to Resource Manager service page and create a connection to your GitLab.
+Using OCI Console, navigate to Resource Manager service page and create a connection to your GitLab instance.
 
 In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
 
 ![GitLab Connection](images/GitLabConnection.png)
-
-**Note:** the GitLab URL must be accessible over the Internet.
 
 Next, create a stack based on a source code control system. Using OCI Console, in the **Create Stack** page:
 1. Select **Source Code Control System** option as the origin of the Terraform configuration.

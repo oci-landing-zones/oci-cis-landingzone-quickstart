@@ -1,7 +1,7 @@
-# CIS OCI Landing Zone Template
+# CIS OCI Landing Zone Quickstart Template
 
 ## Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1. 
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1.    
 
 The Landing Zone template deploys a standard three-tier web architecture using a single VCN with multiple compartments to segregate access to various resources. The template configures the OCI tenancy to meet CIS OCI Foundations Benchmark settings related to:
 
@@ -9,6 +9,8 @@ The Landing Zone template deploys a standard three-tier web architecture using a
 - Networking
 - Monitoring
 - Object Storage
+
+The resources are provisioned using a single user account with broad tenancy administration privileges.
  
  ## Architecture 
  The Landing Zone template creates a three-tier web architecture in a single VCN. The three tiers are divided into:

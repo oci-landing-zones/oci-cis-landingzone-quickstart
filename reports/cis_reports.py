@@ -66,6 +66,90 @@ cis_foundations_benchmark_1_1 = {
     '5.2': {'section' : 'Asset Management', 'recommendation_#' : '5.2', 'Title' : 'Ensure no resources are created in the root compartment','Status' : False, 'Level' : 1 , 'Findings' : []}
 }
 
+cis_monitoring_checks = {
+   "3.4" : [
+        'com.oraclecloud.identitycontrolplane.createidentityprovider',
+        'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
+        'com.oraclecloud.identitycontrolplane.updateidentityprovider'
+    ],
+    "3.5" : [
+        'com.oraclecloud.identitycontrolplane.createpolicy',
+        'com.oraclecloud.identitycontrolplane.deletepolicy',
+        'com.oraclecloud.identitycontrolplane.updatepolicy'
+    ],
+    "3.6" : [
+        'com.oraclecloud.identitycontrolplane.creategroup',
+        'com.oraclecloud.identitycontrolplane.deletegroup',
+        'com.oraclecloud.identitycontrolplane.updategroup'
+    ],
+    "3.7" : [
+        'com.oraclecloud.identitycontrolplane.createpolicy',
+        'com.oraclecloud.identitycontrolplane.deletepolicy',
+        'com.oraclecloud.identitycontrolplane.updatepolicy'
+    ],
+    "3.8" : [
+        'com.oraclecloud.identitycontrolplane.createuser',
+        'com.oraclecloud.identitycontrolplane.deleteuser',
+        'com.oraclecloud.identitycontrolplane.updateuser',
+        'com.oraclecloud.identitycontrolplane.updateusercapabilities',
+        'com.oraclecloud.identitycontrolplane.updateuserstate'
+    ],
+    "3.9" : [
+        'com.oraclecloud.virtualnetwork.createvcn',
+        'com.oraclecloud.virtualnetwork.deletevcn',
+        'com.oraclecloud.virtualnetwork.updatevcn'
+    ],
+    "3.10" : [
+        'com.oraclecloud.virtualnetwork.changeroutetablecompartment',
+        'com.oraclecloud.virtualnetwork.createroutetable',
+        'com.oraclecloud.virtualnetwork.deleteroutetable',
+        'com.oraclecloud.virtualnetwork.updateroutetable'
+    ],
+    "3.11" : [
+        'com.oraclecloud.virtualnetwork.changesecuritylistcompartment',
+        'com.oraclecloud.virtualnetwork.createsecuritylist',
+        'com.oraclecloud.virtualnetwork.deletesecuritylist',
+        'com.oraclecloud.virtualnetwork.updatesecuritylist'
+    ],
+    "3.12" : [
+        'com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment',
+        'com.oraclecloud.virtualnetwork.createnetworksecuritygroup',
+        'com.oraclecloud.virtualnetwork.deletenetworksecuritygroup',
+        'com.oraclecloud.virtualnetwork.updatenetworksecuritygroup'
+    ],
+    "3.13" : [
+        'com.oraclecloud.virtualnetwork.createdrg',
+        'com.oraclecloud.virtualnetwork.deletedrg',
+        'com.oraclecloud.virtualnetwork.updatedrg',
+        'com.oraclecloud.virtualnetwork.createdrgattachment',
+        'com.oraclecloud.virtualnetwork.deletedrgattachment',
+        'com.oraclecloud.virtualnetwork.updatedrgattachment',
+        'com.oraclecloud.virtualnetwork.changeinternetgatewaycompartment',
+        'com.oraclecloud.virtualnetwork.createinternetgateway',
+        'com.oraclecloud.virtualnetwork.deleteinternetgateway',
+        'com.oraclecloud.virtualnetwork.updateinternetgateway',
+        'com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment',
+        'com.oraclecloud.virtualnetwork.createlocalpeeringgateway',
+        'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway',
+        'com.oraclecloud.virtualnetwork.updatelocalpeeringgateway',
+        'com.oraclecloud.natgateway.changenatgatewaycompartment',
+        'com.oraclecloud.natgateway.createnatgateway',
+        'com.oraclecloud.natgateway.deletenatgateway',
+        'com.oraclecloud.natgateway.updatenatgateway',
+        'com.oraclecloud.servicegateway.attachserviceid',
+        'com.oraclecloud.servicegateway.changeservicegatewaycompartment',
+        'com.oraclecloud.servicegateway.createservicegateway',
+        'com.oraclecloud.servicegateway.deleteservicegateway.begin',
+        'com.oraclecloud.servicegateway.deleteservicegateway.end',
+        'com.oraclecloud.servicegateway.detachserviceid',
+        'com.oraclecloud.servicegateway.updateservicegateway'
+
+    ]
+}
+
+
+
+
 ##########################################################################
 # CIS Reporting Class
 ##########################################################################
@@ -1045,7 +1129,21 @@ class CIS_Report:
 
 
 
+        # CIS Checks 3.4 -3.13 
+        #Iterate through all event rules
+        for event in self.event_rules:
+            # Convert Event Condition to dict
+            jsonable_str = event['condition'].lower().replace("'", "\"")
+            event_dict = json.loads(jsonable_str)
             
+            for key,changes in cis_monitoring_checks.items():
+                #Checking if all cis change list is a subset of event condition
+                if(all(x in event_dict['eventtype'] for x in changes)):
+                    cis_foundations_benchmark_1_1[key]['Status'] = True
+                    print_header(cis_foundations_benchmark_1_1[key]['Title'])
+                    print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
+
+                
 
         # CIS Section 4 Checks
 
@@ -1374,10 +1472,11 @@ report = CIS_Report(config,signer)
 
 # print(subnets)
 
-audit_config = report.audit_read_tenancy_audit_configuration()
-print("Audit Configuration is : "+ str(audit_config))
+
+# print("Audit Configuration is : "+ str(audit_config))
 
 report.cloud_guard_read_cloud_guard_configuration()
+audit_config = report.audit_read_tenancy_audit_configuration()
 report.identity_read_tenancy_password_policy()
 policies = report.identity_read_tenancy_policies()
 groups = report.identity_read_groups_and_membership()
@@ -1385,10 +1484,8 @@ users = report.identity_read_users()
 buckets = report.os_read_buckets()
 log_groups = report.logging_read_log_groups_and_logs()
 report.resources_in_root_compartment()
+events = report.events_read_event_rules()
 
-for log_group in log_groups:
-    for log in log_group['logs']:
-        print(log['source_service'])
 
 
 
@@ -1396,13 +1493,24 @@ sls = report.network_read_network_security_lists()
 
 nsgs = report.network_read_network_security_groups_rules()
 
+# vaults = report.vault_read_vaults()
 
 
 report.report_analyze_tenancy()
 
+for event in events:
 
+    jsonable_str = event['condition'].lower().replace("'", "\"")
+    event_dict = json.loads(jsonable_str)
+    
+    for k,v in cis_monitoring_checks.items():
+        if(all(x in event_dict['eventtype'] for x in v )):
+            print(k + " is a subet of " + event['display_name'])
+
+
+for event in events:
+    print(event['display_name'])
 # report.identity_read_tenancy_password_policy()
-# vaults = report.vault_read_vaults()
 # print(vaults)
 # for vault in vaults:
 #     print("Vault Display Name:  " + vault['display_name'] + " Number of Keys: " + str(len(vault['keys'])) + " Compartment ID: " + vault['compartment_id'])

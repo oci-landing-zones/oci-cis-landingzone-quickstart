@@ -842,9 +842,6 @@ class CIS_Report:
         print("Loading Cloud Guard configuration..")
         try:
             self.cloud_guard_config = self._cloud_guard.get_configuration(self._tenancy.id).data
-            if self.cloud_guard_config.status == 'ENABLED':
-                cis_foundations_benchmark_1_1['3.15']['Status']=True
-                print(cis_foundations_benchmark_1_1['3.15'])
 
         except Exception as e:
             raise RuntimeError("Error in cloud_guard_read_cloud_guard_configuration " + str(e.args))
@@ -1144,9 +1141,16 @@ class CIS_Report:
                     print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
 
                 
+        # CIS Check 3.15 - Cloud Guard enabled
+        if self.cloud_guard_config.status == 'ENABLED':
+            cis_foundations_benchmark_1_1['3.15']['Status']=True
+            print(cis_foundations_benchmark_1_1['3.15'])
 
+        # CIS Check 3.16 - Encryption keys over 365
+        #for vault in self.vaults:
+
+        
         # CIS Section 4 Checks
-
         for bucket in self.buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
                 cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
@@ -1475,41 +1479,43 @@ report = CIS_Report(config,signer)
 
 # print("Audit Configuration is : "+ str(audit_config))
 
-report.cloud_guard_read_cloud_guard_configuration()
-audit_config = report.audit_read_tenancy_audit_configuration()
-report.identity_read_tenancy_password_policy()
-policies = report.identity_read_tenancy_policies()
-groups = report.identity_read_groups_and_membership()
-users = report.identity_read_users()
-buckets = report.os_read_buckets()
-log_groups = report.logging_read_log_groups_and_logs()
-report.resources_in_root_compartment()
-events = report.events_read_event_rules()
+cg = report.cloud_guard_read_cloud_guard_configuration()
+vaults = report.vault_read_vaults()
+
+# audit_config = report.audit_read_tenancy_audit_configuration()
+# report.identity_read_tenancy_password_policy()
+# policies = report.identity_read_tenancy_policies()
+# groups = report.identity_read_groups_and_membership()
+# users = report.identity_read_users()
+# buckets = report.os_read_buckets()
+# log_groups = report.logging_read_log_groups_and_logs()
+# report.resources_in_root_compartment()
+# events = report.events_read_event_rules()
 
 
 
 
-sls = report.network_read_network_security_lists()
+# sls = report.network_read_network_security_lists()
 
-nsgs = report.network_read_network_security_groups_rules()
+# nsgs = report.network_read_network_security_groups_rules()
 
-# vaults = report.vault_read_vaults()
+# # vaults = report.vault_read_vaults()
 
 
-report.report_analyze_tenancy()
+# report.report_analyze_tenancy()
 
-for event in events:
+# for event in events:
 
-    jsonable_str = event['condition'].lower().replace("'", "\"")
-    event_dict = json.loads(jsonable_str)
+#     jsonable_str = event['condition'].lower().replace("'", "\"")
+#     event_dict = json.loads(jsonable_str)
     
-    for k,v in cis_monitoring_checks.items():
-        if(all(x in event_dict['eventtype'] for x in v )):
-            print(k + " is a subet of " + event['display_name'])
+#     for k,v in cis_monitoring_checks.items():
+#         if(all(x in event_dict['eventtype'] for x in v )):
+#             print(k + " is a subet of " + event['display_name'])
 
 
-for event in events:
-    print(event['display_name'])
+# for event in events:
+#     print(event['display_name'])
 # report.identity_read_tenancy_password_policy()
 # print(vaults)
 # for vault in vaults:

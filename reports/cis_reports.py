@@ -166,6 +166,7 @@ class CIS_Report:
     
     users = []
     groups_to_users = []
+    tag_defaults = []
 
     buckets = []
 
@@ -872,7 +873,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def ons_read_subscriptions(self):
-        print("Loading ")
+        print("Loading Subscriptions..")
         try:
             # Iterate through compartments to get all subscriptions
             for compartment in self.compartments:
@@ -893,11 +894,40 @@ class CIS_Report:
             
                         }
                         self.subscriptions.append(record)
-
             return self.subscriptions
 
         except Exception as e:
             raise RuntimeError("Error in ons_read_subscription " + str(e.args))
+
+    ##########################################################################
+    # Identity Tag Default
+    ##########################################################################
+    def identity_read_tag_defaults(self):
+        print("Loading Tag Defaults..")
+        try:
+            # Getting Tag Default for the Root Compartment - Only
+            tag_defaults = oci.pagination.list_call_get_all_results(
+                self._identity.list_tag_defaults,
+                compartment_id=self._tenancy.id
+            ).data
+            for tag in tag_defaults:
+                record = {
+                    "id" : tag.id,
+                    "compartment_id" : tag.compartment_id,
+                    "value" : tag.value,
+                    "time_created" : tag.time_created,
+                    "tag_definition_id" : tag.tag_definition_id,
+                    "tag_definition_name" : tag.tag_definition_name,
+                    "tag_namespace_id" : tag.tag_namespace_id,
+                    "lifecycle_state" : tag.lifecycle_state
+    
+                }
+                self.tag_defaults.append(record)
+            return self.tag_defaults
+
+        except Exception as e:
+            raise RuntimeError("Error in identity_read_tag_defaults " + str(e.args))
+    
     ##########################################################################
     # Run advanced search structure query
     ##########################################################################
@@ -934,7 +964,6 @@ class CIS_Report:
                 #print(statement)
                 if "to manage all-resources in tenancy".upper() in statement.upper():
                     cis_foundations_benchmark_1_1['1.2']['Status'] = False
-
                     cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
 
                     break
@@ -1157,6 +1186,15 @@ class CIS_Report:
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.1']['Findings'])))
         print("Status is: " + str(cis_foundations_benchmark_1_1['3.1']['Status']))
 
+
+        # CIS Check 3.2 - Check for Default Tags in Root Compartment
+        # Iterate through tags looking for ${iam.principal.name}
+        for tag in self.tag_defaults:
+            if tag['value'] == "${iam.principal.name}":
+                cis_foundations_benchmark_1_1['3.2']['Status'] = True
+
+        print_header(cis_foundations_benchmark_1_1['3.2']['Title'])
+        print("Status is: " + str(cis_foundations_benchmark_1_1['3.2']['Status']))   
 
         # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.subscriptions) > 0:
@@ -1547,13 +1585,11 @@ report.resources_in_root_compartment()
 events = report.events_read_event_rules()
 subscriptions = report.ons_read_subscriptions()
 
-
-
-
 sls = report.network_read_network_security_lists()
 
 nsgs = report.network_read_network_security_groups_rules()
 
+tags = report.identity_read_tag_defaults()
 
 
 report.report_analyze_tenancy()

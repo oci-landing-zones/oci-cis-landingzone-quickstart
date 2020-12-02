@@ -22,48 +22,48 @@ DAYS_OLD = 90
 
 
 cis_foundations_benchmark_1_1 = {
-    '1.1': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.1', 'Title' : 'Ensure service level admins are created to manage resources of particular service','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.2': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.2', 'Title' : 'Ensure permissions on all resources are given only to the tenancy administrator group','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.3': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.3', 'Title' : 'Ensure IAM administrators cannot update tenancy Administrators group','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.4': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.4', 'Title' : 'Ensure IAM password policy requires minimum length of 14 or greater','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.5': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.5', 'Title' : 'Ensure IAM password policy expires passwords within 365 days','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.6': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.6', 'Title' : 'Ensure IAM password policy prevents password reuse','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.7': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.7', 'Title' : 'Ensure MFA is enabled for all users with a console password','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.8': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.8', 'Title' : 'Ensure user API keys rotate within 90 days or less','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.9': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.9', 'Title' : 'Ensure user customer secret keys rotate within 90 days or less','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.10': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.10', 'Title' : 'Ensure user auth tokens rotate within 90 days or less','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.11': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.11', 'Title' : 'Ensure API keys are not created for tenancy administrator users','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '1.12': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.12', 'Title' : 'Ensure all OCI IAM user accounts have a valid and current email address','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '1.1': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.1', 'Title' : 'Ensure service level admins are created to manage resources of particular service','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.2': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.2', 'Title' : 'Ensure permissions on all resources are given only to the tenancy administrator group','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.3': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.3', 'Title' : 'Ensure IAM administrators cannot update tenancy Administrators group','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.4': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.4', 'Title' : 'Ensure IAM password policy requires minimum length of 14 or greater','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.5': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.5', 'Title' : 'Ensure IAM password policy expires passwords within 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.6': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.6', 'Title' : 'Ensure IAM password policy prevents password reuse','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.7': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.7', 'Title' : 'Ensure MFA is enabled for all users with a console password','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.8': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.8', 'Title' : 'Ensure user API keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.9': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.9', 'Title' : 'Ensure user customer secret keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.10': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.10', 'Title' : 'Ensure user auth tokens rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.11': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.11', 'Title' : 'Ensure API keys are not created for tenancy administrator users','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '1.12': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.12', 'Title' : 'Ensure all OCI IAM user accounts have a valid and current email address','Status' : True, 'Level' : 1 , 'Findings' : []},
 
-    '2.1': {'section' : 'Networking', 'recommendation_#' : '2.1', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '2.2': {'section' : 'Networking', 'recommendation_#' : '2.2', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '2.3': {'section' : 'Networking', 'recommendation_#' : '2.3', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '2.4': {'section' : 'Networking', 'recommendation_#' : '2.4', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '2.5': {'section' : 'Networking', 'recommendation_#' : '2.5', 'Title' : 'Ensure the default security list of every VCN restricts all traffic except ICMP','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '2.1': {'section' : 'Networking', 'recommendation_#' : '2.1', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '2.2': {'section' : 'Networking', 'recommendation_#' : '2.2', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '2.3': {'section' : 'Networking', 'recommendation_#' : '2.3', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '2.4': {'section' : 'Networking', 'recommendation_#' : '2.4', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '2.5': {'section' : 'Networking', 'recommendation_#' : '2.5', 'Title' : 'Ensure the default security list of every VCN restricts all traffic except ICMP','Status' : True, 'Level' : 1 , 'Findings' : []},
 
-    '3.1': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.1', 'Title' : 'Ensure audit log retention period is set to 365 days','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.2': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.2', 'Title' : 'Ensure default tags are used on resources','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '3.1': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.1', 'Title' : 'Ensure audit log retention period is set to 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '3.2': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.2', 'Title' : 'Ensure default tags are used on resources','Status' : True, 'Level' : 1 , 'Findings' : []},
     '3.3': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.3', 'Title' : 'Create at least one notification topic and subscription to receive monitoring alerts','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.4': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.4', 'Title' : 'Ensure a notification is configured for Identity Provider changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.5': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.5', 'Title' : 'Ensure a notification is configured for IdP group mapping changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
     '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.9': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.13': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.13', 'Title' : 'Ensure a notification is configured for  changes to network gateways','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.14': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.14', 'Title' : 'Ensure VCN flow logging is enabled for all subnets','Status' : False, 'Level' : 2 , 'Findings' : []},
-    '3.15': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.15', 'Title' : 'Ensure Cloud Guard is enabled in the root compartment of the tenancy','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.16': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.16', 'Title' : 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.17': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.17', 'Title' : 'Ensure write level Object Storage logging is enabled for all buckets','Status' : False, 'Level' : 2 , 'Findings' : []},
+    '3.13': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.13', 'Title' : 'Ensure a notification is configured for  changes to network gateways','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '3.14': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.14', 'Title' : 'Ensure VCN flow logging is enabled for all subnets','Status' : True, 'Level' : 2 , 'Findings' : []},
+    '3.15': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.15', 'Title' : 'Ensure Cloud Guard is enabled in the root compartment of the tenancy','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '3.16': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.16', 'Title' : 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '3.17': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.17', 'Title' : 'Ensure write level Object Storage logging is enabled for all buckets','Status' : True, 'Level' : 2 , 'Findings' : []},
 
-    '4.1': {'section' : 'Object Storage', 'recommendation_#' : '4.1', 'Title' : 'Ensure no Object Storage buckets are publicly visible','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '4.2': {'section' : 'Object Storage', 'recommendation_#' : '4.2', 'Title' : 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)','Status' : False, 'Level' : 2,'Findings' : [] },
+    '4.1': {'section' : 'Object Storage', 'recommendation_#' : '4.1', 'Title' : 'Ensure no Object Storage buckets are publicly visible','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '4.2': {'section' : 'Object Storage', 'recommendation_#' : '4.2', 'Title' : 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)','Status' : True, 'Level' : 2,'Findings' : [] },
 
-    '5.1': {'section' : 'Asset Management', 'recommendation_#' : '5.1', 'Title' : 'Create at least one compartment in your tenancy to store cloud resources','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '5.2': {'section' : 'Asset Management', 'recommendation_#' : '5.2', 'Title' : 'Ensure no resources are created in the root compartment','Status' : False, 'Level' : 1 , 'Findings' : []}
+    '5.1': {'section' : 'Asset Management', 'recommendation_#' : '5.1', 'Title' : 'Create at least one compartment in your tenancy to store cloud resources','Status' : True, 'Level' : 1 , 'Findings' : []},
+    '5.2': {'section' : 'Asset Management', 'recommendation_#' : '5.2', 'Title' : 'Ensure no resources are created in the root compartment','Status' : True, 'Level' : 1 , 'Findings' : []}
 }
 
 cis_monitoring_checks = {
@@ -156,7 +156,7 @@ cis_monitoring_checks = {
 class CIS_Report:
     # Class variables
     _DAYS_OLD = 90
-
+    _KMS_DAYS_OLD = 30
     # Tenancy Data
     _tenancy = None
     cloud_guard_config = None
@@ -179,12 +179,18 @@ class CIS_Report:
 
     vaults = []
     
+    subscriptions = []
 
     # Start print time info
     start_datetime = datetime.datetime.now()
     start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    key_time_max_datetime = start_datetime - datetime.timedelta(days=DAYS_OLD)
+    
+    key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
     key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+
+    kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=_KMS_DAYS_OLD)
+    kms_key_time_max_datetime = kms_key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+
 
     def __init__(self, config, signer):
         # Start print time info
@@ -237,6 +243,11 @@ class CIS_Report:
             self._vault = oci.key_management.KmsVaultClient(self._config, signer=self._signer)
             if cmd.proxy:
                 self._vault.session.proxies = {'https': cmd.proxy}
+
+            print("\nConnecting to Subscriptions Service...")
+            self._ons_subs = oci.ons.NotificationDataPlaneClient(self._config, signer=self._signer)
+            if cmd.proxy:
+                self._ons_subs.session.proxies = {'https': cmd.proxy}
 
 
             self._tenancy = self._identity.get_tenancy(config["tenancy"]).data
@@ -805,7 +816,7 @@ class CIS_Report:
                             "display_name" : key.display_name,
                             "id" : key.id,
                             "lifecycle_state" : key.lifecycle_state,
-                            "time_created" : key.time_created,
+                            "time_created" : key.time_created.strftime('%Y-%m-%d %H:%M:%S'),
                         }
                         # Getting Key Versions - Most current one is the first one in the list 
                         key_versions = oci.pagination.list_call_get_all_results(
@@ -857,7 +868,36 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError("Error in identity_read_tenancy_password_policy " + str(e.args))
 
+    ##########################################################################
+    # Oracle Notifications Services for Subscriptions
+    ##########################################################################
+    def ons_read_subscriptions(self):
+        print("Loading ")
+        try:
+            # Iterate through compartments to get all subscriptions
+            for compartment in self.compartments:
+                if self._if_not_managed_paas_compartment(compartment.name):
+                    subs_data = oci.pagination.list_call_get_all_results(
+                        self._ons_subs.list_subscriptions,
+                        compartment.id
+                    ).data
+                    for sub in subs_data:
+                        record = {
+                            "id" : sub.id,
+                            "compartment_id" : sub.compartment_id,
+                            "created_time" : sub.created_time,
+                            "endpoint" : sub.endpoint,
+                            "protocol" : sub.protocol,
+                            "topic_id" : sub.topic_id,
+                            "lifecycle_state" : sub.lifecycle_state
+            
+                        }
+                        self.subscriptions.append(record)
 
+            return self.subscriptions
+
+        except Exception as e:
+            raise RuntimeError("Error in ons_read_subscription " + str(e.args))
     ##########################################################################
     # Run advanced search structure query
     ##########################################################################
@@ -893,13 +933,12 @@ class CIS_Report:
                 #print("looping through policy statement")
                 #print(statement)
                 if "to manage all-resources in tenancy".upper() in statement.upper():
-                    #print("Found a policy")
+                    cis_foundations_benchmark_1_1['1.2']['Status'] = False
+
                     cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
-                    # Moving to the next policy 
+
                     break
                 
-        if len(cis_foundations_benchmark_1_1['1.2']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.2']['Status'] = True
         print_header(cis_foundations_benchmark_1_1['1.2']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.2']['Status']))
         print("Finding: " + str(cis_foundations_benchmark_1_1['1.2']['Findings']))
@@ -908,11 +947,12 @@ class CIS_Report:
         for policy in self.policies:
             for statement in policy['statements']:
                 if ("to use groups in tenancy".upper() in statement.upper() or "to use users in tenancy".upper() in statement.upper() or "to manage groups in tenancy".upper() in statement.upper() or "to manage users in tenancy".upper() in statement.upper()):
+                    cis_foundations_benchmark_1_1['1.3']['Status'] = False
+
                     cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
                     # Moving to the next policy 
                     break
-        if len(cis_foundations_benchmark_1_1['1.3']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.3']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['1.3']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.3']['Status']))
         print("Finding: " + str(cis_foundations_benchmark_1_1['1.3']['Findings']))
@@ -929,10 +969,10 @@ class CIS_Report:
         
         for user in self.users:
             if user['external_identifier'] == None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+                cis_foundations_benchmark_1_1['1.7']['Status'] = False
                 cis_foundations_benchmark_1_1['1.7']['Findings'].append(user)
         
-        if len(cis_foundations_benchmark_1_1['1.7']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.7']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['1.7']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.8']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.7']['Findings'])))
@@ -942,7 +982,8 @@ class CIS_Report:
         for user in self.users:
             if user['api_keys']:
                 for key in user['api_keys']:
-                    if self.key_time_max_datetime > key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                        cis_foundations_benchmark_1_1['1.8']['Status'] = False
                         finding = {
                             "user_name" : user['name'],
                             "user_id" : user['id'],
@@ -956,8 +997,7 @@ class CIS_Report:
                         cis_foundations_benchmark_1_1['1.8']['Findings'].append(finding)
                 
         
-        if len(cis_foundations_benchmark_1_1['1.8']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.8']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['1.8']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.8']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.8']['Findings'])))
@@ -967,7 +1007,9 @@ class CIS_Report:
         for user in self.users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
-                    if self.key_time_max_datetime > key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                        cis_foundations_benchmark_1_1['1.9']['Status'] = False
+
                         finding = {
                             "user_name" : user['name'],
                             "user_id" : user['id'],
@@ -981,9 +1023,7 @@ class CIS_Report:
                         
                         cis_foundations_benchmark_1_1['1.9']['Findings'].append(finding)
                 
-        
-        if len(cis_foundations_benchmark_1_1['1.9']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.9']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['1.9']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.9']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.9']['Findings'])))
@@ -993,7 +1033,9 @@ class CIS_Report:
         for user in self.users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
-                    if self.key_time_max_datetime > key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                        cis_foundations_benchmark_1_1['1.10']['Status'] = False
+
                         finding = {
                             "user_name" : user['name'],
                             "user_id" : user['id'],
@@ -1009,8 +1051,7 @@ class CIS_Report:
                         cis_foundations_benchmark_1_1['1.10']['Findings'].append(finding)
                 
         
-        if len(cis_foundations_benchmark_1_1['1.10']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.10']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['1.10']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.10']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.10']['Findings'])))
@@ -1020,11 +1061,10 @@ class CIS_Report:
         # Iterrating through all users to see if they have API Keys and if they are active users
         for user in self.users:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
+                cis_foundations_benchmark_1_1['1.11']['Status'] = False
                 cis_foundations_benchmark_1_1['1.11']['Findings'].append(user)
 
 
-        if len(cis_foundations_benchmark_1_1['1.11']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.11']['Status'] = True
         print_header(cis_foundations_benchmark_1_1['1.11']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.11']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.11']['Findings'])))
@@ -1034,12 +1074,9 @@ class CIS_Report:
         # Iterrating through all users to see if they have API Keys and if they are active users
         for user in self.users:
             if user['external_identifier'] == None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
+                cis_foundations_benchmark_1_1['1.12']['Status'] = False
                 cis_foundations_benchmark_1_1['1.12']['Findings'].append(user)
 
-
-
-        if len(cis_foundations_benchmark_1_1['1.12']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['1.12']['Status'] = True
         print_header(cis_foundations_benchmark_1_1['1.12']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.12']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.12']['Findings'])))
@@ -1053,11 +1090,11 @@ class CIS_Report:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
                         if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
+                            cis_foundations_benchmark_1_1['2.1']['Status'] = False
                             cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
 
 
-        if len(cis_foundations_benchmark_1_1['2.1']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['2.1']['Status'] = True
+
         print_header(cis_foundations_benchmark_1_1['2.1']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['2.1']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.1']['Findings'])))
@@ -1071,11 +1108,10 @@ class CIS_Report:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
                         if irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+                            cis_foundations_benchmark_1_1['2.2']['Status'] = False
                             cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
 
 
-        if len(cis_foundations_benchmark_1_1['2.2']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['2.2']['Status'] = True
         print_header(cis_foundations_benchmark_1_1['2.2']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['2.2']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.2']['Findings'])))
@@ -1088,11 +1124,9 @@ class CIS_Report:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
                         if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
+                            cis_foundations_benchmark_1_1['2.3']['Status'] = False           
                             cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
 
-
-        if len(cis_foundations_benchmark_1_1['2.3']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['2.3']['Status'] = True
         print_header(cis_foundations_benchmark_1_1['2.3']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.3']['Findings'])))
@@ -1104,12 +1138,11 @@ class CIS_Report:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
                         if rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
+                            cis_foundations_benchmark_1_1['2.4']['Status'] = False
                             cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
 
 
-        if len(cis_foundations_benchmark_1_1['2.4']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['2.4']['Status'] = True
-            print_header(cis_foundations_benchmark_1_1['2.4']['Title'])
+        print_header(cis_foundations_benchmark_1_1['2.4']['Title'])
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.4']['Findings'])))
         print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
 
@@ -1125,8 +1158,15 @@ class CIS_Report:
         print("Status is: " + str(cis_foundations_benchmark_1_1['3.1']['Status']))
 
 
+        # CIS Check 3.3 - Check for Active Notification and Subscription
+        if len(self.subscriptions) > 0:
+            cis_foundations_benchmark_1_1['3.3']['Status'] = True
 
-        # CIS Checks 3.4 -3.13 
+        print_header(cis_foundations_benchmark_1_1['3.3']['Title'])
+        print("Status is: " + str(cis_foundations_benchmark_1_1['3.3']['Status']))            
+
+
+        # CIS Checks 3.4 - 3.13 
         #Iterate through all event rules
         for event in self.event_rules:
             # Convert Event Condition to dict
@@ -1137,31 +1177,40 @@ class CIS_Report:
                 #Checking if all cis change list is a subset of event condition
                 if(all(x in event_dict['eventtype'] for x in changes)):
                     cis_foundations_benchmark_1_1[key]['Status'] = True
-                    print_header(cis_foundations_benchmark_1_1[key]['Title'])
-                    print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
-
                 
+        
+        for key,changes in cis_monitoring_checks.items():
+            print_header(cis_foundations_benchmark_1_1[key]['Title'])
+            print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
+
+        
         # CIS Check 3.15 - Cloud Guard enabled
         if self.cloud_guard_config.status == 'ENABLED':
             cis_foundations_benchmark_1_1['3.15']['Status']=True
-            print(cis_foundations_benchmark_1_1['3.15'])
-
+        
+        print_header(cis_foundations_benchmark_1_1['3.15']['Title'])
+        print("Status is: " + str(cis_foundations_benchmark_1_1['3.15']['Status']))
+        
         # CIS Check 3.16 - Encryption keys over 365
-        #for vault in self.vaults:
-
+        for vault in vaults:
+            for key in vault['keys']:
+                if self.kms_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    cis_foundations_benchmark_1_1['3.16']['Status'] = False
+                    cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
+        
+        print_header(cis_foundations_benchmark_1_1['3.16']['Title'])
+        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.16']['Findings'])))
+        print("Status is: " + str(cis_foundations_benchmark_1_1['3.16']['Status']))        
         
         # CIS Section 4 Checks
         for bucket in self.buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
+                cis_foundations_benchmark_1_1['4.1']['Status'] = False
                 cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
             elif not(bucket['kms_key_id']):
                 cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
-        # Checking if their are findings
-        if len(cis_foundations_benchmark_1_1['4.1']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['4.1']['Status'] = True
-        # Checking if their Findings
-        if len(cis_foundations_benchmark_1_1['4.2']['Findings']) == 0:
-            cis_foundations_benchmark_1_1['4.2']['Status'] = True
+                cis_foundations_benchmark_1_1['4.2']['Status'] = False
+
 
         print_header(cis_foundations_benchmark_1_1['4.1']['Title'])
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['4.1']['Findings'])))
@@ -1173,17 +1222,16 @@ class CIS_Report:
 
 
 
-
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment 
-        if len(self.compartments) > 1:
-            cis_foundations_benchmark_1_1['5.1']['Status'] = True
+        if len(self.compartments) < 2:
+            cis_foundations_benchmark_1_1['5.1']['Status'] = False
         
         if len(self.resources_in_root) > 0:
             for item in self.resources_in_root:
+                cis_foundations_benchmark_1_1['5.2']['Status'] = False
                 cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
-        elif len(self.resources_in_root) == 0:
-                cis_foundations_benchmark_1_1['5.2']['Status'] = True
+
         
         print_header(cis_foundations_benchmark_1_1['5.1']['Title'])
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['5.1']['Findings'])))
@@ -1426,7 +1474,7 @@ cmd = parser.parse_args()
 start_datetime = datetime.datetime.now()
 start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 key_time_max_datetime = start_datetime - datetime.timedelta(days=DAYS_OLD)
-key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+#key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 print(start_datetime)
 print(key_time_max_datetime)
@@ -1481,28 +1529,34 @@ report = CIS_Report(config,signer)
 
 cg = report.cloud_guard_read_cloud_guard_configuration()
 vaults = report.vault_read_vaults()
+# print(type(key_time_max_datetime))
+# for vault in vaults:
+#     for key in vault['keys']:
+#         if key['time_created'] > key_time_max_datetime:
 
-# audit_config = report.audit_read_tenancy_audit_configuration()
-# report.identity_read_tenancy_password_policy()
-# policies = report.identity_read_tenancy_policies()
-# groups = report.identity_read_groups_and_membership()
-# users = report.identity_read_users()
-# buckets = report.os_read_buckets()
-# log_groups = report.logging_read_log_groups_and_logs()
-# report.resources_in_root_compartment()
-# events = report.events_read_event_rules()
+#             print(key)
 
-
-
-
-# sls = report.network_read_network_security_lists()
-
-# nsgs = report.network_read_network_security_groups_rules()
-
-# # vaults = report.vault_read_vaults()
+audit_config = report.audit_read_tenancy_audit_configuration()
+report.identity_read_tenancy_password_policy()
+policies = report.identity_read_tenancy_policies()
+groups = report.identity_read_groups_and_membership()
+users = report.identity_read_users()
+buckets = report.os_read_buckets()
+log_groups = report.logging_read_log_groups_and_logs()
+report.resources_in_root_compartment()
+events = report.events_read_event_rules()
+subscriptions = report.ons_read_subscriptions()
 
 
-# report.report_analyze_tenancy()
+
+
+sls = report.network_read_network_security_lists()
+
+nsgs = report.network_read_network_security_groups_rules()
+
+
+
+report.report_analyze_tenancy()
 
 # for event in events:
 

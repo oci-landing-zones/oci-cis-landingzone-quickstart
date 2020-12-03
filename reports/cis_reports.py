@@ -157,7 +157,7 @@ cis_monitoring_checks = {
 class CIS_Report:
     # Class variables
     _DAYS_OLD = 90
-    _KMS_DAYS_OLD = 10
+    _KMS_DAYS_OLD = 30
     # Tenancy Data
     _tenancy = None
     cloud_guard_config = None

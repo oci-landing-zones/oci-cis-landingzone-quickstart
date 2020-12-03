@@ -15,6 +15,7 @@ from __future__ import print_function
 import sys
 import argparse
 import datetime
+import pytz
 import oci
 import json
 import os
@@ -156,7 +157,7 @@ cis_monitoring_checks = {
 class CIS_Report:
     # Class variables
     _DAYS_OLD = 90
-    _KMS_DAYS_OLD = 30
+    _KMS_DAYS_OLD = 10
     # Tenancy Data
     _tenancy = None
     cloud_guard_config = None
@@ -183,14 +184,14 @@ class CIS_Report:
     subscriptions = []
 
     # Start print time info
-    start_datetime = datetime.datetime.now()
-    start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+    start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
     key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
-    key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+    #key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=_KMS_DAYS_OLD)
-    kms_key_time_max_datetime = kms_key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+    #kms_key_time_max_datetime = kms_key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 
     def __init__(self, config, signer):
@@ -380,7 +381,7 @@ class CIS_Report:
                     'fingerprint' : api_key.fingerprint,
                     'inactive_status' : api_key.inactive_status,
                     'lifecycle_state' : api_key.lifecycle_state,
-                    'time_created' : api_key.time_created.strftime('%Y-%m-%d %H:%M:%S')
+                    'time_created' : api_key.time_created, #.strftime('%Y-%m-%d %H:%M:%S')
                 }
                 api_keys.append(record)
 
@@ -408,7 +409,7 @@ class CIS_Report:
                 'description' : token.description,
                 'inactive_status' : token.inactive_status,
                 'lifecycle_state' : token.lifecycle_state,
-                'time_created' : token.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                'time_created' : token.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                 'time_expires' : token.time_expires,
                 'token' : token.token
                 
@@ -438,7 +439,7 @@ class CIS_Report:
                 'display_name' : key.display_name,
                 'inactive_status' : key.inactive_status,
                 'lifecycle_state' : key.lifecycle_state,
-                'time_created' : key.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                'time_created' : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                 'time_expires' : key.time_expires,              
                 
                 }
@@ -817,7 +818,7 @@ class CIS_Report:
                             "display_name" : key.display_name,
                             "id" : key.id,
                             "lifecycle_state" : key.lifecycle_state,
-                            "time_created" : key.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                            "time_created" : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                         }
                         # Getting Key Versions - Most current one is the first one in the list 
                         key_versions = oci.pagination.list_call_get_all_results(
@@ -1232,7 +1233,8 @@ class CIS_Report:
         # CIS Check 3.16 - Encryption keys over 365
         for vault in vaults:
             for key in vault['keys']:
-                if self.kms_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
+                if self.kms_key_time_max_datetime >= key['time_created'] :
                     cis_foundations_benchmark_1_1['3.16']['Status'] = False
                     cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
         
@@ -1509,13 +1511,11 @@ parser.add_argument('-dt', action='store_true', default=False, dest='is_delegati
 cmd = parser.parse_args()
 
 # Start print time info
-start_datetime = datetime.datetime.now()
-start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-key_time_max_datetime = start_datetime - datetime.timedelta(days=DAYS_OLD)
+start_time_datetime = datetime.datetime.utcnow()
+start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+key_time_max_datetime = start_time_datetime - datetime.timedelta(days=DAYS_OLD)
 #key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-print(start_datetime)
-print(key_time_max_datetime)
 
 print_header("Running CIS Reports")
 print("Code base By Adi Zohar, June 2020")
@@ -1567,12 +1567,16 @@ report = CIS_Report(config,signer)
 
 cg = report.cloud_guard_read_cloud_guard_configuration()
 vaults = report.vault_read_vaults()
+
 # print(type(key_time_max_datetime))
 # for vault in vaults:
 #     for key in vault['keys']:
-#         if key['time_created'] > key_time_max_datetime:
-
-#             print(key)
+#         print(key['time_created'])
+#         print(type(key['time_created']))
+#         print(key['key_time_max_datetime'])
+       
+#         if key_time_max_datetime < key['time_created']:
+#             print("I hate time")
 
 audit_config = report.audit_read_tenancy_audit_configuration()
 report.identity_read_tenancy_password_policy()

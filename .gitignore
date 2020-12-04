@@ -1,4 +1,4 @@
-env-vars.*.*
+env-vars.*
 **/*.tfstate*
 **/*.out
 **/.terraform/*

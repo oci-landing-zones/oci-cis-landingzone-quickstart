@@ -50,7 +50,7 @@ cis_foundations_benchmark_1_1 = {
     '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
     '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.9': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
@@ -157,7 +157,7 @@ cis_monitoring_checks = {
 class CIS_Report:
     # Class variables
     _DAYS_OLD = 90
-    _KMS_DAYS_OLD = 30
+    _KMS_DAYS_OLD = 365
     # Tenancy Data
     _tenancy = None
     cloud_guard_config = None
@@ -178,6 +178,9 @@ class CIS_Report:
     event_rules = []
 
     logging_list = []
+    # For Logging & Monitoring checks
+    _subnet_logs = []
+    _write_bucket_logs = []
 
     vaults = []
     
@@ -763,14 +766,26 @@ class CIS_Report:
                                 "retention_duration" : log.retention_duration,
                                 "time_created" : log.time_created,
                                 "time_last_modified" : log.time_last_modified,
-                                "configuration_compartment_id" : log.configuration.compartment_id,
-                                "source_category" : log.configuration.source.category,
-                                "source_parameters" : log.configuration.source.parameters,
-                                "source_resource" : log.configuration.source.resource,
-                                "source_service" : log.configuration.source.service,
-                                "source_source_type" : log.configuration.source.source_type
+
                                 }
-                            
+                            try:
+                                if log.configuration:
+                                    log_record["configuration_compartment_id"] = log.configuration.compartment_id,
+                                    log_record["source_category"] = log.configuration.source.category,
+                                    log_record["source_parameters"] = log.configuration.source.parameters,
+                                    log_record["source_resource"] = log.configuration.source.resource,
+                                    log_record["source_service"] = log.configuration.source.service,
+                                    log_record["source_source_type"] = log.configuration.source.source_type
+                                if log.configuration.source.service == 'flowlogs':
+                                    print("VCN  Log")
+                                    self._subnet_logs.append(log.source_resource)
+                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.service:
+                                    #Only write logs 
+                                    self._write_bucket_logs.append(log.source_resource)
+                                    print("***"* 50)
+                                    print(log)
+                            except: 
+                                pass
                             # Append Log to log List
                             record['logs'].append(log_record)
                         self.logging_list.append(record)
@@ -855,7 +870,7 @@ class CIS_Report:
         print("Loading Cloud Guard configuration..")
         try:
             self.cloud_guard_config = self._cloud_guard.get_configuration(self._tenancy.id).data
-
+            return self.cloud_guard_config
         except Exception as e:
             raise RuntimeError("Error in cloud_guard_read_cloud_guard_configuration " + str(e.args))
 
@@ -971,12 +986,14 @@ class CIS_Report:
                 
         print_header(cis_foundations_benchmark_1_1['1.2']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.2']['Status']))
-        print("Finding: " + str(cis_foundations_benchmark_1_1['1.2']['Findings']))
 
-        # 1.3 Check
+        # 1.3 Check - May want to add a service check
         for policy in self.policies:
             for statement in policy['statements']:
-                if ("to use groups in tenancy".upper() in statement.upper() or "to use users in tenancy".upper() in statement.upper() or "to manage groups in tenancy".upper() in statement.upper() or "to manage users in tenancy".upper() in statement.upper()):
+                if ("to use groups in tenancy".upper() in statement.upper() or \
+                    "to use users in tenancy".upper() in statement.upper() or \
+                        "to manage groups in tenancy".upper() in statement.upper() or 
+                        "to manage users in tenancy".upper() in statement.upper()):
                     cis_foundations_benchmark_1_1['1.3']['Status'] = False
 
                     cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
@@ -985,7 +1002,6 @@ class CIS_Report:
 
         print_header(cis_foundations_benchmark_1_1['1.3']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.3']['Status']))
-        print("Finding: " + str(cis_foundations_benchmark_1_1['1.3']['Findings']))
 
 
         # 1.4 Check
@@ -1112,7 +1128,7 @@ class CIS_Report:
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.12']['Findings'])))
  
         
-       # CIS 2.1 Check - Security List Ingress from 0.0.0.0/0 on port 22
+       # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on port 22, 3389
 
         # Iterrating through all users to see if they have API Keys and if they are active users
         for sl in self.network_security_lists:
@@ -1122,6 +1138,13 @@ class CIS_Report:
                         if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
                             cis_foundations_benchmark_1_1['2.1']['Status'] = False
                             cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
+                        elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+                            cis_foundations_benchmark_1_1['2.2']['Status'] = False
+                            cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+                # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
+                if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                    cis_foundations_benchmark_1_1['2.5']['Status'] = False
+                    cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
 
 
 
@@ -1131,15 +1154,15 @@ class CIS_Report:
 
 
         
-       # CIS 2.2 Check - Security List Ingress from 0.0.0.0/0 on port 3389
-        # Iterrating through all users to see if they have API Keys and if they are active users
-        for sl in self.network_security_lists:
-            for irule in sl['ingress_security_rules']:
-                if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
-                    if irule['tcp_options']:
-                        if irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
-                            cis_foundations_benchmark_1_1['2.2']['Status'] = False
-                            cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+    #    # CIS 2.2 Check - Security List Ingress from 0.0.0.0/0 on port 3389
+    #     # Iterrating through all users to see if they have API Keys and if they are active users
+    #     for sl in self.network_security_lists:
+    #         for irule in sl['ingress_security_rules']:
+    #             if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
+    #                 if irule['tcp_options']:
+    #                     if irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+    #                         cis_foundations_benchmark_1_1['2.2']['Status'] = False
+    #                         cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
 
 
         print_header(cis_foundations_benchmark_1_1['2.2']['Title'])
@@ -1147,7 +1170,7 @@ class CIS_Report:
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.2']['Findings'])))
 
 
-       # CIS 2.3 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22
+       # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
         # Iterrating through all users to see if they have API Keys and if they are active users
         for nsg in self.network_security_groups:
             for rule in nsg['rules']:
@@ -1156,6 +1179,10 @@ class CIS_Report:
                         if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
                             cis_foundations_benchmark_1_1['2.3']['Status'] = False           
                             cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
+                        elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
+                            cis_foundations_benchmark_1_1['2.4']['Status'] = False
+                            cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
+                        
 
         print_header(cis_foundations_benchmark_1_1['2.3']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
@@ -1163,13 +1190,13 @@ class CIS_Report:
 
        # CIS 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 3389
         # Iterrating through all users to see if they have API Keys and if they are active users
-        for nsg in self.network_security_groups:
-            for rule in nsg['rules']:
-                if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
-                    if rule['tcp_options']:
-                        if rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-                            cis_foundations_benchmark_1_1['2.4']['Status'] = False
-                            cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
+        # for nsg in self.network_security_groups:
+        #     for rule in nsg['rules']:
+        #         if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
+        #             if rule['tcp_options']:
+        #                 if rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
+        #                     cis_foundations_benchmark_1_1['2.4']['Status'] = False
+        #                     cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
 
 
         print_header(cis_foundations_benchmark_1_1['2.4']['Title'])
@@ -1214,6 +1241,7 @@ class CIS_Report:
             
             for key,changes in cis_monitoring_checks.items():
                 #Checking if all cis change list is a subset of event condition
+                # if(all(x in test_list for x in sub_list)): 
                 if(all(x in event_dict['eventtype'] for x in changes)):
                     cis_foundations_benchmark_1_1[key]['Status'] = True
                 
@@ -1222,7 +1250,17 @@ class CIS_Report:
             print_header(cis_foundations_benchmark_1_1[key]['Title'])
             print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
 
-        
+        # CIS Check 3.14 - VCN FlowLog enable
+        # Generate list of subnets IDs
+        all_subnet_ids = []
+        for subnet in self.network_subnets:
+            all_subnet_ids.append(subnet['id'])
+
+        if(all(x in self._subnet_logs for x in all_subnet_ids)):
+            cis_foundations_benchmark_1_1['3.14']['Status'] = True
+        else:
+            cis_foundations_benchmark_1_1['3.14']['Status'] = False
+
         # CIS Check 3.15 - Cloud Guard enabled
         if self.cloud_guard_config.status == 'ENABLED':
             cis_foundations_benchmark_1_1['3.15']['Status']=True
@@ -1231,7 +1269,7 @@ class CIS_Report:
         print("Status is: " + str(cis_foundations_benchmark_1_1['3.15']['Status']))
         
         # CIS Check 3.16 - Encryption keys over 365
-        for vault in vaults:
+        for vault in self.vaults:
             for key in vault['keys']:
                 #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
                 if self.kms_key_time_max_datetime >= key['time_created'] :
@@ -1242,6 +1280,21 @@ class CIS_Report:
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.16']['Findings'])))
         print("Status is: " + str(cis_foundations_benchmark_1_1['3.16']['Status']))        
         
+
+        # CIS Check 3.17 - Object Storage with Logs
+        # Generating list of buckets names
+        all_bucket_names = []
+
+        for bucket in self.buckets:
+            all_bucket_names.append(bucket['name'])
+              
+        # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
+        if(all(x in  all_bucket_names for x in self._write_bucket_logs)):
+            cis_foundations_benchmark_1_1['3.17']['Status'] = True
+        else:
+            cis_foundations_benchmark_1_1['3.17']['Status'] = False
+
+
         # CIS Section 4 Checks
         for bucket in self.buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
@@ -1526,64 +1579,27 @@ print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
 # Identity extract compartments
 config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
 report = CIS_Report(config,signer)
-# buckets = report.os_read_buckets()
-# # print(buckets)
-# users = report.identity_read_users()
-# print(users)
 
+#logs = report.logging_read_log_groups_and_logs()
 
-# print(type(cis_foundations_benchmark_1_1))
-
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
-
-# events = report.events_read_event_rules()
-
-# for event in events:
-#     print(event)
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
-
-# logs = report.logging_read_log_groups_and_logs()
-
-# for log in logs:
-#     print(log)
-
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
-
-# subnets = report.network_read_network_subnets()
-
-# print(subnets)
-
+# for log_group in logs:
+#     for log in log_group['logs']:
+#         print(log['source_category'])
+#         print(type(log['source_category']))
+#         print(len(log['source_category']))
+#         print(log['source_category'][0])
 
 # print("Audit Configuration is : "+ str(audit_config))
 
 cg = report.cloud_guard_read_cloud_guard_configuration()
 vaults = report.vault_read_vaults()
-
-# print(type(key_time_max_datetime))
-# for vault in vaults:
-#     for key in vault['keys']:
-#         print(key['time_created'])
-#         print(type(key['time_created']))
-#         print(key['key_time_max_datetime'])
-       
-#         if key_time_max_datetime < key['time_created']:
-#             print("I hate time")
-
 audit_config = report.audit_read_tenancy_audit_configuration()
 report.identity_read_tenancy_password_policy()
 policies = report.identity_read_tenancy_policies()
 groups = report.identity_read_groups_and_membership()
 users = report.identity_read_users()
 buckets = report.os_read_buckets()
+
 log_groups = report.logging_read_log_groups_and_logs()
 report.resources_in_root_compartment()
 events = report.events_read_event_rules()

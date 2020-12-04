@@ -1147,29 +1147,6 @@ class CIS_Report:
                     cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
 
 
-
-        print_header(cis_foundations_benchmark_1_1['2.1']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.1']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.1']['Findings'])))
-
-
-        
-    #    # CIS 2.2 Check - Security List Ingress from 0.0.0.0/0 on port 3389
-    #     # Iterrating through all users to see if they have API Keys and if they are active users
-    #     for sl in self.network_security_lists:
-    #         for irule in sl['ingress_security_rules']:
-    #             if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
-    #                 if irule['tcp_options']:
-    #                     if irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
-    #                         cis_foundations_benchmark_1_1['2.2']['Status'] = False
-    #                         cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
-
-
-        print_header(cis_foundations_benchmark_1_1['2.2']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.2']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.2']['Findings'])))
-
-
        # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
         # Iterrating through all users to see if they have API Keys and if they are active users
         for nsg in self.network_security_groups:
@@ -1182,27 +1159,6 @@ class CIS_Report:
                         elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
                             cis_foundations_benchmark_1_1['2.4']['Status'] = False
                             cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
-                        
-
-        print_header(cis_foundations_benchmark_1_1['2.3']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.3']['Findings'])))
-
-       # CIS 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 3389
-        # Iterrating through all users to see if they have API Keys and if they are active users
-        # for nsg in self.network_security_groups:
-        #     for rule in nsg['rules']:
-        #         if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
-        #             if rule['tcp_options']:
-        #                 if rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-        #                     cis_foundations_benchmark_1_1['2.4']['Status'] = False
-        #                     cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
-
-
-        print_header(cis_foundations_benchmark_1_1['2.4']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.4']['Findings'])))
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
-
 
         
         # CIS 3.1 Check - Ensure Audit log retention == 365
@@ -1210,26 +1166,15 @@ class CIS_Report:
             cis_foundations_benchmark_1_1['3.1']['Status'] = True
             cis_foundations_benchmark_1_1['3.1']['Findings'].append(self.audit_retention_period)
 
-        print_header(cis_foundations_benchmark_1_1['3.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.1']['Status']))
-
-
         # CIS Check 3.2 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.tag_defaults:
             if tag['value'] == "${iam.principal.name}":
                 cis_foundations_benchmark_1_1['3.2']['Status'] = True
 
-        print_header(cis_foundations_benchmark_1_1['3.2']['Title'])
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.2']['Status']))   
-
-        # CIS Check 3.3 - Check for Active Notification and Subscription
+      # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.subscriptions) > 0:
             cis_foundations_benchmark_1_1['3.3']['Status'] = True
-
-        print_header(cis_foundations_benchmark_1_1['3.3']['Title'])
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.3']['Status']))            
 
 
         # CIS Checks 3.4 - 3.13 
@@ -1245,29 +1190,32 @@ class CIS_Report:
                 if(all(x in event_dict['eventtype'] for x in changes)):
                     cis_foundations_benchmark_1_1[key]['Status'] = True
                 
-        
         for key,changes in cis_monitoring_checks.items():
             print_header(cis_foundations_benchmark_1_1[key]['Title'])
             print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
 
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
-        all_subnet_ids = []
         for subnet in self.network_subnets:
-            all_subnet_ids.append(subnet['id'])
+            if not(subnet['id'] in self._subnet_logs):
+                cis_foundations_benchmark_1_1['3.14']['Status'] = False
+                cis_foundations_benchmark_1_1['3.14']['Fidnings'].append(subnet)
+            else:
+                print("*** founda a subnet logged***")
 
-        if(all(x in self._subnet_logs for x in all_subnet_ids)):
-            cis_foundations_benchmark_1_1['3.14']['Status'] = True
-        else:
-            cis_foundations_benchmark_1_1['3.14']['Status'] = False
+
+        # if(all(x in self._subnet_logs for x in all_subnet_ids)):
+        #     cis_foundations_benchmark_1_1['3.14']['Status'] = True
+        # else:
+        #     cis_foundations_benchmark_1_1['3.14']['Status'] = False
 
         # CIS Check 3.15 - Cloud Guard enabled
         if self.cloud_guard_config.status == 'ENABLED':
-            cis_foundations_benchmark_1_1['3.15']['Status']=True
-        
-        print_header(cis_foundations_benchmark_1_1['3.15']['Title'])
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.15']['Status']))
-        
+            cis_foundations_benchmark_1_1['3.15']['Status'] = True
+        else:
+            cis_foundations_benchmark_1_1['3.15']['Status'] = False
+
+
         # CIS Check 3.16 - Encryption keys over 365
         for vault in self.vaults:
             for key in vault['keys']:
@@ -1276,23 +1224,22 @@ class CIS_Report:
                     cis_foundations_benchmark_1_1['3.16']['Status'] = False
                     cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
         
-        print_header(cis_foundations_benchmark_1_1['3.16']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.16']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.16']['Status']))        
-        
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
-        all_bucket_names = []
-
         for bucket in self.buckets:
-            all_bucket_names.append(bucket['name'])
-              
-        # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
-        if(all(x in  all_bucket_names for x in self._write_bucket_logs)):
-            cis_foundations_benchmark_1_1['3.17']['Status'] = True
-        else:
-            cis_foundations_benchmark_1_1['3.17']['Status'] = False
+            if not(bucket['name'] in self._write_bucket_logs):
+                cis_foundations_benchmark_1_1['3.17']['Status'] = False
+                cis_foundations_benchmark_1_1['3.17']['Fidnings'].append(bucket)
+            else:
+                print("*** founda a bucket with write logged***")
+
+        # for bucket in all
+        # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
+        # if(all(x in  all_bucket_names for x in self._write_bucket_logs)):
+        #     cis_foundations_benchmark_1_1['3.17']['Status'] = True
+        # else:
+        #     cis_foundations_benchmark_1_1['3.17']['Status'] = False
 
 
         # CIS Section 4 Checks

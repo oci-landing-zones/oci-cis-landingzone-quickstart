@@ -12,7 +12,7 @@ module "cis_vcn" {
   compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
   vcn_display_name     = local.vcn_display_name
   vcn_cidr             = var.vcn_cidr
-  vcn_dns_label        = lower(format("%s", var.service_label))
+  vcn_dns_label        = var.service_label
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
   is_create_drg        = tobool(var.is_vcn_onprem_connected)

@@ -778,12 +778,12 @@ class CIS_Report:
                                     log_record["source_source_type"] = log.configuration.source.source_type
                                 if log.configuration.source.service == 'flowlogs':
                                     print("VCN  Log")
-                                    self._subnet_logs.append(log.source_resource)
-                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.service:
+                                    self._subnet_logs.append(log.configuration.source.resource)
+                                    print("Added: " + str(log.configuration.source.resource))
+                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
                                     #Only write logs 
-                                    self._write_bucket_logs.append(log.source_resource)
-                                    print("***"* 50)
-                                    print(log)
+                                    self._write_bucket_logs.append(log.configuration.source.resource)
+                                    print("Added: " + str(log.configuration.source.resource))
                             except: 
                                 pass
                             # Append Log to log List
@@ -1199,7 +1199,7 @@ class CIS_Report:
         for subnet in self.network_subnets:
             if not(subnet['id'] in self._subnet_logs):
                 cis_foundations_benchmark_1_1['3.14']['Status'] = False
-                cis_foundations_benchmark_1_1['3.14']['Fidnings'].append(subnet)
+                cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
             else:
                 print("*** founda a subnet logged***")
 
@@ -1230,7 +1230,7 @@ class CIS_Report:
         for bucket in self.buckets:
             if not(bucket['name'] in self._write_bucket_logs):
                 cis_foundations_benchmark_1_1['3.17']['Status'] = False
-                cis_foundations_benchmark_1_1['3.17']['Fidnings'].append(bucket)
+                cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
             else:
                 print("*** founda a bucket with write logged***")
 
@@ -1252,16 +1252,6 @@ class CIS_Report:
                 cis_foundations_benchmark_1_1['4.2']['Status'] = False
 
 
-        print_header(cis_foundations_benchmark_1_1['4.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['4.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['4.1']['Status']))
-
-        print_header(cis_foundations_benchmark_1_1['4.2']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['4.2']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['4.2']['Status']))
-
-
-
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment 
         if len(self.compartments) < 2:
@@ -1271,16 +1261,6 @@ class CIS_Report:
             for item in self.resources_in_root:
                 cis_foundations_benchmark_1_1['5.2']['Status'] = False
                 cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
-
-        
-        print_header(cis_foundations_benchmark_1_1['5.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['5.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['5.1']['Status']))
-
-        print_header(cis_foundations_benchmark_1_1['5.2']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['5.2']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['5.2']['Status']))
-
 
 
 ##########################################################################
@@ -1527,7 +1507,7 @@ print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
 config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
 report = CIS_Report(config,signer)
 
-#logs = report.logging_read_log_groups_and_logs()
+# logs = report.logging_read_log_groups_and_logs()
 
 # for log_group in logs:
 #     for log in log_group['logs']:
@@ -1555,6 +1535,8 @@ subscriptions = report.ons_read_subscriptions()
 sls = report.network_read_network_security_lists()
 
 nsgs = report.network_read_network_security_groups_rules()
+
+subnets = report.network_read_network_subnets()
 
 tags = report.identity_read_tag_defaults()
 

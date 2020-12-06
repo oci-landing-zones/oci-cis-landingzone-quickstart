@@ -19,7 +19,8 @@ import pytz
 import oci
 import json
 import os
-DAYS_OLD = 90
+import csv
+#DAYS_OLD = 90
 
 
 cis_foundations_benchmark_1_1 = {
@@ -148,9 +149,6 @@ cis_monitoring_checks = {
     ]
 }
 
-
-
-
 ##########################################################################
 # CIS Reporting Class
 ##########################################################################
@@ -186,15 +184,15 @@ class CIS_Report:
     
     subscriptions = []
 
+    resources_in_root_compartment =[]
+
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
     key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
-    #key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=_KMS_DAYS_OLD)
-    #kms_key_time_max_datetime = kms_key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 
     def __init__(self, config, signer):
@@ -415,8 +413,7 @@ class CIS_Report:
                 'time_created' : token.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                 'time_expires' : token.time_expires,
                 'token' : token.token
-                
-                
+                     
                 }
                 auth_tokens.append(record)
 
@@ -961,16 +958,23 @@ class CIS_Report:
     ##########################################################################
     # Resources in root compartment
     ##########################################################################
-    def resources_in_root_compartment(self):
+    def search_resources_in_root_compartment(self):
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self._tenancy.id + "'"
-        print("Load resources in root compartment: \n" + query)
-        self.resources_in_root = self.search_run_structured_query(query)
-        return self.resources_in_root
+        print("Load resources in root compartment...")
+        resources_in_root_data = self.search_run_structured_query(query)
+        for item in resources_in_root_data:
+            record = {
+                "display_name" : item.display_name,
+                "id" : item.identifier
+            }
+            self.resources_in_root_compartment.append(record)
+    
+        return self.resources_in_root_compartment
 
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report 
     ##########################################################################
-    def report_analyze_tenancy(self):
+    def report_analyze_tenancy_data(self):
         print("Running CIS Report...")
 
         # 1.2 Check
@@ -1164,7 +1168,6 @@ class CIS_Report:
         # CIS 3.1 Check - Ensure Audit log retention == 365
         if self.audit_retention_period >= 365:
             cis_foundations_benchmark_1_1['3.1']['Status'] = True
-            cis_foundations_benchmark_1_1['3.1']['Findings'].append(self.audit_retention_period)
 
         # CIS Check 3.2 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
@@ -1257,11 +1260,70 @@ class CIS_Report:
         if len(self.compartments) < 2:
             cis_foundations_benchmark_1_1['5.1']['Status'] = False
         
-        if len(self.resources_in_root) > 0:
-            for item in self.resources_in_root:
+        if len(self.resources_in_root_compartment) > 0:
+            for item in self.resources_in_root_compartment:
                 cis_foundations_benchmark_1_1['5.2']['Status'] = False
                 cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
 
+    def report_generate_output_csv(self):
+        # This function reports generates CSV reports
+        #     
+        summary_report = []
+        for key, recommendation in cis_foundations_benchmark_1_1.items():            
+            record = {
+                "Recommendation #" : key,
+                "Section" : recommendation['section'],
+                "Level" : str(recommendation['Level']),
+                "Status" : str(recommendation['Status']),
+                "Findings" : str(len(recommendation['Findings'])),
+                "Title" : recommendation['Title']
+            }
+            # Add record to summary report for CSV output
+            summary_report.append(record)
+
+            # Generate Findings report
+            self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )            
+        
+        # Generate CIS Summary Report
+        print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        for finding in summary_report:
+            print(finding['Recommendation #'] + "\t" + " Level: " + \
+            finding['Level'] + "\t" "Status: " + finding['Status'] + "\t" +
+                    "Findings:  " + finding['Findings'] + "\t" + finding['Title'])
+        self.__print_to_csv_file("cis", "summary_report", summary_report)
+        
+    ##########################################################################
+    # Print to CSV 
+    ##########################################################################
+    def __print_to_csv_file(self, header, file_subject, data):
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return
+
+            # get the file name of the CSV
+            file_name =  header + "_" + file_subject + ".csv"
+            
+            # add start_date to each dictionary
+            result = [dict(item, extract_date=self.start_time_str) for item in data]
+
+            # generate fields
+            fields = [key for key in result[0].keys()]
+
+            with open(file_name, mode='w', newline='') as csv_file:
+                writer = csv.DictWriter(csv_file, fieldnames=fields)
+
+                # write header
+                writer.writeheader()
+
+                for row in result:
+                    writer.writerow(row)
+
+            print("CSV: " + file_subject.ljust(22) + " --> " + file_name)
+
+        except Exception as e:
+            raise Exception("Error in print_to_csv_file: " + str(e.args))
 
 ##########################################################################
 # Print header centered
@@ -1356,95 +1418,6 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
         return config, signer
 
 
-
-
-
-
-
-
-
-
-
-
-def events_cis_check(event_rules):
-
-    cis_3_4_identity_provider_changes = [
-        'com.oraclecloud.identitycontrolplane.createidentityprovider',
-        'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
-        'com.oraclecloud.identitycontrolplane.updateidentityprovider'
-    ]
-    for event in event_rules:
-        if (set(
-            cis_3_4_identity_provider_changes).issubset(
-                set(event['condition']))
-                and event['is_enabled']):
-                cis_3_4_flag = True
-                print("&&&" * 30)
-                print("CIS_3_4 is set")
-
-        # if (set(
-        #     self.cis_3_5_identity_group_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_5_flag = True
-        #         print("CIS_3_5 is set")
-
-        # if (set(
-        #     self.cis_3_6_iam_group_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_6_flag = True
-        #         print("CIS_3_6 is set")                    
-
-        # if (set(
-        #     self.cis_3_7_iam_policy_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_6_flag = True
-        #         print("CIS_3_7 is set")  
-        # if (set(
-        #     self.cis_3_8_user_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_8_flag = True
-        #         print("CIS_3_8 is set")  
-        # if (set(
-        #     self.cis_3_9_vcn_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_9_flag = True
-        #         print("CIS_3_9 is set")  
-        # if (set(
-        #     self.cis_3_10_route_table_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_10_flag = True
-        #         print("CIS_3_10 is set")  
-
-        # if (set(
-        #     self.cis_3_11_security_list_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_11_flag = True
-        #         print("CIS_3_11 is set")  
-
-        # if (set(
-        #     self.cis_3_12_security_groups_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_12_flag = True
-        #         print("CIS_3_12 is set")  
-
-        # if (set(
-        #     self.cis_3_13_network_gateway_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-                
-        #         self._cis_3_13_flag = True
-        #         print("CIS_3_13 is set")  
-
-
-
 ##########################################################################
 # Arg Parsing function to be updated 
 ##########################################################################
@@ -1493,7 +1466,7 @@ cmd = parser.parse_args()
 # Start print time info
 start_time_datetime = datetime.datetime.utcnow()
 start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-key_time_max_datetime = start_time_datetime - datetime.timedelta(days=DAYS_OLD)
+#key_time_max_datetime = start_time_datetime - datetime.timedelta(days=DAYS_OLD)
 #key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -1528,7 +1501,10 @@ users = report.identity_read_users()
 buckets = report.os_read_buckets()
 
 log_groups = report.logging_read_log_groups_and_logs()
-report.resources_in_root_compartment()
+root_resources = report.search_resources_in_root_compartment()
+
+
+
 events = report.events_read_event_rules()
 subscriptions = report.ons_read_subscriptions()
 
@@ -1541,181 +1517,7 @@ subnets = report.network_read_network_subnets()
 tags = report.identity_read_tag_defaults()
 
 
-report.report_analyze_tenancy()
+report.report_analyze_tenancy_data()
 
-# for event in events:
+report.report_generate_output_csv()
 
-#     jsonable_str = event['condition'].lower().replace("'", "\"")
-#     event_dict = json.loads(jsonable_str)
-    
-#     for k,v in cis_monitoring_checks.items():
-#         if(all(x in event_dict['eventtype'] for x in v )):
-#             print(k + " is a subet of " + event['display_name'])
-
-
-# for event in events:
-#     print(event['display_name'])
-# report.identity_read_tenancy_password_policy()
-# print(vaults)
-# for vault in vaults:
-#     print("Vault Display Name:  " + vault['display_name'] + " Number of Keys: " + str(len(vault['keys'])) + " Compartment ID: " + vault['compartment_id'])
-# compartments = []
-# tenancy = None
-# try:
-#     print("\nConnecting to Identity Service...")
-#     identity = oci.identity.IdentityClient(config, signer=signer)
-#     if cmd.proxy:
-#         identity.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Audit Service...")
-#     audit = oci.audit.AuditClient(config, signer=signer)
-#     if cmd.proxy:
-#         audit.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Advance Search Service...")
-#     search = oci.resource_search.ResourceSearchClient(config, signer=signer)
-#     if cmd.proxy:
-#         search.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Network Service...")
-#     network = oci.core.VirtualNetworkClient(config, signer=signer)
-#     if cmd.proxy:
-#         network.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Events Service...")
-#     events = oci.events.EventsClient(config, signer=signer)
-#     if cmd.proxy:
-#         events.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Logging Service...")
-#     logging = oci.logging.LoggingManagementClient(config, signer=signer)
-#     if cmd.proxy:
-#         logging.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Object Storage Service...")
-#     os_client = oci.object_storage.ObjectStorageClient(config, signer=signer)
-#     if cmd.proxy:
-#         os_client.base_client.session.proxies = {'https': cmd.proxy}
-    
-#     tenancy = identity.get_tenancy(config["tenancy"]).data
-#     regions = identity.list_region_subscriptions(tenancy.id).data
-#     audit_retention_period = audit.get_configuration(tenancy.id).data.retention_period_days
-
-
-#     cis_resource_search_queries = [
-#         {"recommendation_#" : "2.1",
-#         "query" : """query SecurityList resources where 
-#                     (IngressSecurityRules.source = '0.0.0.0/0' && 
-#                     IngressSecurityRules.protocol = 6 && 
-#                     IngressSecurityRules.tcpOptions.destinationPortRange.max = 22 && 
-#                     IngressSecurityRules.tcpOptions.destinationPortRange.min = 22)"""
-#         },
-#         {"recommendation_#" : "2.2",
-#         "query" : """query SecurityList resources where 
-#             (IngressSecurityRules.source = '0.0.0.0/0' && 
-#             IngressSecurityRules.protocol = 6 && 
-#             IngressSecurityRules.tcpOptions.destinationPortRange.max = 3389 && 
-#             IngressSecurityRules.tcpOptions.destinationPortRange.min = 3389)"""
-#         },  
-#         {"recommendation_#" : "3.4",
-#         "query" : """query eventrule resources where condition = '{"eventType":["com.oraclecloud.identitycontrolplane.createidentityprovider",
-#             "com.oraclecloud.identitycontrolplane.deleteidentityprovider",
-#             "com.oraclecloud.identitycontrolplane.updateidentityprovider"],"data":{}}'""".upper()
-#         },   
-#         {"recommendation_#" : "4.1",
-#         "query" : """query bucket resources where (publicAccessType == 'ObjectRead') || 
-#             (publicAccessType == 'ObjectReadWithoutList')"""
-#         },
-#         {"recommendation_#" : "5.2",
-#         "query" : "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + tenancy.id + "'"
-#         }
-#     ]
-
-#     testcg = """query eventrule resources where
-#     condition = '{"eventType":["com.oraclecloud.cloudguard.problemdetected"],"data":{}}'"""
-
-#     testcg1 = """query eventrule resources where
-#         condition = '{"eventType":["com.oraclecloud.identitycontrolplane.createidentityprovider",
-#         "com.oraclecloud.identitycontrolplane.deleteidentityprovider",
-#         "com.oraclecloud.identitycontrolplane.updateidentityprovider"],"data":{}}'"""
-#     print("Tenant Name : " + str(tenancy.name))
-#     print("Tenant Id   : " + tenancy.id)
-#     print("")
-#     print("Audit Period: " + str(audit_retention_period))
-    
-#     # print(cis_resource_search_queries[3]['query'])
-#     # security_lists = search_run_structured_query(search,testcg)
-#     # print(security_lists)
-
-#     compartments = identity_read_compartments(identity, tenancy)
-#     # policies = identity_read_tenancy_policies(identity, tenancy)
-    
-#     # nsgs = network_read_network_security_groups_rules(network, compartments)
-#     # print(nsgs)
-
-#     buckets = os_read_buckets(os_client, compartments)
-
-#     print(buckets)
-
-#     event_rules = events_read_event_rules(events,compartments)
-#     print(event_rules)
-#     print(len(event_rules))
-#     for event in event_rules:
-#         cis_3_4_identity_provider_changes = [
-#         'com.oraclecloud.identitycontrolplane.createidentityprovider',
-#         'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
-#         'com.oraclecloud.identitycontrolplane.updateidentityprovider'
-#         ]
-#         for rule in cis_3_4_identity_provider_changes:
-#             if rule.upper() in event['condition'].upper():
-#                 print("I have one")
-#                 print(event['condition'])
-
-#         print(type(event['condition']))
-
-#     # events_cis_check(event_rules)
-
-#     # logs = logging_read_log_groups_and_logs(logging,compartments)
-#     # print(logs)
-
-#     # print("###" * 30)
-#     # for compartment in compartments:
-#     #     print(compartment.name)
-#     #     if not(if_managed_paas_compartment(compartment.name)):
-#     #         nsgs_data = oci.pagination.list_call_get_all_results(
-#     #                 network.list_network_security_groups,
-#     #                 compartment.id
-#     #             ).data
-#     #         print(nsgs_data)
-
-
-#     # for policy in policies:
-#     #     for statement in policy.statements:
-#     #         if "to manage all-resources in tenancy".upper() in statement.upper():
-#     #             print("Bad Policy")
-#     #             print(policy.name)
-
-#    # users = identity_read_users(identity, tenancy)
-
-
-
-#     # for user in users:
-#     #     if 'hammer' in user['name']:
-
-#     #         print(user)
-#     #         print(user['customer_secret_keys'][0])
-#     #         print(type(user['api_keys'][0]))
-#     #         print("Key max time is:")
-#     #         print(key_time_max_datetime)
-
-#     #         for key in user['api_keys']:
-#     #             print(type(key['time_created']))
-#     #             if key_time_max_datetime > key['time_created']:
-#     #                 print("Key Expired")
-            
-
-#     #         #print(type(user['auth_tokens'][0]))
-
-
-# except Exception as e:
-#     raise RuntimeError("\nError extracting compartments section - " + str(e))

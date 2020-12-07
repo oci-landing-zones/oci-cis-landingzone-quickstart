@@ -153,109 +153,113 @@ cis_monitoring_checks = {
 # CIS Reporting Class
 ##########################################################################
 class CIS_Report:
+    
     # Class variables
     _DAYS_OLD = 90
-    _KMS_DAYS_OLD = 365
+    __KMS_DAYS_OLD = 365
+    
     # Tenancy Data
-    _tenancy = None
-    cloud_guard_config = None
-    tenancy_password_policy = None
-    compartments = []
-    policies = []
+    __tenancy = None
+    __cloud_guard_config = None
+    __tenancy_password_policy = None
+    __compartments = []
+    __policies = []
     
-    users = []
-    groups_to_users = []
-    tag_defaults = []
+    __users = []
+    __groups_to_users = []
+    __tag_defaults = []
 
-    buckets = []
+    __buckets = []
 
-    network_security_groups = []
-    network_security_lists = []
-    network_subnets = []
+    __network_security_groups = []
+    __network_security_lists = []
+    __network_subnets = []
 
-    event_rules = []
+    __event_rules = []
 
-    logging_list = []
+    __logging_list = []
     # For Logging & Monitoring checks
-    _subnet_logs = []
-    _write_bucket_logs = []
+    __subnet_logs = []
+    __write_bucket_logs = []
 
-    vaults = []
+    __vaults = []
     
-    subscriptions = []
+    __subscriptions = []
 
-    resources_in_root_compartment =[]
+    __resources_in_root_compartment =[]
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
-    key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
+    api_key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
 
-    kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=_KMS_DAYS_OLD)
+    kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=__KMS_DAYS_OLD)
 
 
-    def __init__(self, config, signer):
+    def __init__(self, config, signer, proxy):
         # Start print time info
+        self.__print_header("Running CIS Reports")
+        print("Code base By Adi Zohar, June 2020")
+        print("Written By Andre Luiz Correa Neto & Josh Hammer, November 2020")
+        print("Starts at " + self.start_time_str )
         self._config = config
         self._signer = signer
-        print(self._config)
-        print(self._signer)
         try:
             print("\nConnecting to Identity Service...")
-            self._identity = oci.identity.IdentityClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._identity.base_client.session.proxies = {'https': cmd.proxy}
+            self.__identity = oci.identity.IdentityClient(self._config, signer=self._signer)
+            if proxy:
+                self.__identity.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Audit Service...")
-            self._audit = oci.audit.AuditClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._audit.base_client.session.proxies = {'https': cmd.proxy}
+            self.__audit = oci.audit.AuditClient(self._config, signer=self._signer)
+            if proxy:
+                self.__audit.base_client.session.proxies = {'https': proxy}
             
             print("\nConnecting to Cloud Guard Service...")
-            self._cloud_guard = oci.cloud_guard.CloudGuardClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._cloud_guard.base_client.session.proxies = {'https': cmd.proxy}
+            self.__cloud_guard = oci.cloud_guard.CloudGuardClient(self._config, signer=self._signer)
+            if proxy:
+                self.__cloud_guard.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Advance Search Service...")
-            self._search = oci.resource_search.ResourceSearchClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._search.base_client.session.proxies = {'https': cmd.proxy}
+            self.__search = oci.resource_search.ResourceSearchClient(self._config, signer=self._signer)
+            if proxy:
+                self.__search.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Network Service...")
-            self._network = oci.core.VirtualNetworkClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._network.base_client.session.proxies = {'https': cmd.proxy}
+            self.__network = oci.core.VirtualNetworkClient(self._config, signer=self._signer)
+            if proxy:
+                self.__network.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Events Service...")
-            self._events = oci.events.EventsClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._events.base_client.session.proxies = {'https': cmd.proxy}
+            self.__events = oci.events.EventsClient(self._config, signer=self._signer)
+            if proxy:
+                self.__events.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Logging Service...")
-            self._logging = oci.logging.LoggingManagementClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._logging.base_client.session.proxies = {'https': cmd.proxy}
+            self.__logging = oci.logging.LoggingManagementClient(self._config, signer=self._signer)
+            if proxy:
+                self.__logging.base_client.session.proxies = {'https': proxy}
 
             print("\nConnecting to Object Storage Service...")
-            self._os_client = oci.object_storage.ObjectStorageClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._os_client.base_client.session.proxies = {'https': cmd.proxy}
+            self.__os_client = oci.object_storage.ObjectStorageClient(self._config, signer=self._signer)
+            if proxy:
+                self.__os_client.base_client.session.proxies = {'https': proxy}
             
             print("\nConnecting to Vault Service...")
-            self._vault = oci.key_management.KmsVaultClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._vault.session.proxies = {'https': cmd.proxy}
+            self.__vault = oci.key_management.KmsVaultClient(self._config, signer=self._signer)
+            if proxy:
+                self.__vault.session.proxies = {'https': proxy}
 
             print("\nConnecting to Subscriptions Service...")
-            self._ons_subs = oci.ons.NotificationDataPlaneClient(self._config, signer=self._signer)
-            if cmd.proxy:
-                self._ons_subs.session.proxies = {'https': cmd.proxy}
+            self.__ons_subs = oci.ons.NotificationDataPlaneClient(self._config, signer=self._signer)
+            if proxy:
+                self.__ons_subs.session.proxies = {'https': proxy}
 
 
-            self._tenancy = self._identity.get_tenancy(config["tenancy"]).data
-            self._regions = self._identity.list_region_subscriptions(self._tenancy.id).data
-            self.compartments = self._identity_read_compartments()
+            self.__tenancy = self.__identity.get_tenancy(config["tenancy"]).data
+            self.__regions = self.__identity.list_region_subscriptions(self.__tenancy.id).data
+            self.__compartments = self.__identity_read_compartments()
 
         except Exception as e:
                 raise RuntimeError("Failed to create service objects" + str(e.args))
@@ -263,27 +267,27 @@ class CIS_Report:
     ##########################################################################
     # Check for Managed PaaS Compartment
     ##########################################################################
-    def _if_not_managed_paas_compartment(self,name):
+    def __if_not_managed_paas_compartment(self,name):
         return name != "ManagedCompartmentForPaaS"
       
     ##########################################################################
     # Load compartments
     ##########################################################################
-    def _identity_read_compartments(self):
+    def __identity_read_compartments(self):
 
         print("Loading Compartments...")
         try:
-            compartments = oci.pagination.list_call_get_all_results(
-                self._identity.list_compartments,
-                self._tenancy.id,
+            self.__compartments = oci.pagination.list_call_get_all_results(
+                self.__identity.list_compartments,
+                self.__tenancy.id,
                 compartment_id_in_subtree=True
             ).data
 
             # Add root compartment which is not part of the list_compartments
-            compartments.append(self._tenancy)
+            self.__compartments.append(self.__tenancy)
 
-            print("    Total " + str(len(compartments)) + " compartments loaded.")
-            return compartments
+            print("    Total " + str(len(self.__compartments)) + " compartments loaded.")
+            return self.__compartments
 
         except Exception as e:
             raise RuntimeError("Error in identity_read_compartments: " + str(e.args))
@@ -291,19 +295,19 @@ class CIS_Report:
     ##########################################################################
     # Load Groups and Group membership
     ##########################################################################
-    def identity_read_groups_and_membership(self):
+    def __identity_read_groups_and_membership(self):
         print("Loading User Groups and Group Membership...")
         try:
             # Getting all Groups in the Tenancy
             groups_data = oci.pagination.list_call_get_all_results(
-                self._identity.list_groups,
-                self._tenancy.id
+                self.__identity.list_groups,
+                self.__tenancy.id
             ).data
             # For each group in the tenacy getting the group's membership
             for grp in groups_data:
                 membership = oci.pagination.list_call_get_all_results(
-                    self._identity.list_user_group_memberships,
-                    self._tenancy.id,
+                    self.__identity.list_user_group_memberships,
+                    self.__tenancy.id,
                     group_id=grp.id
                 ).data
                 for member in membership:
@@ -316,21 +320,21 @@ class CIS_Report:
                         "user_id" : member.user_id
                     }
                     # Adding a record per user to group
-                    self.groups_to_users.append(group_record)
-            return self.groups_to_users
+                    self.__groups_to_users.append(group_record)
+            return self.__groups_to_users
         except Exception as e:
-            RuntimeError("Error in identity_read_groups_and_membership" + str(e.args))
+            RuntimeError("Error in __identity_read_groups_and_membership" + str(e.args))
 
     ##########################################################################
     # Load users
     ##########################################################################
-    def identity_read_users(self):
+    def __identity_read_users(self):
         print("Loading Users...")
         try:
             # Getting all users in the Tenancy
             users_data = oci.pagination.list_call_get_all_results(
-                self._identity.list_users,
-                self._tenancy.id
+                self.__identity.list_users,
+                self.__tenancy.id
             ).data
             # Adding record to the users
             for user in users_data:
@@ -349,30 +353,30 @@ class CIS_Report:
                     'groups' :[]
                 }
                 # Adding Groups to the user
-                for group in self.groups_to_users:
+                for group in self.__groups_to_users:
                     if user.id == group['user_id']:
                         record['groups'].append(group['name'])
                 
-                record['api_keys'] = self._identity_read_user_api_key(user.id)
-                record['auth_tokens'] = self._identity_read_user_auth_token(user.id)
-                record['customer_secret_keys'] = self._identity_read_user_customer_secret_key(user.id)
+                record['api_keys'] = self.__identity_read_user_api_key(user.id)
+                record['auth_tokens'] = self.__identity_read_user_auth_token(user.id)
+                record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.id)
 
-                self.users.append(record)
+                self.__users.append(record)
 
-            print("    Total " + str(len(self.users)) + " users loaded.")
-            return self.users
+            print("    Total " + str(len(self.__users)) + " users loaded.")
+            return self.__users
 
         except Exception as e:
-            raise RuntimeError("Error in identity_read_users: " + str(e.args))
+            raise RuntimeError("Error in __identity_read_users: " + str(e.args))
 
     ##########################################################################
     # Load user api keys
     ##########################################################################
-    def _identity_read_user_api_key(self,user_ocid):
+    def __identity_read_user_api_key(self,user_ocid):
         api_keys = []
         try:
             user_api_keys_data = oci.pagination.list_call_get_all_results(
-                self._identity.list_api_keys,
+                self.__identity.list_api_keys,
                 user_ocid
             ).data
 
@@ -396,11 +400,11 @@ class CIS_Report:
     ##########################################################################
     # Load user auth tokens
     ##########################################################################
-    def _identity_read_user_auth_token(self, user_ocid):
+    def __identity_read_user_auth_token(self, user_ocid):
         auth_tokens = []
         try:
             auth_tokens_data = oci.pagination.list_call_get_all_results(
-                self._identity.list_auth_tokens,
+                self.__identity.list_auth_tokens,
                 user_ocid
             ).data
 
@@ -425,11 +429,11 @@ class CIS_Report:
     ##########################################################################
     # Load user customer secret key
     ##########################################################################
-    def _identity_read_user_customer_secret_key(self,user_ocid):
+    def __identity_read_user_customer_secret_key(self,user_ocid):
         customer_secret_key = []
         try:
             customer_secret_key_data = oci.pagination.list_call_get_all_results(
-                self._identity.list_customer_secret_keys,
+                self.__identity.list_customer_secret_keys,
                 user_ocid
             ).data
 
@@ -453,14 +457,14 @@ class CIS_Report:
     ##########################################################################
     # Tenancy IAM Policies
     ##########################################################################
-    def identity_read_tenancy_policies(self):
+    def __identity_read_tenancy_policies(self):
 
         print("Loading Tenancy Policies...")
         # Get all policy at the tenacy level
         try:
-            for compartment in self.compartments:
+            for compartment in self.__compartments:
                 policies_data = oci.pagination.list_call_get_all_results(
-                    self._identity.list_policies,
+                    self.__identity.list_policies,
                     compartment.id
                 ).data
                 for policy in policies_data:
@@ -472,40 +476,39 @@ class CIS_Report:
                         "lifecycle_state" : policy.lifecycle_state,
                         "statements" : policy.statements
                     }
-                    self.policies.append(record)
+                    self.__policies.append(record)
 
-            print("    Total " + str(len(self.policies)) + " compartments loaded.")
-            return self.policies
+            print("    Total " + str(len(self.__policies)) + " compartments loaded.")
+            return self.__policies
 
         except Exception as e:
-            raise RuntimeError("Error in identity_read_tenancy_policies: " + str(e.args))
+            raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
     ##########################################################################
     # Get Objects Store Buckets
     ##########################################################################
-    def os_read_buckets(self):
+    def __os_read_buckets(self):
         print("Loading Object Store Buckets")
         # Getting OS Namespace
         try: 
-            os_namespace = self._os_client.get_namespace().data
+            os_namespace = self.__os_client.get_namespace().data
         except Exception as e:
-            raise RuntimeError("Error in os_read_buckets could not load namespace " + str(e.args))
+            raise RuntimeError("Error in __os_read_buckets could not load namespace " + str(e.args))
 
         try:
-            for compartment in self.compartments:
+            # Collecting buckets from each compartment
+            for compartment in self.__compartments:
                 # Skipping the managed pass compartment
-                print("Loading Buckets from compartment: " + compartment.name)
-
-                if self._if_not_managed_paas_compartment(compartment.name):
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     buckets_data = oci.pagination.list_call_get_all_results(
-                        self._os_client.list_buckets,
+                        self.__os_client.list_buckets,
                         os_namespace,
                         compartment.id
                     ).data
 
                     # Getting Bucket Info
                     for bucket in buckets_data:
-                        bucket_info = self._os_client.get_bucket(os_namespace,bucket.name).data
+                        bucket_info = self.__os_client.get_bucket(os_namespace,bucket.name).data
                         record = {
                             "id" : bucket_info.id,
                             "name" : bucket_info.name,
@@ -519,26 +522,26 @@ class CIS_Report:
                             "time_created" : bucket_info.time_created,
                             "versioning" : bucket_info.versioning
                         }
-                        self.buckets.append(record)
+                        self.__buckets.append(record)
             # Returning Buckets
-            return self.buckets
+            return self.__buckets
         except Exception as e:
-            raise RuntimeError("Error in os_read_buckets " + str(e.args))
+            raise RuntimeError("Error in __os_read_buckets " + str(e.args))
 
     ##########################################################################
     # Network Security Groups
     ##########################################################################
-    def network_read_network_security_groups_rules(self):
+    def __network_read_network_security_groups_rules(self):
         
         print("Loading Network Security Groups...")
         # print(network)
         # print(compartments)
         # Loopig Through Compartments Except Mnaaged
         try:
-            for compartment in self.compartments:
-                if self._if_not_managed_paas_compartment(compartment.name):
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     nsgs_data = oci.pagination.list_call_get_all_results(
-                            self._network.list_network_security_groups,
+                            self.__network.list_network_security_groups,
                             compartment.id
                         ).data
                     # Looping through NSGs to to get 
@@ -553,7 +556,7 @@ class CIS_Report:
                             "rules" : []
                         }
                         nsg_rules = oci.pagination.list_call_get_all_results( 
-                            self._network.list_network_security_group_security_rules,
+                            self.__network.list_network_security_group_security_rules,
                             nsg.id
                             ).data
                         for rule in nsg_rules:
@@ -577,27 +580,27 @@ class CIS_Report:
                             # Append NSG Rules to NSG
                             record['rules'].append(rule_record)
                         # Append NSG to list of NSGs
-                        self.network_security_groups.append(record)
+                        self.__network_security_groups.append(record)
 
 
-            return self.network_security_groups
+            return self.__network_security_groups
         except Exception as e:
-            raise RuntimeError("Error in network_read_network_security_groups_rules " + str(e.args))
+            raise RuntimeError("Error in __network_read_network_security_groups_rules " + str(e.args))
 
     ##########################################################################
     # Network Security Lists
     ##########################################################################
-    def network_read_network_security_lists(self):
+    def __network_read_network_security_lists(self):
         
         print("Loading Network Security Lists...")
         # print(network)
         # print(compartments)
         # Loopig Through Compartments Except Mnaaged
         try:
-            for compartment in self.compartments:
-                if self._if_not_managed_paas_compartment(compartment.name):
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     security_lists_data = oci.pagination.list_call_get_all_results(
-                            self._network.list_security_lists,
+                            self.__network.list_security_lists,
                             compartment.id
                         ).data
                     # Looping through Security Lists to to get 
@@ -638,23 +641,23 @@ class CIS_Report:
                             record['ingress_security_rules'].append(irule)
 
                         # Append Security List to list of NSGs
-                        self.network_security_lists.append(record)
+                        self.__network_security_lists.append(record)
 
-            return self.network_security_lists
+            return self.__network_security_lists
         except Exception as e:
-            raise RuntimeError("Error in network_read_network_security_lists " + str(e.args))
+            raise RuntimeError("Error in __network_read_network_security_lists " + str(e.args))
 
     ##########################################################################
     # Network Subnets Lists
     ##########################################################################
-    def network_read_network_subnets(self):
+    def __network_read_network_subnets(self):
         print("Loading Network Subnets...")
         try:
             # Looping through compartments in tenancy
-            for compartment in self.compartments:
-                if self._if_not_managed_paas_compartment(compartment.name):
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     subnets_data = oci.pagination.list_call_get_all_results(
-                        self._network.list_subnets,
+                        self.__network.list_subnets,
                         compartment.id
                     ).data
                     # Looping through subnets in a compartment
@@ -682,22 +685,22 @@ class CIS_Report:
 
                         }
                         # Adding subnet to subnet list
-                        self.network_subnets.append(record)
-            return self.network_subnets
+                        self.__network_subnets.append(record)
+            return self.__network_subnets
         except Exception as e:
-            raise RuntimeError("Error in network_read_network_subnets " + str(e.args))
+            raise RuntimeError("Error in __network_read_network_subnets " + str(e.args))
 
     ##########################################################################
     # Events
     ##########################################################################
-    def events_read_event_rules(self):
+    def __events_read_event_rules(self):
 
         print("Loading Event Rules...")
         try:
-            for compartment in self.compartments:
-                if self._if_not_managed_paas_compartment(compartment.name):
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     events_rules_data = oci.pagination.list_call_get_all_results(
-                        self._events.list_rules,
+                        self.__events.list_rules,
                         compartment.id
                         ).data
 
@@ -712,27 +715,27 @@ class CIS_Report:
                             "lifecycle_state" : event_rule.lifecycle_state,
                             "time_created" : event_rule.time_created
                         }
-                        self.event_rules.append(record)
+                        self.__event_rules.append(record)
             
-            return self.event_rules
+            return self.__event_rules
         except Exception as e:
             raise RuntimeError("Error in events_read_rules " + str(e.args))
 
     ##########################################################################
     # Logging - Log Groups and Logs
     ##########################################################################
-    def logging_read_log_groups_and_logs(self):
+    def __logging_read_log_groups_and_logs(self):
 
         print("Loading Log Groups and Logs...")
 
         try:
             # Looping through compartments
-            for compartment in self.compartments:
+            for compartment in self.__compartments:
                 # Checking if Managed Compartment cause I can't query it
-                if self._if_not_managed_paas_compartment(compartment.name):
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     # Getting Log Groups in compartment
                     log_groups = oci.pagination.list_call_get_all_results(
-                            self._logging.list_log_groups,
+                            self.__logging.list_log_groups,
                             compartment.id
                         ).data
                     # Looping through log groups to get logs
@@ -748,7 +751,7 @@ class CIS_Report:
                         }
 
                         logs = oci.pagination.list_call_get_all_results( 
-                            self._logging.list_logs,
+                            self.__logging.list_logs,
                             log_group.id
                             ).data
                         for log in logs:
@@ -774,33 +777,30 @@ class CIS_Report:
                                     log_record["source_service"] = log.configuration.source.service,
                                     log_record["source_source_type"] = log.configuration.source.source_type
                                 if log.configuration.source.service == 'flowlogs':
-                                    print("VCN  Log")
-                                    self._subnet_logs.append(log.configuration.source.resource)
-                                    print("Added: " + str(log.configuration.source.resource))
+                                    self.__subnet_logs.append(log.configuration.source.resource)
                                 elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
                                     #Only write logs 
-                                    self._write_bucket_logs.append(log.configuration.source.resource)
-                                    print("Added: " + str(log.configuration.source.resource))
+                                    self.__write_bucket_logs.append(log.configuration.source.resource)
                             except: 
                                 pass
                             # Append Log to log List
                             record['logs'].append(log_record)
-                        self.logging_list.append(record)
+                        self.__logging_list.append(record)
 
-            return self.logging_list
+            return self.__logging_list
         except Exception as e:
-            raise RuntimeError("Error in network_read_network_security_groups_rules " + str(e.args))
+            raise RuntimeError("Error in __network_read_network_security_groups_rules " + str(e.args))
 
     ##########################################################################
     # Vault Keys 
     ##########################################################################
-    def vault_read_vaults(self):
+    def __vault_read_vaults(self):
         print("Loading Vaults and Keys...")
         # Iterating through compartments
-        for compartment in self.compartments:
-            if self._if_not_managed_paas_compartment(compartment.name):
+        for compartment in self.__compartments:
+            if self.__if_not_managed_paas_compartment(compartment.name):
                 vaults_data = oci.pagination.list_call_get_all_results(
-                    self._vault.list_vaults,
+                    self.__vault.list_vaults,
                     compartment.id
                 ).data
                 # Get all Vaults in a compartment
@@ -816,83 +816,84 @@ class CIS_Report:
                         "vault_type" : vlt.time_created,
                         "keys" : []
                         }
-                    
                     print("\nConnecting to Key Management Service...")
-                    cur_key_client = oci.key_management.KmsManagementClient(self._config, vlt.management_endpoint)
-                    keys = oci.pagination.list_call_get_all_results(
-                        cur_key_client.list_keys,
-                        compartment.id
-                    ).data
-                    # Iterrating through Keys in Vaults
-                    for key in keys:
-                        key_record = {
-                            "compartment_id" : key.compartment_id,
-                            "display_name" : key.display_name,
-                            "id" : key.id,
-                            "lifecycle_state" : key.lifecycle_state,
-                            "time_created" : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
-                        }
-                        # Getting Key Versions - Most current one is the first one in the list 
-                        key_versions = oci.pagination.list_call_get_all_results(
-                                cur_key_client.list_key_versions,
-                                key.id
-                            ).data
-                        
-                        # Adding current key version to key_record
-                        key_record['current_key_version_date'] = key_versions[0].time_created
-                        # Adding key to vault
-                        vault_record['keys'].append(key_record)
+                    # Checking for active Vaults only
+                    if vlt.lifecycle_state == 'ACTIVE':
+                        cur_key_client = oci.key_management.KmsManagementClient(self._config, vlt.management_endpoint)
+                        keys = oci.pagination.list_call_get_all_results(
+                            cur_key_client.list_keys,
+                            compartment.id
+                        ).data
+                        # Iterrating through Keys in Vaults
+                        for key in keys:
+                            key_record = {
+                                "compartment_id" : key.compartment_id,
+                                "display_name" : key.display_name,
+                                "id" : key.id,
+                                "lifecycle_state" : key.lifecycle_state,
+                                "time_created" : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
+                            }
+                            # Getting Key Versions - Most current one is the first one in the list 
+                            key_versions = oci.pagination.list_call_get_all_results(
+                                    cur_key_client.list_key_versions,
+                                    key.id
+                                ).data
+                            
+                            # Adding current key version to key_record
+                            key_record['current_key_version_date'] = key_versions[0].time_created
+                            # Adding key to vault
+                            vault_record['keys'].append(key_record)
 
-                    self.vaults.append(vault_record)
+                    self.__vaults.append(vault_record)
         
-        return self.vaults
+        return self.__vaults
 
     ##########################################################################
     # Audit Configuration
     ##########################################################################
-    def audit_read_tenancy_audit_configuration(self):
+    def __audit_read__tenancy_audit_configuration(self):
         # Pulling the Audit Configuration
         print("Loading Audit Configuration...")
 
         try:
-            self.audit_retention_period = self._audit.get_configuration(self._tenancy.id).data.retention_period_days
-            return self.audit_retention_period
+            self.__audit_retention_period = self.__audit.get_configuration(self.__tenancy.id).data.retention_period_days
+            return self.__audit_retention_period
         except Exception as e:
-            raise RuntimeError("Error in get_tenancy_audit_configuration " + str(e.args))
+            raise RuntimeError("Error in get__tenancy_audit_configuration " + str(e.args))
 
     ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
-    def cloud_guard_read_cloud_guard_configuration(self):
+    def __cloud_guard_read_cloud_guard_configuration(self):
         print("Loading Cloud Guard configuration..")
         try:
-            self.cloud_guard_config = self._cloud_guard.get_configuration(self._tenancy.id).data
-            return self.cloud_guard_config
+            self.__cloud_guard_config = self.__cloud_guard.get_configuration(self.__tenancy.id).data
+            return self.__cloud_guard_config
         except Exception as e:
-            raise RuntimeError("Error in cloud_guard_read_cloud_guard_configuration " + str(e.args))
+            raise RuntimeError("Error in __cloud_guard_read_cloud_guard_configuration " + str(e.args))
 
     ##########################################################################
     # Identity Password Policy 
     ##########################################################################
-    def identity_read_tenancy_password_policy(self):
+    def __identity_read_tenancy_password_policy(self):
         print("Loading Tenancy Password Policy...")
         try:
-            self.tenancy_password_policy = self._identity.get_authentication_policy(self._tenancy.id).data
+            self.__tenancy_password_policy = self.__identity.get_authentication_policy(self.__tenancy.id).data
 
         except Exception as e:
-            raise RuntimeError("Error in identity_read_tenancy_password_policy " + str(e.args))
+            raise RuntimeError("Error in __identity_read__tenancy_password_policy " + str(e.args))
 
     ##########################################################################
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
-    def ons_read_subscriptions(self):
+    def __ons_read_subscriptions(self):
         print("Loading Subscriptions..")
         try:
             # Iterate through compartments to get all subscriptions
-            for compartment in self.compartments:
-                if self._if_not_managed_paas_compartment(compartment.name):
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
                     subs_data = oci.pagination.list_call_get_all_results(
-                        self._ons_subs.list_subscriptions,
+                        self.__ons_subs.list_subscriptions,
                         compartment.id
                     ).data
                     for sub in subs_data:
@@ -906,8 +907,8 @@ class CIS_Report:
                             "lifecycle_state" : sub.lifecycle_state
             
                         }
-                        self.subscriptions.append(record)
-            return self.subscriptions
+                        self.__subscriptions.append(record)
+            return self.__subscriptions
 
         except Exception as e:
             raise RuntimeError("Error in ons_read_subscription " + str(e.args))
@@ -915,13 +916,13 @@ class CIS_Report:
     ##########################################################################
     # Identity Tag Default
     ##########################################################################
-    def identity_read_tag_defaults(self):
+    def __identity_read_tag_defaults(self):
         print("Loading Tag Defaults..")
         try:
             # Getting Tag Default for the Root Compartment - Only
             tag_defaults = oci.pagination.list_call_get_all_results(
-                self._identity.list_tag_defaults,
-                compartment_id=self._tenancy.id
+                self.__identity.list_tag_defaults,
+                compartment_id=self.__tenancy.id
             ).data
             for tag in tag_defaults:
                 record = {
@@ -935,20 +936,20 @@ class CIS_Report:
                     "lifecycle_state" : tag.lifecycle_state
     
                 }
-                self.tag_defaults.append(record)
-            return self.tag_defaults
+                self.__tag_defaults.append(record)
+            return self.__tag_defaults
 
         except Exception as e:
-            raise RuntimeError("Error in identity_read_tag_defaults " + str(e.args))
+            raise RuntimeError("Error in __identity_read_tag_defaults " + str(e.args))
     
     ##########################################################################
     # Run advanced search structure query
     ##########################################################################
-    def search_run_structured_query(self, query):
+    def __search_run_structured_query(self, query):
         try:
             structured_search = oci.resource_search.models.StructuredSearchDetails(query=query, type='Structured', 
                 matching_context_type=oci.resource_search.models.SearchDetails.MATCHING_CONTEXT_TYPE_NONE)
-            search_results = self._search.search_resources(structured_search).data.items
+            search_results = self.__search.search_resources(structured_search).data.items
 
             return search_results
         
@@ -958,81 +959,79 @@ class CIS_Report:
     ##########################################################################
     # Resources in root compartment
     ##########################################################################
-    def search_resources_in_root_compartment(self):
-        query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self._tenancy.id + "'"
+    def __search_resources_in_root_compartment(self):
+        query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
         print("Load resources in root compartment...")
-        resources_in_root_data = self.search_run_structured_query(query)
+        resources_in_root_data = self.__search_run_structured_query(query)
         for item in resources_in_root_data:
             record = {
                 "display_name" : item.display_name,
                 "id" : item.identifier
             }
-            self.resources_in_root_compartment.append(record)
+            self.__resources_in_root_compartment.append(record)
     
-        return self.resources_in_root_compartment
+        return self.__resources_in_root_compartment
 
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report 
     ##########################################################################
     def report_analyze_tenancy_data(self):
-        print("Running CIS Report...")
+        #print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
+
+
+        # 1.1 Check - checking if their are additional policies
+        policy_counter = 0 
+        for policy in self.__policies:
+            for statement in policy['statements']:
+                if "allow group".upper() in statement.upper() \
+                    and not("to manage all-resources in tenancy".upper() in statement.upper()) \
+                        and policy['name'].upper() != "Tenant Admin Policy".upper():
+                    policy_counter+=1
+            if policy_counter < 3:
+                cis_foundations_benchmark_1_1['1.1']['Status'] = False
+                cis_foundations_benchmark_1_1['1.1']['Findings'].append(policy)
 
         # 1.2 Check
-        for policy in self.policies:
+        for policy in self.__policies:
             for statement in policy['statements']:
-                #print("looping through policy statement")
-                #print(statement)
-                if "to manage all-resources in tenancy".upper() in statement.upper():
+                if "allow group".upper() in statement.upper() \
+                    and "to manage all-resources in tenancy".upper() in statement.upper() \
+                    and policy['name'].upper() != "Tenant Admin Policy".upper():
+
                     cis_foundations_benchmark_1_1['1.2']['Status'] = False
                     cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
 
-                    break
-                
-        print_header(cis_foundations_benchmark_1_1['1.2']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.2']['Status']))
 
         # 1.3 Check - May want to add a service check
-        for policy in self.policies:
+        for policy in self.__policies:
             for statement in policy['statements']:
                 if ("to use groups in tenancy".upper() in statement.upper() or \
                     "to use users in tenancy".upper() in statement.upper() or \
                         "to manage groups in tenancy".upper() in statement.upper() or 
                         "to manage users in tenancy".upper() in statement.upper()):
                     cis_foundations_benchmark_1_1['1.3']['Status'] = False
-
                     cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
                     # Moving to the next policy 
                     break
 
-        print_header(cis_foundations_benchmark_1_1['1.3']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.3']['Status']))
 
-
-        # 1.4 Check
-        if self.tenancy_password_policy.password_policy.is_lowercase_characters_required:
+        # 1.4 Check - Password Policy
+        if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
             cis_foundations_benchmark_1_1['1.4']['Status'] = True
-        print_header(cis_foundations_benchmark_1_1['1.4']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.4']['Status']))
-        print("Finding: " + str(cis_foundations_benchmark_1_1['1.4']['Findings']))
 
 
-        
-        for user in self.users:
+
+        # 1.7 Check - Local Users w/o MFA
+        for user in self.__users:
             if user['external_identifier'] == None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
                 cis_foundations_benchmark_1_1['1.7']['Status'] = False
                 cis_foundations_benchmark_1_1['1.7']['Findings'].append(user)
-        
 
-        print_header(cis_foundations_benchmark_1_1['1.7']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.8']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.7']['Findings'])))
-
-
-        
-        for user in self.users:
+        # 1.8 Check - API Keys over 90
+        for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
-                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
                         cis_foundations_benchmark_1_1['1.8']['Status'] = False
                         finding = {
                             "user_name" : user['name'],
@@ -1045,19 +1044,12 @@ class CIS_Report:
                         }
                         
                         cis_foundations_benchmark_1_1['1.8']['Findings'].append(finding)
-                
-        
 
-        print_header(cis_foundations_benchmark_1_1['1.8']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.8']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.8']['Findings'])))
-
-
-        # CIS 1.9 Check
-        for user in self.users:
+        # CIS 1.9 Check - Old Customer Secrets
+        for user in self.__users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
-                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
                         cis_foundations_benchmark_1_1['1.9']['Status'] = False
 
                         finding = {
@@ -1072,18 +1064,13 @@ class CIS_Report:
                         }
                         
                         cis_foundations_benchmark_1_1['1.9']['Findings'].append(finding)
-                
-
-        print_header(cis_foundations_benchmark_1_1['1.9']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.9']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.9']['Findings'])))
 
         
-        # CIS 1.10 Check
-        for user in self.users:
+        # CIS 1.10 Check - Old Auth Tokens
+        for user in self.__users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
-                    if self.key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
                         cis_foundations_benchmark_1_1['1.10']['Status'] = False
 
                         finding = {
@@ -1099,43 +1086,27 @@ class CIS_Report:
                         }
                         
                         cis_foundations_benchmark_1_1['1.10']['Findings'].append(finding)
-                
-        
 
-        print_header(cis_foundations_benchmark_1_1['1.10']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.10']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.10']['Findings'])))
-
-
-        # CIS 1.11 Check
+        # CIS 1.11 Active Admins with API keys
         # Iterrating through all users to see if they have API Keys and if they are active users
-        for user in self.users:
+        for user in self.__users:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
                 cis_foundations_benchmark_1_1['1.11']['Status'] = False
                 cis_foundations_benchmark_1_1['1.11']['Findings'].append(user)
 
 
-        print_header(cis_foundations_benchmark_1_1['1.11']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.11']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.11']['Findings'])))
-
-
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterrating through all users to see if they have API Keys and if they are active users
-        for user in self.users:
+        for user in self.__users:
             if user['external_identifier'] == None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
                 cis_foundations_benchmark_1_1['1.12']['Status'] = False
                 cis_foundations_benchmark_1_1['1.12']['Findings'].append(user)
 
-        print_header(cis_foundations_benchmark_1_1['1.12']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['1.12']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.12']['Findings'])))
- 
         
        # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on port 22, 3389
 
         # Iterrating through all users to see if they have API Keys and if they are active users
-        for sl in self.network_security_lists:
+        for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
@@ -1153,7 +1124,7 @@ class CIS_Report:
 
        # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
         # Iterrating through all users to see if they have API Keys and if they are active users
-        for nsg in self.network_security_groups:
+        for nsg in self.__network_security_groups:
             for rule in nsg['rules']:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
@@ -1166,23 +1137,23 @@ class CIS_Report:
 
         
         # CIS 3.1 Check - Ensure Audit log retention == 365
-        if self.audit_retention_period >= 365:
+        if self.__audit_retention_period >= 365:
             cis_foundations_benchmark_1_1['3.1']['Status'] = True
 
         # CIS Check 3.2 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
-        for tag in self.tag_defaults:
+        for tag in self.__tag_defaults:
             if tag['value'] == "${iam.principal.name}":
                 cis_foundations_benchmark_1_1['3.2']['Status'] = True
 
       # CIS Check 3.3 - Check for Active Notification and Subscription
-        if len(self.subscriptions) > 0:
+        if len(self.__subscriptions) > 0:
             cis_foundations_benchmark_1_1['3.3']['Status'] = True
 
 
         # CIS Checks 3.4 - 3.13 
         #Iterate through all event rules
-        for event in self.event_rules:
+        for event in self.__event_rules:
             # Convert Event Condition to dict
             jsonable_str = event['condition'].lower().replace("'", "\"")
             event_dict = json.loads(jsonable_str)
@@ -1192,35 +1163,29 @@ class CIS_Report:
                 # if(all(x in test_list for x in sub_list)): 
                 if(all(x in event_dict['eventtype'] for x in changes)):
                     cis_foundations_benchmark_1_1[key]['Status'] = True
-                
-        for key,changes in cis_monitoring_checks.items():
-            print_header(cis_foundations_benchmark_1_1[key]['Title'])
-            print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
 
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
-        for subnet in self.network_subnets:
-            if not(subnet['id'] in self._subnet_logs):
+        for subnet in self.__network_subnets:
+            if not(subnet['id'] in self.__subnet_logs):
                 cis_foundations_benchmark_1_1['3.14']['Status'] = False
                 cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
-            else:
-                print("*** founda a subnet logged***")
 
 
-        # if(all(x in self._subnet_logs for x in all_subnet_ids)):
+        # if(all(x in self.__subnet_logs for x in all_subnet_ids)):
         #     cis_foundations_benchmark_1_1['3.14']['Status'] = True
         # else:
         #     cis_foundations_benchmark_1_1['3.14']['Status'] = False
 
         # CIS Check 3.15 - Cloud Guard enabled
-        if self.cloud_guard_config.status == 'ENABLED':
+        if self.__cloud_guard_config.status == 'ENABLED':
             cis_foundations_benchmark_1_1['3.15']['Status'] = True
         else:
             cis_foundations_benchmark_1_1['3.15']['Status'] = False
 
 
         # CIS Check 3.16 - Encryption keys over 365
-        for vault in self.vaults:
+        for vault in self.__vaults:
             for key in vault['keys']:
                 #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
                 if self.kms_key_time_max_datetime >= key['time_created'] :
@@ -1230,23 +1195,22 @@ class CIS_Report:
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
-        for bucket in self.buckets:
-            if not(bucket['name'] in self._write_bucket_logs):
+        for bucket in self.__buckets:
+            if not(bucket['name'] in self.__write_bucket_logs):
                 cis_foundations_benchmark_1_1['3.17']['Status'] = False
                 cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
-            else:
-                print("*** founda a bucket with write logged***")
+
 
         # for bucket in all
         # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
-        # if(all(x in  all_bucket_names for x in self._write_bucket_logs)):
+        # if(all(x in  all_bucket_names for x in self.__write_bucket_logs)):
         #     cis_foundations_benchmark_1_1['3.17']['Status'] = True
         # else:
         #     cis_foundations_benchmark_1_1['3.17']['Status'] = False
 
 
         # CIS Section 4 Checks
-        for bucket in self.buckets:
+        for bucket in self.__buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
                 cis_foundations_benchmark_1_1['4.1']['Status'] = False
                 cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
@@ -1257,17 +1221,16 @@ class CIS_Report:
 
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment 
-        if len(self.compartments) < 2:
+        if len(self.__compartments) < 2:
             cis_foundations_benchmark_1_1['5.1']['Status'] = False
         
-        if len(self.resources_in_root_compartment) > 0:
-            for item in self.resources_in_root_compartment:
+        if len(self.__resources_in_root_compartment) > 0:
+            for item in self.__resources_in_root_compartment:
                 cis_foundations_benchmark_1_1['5.2']['Status'] = False
                 cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
 
     def report_generate_output_csv(self):
         # This function reports generates CSV reports
-        #     
         summary_report = []
         for key, recommendation in cis_foundations_benchmark_1_1.items():            
             record = {
@@ -1284,14 +1247,36 @@ class CIS_Report:
             # Generate Findings report
             self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )            
         
-        # Generate CIS Summary Report
-        print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        # Screen output for CIS Summary Report
+        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
         for finding in summary_report:
             print(finding['Recommendation #'] + "\t" + " Level: " + \
             finding['Level'] + "\t" "Status: " + finding['Status'] + "\t" +
                     "Findings:  " + finding['Findings'] + "\t" + finding['Title'])
+        
+        # Generating Summary report CSV
         self.__print_to_csv_file("cis", "summary_report", summary_report)
         
+
+    def report_collect_tenancy_data(self):
+
+        self.__cloud_guard_read_cloud_guard_configuration()
+        self.__vault_read_vaults()
+        self.__audit_read__tenancy_audit_configuration()
+        self.__identity_read_tenancy_password_policy()
+        self.__identity_read_tenancy_policies()
+        self.__identity_read_groups_and_membership()
+        self.__identity_read_users()
+        self.__os_read_buckets()
+        self.__logging_read_log_groups_and_logs()
+        self.__search_resources_in_root_compartment()
+        self.__events_read_event_rules()
+        self.__ons_read_subscriptions()
+        self.__network_read_network_security_lists()
+        self.__network_read_network_security_groups_rules()
+        self.__network_read_network_subnets()
+        self.__identity_read_tag_defaults()
+
     ##########################################################################
     # Print to CSV 
     ##########################################################################
@@ -1325,15 +1310,15 @@ class CIS_Report:
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
 
-##########################################################################
-# Print header centered
-##########################################################################
-def print_header(name):
-    chars = int(90)
-    print("")
-    print('#' * chars)
-    print("#" + name.center(chars - 2, " ") + "#")
-    print('#' * chars)
+    ##########################################################################
+    # Print header centered
+    ##########################################################################
+    def __print_header(self,name):
+        chars = int(90)
+        print("")
+        print('#' * chars)
+        print("#" + name.center(chars - 2, " ") + "#")
+        print('#' * chars)
 
 ##########################################################################
 # check service error to warn instead of error
@@ -1363,7 +1348,7 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
             return config, signer
 
         except Exception:
-            print_header("Error obtaining instance principals certificate, aborting")
+            print("Error obtaining instance principals certificate, aborting")
             raise SystemExit
 
     # -----------------------------
@@ -1447,77 +1432,33 @@ def set_parser_arguments():
 # execute_report
 ##########################################################################
 def execute_report():
-    cmd = set_parser_arguments()
-    if cmd is None:
-        return
+
+    # Get Command Line Parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
+    parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
+    parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
+    parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
+    cmd = parser.parse_args()
+    # Getting  Command line  arguments
+    # cmd = set_parser_arguments()
+    # if cmd is None:
+    #     pass
+    #     # return
+
+    # Identity extract compartments
+    config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+    report = CIS_Report(config, signer, cmd.proxy)
+    report.report_collect_tenancy_data()
+    report.report_analyze_tenancy_data()
+    report.report_generate_output_csv()
+    
 
 ##########################################################################
 # Main
 ##########################################################################
 
-# Get Command Line Parser
-parser = argparse.ArgumentParser()
-parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
-parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
-parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
-parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
-cmd = parser.parse_args()
 
-# Start print time info
-start_time_datetime = datetime.datetime.utcnow()
-start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-#key_time_max_datetime = start_time_datetime - datetime.timedelta(days=DAYS_OLD)
-#key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
+execute_report()
 
-
-print_header("Running CIS Reports")
-print("Code base By Adi Zohar, June 2020")
-print("Written By Andre Luiz Correa Neto & Josh Hammer, November 2020")
-print("Starts at " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
-
-# Identity extract compartments
-config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-report = CIS_Report(config,signer)
-
-# logs = report.logging_read_log_groups_and_logs()
-
-# for log_group in logs:
-#     for log in log_group['logs']:
-#         print(log['source_category'])
-#         print(type(log['source_category']))
-#         print(len(log['source_category']))
-#         print(log['source_category'][0])
-
-# print("Audit Configuration is : "+ str(audit_config))
-
-cg = report.cloud_guard_read_cloud_guard_configuration()
-vaults = report.vault_read_vaults()
-audit_config = report.audit_read_tenancy_audit_configuration()
-report.identity_read_tenancy_password_policy()
-policies = report.identity_read_tenancy_policies()
-groups = report.identity_read_groups_and_membership()
-users = report.identity_read_users()
-buckets = report.os_read_buckets()
-
-log_groups = report.logging_read_log_groups_and_logs()
-root_resources = report.search_resources_in_root_compartment()
-
-
-
-events = report.events_read_event_rules()
-subscriptions = report.ons_read_subscriptions()
-
-sls = report.network_read_network_security_lists()
-
-nsgs = report.network_read_network_security_groups_rules()
-
-subnets = report.network_read_network_subnets()
-
-tags = report.identity_read_tag_defaults()
-
-
-report.report_analyze_tenancy_data()
-
-report.report_generate_output_csv()
 

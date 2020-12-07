@@ -4,6 +4,7 @@ env-vars.*
 **/.terraform/*
 **/.DS_Store
 **/crash.log
+**/.csv
 private_key.pem
 config/terraform.tfvars
 config/iam_1.2.tf

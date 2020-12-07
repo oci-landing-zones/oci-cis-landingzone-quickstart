@@ -15,10 +15,12 @@ from __future__ import print_function
 import sys
 import argparse
 import datetime
+import pytz
 import oci
 import json
 import os
-DAYS_OLD = 90
+import csv
+#DAYS_OLD = 90
 
 
 cis_foundations_benchmark_1_1 = {
@@ -49,7 +51,7 @@ cis_foundations_benchmark_1_1 = {
     '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
     '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.9': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+    '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
     '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
@@ -147,16 +149,13 @@ cis_monitoring_checks = {
     ]
 }
 
-
-
-
 ##########################################################################
 # CIS Reporting Class
 ##########################################################################
 class CIS_Report:
     # Class variables
     _DAYS_OLD = 90
-    _KMS_DAYS_OLD = 30
+    _KMS_DAYS_OLD = 365
     # Tenancy Data
     _tenancy = None
     cloud_guard_config = None
@@ -166,6 +165,7 @@ class CIS_Report:
     
     users = []
     groups_to_users = []
+    tag_defaults = []
 
     buckets = []
 
@@ -176,20 +176,23 @@ class CIS_Report:
     event_rules = []
 
     logging_list = []
+    # For Logging & Monitoring checks
+    _subnet_logs = []
+    _write_bucket_logs = []
 
     vaults = []
     
     subscriptions = []
 
+    resources_in_root_compartment =[]
+
     # Start print time info
-    start_datetime = datetime.datetime.now()
-    start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+    start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
     key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
-    key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=_KMS_DAYS_OLD)
-    kms_key_time_max_datetime = kms_key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 
     def __init__(self, config, signer):
@@ -379,7 +382,7 @@ class CIS_Report:
                     'fingerprint' : api_key.fingerprint,
                     'inactive_status' : api_key.inactive_status,
                     'lifecycle_state' : api_key.lifecycle_state,
-                    'time_created' : api_key.time_created.strftime('%Y-%m-%d %H:%M:%S')
+                    'time_created' : api_key.time_created, #.strftime('%Y-%m-%d %H:%M:%S')
                 }
                 api_keys.append(record)
 
@@ -407,11 +410,10 @@ class CIS_Report:
                 'description' : token.description,
                 'inactive_status' : token.inactive_status,
                 'lifecycle_state' : token.lifecycle_state,
-                'time_created' : token.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                'time_created' : token.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                 'time_expires' : token.time_expires,
                 'token' : token.token
-                
-                
+                     
                 }
                 auth_tokens.append(record)
 
@@ -437,7 +439,7 @@ class CIS_Report:
                 'display_name' : key.display_name,
                 'inactive_status' : key.inactive_status,
                 'lifecycle_state' : key.lifecycle_state,
-                'time_created' : key.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                'time_created' : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                 'time_expires' : key.time_expires,              
                 
                 }
@@ -761,14 +763,26 @@ class CIS_Report:
                                 "retention_duration" : log.retention_duration,
                                 "time_created" : log.time_created,
                                 "time_last_modified" : log.time_last_modified,
-                                "configuration_compartment_id" : log.configuration.compartment_id,
-                                "source_category" : log.configuration.source.category,
-                                "source_parameters" : log.configuration.source.parameters,
-                                "source_resource" : log.configuration.source.resource,
-                                "source_service" : log.configuration.source.service,
-                                "source_source_type" : log.configuration.source.source_type
+
                                 }
-                            
+                            try:
+                                if log.configuration:
+                                    log_record["configuration_compartment_id"] = log.configuration.compartment_id,
+                                    log_record["source_category"] = log.configuration.source.category,
+                                    log_record["source_parameters"] = log.configuration.source.parameters,
+                                    log_record["source_resource"] = log.configuration.source.resource,
+                                    log_record["source_service"] = log.configuration.source.service,
+                                    log_record["source_source_type"] = log.configuration.source.source_type
+                                if log.configuration.source.service == 'flowlogs':
+                                    print("VCN  Log")
+                                    self._subnet_logs.append(log.configuration.source.resource)
+                                    print("Added: " + str(log.configuration.source.resource))
+                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
+                                    #Only write logs 
+                                    self._write_bucket_logs.append(log.configuration.source.resource)
+                                    print("Added: " + str(log.configuration.source.resource))
+                            except: 
+                                pass
                             # Append Log to log List
                             record['logs'].append(log_record)
                         self.logging_list.append(record)
@@ -816,7 +830,7 @@ class CIS_Report:
                             "display_name" : key.display_name,
                             "id" : key.id,
                             "lifecycle_state" : key.lifecycle_state,
-                            "time_created" : key.time_created.strftime('%Y-%m-%d %H:%M:%S'),
+                            "time_created" : key.time_created, #.strftime('%Y-%m-%d %H:%M:%S'),
                         }
                         # Getting Key Versions - Most current one is the first one in the list 
                         key_versions = oci.pagination.list_call_get_all_results(
@@ -853,7 +867,7 @@ class CIS_Report:
         print("Loading Cloud Guard configuration..")
         try:
             self.cloud_guard_config = self._cloud_guard.get_configuration(self._tenancy.id).data
-
+            return self.cloud_guard_config
         except Exception as e:
             raise RuntimeError("Error in cloud_guard_read_cloud_guard_configuration " + str(e.args))
 
@@ -872,7 +886,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def ons_read_subscriptions(self):
-        print("Loading ")
+        print("Loading Subscriptions..")
         try:
             # Iterate through compartments to get all subscriptions
             for compartment in self.compartments:
@@ -893,11 +907,40 @@ class CIS_Report:
             
                         }
                         self.subscriptions.append(record)
-
             return self.subscriptions
 
         except Exception as e:
             raise RuntimeError("Error in ons_read_subscription " + str(e.args))
+
+    ##########################################################################
+    # Identity Tag Default
+    ##########################################################################
+    def identity_read_tag_defaults(self):
+        print("Loading Tag Defaults..")
+        try:
+            # Getting Tag Default for the Root Compartment - Only
+            tag_defaults = oci.pagination.list_call_get_all_results(
+                self._identity.list_tag_defaults,
+                compartment_id=self._tenancy.id
+            ).data
+            for tag in tag_defaults:
+                record = {
+                    "id" : tag.id,
+                    "compartment_id" : tag.compartment_id,
+                    "value" : tag.value,
+                    "time_created" : tag.time_created,
+                    "tag_definition_id" : tag.tag_definition_id,
+                    "tag_definition_name" : tag.tag_definition_name,
+                    "tag_namespace_id" : tag.tag_namespace_id,
+                    "lifecycle_state" : tag.lifecycle_state
+    
+                }
+                self.tag_defaults.append(record)
+            return self.tag_defaults
+
+        except Exception as e:
+            raise RuntimeError("Error in identity_read_tag_defaults " + str(e.args))
+    
     ##########################################################################
     # Run advanced search structure query
     ##########################################################################
@@ -915,16 +958,23 @@ class CIS_Report:
     ##########################################################################
     # Resources in root compartment
     ##########################################################################
-    def resources_in_root_compartment(self):
+    def search_resources_in_root_compartment(self):
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self._tenancy.id + "'"
-        print("Load resources in root compartment: \n" + query)
-        self.resources_in_root = self.search_run_structured_query(query)
-        return self.resources_in_root
+        print("Load resources in root compartment...")
+        resources_in_root_data = self.search_run_structured_query(query)
+        for item in resources_in_root_data:
+            record = {
+                "display_name" : item.display_name,
+                "id" : item.identifier
+            }
+            self.resources_in_root_compartment.append(record)
+    
+        return self.resources_in_root_compartment
 
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report 
     ##########################################################################
-    def report_analyze_tenancy(self):
+    def report_analyze_tenancy_data(self):
         print("Running CIS Report...")
 
         # 1.2 Check
@@ -934,19 +984,20 @@ class CIS_Report:
                 #print(statement)
                 if "to manage all-resources in tenancy".upper() in statement.upper():
                     cis_foundations_benchmark_1_1['1.2']['Status'] = False
-
                     cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
 
                     break
                 
         print_header(cis_foundations_benchmark_1_1['1.2']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.2']['Status']))
-        print("Finding: " + str(cis_foundations_benchmark_1_1['1.2']['Findings']))
 
-        # 1.3 Check
+        # 1.3 Check - May want to add a service check
         for policy in self.policies:
             for statement in policy['statements']:
-                if ("to use groups in tenancy".upper() in statement.upper() or "to use users in tenancy".upper() in statement.upper() or "to manage groups in tenancy".upper() in statement.upper() or "to manage users in tenancy".upper() in statement.upper()):
+                if ("to use groups in tenancy".upper() in statement.upper() or \
+                    "to use users in tenancy".upper() in statement.upper() or \
+                        "to manage groups in tenancy".upper() in statement.upper() or 
+                        "to manage users in tenancy".upper() in statement.upper()):
                     cis_foundations_benchmark_1_1['1.3']['Status'] = False
 
                     cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
@@ -955,7 +1006,6 @@ class CIS_Report:
 
         print_header(cis_foundations_benchmark_1_1['1.3']['Title'])
         print("Status: " + str(cis_foundations_benchmark_1_1['1.3']['Status']))
-        print("Finding: " + str(cis_foundations_benchmark_1_1['1.3']['Findings']))
 
 
         # 1.4 Check
@@ -1082,7 +1132,7 @@ class CIS_Report:
         print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['1.12']['Findings'])))
  
         
-       # CIS 2.1 Check - Security List Ingress from 0.0.0.0/0 on port 22
+       # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on port 22, 3389
 
         # Iterrating through all users to see if they have API Keys and if they are active users
         for sl in self.network_security_lists:
@@ -1092,32 +1142,16 @@ class CIS_Report:
                         if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
                             cis_foundations_benchmark_1_1['2.1']['Status'] = False
                             cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
-
-
-
-        print_header(cis_foundations_benchmark_1_1['2.1']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.1']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.1']['Findings'])))
-
-
-        
-       # CIS 2.2 Check - Security List Ingress from 0.0.0.0/0 on port 3389
-        # Iterrating through all users to see if they have API Keys and if they are active users
-        for sl in self.network_security_lists:
-            for irule in sl['ingress_security_rules']:
-                if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
-                    if irule['tcp_options']:
-                        if irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+                        elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
                             cis_foundations_benchmark_1_1['2.2']['Status'] = False
                             cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+                # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
+                if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                    cis_foundations_benchmark_1_1['2.5']['Status'] = False
+                    cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
 
 
-        print_header(cis_foundations_benchmark_1_1['2.2']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.2']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.2']['Findings'])))
-
-
-       # CIS 2.3 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22
+       # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
         # Iterrating through all users to see if they have API Keys and if they are active users
         for nsg in self.network_security_groups:
             for rule in nsg['rules']:
@@ -1126,44 +1160,24 @@ class CIS_Report:
                         if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
                             cis_foundations_benchmark_1_1['2.3']['Status'] = False           
                             cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
-
-        print_header(cis_foundations_benchmark_1_1['2.3']['Title'])
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.3']['Findings'])))
-
-       # CIS 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 3389
-        # Iterrating through all users to see if they have API Keys and if they are active users
-        for nsg in self.network_security_groups:
-            for rule in nsg['rules']:
-                if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
-                    if rule['tcp_options']:
-                        if rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
+                        elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
                             cis_foundations_benchmark_1_1['2.4']['Status'] = False
                             cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
-
-
-        print_header(cis_foundations_benchmark_1_1['2.4']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['2.4']['Findings'])))
-        print("Status: " + str(cis_foundations_benchmark_1_1['2.3']['Status']))
-
 
         
         # CIS 3.1 Check - Ensure Audit log retention == 365
         if self.audit_retention_period >= 365:
             cis_foundations_benchmark_1_1['3.1']['Status'] = True
-            cis_foundations_benchmark_1_1['3.1']['Findings'].append(self.audit_retention_period)
 
-        print_header(cis_foundations_benchmark_1_1['3.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.1']['Status']))
+        # CIS Check 3.2 - Check for Default Tags in Root Compartment
+        # Iterate through tags looking for ${iam.principal.name}
+        for tag in self.tag_defaults:
+            if tag['value'] == "${iam.principal.name}":
+                cis_foundations_benchmark_1_1['3.2']['Status'] = True
 
-
-        # CIS Check 3.3 - Check for Active Notification and Subscription
+      # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.subscriptions) > 0:
             cis_foundations_benchmark_1_1['3.3']['Status'] = True
-
-        print_header(cis_foundations_benchmark_1_1['3.3']['Title'])
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.3']['Status']))            
 
 
         # CIS Checks 3.4 - 3.13 
@@ -1175,33 +1189,62 @@ class CIS_Report:
             
             for key,changes in cis_monitoring_checks.items():
                 #Checking if all cis change list is a subset of event condition
+                # if(all(x in test_list for x in sub_list)): 
                 if(all(x in event_dict['eventtype'] for x in changes)):
                     cis_foundations_benchmark_1_1[key]['Status'] = True
                 
-        
         for key,changes in cis_monitoring_checks.items():
             print_header(cis_foundations_benchmark_1_1[key]['Title'])
             print("Status is: " + str(cis_foundations_benchmark_1_1[key]['Status']))
 
-        
+        # CIS Check 3.14 - VCN FlowLog enable
+        # Generate list of subnets IDs
+        for subnet in self.network_subnets:
+            if not(subnet['id'] in self._subnet_logs):
+                cis_foundations_benchmark_1_1['3.14']['Status'] = False
+                cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
+            else:
+                print("*** founda a subnet logged***")
+
+
+        # if(all(x in self._subnet_logs for x in all_subnet_ids)):
+        #     cis_foundations_benchmark_1_1['3.14']['Status'] = True
+        # else:
+        #     cis_foundations_benchmark_1_1['3.14']['Status'] = False
+
         # CIS Check 3.15 - Cloud Guard enabled
         if self.cloud_guard_config.status == 'ENABLED':
-            cis_foundations_benchmark_1_1['3.15']['Status']=True
-        
-        print_header(cis_foundations_benchmark_1_1['3.15']['Title'])
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.15']['Status']))
-        
+            cis_foundations_benchmark_1_1['3.15']['Status'] = True
+        else:
+            cis_foundations_benchmark_1_1['3.15']['Status'] = False
+
+
         # CIS Check 3.16 - Encryption keys over 365
-        for vault in vaults:
+        for vault in self.vaults:
             for key in vault['keys']:
-                if self.kms_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
+                if self.kms_key_time_max_datetime >= key['time_created'] :
                     cis_foundations_benchmark_1_1['3.16']['Status'] = False
                     cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
         
-        print_header(cis_foundations_benchmark_1_1['3.16']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['3.16']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['3.16']['Status']))        
-        
+
+        # CIS Check 3.17 - Object Storage with Logs
+        # Generating list of buckets names
+        for bucket in self.buckets:
+            if not(bucket['name'] in self._write_bucket_logs):
+                cis_foundations_benchmark_1_1['3.17']['Status'] = False
+                cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
+            else:
+                print("*** founda a bucket with write logged***")
+
+        # for bucket in all
+        # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
+        # if(all(x in  all_bucket_names for x in self._write_bucket_logs)):
+        #     cis_foundations_benchmark_1_1['3.17']['Status'] = True
+        # else:
+        #     cis_foundations_benchmark_1_1['3.17']['Status'] = False
+
+
         # CIS Section 4 Checks
         for bucket in self.buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
@@ -1212,36 +1255,75 @@ class CIS_Report:
                 cis_foundations_benchmark_1_1['4.2']['Status'] = False
 
 
-        print_header(cis_foundations_benchmark_1_1['4.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['4.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['4.1']['Status']))
-
-        print_header(cis_foundations_benchmark_1_1['4.2']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['4.2']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['4.2']['Status']))
-
-
-
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment 
         if len(self.compartments) < 2:
             cis_foundations_benchmark_1_1['5.1']['Status'] = False
         
-        if len(self.resources_in_root) > 0:
-            for item in self.resources_in_root:
+        if len(self.resources_in_root_compartment) > 0:
+            for item in self.resources_in_root_compartment:
                 cis_foundations_benchmark_1_1['5.2']['Status'] = False
                 cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
 
+    def report_generate_output_csv(self):
+        # This function reports generates CSV reports
+        #     
+        summary_report = []
+        for key, recommendation in cis_foundations_benchmark_1_1.items():            
+            record = {
+                "Recommendation #" : key,
+                "Section" : recommendation['section'],
+                "Level" : str(recommendation['Level']),
+                "Status" : str(recommendation['Status']),
+                "Findings" : str(len(recommendation['Findings'])),
+                "Title" : recommendation['Title']
+            }
+            # Add record to summary report for CSV output
+            summary_report.append(record)
+
+            # Generate Findings report
+            self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )            
         
-        print_header(cis_foundations_benchmark_1_1['5.1']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['5.1']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['5.1']['Status']))
+        # Generate CIS Summary Report
+        print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        for finding in summary_report:
+            print(finding['Recommendation #'] + "\t" + " Level: " + \
+            finding['Level'] + "\t" "Status: " + finding['Status'] + "\t" +
+                    "Findings:  " + finding['Findings'] + "\t" + finding['Title'])
+        self.__print_to_csv_file("cis", "summary_report", summary_report)
+        
+    ##########################################################################
+    # Print to CSV 
+    ##########################################################################
+    def __print_to_csv_file(self, header, file_subject, data):
 
-        print_header(cis_foundations_benchmark_1_1['5.2']['Title'])
-        print("Number of Findings: " + str(len(cis_foundations_benchmark_1_1['5.2']['Findings'])))
-        print("Status is: " + str(cis_foundations_benchmark_1_1['5.2']['Status']))
+        try:
+            # if no data
+            if len(data) == 0:
+                return
 
+            # get the file name of the CSV
+            file_name =  header + "_" + file_subject + ".csv"
+            
+            # add start_date to each dictionary
+            result = [dict(item, extract_date=self.start_time_str) for item in data]
 
+            # generate fields
+            fields = [key for key in result[0].keys()]
+
+            with open(file_name, mode='w', newline='') as csv_file:
+                writer = csv.DictWriter(csv_file, fieldnames=fields)
+
+                # write header
+                writer.writeheader()
+
+                for row in result:
+                    writer.writerow(row)
+
+            print("CSV: " + file_subject.ljust(22) + " --> " + file_name)
+
+        except Exception as e:
+            raise Exception("Error in print_to_csv_file: " + str(e.args))
 
 ##########################################################################
 # Print header centered
@@ -1336,95 +1418,6 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
         return config, signer
 
 
-
-
-
-
-
-
-
-
-
-
-def events_cis_check(event_rules):
-
-    cis_3_4_identity_provider_changes = [
-        'com.oraclecloud.identitycontrolplane.createidentityprovider',
-        'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
-        'com.oraclecloud.identitycontrolplane.updateidentityprovider'
-    ]
-    for event in event_rules:
-        if (set(
-            cis_3_4_identity_provider_changes).issubset(
-                set(event['condition']))
-                and event['is_enabled']):
-                cis_3_4_flag = True
-                print("&&&" * 30)
-                print("CIS_3_4 is set")
-
-        # if (set(
-        #     self.cis_3_5_identity_group_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_5_flag = True
-        #         print("CIS_3_5 is set")
-
-        # if (set(
-        #     self.cis_3_6_iam_group_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_6_flag = True
-        #         print("CIS_3_6 is set")                    
-
-        # if (set(
-        #     self.cis_3_7_iam_policy_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_6_flag = True
-        #         print("CIS_3_7 is set")  
-        # if (set(
-        #     self.cis_3_8_user_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_8_flag = True
-        #         print("CIS_3_8 is set")  
-        # if (set(
-        #     self.cis_3_9_vcn_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_9_flag = True
-        #         print("CIS_3_9 is set")  
-        # if (set(
-        #     self.cis_3_10_route_table_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_10_flag = True
-        #         print("CIS_3_10 is set")  
-
-        # if (set(
-        #     self.cis_3_11_security_list_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_11_flag = True
-        #         print("CIS_3_11 is set")  
-
-        # if (set(
-        #     self.cis_3_12_security_groups_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-        #         self._cis_3_12_flag = True
-        #         print("CIS_3_12 is set")  
-
-        # if (set(
-        #     self.cis_3_13_network_gateway_changes).issubset(
-        #         set(json_conditions['eventType']))
-        #         and event['is_enabled'] == "True"):
-                
-        #         self._cis_3_13_flag = True
-        #         print("CIS_3_13 is set")  
-
-
-
 ##########################################################################
 # Arg Parsing function to be updated 
 ##########################################################################
@@ -1471,13 +1464,11 @@ parser.add_argument('-dt', action='store_true', default=False, dest='is_delegati
 cmd = parser.parse_args()
 
 # Start print time info
-start_datetime = datetime.datetime.now()
-start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-key_time_max_datetime = start_datetime - datetime.timedelta(days=DAYS_OLD)
+start_time_datetime = datetime.datetime.utcnow()
+start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+#key_time_max_datetime = start_time_datetime - datetime.timedelta(days=DAYS_OLD)
 #key_time_max_datetime = key_time_max_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-print(start_datetime)
-print(key_time_max_datetime)
 
 print_header("Running CIS Reports")
 print("Code base By Adi Zohar, June 2020")
@@ -1488,249 +1479,45 @@ print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
 # Identity extract compartments
 config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
 report = CIS_Report(config,signer)
-# buckets = report.os_read_buckets()
-# # print(buckets)
-# users = report.identity_read_users()
-# print(users)
-
-
-# print(type(cis_foundations_benchmark_1_1))
-
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
-
-# events = report.events_read_event_rules()
-
-# for event in events:
-#     print(event)
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
 
 # logs = report.logging_read_log_groups_and_logs()
 
-# for log in logs:
-#     print(log)
-
-
-# print("####" * 30)
-# print("####" * 30)
-# print("####" * 30)
-
-# subnets = report.network_read_network_subnets()
-
-# print(subnets)
-
+# for log_group in logs:
+#     for log in log_group['logs']:
+#         print(log['source_category'])
+#         print(type(log['source_category']))
+#         print(len(log['source_category']))
+#         print(log['source_category'][0])
 
 # print("Audit Configuration is : "+ str(audit_config))
 
 cg = report.cloud_guard_read_cloud_guard_configuration()
 vaults = report.vault_read_vaults()
-# print(type(key_time_max_datetime))
-# for vault in vaults:
-#     for key in vault['keys']:
-#         if key['time_created'] > key_time_max_datetime:
-
-#             print(key)
-
 audit_config = report.audit_read_tenancy_audit_configuration()
 report.identity_read_tenancy_password_policy()
 policies = report.identity_read_tenancy_policies()
 groups = report.identity_read_groups_and_membership()
 users = report.identity_read_users()
 buckets = report.os_read_buckets()
+
 log_groups = report.logging_read_log_groups_and_logs()
-report.resources_in_root_compartment()
+root_resources = report.search_resources_in_root_compartment()
+
+
+
 events = report.events_read_event_rules()
 subscriptions = report.ons_read_subscriptions()
-
-
-
 
 sls = report.network_read_network_security_lists()
 
 nsgs = report.network_read_network_security_groups_rules()
 
+subnets = report.network_read_network_subnets()
+
+tags = report.identity_read_tag_defaults()
 
 
-report.report_analyze_tenancy()
+report.report_analyze_tenancy_data()
 
-# for event in events:
+report.report_generate_output_csv()
 
-#     jsonable_str = event['condition'].lower().replace("'", "\"")
-#     event_dict = json.loads(jsonable_str)
-    
-#     for k,v in cis_monitoring_checks.items():
-#         if(all(x in event_dict['eventtype'] for x in v )):
-#             print(k + " is a subet of " + event['display_name'])
-
-
-# for event in events:
-#     print(event['display_name'])
-# report.identity_read_tenancy_password_policy()
-# print(vaults)
-# for vault in vaults:
-#     print("Vault Display Name:  " + vault['display_name'] + " Number of Keys: " + str(len(vault['keys'])) + " Compartment ID: " + vault['compartment_id'])
-# compartments = []
-# tenancy = None
-# try:
-#     print("\nConnecting to Identity Service...")
-#     identity = oci.identity.IdentityClient(config, signer=signer)
-#     if cmd.proxy:
-#         identity.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Audit Service...")
-#     audit = oci.audit.AuditClient(config, signer=signer)
-#     if cmd.proxy:
-#         audit.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Advance Search Service...")
-#     search = oci.resource_search.ResourceSearchClient(config, signer=signer)
-#     if cmd.proxy:
-#         search.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Network Service...")
-#     network = oci.core.VirtualNetworkClient(config, signer=signer)
-#     if cmd.proxy:
-#         network.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Events Service...")
-#     events = oci.events.EventsClient(config, signer=signer)
-#     if cmd.proxy:
-#         events.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Logging Service...")
-#     logging = oci.logging.LoggingManagementClient(config, signer=signer)
-#     if cmd.proxy:
-#         logging.base_client.session.proxies = {'https': cmd.proxy}
-
-#     print("\nConnecting to Object Storage Service...")
-#     os_client = oci.object_storage.ObjectStorageClient(config, signer=signer)
-#     if cmd.proxy:
-#         os_client.base_client.session.proxies = {'https': cmd.proxy}
-    
-#     tenancy = identity.get_tenancy(config["tenancy"]).data
-#     regions = identity.list_region_subscriptions(tenancy.id).data
-#     audit_retention_period = audit.get_configuration(tenancy.id).data.retention_period_days
-
-
-#     cis_resource_search_queries = [
-#         {"recommendation_#" : "2.1",
-#         "query" : """query SecurityList resources where 
-#                     (IngressSecurityRules.source = '0.0.0.0/0' && 
-#                     IngressSecurityRules.protocol = 6 && 
-#                     IngressSecurityRules.tcpOptions.destinationPortRange.max = 22 && 
-#                     IngressSecurityRules.tcpOptions.destinationPortRange.min = 22)"""
-#         },
-#         {"recommendation_#" : "2.2",
-#         "query" : """query SecurityList resources where 
-#             (IngressSecurityRules.source = '0.0.0.0/0' && 
-#             IngressSecurityRules.protocol = 6 && 
-#             IngressSecurityRules.tcpOptions.destinationPortRange.max = 3389 && 
-#             IngressSecurityRules.tcpOptions.destinationPortRange.min = 3389)"""
-#         },  
-#         {"recommendation_#" : "3.4",
-#         "query" : """query eventrule resources where condition = '{"eventType":["com.oraclecloud.identitycontrolplane.createidentityprovider",
-#             "com.oraclecloud.identitycontrolplane.deleteidentityprovider",
-#             "com.oraclecloud.identitycontrolplane.updateidentityprovider"],"data":{}}'""".upper()
-#         },   
-#         {"recommendation_#" : "4.1",
-#         "query" : """query bucket resources where (publicAccessType == 'ObjectRead') || 
-#             (publicAccessType == 'ObjectReadWithoutList')"""
-#         },
-#         {"recommendation_#" : "5.2",
-#         "query" : "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + tenancy.id + "'"
-#         }
-#     ]
-
-#     testcg = """query eventrule resources where
-#     condition = '{"eventType":["com.oraclecloud.cloudguard.problemdetected"],"data":{}}'"""
-
-#     testcg1 = """query eventrule resources where
-#         condition = '{"eventType":["com.oraclecloud.identitycontrolplane.createidentityprovider",
-#         "com.oraclecloud.identitycontrolplane.deleteidentityprovider",
-#         "com.oraclecloud.identitycontrolplane.updateidentityprovider"],"data":{}}'"""
-#     print("Tenant Name : " + str(tenancy.name))
-#     print("Tenant Id   : " + tenancy.id)
-#     print("")
-#     print("Audit Period: " + str(audit_retention_period))
-    
-#     # print(cis_resource_search_queries[3]['query'])
-#     # security_lists = search_run_structured_query(search,testcg)
-#     # print(security_lists)
-
-#     compartments = identity_read_compartments(identity, tenancy)
-#     # policies = identity_read_tenancy_policies(identity, tenancy)
-    
-#     # nsgs = network_read_network_security_groups_rules(network, compartments)
-#     # print(nsgs)
-
-#     buckets = os_read_buckets(os_client, compartments)
-
-#     print(buckets)
-
-#     event_rules = events_read_event_rules(events,compartments)
-#     print(event_rules)
-#     print(len(event_rules))
-#     for event in event_rules:
-#         cis_3_4_identity_provider_changes = [
-#         'com.oraclecloud.identitycontrolplane.createidentityprovider',
-#         'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
-#         'com.oraclecloud.identitycontrolplane.updateidentityprovider'
-#         ]
-#         for rule in cis_3_4_identity_provider_changes:
-#             if rule.upper() in event['condition'].upper():
-#                 print("I have one")
-#                 print(event['condition'])
-
-#         print(type(event['condition']))
-
-#     # events_cis_check(event_rules)
-
-#     # logs = logging_read_log_groups_and_logs(logging,compartments)
-#     # print(logs)
-
-#     # print("###" * 30)
-#     # for compartment in compartments:
-#     #     print(compartment.name)
-#     #     if not(if_managed_paas_compartment(compartment.name)):
-#     #         nsgs_data = oci.pagination.list_call_get_all_results(
-#     #                 network.list_network_security_groups,
-#     #                 compartment.id
-#     #             ).data
-#     #         print(nsgs_data)
-
-
-#     # for policy in policies:
-#     #     for statement in policy.statements:
-#     #         if "to manage all-resources in tenancy".upper() in statement.upper():
-#     #             print("Bad Policy")
-#     #             print(policy.name)
-
-#    # users = identity_read_users(identity, tenancy)
-
-
-
-#     # for user in users:
-#     #     if 'hammer' in user['name']:
-
-#     #         print(user)
-#     #         print(user['customer_secret_keys'][0])
-#     #         print(type(user['api_keys'][0]))
-#     #         print("Key max time is:")
-#     #         print(key_time_max_datetime)
-
-#     #         for key in user['api_keys']:
-#     #             print(type(key['time_created']))
-#     #             if key_time_max_datetime > key['time_created']:
-#     #                 print("Key Expired")
-            
-
-#     #         #print(type(user['auth_tokens'][0]))
-
-
-# except Exception as e:
-#     raise RuntimeError("\nError extracting compartments section - " + str(e))

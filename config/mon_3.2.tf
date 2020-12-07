@@ -7,6 +7,7 @@
 
 module "cis_tags" {
   source                       = "../modules/monitoring/tags"
+  providers                    = { oci = oci.home }
   tag_namespace_compartment_id = var.tenancy_ocid
   tag_namespace_name           = var.service_label
   tag_namespace_description    = "${var.service_label} tag namespace"

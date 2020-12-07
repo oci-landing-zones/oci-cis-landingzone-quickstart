@@ -5,6 +5,7 @@
 
 module "cis_iam_admins" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.iam_admin_group_name
   group_description     = "Group responsible for managing IAM resources in the tenancy."

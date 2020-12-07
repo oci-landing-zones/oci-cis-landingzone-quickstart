@@ -478,7 +478,7 @@ class CIS_Report:
                     }
                     self.__policies.append(record)
 
-            print("    Total " + str(len(self.__policies)) + " compartments loaded.")
+            print("    Total " + str(len(self.__policies)) + " compartments policies.")
             return self.__policies
 
         except Exception as e:

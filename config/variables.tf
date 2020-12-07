@@ -3,35 +3,36 @@
 
 # General
 variable "service_label" {
-    default = "cis"
     validation {
-        condition     = length(regexall("_",var.service_label)) == 0
-        error_message = "The service_label variable value must not contain the character _."
-    }
+        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.service_label)) > 0
+        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 8 character max."
+  }
 }
 
 variable "tenancy_ocid" {}
-variable "user_ocid" {
-    default = ""
-}
-variable "fingerprint" {
-    default = ""
-}
-variable "private_key_path" {
-    default = ""
-}
+variable "user_ocid" {}
+variable "fingerprint" {}
+variable "private_key_path" {}
 variable "private_key_password" {
     default = ""
 }
-
 variable "home_region" {
-    default = "us-ashburn-1"
+    validation {
+        condition     = length(trim(var.home_region,"")) > 0
+        error_message = "The home_region variable is required for IAM resources."
+  }
 }
 variable "region" {
-    default = "us-ashburn-1"
-}
+    validation {
+        condition     = length(trim(var.region,"")) > 0
+        error_message = "The region variable is required."
+  }
+}  
 variable "region_key" {
-    default = "iad"
+  validation {
+    condition     = length(regexall("^[a-z]{1,3}$", var.region_key)) > 0
+    error_message = "The region_key variable is required and must be a 3 letter string, lowercase."
+  }
 }
 
 # Networking
@@ -84,7 +85,7 @@ variable "is_vcn_onprem_connected" {
     }
 }
 variable "onprem_cidr" {
-    default = "192.168.0.0/16"
+    default = "0.0.0.0/0"
     validation { 
         condition = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",var.onprem_cidr)) > 0
         error_message = "Invalid cidr block value provided for onprem_cidr variable."

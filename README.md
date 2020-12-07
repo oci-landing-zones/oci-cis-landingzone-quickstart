@@ -5,28 +5,32 @@ This Landing Zone template deploys a standardized environment in an Oracle Cloud
 
 The Landing Zone template deploys a standard three-tier web architecture using a single VCN with multiple compartments to segregate access to various resources. The template configures the OCI tenancy to meet CIS OCI Foundations Benchmark settings related to:
 
-- IAM
+- IAM (Identity & Access Management)
 - Networking
-- Monitoring
+- Keys
+- Cloud Guard
+- Logging
+- Events
+- Notifications
 - Object Storage
 
-The resources are provisioned using a single user account with broad tenancy administration privileges.
- 
  ## Architecture 
- The Landing Zone template creates a three-tier web architecture in a single VCN. The three tiers are divided into:
+ The template creates a three-tier web architecture in a single VCN. The three tiers are divided into:
  
- - One (1) Public Subnet (for load balancers and bastion servers)
- - Two (2) Private Subnets (one for the application tier/servers and one for the database tier)
+ - One public subnet for load balancers and bastion servers;
+ - Two private subnets: one for the application tier and one for the database tier.
  
- The Landing Zone template also creates four (4) compartments in the tenancy:
+ The Landing Zone template also creates four compartments in the tenancy:
  
- - A network compartment: A compartment for all networking resources.
- - A security compartment: A compartment for all logging, key management, and notifications resources and services. 
- - An application development compartment: A compartment for application development related services, including compute, storage, functions, streams, Kubernetes and API Gateway. 
- - A database compartment: A compartment for a database resources and services. 
+ - A network compartment: for all networking resources.
+ - A security compartment: for all logging, key management, and notifications resources. 
+ - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 
+ - A database compartment: for all database resources. 
 
 The architecture diagram below does not show the database compartment, because no resources are initially provisioned into that compartment.
 The greyed out icons in the AppDev compartment indicate services not provisioned by this template.
+
+The resources are provisioned using a single user account with broad tenancy administration privileges.
 
 ![Architecture](images/Architecture.png)
 
@@ -48,67 +52,51 @@ Input variables used in the configuration are all defined (and defaulted) in con
 - **private_key_path**: the local path to the user private key.
 	- Required, no default
 - **private_key_password**: the private key password, if any.
-	- Optional, no default
+	- Optional, default ""
 - **home_region**: the tenancy home region identifier where Terraform should provision IAM resources (for a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)
-	- Required, default us-ashburn-1
+	- Required, no default	
 - **region**: the tenancy region identifier where the Terraform should provision the resources.
-	- Required, default us-ashburn-1
+	- Required, no default
 - **region_key**: the 3-letter region key
-	- Required, default iad
+	- Required, no default
 - **service_label**: a label that is used as a prefix when naming provisioned resources.
-	- Required, default cis
+	- Required, no default
 - **vcn_cidr**: the VCN CIDR block
-	- Required, default 10.0.0.0/16
+	- Optional, default 10.0.0.0/16
 - **public_subnet_cidr**: the public subnet CIDR block.
-	- Required, default 10.0.1.0/24
+	- Optional, default 10.0.1.0/24
 - **private_subnet_app_cidr**: the App private subnet CIDR block.
-	- Required, default 10.0.2.0/24
+	- Optional, default 10.0.2.0/24
 - **private_subnet_db_cidr**: the DB private subnet CIDR block.
-	- Required, default 10.0.3.0/24
+	- Optional, default 10.0.3.0/24
 - **public_src_bastion_cidr**: the external CIDR block that is allowed to ingress into the bastions servers in the public subnet.
 	- Required, no default
 - **public_src_lbr_cidr**: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
-	- Required, default 0.0.0.0/0
+	- Optional, default 0.0.0.0/0
 - **is_vcn_onprem_connected**: whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN.
 	- Required, default false	
 - **onprem_cidr**: the on-premises CIDR block. Only used if is_vcn_onprem_connected == true
-	- Optional, default 192.168.0.0/16	
+	- Optional, default 0.0.0.0/0	
 - **network_admin_email_endpoint**: an email to receive notifications for network related events.
 	- Required, no default
 - **security_admin_email_endpoint**: an email to receive notifications for security related events.
 	- Required, no default
 - **cloud_guard_configuration_status**: whether Cloud Guard is enabled or not.
-	- Required, default ENABLED
+	- Optional, default ENABLED
 - **cloud_guard_configuration_self_manage_resources**: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities.
-	- Required, default false
+	- Optional, default false
 
 ## How to Execute the Code Using Terraform CLI
-You MUST provide values for the following variable names: tenancy_ocid, user_ocid, fingerprint, private_key_path and private_key_password (if any)
+Within the config folder, provide variable values in the existing *quickstart-input.tfvars* file.
 
-There are multiple ways of achieving this, all documented in https://www.terraform.io/docs/configuration/variables.html:
-- Environment variables
-- terraform.tfvars or terraform.tfvars.json files 
-- *.auto.tfvars or *.auto.tfvars.json files
-- any -var and -var-file options on the command line.
+Next, within the config folder, execute:
 
-For environment variables, please see the provided env-vars.template. Once the correct values are provided, make sure to run 'source env-vars.template' to export those variables before executing Terraform.
+	terraform init
+	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
+	terraform apply -var-file="quickstart-input.tfvars" plan.out
 
-If you want to use terraform.tfvars file, create the file with this exact name (terraform.tfvars) in the config folder and provide values as shown below (you are expected to change the sample values :-)). Also add any custom values for the default variables defined in config/variables.tf.The terraform.tfvars file is automatically loaded when Terraform executes.
+Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and execute:	
 
-	tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaaixl3xlrmengaocampeaogim5q2l2pv2qmfithywqhw4tgbvuq"
-	user_ocid="ocid1.user.oc1..aaaaaaaalxqallveu54bidalibertaaaonjyn7mopu2oyy4hqjjducajotaefe"
-	fingerprint="c1:91:24:3f:49:77:68:22:2e:45:80:fg:36:67:45:93"
-	private_key_path="/home/users/myself/private_key.pem"
-	private_key_password=""
-	is_vcn_onprem_connected="true" # if you want to provision a DRG
-	onprem_cidr="a_valid_cidr_block"
-	public_src_bastion_cidr="a_valid_cidr_block"
-	network_admin_email_endpoint="a_valid_email@your_domain.com"
-	security_admin_email_endpoint="a_valid_email@your_domain.com"
-
-With variable values provided, execute:
-
-	cd config
 	terraform init
 	terraform plan -out plan.out
 	terraform apply plan.out

@@ -6,6 +6,7 @@
 ### Networking service
 module "cis_network_admins" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.network_admin_group_name
   group_description     = "Group responsible for managing networking in compartment ${local.network_compartment_name_output}."
@@ -27,6 +28,7 @@ module "cis_network_admins" {
 ### Security services
 module "cis_security_admins" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.security_admin_group_name
   group_description     = "Group responsible for managing security services in compartment ${local.security_compartment_name_output}."
@@ -70,6 +72,7 @@ module "cis_security_admins" {
 ### Database service - group for managing DBaaS and Autonomous Database.
 module "cis_database_admins" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.database_admin_group_name
   group_description     = "Group responsible for managing databases in compartment ${local.database_compartment_name_output}."
@@ -97,6 +100,7 @@ module "cis_database_admins" {
 ### Application Development services - Combined AppDev with Compute and storage
 module "cis_appdev_admins" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.appdev_admin_group_name
   group_description     = "Group responsible for managing app development related services in compartment ${local.appdev_compartment_name_output}."
@@ -134,6 +138,7 @@ module "cis_appdev_admins" {
 ### Auditors
 module "cis_tenancy_auditors" {
   source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.auditor_group_name
   group_description     = "Group responsible for Auditing the tenancy"

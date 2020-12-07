@@ -5,6 +5,7 @@
 
 module "cis_compartments" {
   source       = "../modules/iam/iam-compartment"
+  providers    = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid        
   compartments = {
       (local.security_compartment_name) = {

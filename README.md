@@ -148,10 +148,11 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ## How to Customize the Terraform Configuration
-The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. For managing extra resources, like new compartments or VCNs, you can simply add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. 
+The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. We encourage any customization to follow this pattern as it enables consistent code reuse.
 
-For adding extra subnets to the existing VCN, for instance, simply add the extra subnet resources to the existing subnets map.
-Looking at the net_vcn.tf file, we have:
+For bringing new resources into the Terraform configuration, like compartments or VCNs, you can simply reuse the existing modules and add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. 
+
+For adding extra objects to an existing container object (like adding subnets to a VCN), simply add the extra objects to the existing map. For instance, looking at the net_vcn.tf file, we have:
 
 ```
   module "cis_vcn" {
@@ -184,7 +185,7 @@ Looking at the net_vcn.tf file, we have:
       security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_app_security_list_name].id]
 	  ...
 ```
-Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. You need to make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
+In this code excerpt, the *subnets* variable is a map of subnet objects. Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. Make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
 
 # Compliance Checking Script
 ## Overview

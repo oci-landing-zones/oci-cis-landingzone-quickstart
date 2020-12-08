@@ -66,7 +66,7 @@ Variable Name | Description | Required | Default Value
 **network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
 **security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
 **cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
-**cloud_guard_configuration_self_manage_resources**: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
+**cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
 
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
 
@@ -138,7 +138,6 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
-
 # CIS Reports Script
 ## Overview
 The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud.  The script outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
@@ -153,26 +152,34 @@ Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to t
 
 1. Run
 ```
-python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile Name>
+python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile_Name>
 ```
+where \<Profile_Name> is the profile name in OCI client config file (typically located under $HOME/.oci). The profile name defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
+
+	[the_profile_name]
+	tenancy=ocid1.tenancy.oc1..aaaaaaaagfqbe4notarealocidreallygzinrxt6h6hfshjokfgfi5nzquxmfpzkyq
+	region=us-ashburn-1
+	user=ocid1.user.oc1..aaaaaaaaltwx45wllv52qqxk7inotarealocidreallyo76gboofpbzlgmihq
+	fingerprint=c8:91:41:8p:65:56:68:02:2e:54:80:kk:36:76:69:39
+	key_file=/path_to_my_private_key_file.pem
 
 ### Executing using Cloud Shell:
-1. install oci sdk
+1. install OCI sdk
 
 ```
 pip3 install --user oci
 ```
-
 1. Copy the cis_reports.py to the directory
 
 1. Run
 ```
 python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
+# Known Facts
+## Destroying Resources
+	- By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
+	- By design, compartments are not destroyed immediately. 
+	- Tag namespace may fail to delete on the first destroy.  Run destroy again to remove.
 
-# Known Issues
-## Deployment via Resource Manager or Terraform
-- Destroying the stack
-	- Vaults have a delayed delete of 30 days
-	- Compartments may not delete 
-	- Tag namespace fails to delete on the first destroy.  Run destroy again to remove.
+# Feedback
+We welcome your feedback about this template. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

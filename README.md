@@ -43,6 +43,7 @@ Within the config folder, the Terraform files are named after the use cases they
 
 ## Input Variables
 Input variables used in the configuration are all defined (and defaulted) in config/variables.tf:
+
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console | Yes | None

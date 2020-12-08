@@ -20,140 +20,140 @@ import oci
 import json
 import os
 import csv
-#DAYS_OLD = 90
 
-
-cis_foundations_benchmark_1_1 = {
-    '1.1': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.1', 'Title' : 'Ensure service level admins are created to manage resources of particular service','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.2': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.2', 'Title' : 'Ensure permissions on all resources are given only to the tenancy administrator group','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.3': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.3', 'Title' : 'Ensure IAM administrators cannot update tenancy Administrators group','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.4': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.4', 'Title' : 'Ensure IAM password policy requires minimum length of 14 or greater','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.5': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.5', 'Title' : 'Ensure IAM password policy expires passwords within 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.6': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.6', 'Title' : 'Ensure IAM password policy prevents password reuse','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.7': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.7', 'Title' : 'Ensure MFA is enabled for all users with a console password','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.8': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.8', 'Title' : 'Ensure user API keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.9': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.9', 'Title' : 'Ensure user customer secret keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.10': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.10', 'Title' : 'Ensure user auth tokens rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.11': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.11', 'Title' : 'Ensure API keys are not created for tenancy administrator users','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '1.12': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.12', 'Title' : 'Ensure all OCI IAM user accounts have a valid and current email address','Status' : True, 'Level' : 1 , 'Findings' : []},
-
-    '2.1': {'section' : 'Networking', 'recommendation_#' : '2.1', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '2.2': {'section' : 'Networking', 'recommendation_#' : '2.2', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '2.3': {'section' : 'Networking', 'recommendation_#' : '2.3', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '2.4': {'section' : 'Networking', 'recommendation_#' : '2.4', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '2.5': {'section' : 'Networking', 'recommendation_#' : '2.5', 'Title' : 'Ensure the default security list of every VCN restricts all traffic except ICMP','Status' : True, 'Level' : 1 , 'Findings' : []},
-
-    '3.1': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.1', 'Title' : 'Ensure audit log retention period is set to 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.2': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.2', 'Title' : 'Ensure default tags are used on resources','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.3': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.3', 'Title' : 'Create at least one notification topic and subscription to receive monitoring alerts','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.4': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.4', 'Title' : 'Ensure a notification is configured for Identity Provider changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.5': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.5', 'Title' : 'Ensure a notification is configured for IdP group mapping changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-    '3.13': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.13', 'Title' : 'Ensure a notification is configured for  changes to network gateways','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.14': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.14', 'Title' : 'Ensure VCN flow logging is enabled for all subnets','Status' : True, 'Level' : 2 , 'Findings' : []},
-    '3.15': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.15', 'Title' : 'Ensure Cloud Guard is enabled in the root compartment of the tenancy','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.16': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.16', 'Title' : 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '3.17': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.17', 'Title' : 'Ensure write level Object Storage logging is enabled for all buckets','Status' : True, 'Level' : 2 , 'Findings' : []},
-
-    '4.1': {'section' : 'Object Storage', 'recommendation_#' : '4.1', 'Title' : 'Ensure no Object Storage buckets are publicly visible','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '4.2': {'section' : 'Object Storage', 'recommendation_#' : '4.2', 'Title' : 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)','Status' : True, 'Level' : 2,'Findings' : [] },
-
-    '5.1': {'section' : 'Asset Management', 'recommendation_#' : '5.1', 'Title' : 'Create at least one compartment in your tenancy to store cloud resources','Status' : True, 'Level' : 1 , 'Findings' : []},
-    '5.2': {'section' : 'Asset Management', 'recommendation_#' : '5.2', 'Title' : 'Ensure no resources are created in the root compartment','Status' : True, 'Level' : 1 , 'Findings' : []}
-}
-
-cis_monitoring_checks = {
-   "3.4" : [
-        'com.oraclecloud.identitycontrolplane.createidentityprovider',
-        'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
-        'com.oraclecloud.identitycontrolplane.updateidentityprovider'
-    ],
-    "3.5" : [
-        'com.oraclecloud.identitycontrolplane.createpolicy',
-        'com.oraclecloud.identitycontrolplane.deletepolicy',
-        'com.oraclecloud.identitycontrolplane.updatepolicy'
-    ],
-    "3.6" : [
-        'com.oraclecloud.identitycontrolplane.creategroup',
-        'com.oraclecloud.identitycontrolplane.deletegroup',
-        'com.oraclecloud.identitycontrolplane.updategroup'
-    ],
-    "3.7" : [
-        'com.oraclecloud.identitycontrolplane.createpolicy',
-        'com.oraclecloud.identitycontrolplane.deletepolicy',
-        'com.oraclecloud.identitycontrolplane.updatepolicy'
-    ],
-    "3.8" : [
-        'com.oraclecloud.identitycontrolplane.createuser',
-        'com.oraclecloud.identitycontrolplane.deleteuser',
-        'com.oraclecloud.identitycontrolplane.updateuser',
-        'com.oraclecloud.identitycontrolplane.updateusercapabilities',
-        'com.oraclecloud.identitycontrolplane.updateuserstate'
-    ],
-    "3.9" : [
-        'com.oraclecloud.virtualnetwork.createvcn',
-        'com.oraclecloud.virtualnetwork.deletevcn',
-        'com.oraclecloud.virtualnetwork.updatevcn'
-    ],
-    "3.10" : [
-        'com.oraclecloud.virtualnetwork.changeroutetablecompartment',
-        'com.oraclecloud.virtualnetwork.createroutetable',
-        'com.oraclecloud.virtualnetwork.deleteroutetable',
-        'com.oraclecloud.virtualnetwork.updateroutetable'
-    ],
-    "3.11" : [
-        'com.oraclecloud.virtualnetwork.changesecuritylistcompartment',
-        'com.oraclecloud.virtualnetwork.createsecuritylist',
-        'com.oraclecloud.virtualnetwork.deletesecuritylist',
-        'com.oraclecloud.virtualnetwork.updatesecuritylist'
-    ],
-    "3.12" : [
-        'com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment',
-        'com.oraclecloud.virtualnetwork.createnetworksecuritygroup',
-        'com.oraclecloud.virtualnetwork.deletenetworksecuritygroup',
-        'com.oraclecloud.virtualnetwork.updatenetworksecuritygroup'
-    ],
-    "3.13" : [
-        'com.oraclecloud.virtualnetwork.createdrg',
-        'com.oraclecloud.virtualnetwork.deletedrg',
-        'com.oraclecloud.virtualnetwork.updatedrg',
-        'com.oraclecloud.virtualnetwork.createdrgattachment',
-        'com.oraclecloud.virtualnetwork.deletedrgattachment',
-        'com.oraclecloud.virtualnetwork.updatedrgattachment',
-        'com.oraclecloud.virtualnetwork.changeinternetgatewaycompartment',
-        'com.oraclecloud.virtualnetwork.createinternetgateway',
-        'com.oraclecloud.virtualnetwork.deleteinternetgateway',
-        'com.oraclecloud.virtualnetwork.updateinternetgateway',
-        'com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment',
-        'com.oraclecloud.virtualnetwork.createlocalpeeringgateway',
-        'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway',
-        'com.oraclecloud.virtualnetwork.updatelocalpeeringgateway',
-        'com.oraclecloud.natgateway.changenatgatewaycompartment',
-        'com.oraclecloud.natgateway.createnatgateway',
-        'com.oraclecloud.natgateway.deletenatgateway',
-        'com.oraclecloud.natgateway.updatenatgateway',
-        'com.oraclecloud.servicegateway.attachserviceid',
-        'com.oraclecloud.servicegateway.changeservicegatewaycompartment',
-        'com.oraclecloud.servicegateway.createservicegateway',
-        'com.oraclecloud.servicegateway.deleteservicegateway.begin',
-        'com.oraclecloud.servicegateway.deleteservicegateway.end',
-        'com.oraclecloud.servicegateway.detachserviceid',
-        'com.oraclecloud.servicegateway.updateservicegateway'
-
-    ]
-}
 
 ##########################################################################
 # CIS Reporting Class
 ##########################################################################
 class CIS_Report:
     
+    # CIS Foundation benchmark 1.1 
+    cis_foundations_benchmark_1_1 = {
+        '1.1': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.1', 'Title' : 'Ensure service level admins are created to manage resources of particular service','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.2': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.2', 'Title' : 'Ensure permissions on all resources are given only to the tenancy administrator group','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.3': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.3', 'Title' : 'Ensure IAM administrators cannot update tenancy Administrators group','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.4': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.4', 'Title' : 'Ensure IAM password policy requires minimum length of 14 or greater','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.5': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.5', 'Title' : 'Ensure IAM password policy expires passwords within 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.6': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.6', 'Title' : 'Ensure IAM password policy prevents password reuse','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.7': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.7', 'Title' : 'Ensure MFA is enabled for all users with a console password','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.8': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.8', 'Title' : 'Ensure user API keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.9': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.9', 'Title' : 'Ensure user customer secret keys rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.10': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.10', 'Title' : 'Ensure user auth tokens rotate within 90 days or less','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.11': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.11', 'Title' : 'Ensure API keys are not created for tenancy administrator users','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '1.12': {'section' : 'Identity and Access Management', 'recommendation_#' : '1.12', 'Title' : 'Ensure all OCI IAM user accounts have a valid and current email address','Status' : True, 'Level' : 1 , 'Findings' : []},
+
+        '2.1': {'section' : 'Networking', 'recommendation_#' : '2.1', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '2.2': {'section' : 'Networking', 'recommendation_#' : '2.2', 'Title' : 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '2.3': {'section' : 'Networking', 'recommendation_#' : '2.3', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '2.4': {'section' : 'Networking', 'recommendation_#' : '2.4', 'Title' : 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '2.5': {'section' : 'Networking', 'recommendation_#' : '2.5', 'Title' : 'Ensure the default security list of every VCN restricts all traffic except ICMP','Status' : True, 'Level' : 1 , 'Findings' : []},
+
+        '3.1': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.1', 'Title' : 'Ensure audit log retention period is set to 365 days','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.2': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.2', 'Title' : 'Ensure default tags are used on resources','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.3': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.3', 'Title' : 'Create at least one notification topic and subscription to receive monitoring alerts','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.4': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.4', 'Title' : 'Ensure a notification is configured for Identity Provider changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.5': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.5', 'Title' : 'Ensure a notification is configured for IdP group mapping changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.13': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.13', 'Title' : 'Ensure a notification is configured for  changes to network gateways','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.14': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.14', 'Title' : 'Ensure VCN flow logging is enabled for all subnets','Status' : True, 'Level' : 2 , 'Findings' : []},
+        '3.15': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.15', 'Title' : 'Ensure Cloud Guard is enabled in the root compartment of the tenancy','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.16': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.16', 'Title' : 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '3.17': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.17', 'Title' : 'Ensure write level Object Storage logging is enabled for all buckets','Status' : True, 'Level' : 2 , 'Findings' : []},
+
+        '4.1': {'section' : 'Object Storage', 'recommendation_#' : '4.1', 'Title' : 'Ensure no Object Storage buckets are publicly visible','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '4.2': {'section' : 'Object Storage', 'recommendation_#' : '4.2', 'Title' : 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)','Status' : True, 'Level' : 2,'Findings' : [] },
+
+        '5.1': {'section' : 'Asset Management', 'recommendation_#' : '5.1', 'Title' : 'Create at least one compartment in your tenancy to store cloud resources','Status' : True, 'Level' : 1 , 'Findings' : []},
+        '5.2': {'section' : 'Asset Management', 'recommendation_#' : '5.2', 'Title' : 'Ensure no resources are created in the root compartment','Status' : True, 'Level' : 1 , 'Findings' : []}
+}
+    # CIS monitoring notifications check
+    cis_monitoring_checks = {
+        "3.4" : [
+            'com.oraclecloud.identitycontrolplane.createidentityprovider',
+            'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
+            'com.oraclecloud.identitycontrolplane.updateidentityprovider'
+        ],
+        "3.5" : [
+            'com.oraclecloud.identitycontrolplane.createpolicy',
+            'com.oraclecloud.identitycontrolplane.deletepolicy',
+            'com.oraclecloud.identitycontrolplane.updatepolicy'
+        ],
+        "3.6" : [
+            'com.oraclecloud.identitycontrolplane.creategroup',
+            'com.oraclecloud.identitycontrolplane.deletegroup',
+            'com.oraclecloud.identitycontrolplane.updategroup'
+        ],
+        "3.7" : [
+            'com.oraclecloud.identitycontrolplane.createpolicy',
+            'com.oraclecloud.identitycontrolplane.deletepolicy',
+            'com.oraclecloud.identitycontrolplane.updatepolicy'
+        ],
+        "3.8" : [
+            'com.oraclecloud.identitycontrolplane.createuser',
+            'com.oraclecloud.identitycontrolplane.deleteuser',
+            'com.oraclecloud.identitycontrolplane.updateuser',
+            'com.oraclecloud.identitycontrolplane.updateusercapabilities',
+            'com.oraclecloud.identitycontrolplane.updateuserstate'
+        ],
+        "3.9" : [
+            'com.oraclecloud.virtualnetwork.createvcn',
+            'com.oraclecloud.virtualnetwork.deletevcn',
+            'com.oraclecloud.virtualnetwork.updatevcn'
+        ],
+        "3.10" : [
+            'com.oraclecloud.virtualnetwork.changeroutetablecompartment',
+            'com.oraclecloud.virtualnetwork.createroutetable',
+            'com.oraclecloud.virtualnetwork.deleteroutetable',
+            'com.oraclecloud.virtualnetwork.updateroutetable'
+        ],
+        "3.11" : [
+            'com.oraclecloud.virtualnetwork.changesecuritylistcompartment',
+            'com.oraclecloud.virtualnetwork.createsecuritylist',
+            'com.oraclecloud.virtualnetwork.deletesecuritylist',
+            'com.oraclecloud.virtualnetwork.updatesecuritylist'
+        ],
+        "3.12" : [
+            'com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment',
+            'com.oraclecloud.virtualnetwork.createnetworksecuritygroup',
+            'com.oraclecloud.virtualnetwork.deletenetworksecuritygroup',
+            'com.oraclecloud.virtualnetwork.updatenetworksecuritygroup'
+        ],
+        "3.13" : [
+            'com.oraclecloud.virtualnetwork.createdrg',
+            'com.oraclecloud.virtualnetwork.deletedrg',
+            'com.oraclecloud.virtualnetwork.updatedrg',
+            'com.oraclecloud.virtualnetwork.createdrgattachment',
+            'com.oraclecloud.virtualnetwork.deletedrgattachment',
+            'com.oraclecloud.virtualnetwork.updatedrgattachment',
+            'com.oraclecloud.virtualnetwork.changeinternetgatewaycompartment',
+            'com.oraclecloud.virtualnetwork.createinternetgateway',
+            'com.oraclecloud.virtualnetwork.deleteinternetgateway',
+            'com.oraclecloud.virtualnetwork.updateinternetgateway',
+            'com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment',
+            'com.oraclecloud.virtualnetwork.createlocalpeeringgateway',
+            'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway',
+            'com.oraclecloud.virtualnetwork.updatelocalpeeringgateway',
+            'com.oraclecloud.natgateway.changenatgatewaycompartment',
+            'com.oraclecloud.natgateway.createnatgateway',
+            'com.oraclecloud.natgateway.deletenatgateway',
+            'com.oraclecloud.natgateway.updatenatgateway',
+            'com.oraclecloud.servicegateway.attachserviceid',
+            'com.oraclecloud.servicegateway.changeservicegatewaycompartment',
+            'com.oraclecloud.servicegateway.createservicegateway',
+            'com.oraclecloud.servicegateway.deleteservicegateway.begin',
+            'com.oraclecloud.servicegateway.deleteservicegateway.end',
+            'com.oraclecloud.servicegateway.detachserviceid',
+            'com.oraclecloud.servicegateway.updateservicegateway'
+
+        ]
+    }
+
     # Class variables
     _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
@@ -161,16 +161,18 @@ class CIS_Report:
     # Tenancy Data
     __tenancy = None
     __cloud_guard_config = None
+
+    # For IAM Checks
     __tenancy_password_policy = None
     __compartments = []
-    __policies = []
-    
+    __policies = [] 
     __users = []
     __groups_to_users = []
     __tag_defaults = []
 
     __buckets = []
 
+    # For Networking checks
     __network_security_groups = []
     __network_security_lists = []
     __network_subnets = []
@@ -182,84 +184,79 @@ class CIS_Report:
     __subnet_logs = []
     __write_bucket_logs = []
 
+    # For Vaults and Keys checks
     __vaults = []
     
+    # For ONS Subscriptions 
     __subscriptions = []
 
+    # Results from Advanced search query
     __resources_in_root_compartment =[]
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
+    # For User based key checks
+    start_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
     api_key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
 
+    # For KMS check
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=__KMS_DAYS_OLD)
 
 
-    def __init__(self, config, signer, proxy):
+    def __init__(self, config, signer, proxy, output_bucket):
         # Start print time info
         self.__print_header("Running CIS Reports")
-        print("Code base By Adi Zohar, June 2020")
         print("Written By Andre Luiz Correa Neto & Josh Hammer, November 2020")
         print("Starts at " + self.start_time_str )
-        self._config = config
-        self._signer = signer
+        self.__config = config
+        self.__signer = signer
+        self.__output_bucket = output_bucket
         try:
-            print("\nConnecting to Identity Service...")
-            self.__identity = oci.identity.IdentityClient(self._config, signer=self._signer)
+            self.__identity = oci.identity.IdentityClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__identity.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Audit Service...")
-            self.__audit = oci.audit.AuditClient(self._config, signer=self._signer)
+            self.__audit = oci.audit.AuditClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__audit.base_client.session.proxies = {'https': proxy}
             
-            print("\nConnecting to Cloud Guard Service...")
-            self.__cloud_guard = oci.cloud_guard.CloudGuardClient(self._config, signer=self._signer)
+            self.__cloud_guard = oci.cloud_guard.CloudGuardClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__cloud_guard.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Advance Search Service...")
-            self.__search = oci.resource_search.ResourceSearchClient(self._config, signer=self._signer)
+            self.__search = oci.resource_search.ResourceSearchClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__search.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Network Service...")
-            self.__network = oci.core.VirtualNetworkClient(self._config, signer=self._signer)
+            self.__network = oci.core.VirtualNetworkClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__network.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Events Service...")
-            self.__events = oci.events.EventsClient(self._config, signer=self._signer)
+            self.__events = oci.events.EventsClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__events.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Logging Service...")
-            self.__logging = oci.logging.LoggingManagementClient(self._config, signer=self._signer)
+            self.__logging = oci.logging.LoggingManagementClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__logging.base_client.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Object Storage Service...")
-            self.__os_client = oci.object_storage.ObjectStorageClient(self._config, signer=self._signer)
+            self.__os_client = oci.object_storage.ObjectStorageClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__os_client.base_client.session.proxies = {'https': proxy}
             
-            print("\nConnecting to Vault Service...")
-            self.__vault = oci.key_management.KmsVaultClient(self._config, signer=self._signer)
+            self.__vault = oci.key_management.KmsVaultClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__vault.session.proxies = {'https': proxy}
 
-            print("\nConnecting to Subscriptions Service...")
-            self.__ons_subs = oci.ons.NotificationDataPlaneClient(self._config, signer=self._signer)
+            self.__ons_subs = oci.ons.NotificationDataPlaneClient(self.__config, signer=self.__signer)
             if proxy:
                 self.__ons_subs.session.proxies = {'https': proxy}
 
-
+            # Getting Tenancy Data and Region data
             self.__tenancy = self.__identity.get_tenancy(config["tenancy"]).data
             self.__regions = self.__identity.list_region_subscriptions(self.__tenancy.id).data
-            self.__compartments = self.__identity_read_compartments()
 
         except Exception as e:
                 raise RuntimeError("Failed to create service objects" + str(e.args))
@@ -275,7 +272,7 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_compartments(self):
 
-        print("Loading Compartments...")
+        print("Processing Compartments...")
         try:
             self.__compartments = oci.pagination.list_call_get_all_results(
                 self.__identity.list_compartments,
@@ -286,7 +283,6 @@ class CIS_Report:
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
 
-            print("    Total " + str(len(self.__compartments)) + " compartments loaded.")
             return self.__compartments
 
         except Exception as e:
@@ -296,7 +292,7 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
-        print("Loading User Groups and Group Membership...")
+        print("Processing User Groups and Group Membership...")
         try:
             # Getting all Groups in the Tenancy
             groups_data = oci.pagination.list_call_get_all_results(
@@ -329,7 +325,7 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        print("Loading Users...")
+        print("Processing Users...")
         try:
             # Getting all users in the Tenancy
             users_data = oci.pagination.list_call_get_all_results(
@@ -363,7 +359,6 @@ class CIS_Report:
 
                 self.__users.append(record)
 
-            print("    Total " + str(len(self.__users)) + " users loaded.")
             return self.__users
 
         except Exception as e:
@@ -391,7 +386,6 @@ class CIS_Report:
                 api_keys.append(record)
 
 
-            #print("    Total " + str(len(api_keys)) + " api keys loaded.")
             return api_keys
 
         except Exception as e:
@@ -459,7 +453,7 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_tenancy_policies(self):
 
-        print("Loading Tenancy Policies...")
+        print("Processing IAM Policies in root...")
         # Get all policy at the tenacy level
         try:
             for compartment in self.__compartments:
@@ -478,7 +472,6 @@ class CIS_Report:
                     }
                     self.__policies.append(record)
 
-            print("    Total " + str(len(self.__policies)) + " compartments policies.")
             return self.__policies
 
         except Exception as e:
@@ -488,10 +481,10 @@ class CIS_Report:
     # Get Objects Store Buckets
     ##########################################################################
     def __os_read_buckets(self):
-        print("Loading Object Store Buckets")
+        print("Processing Object Store Buckets")
         # Getting OS Namespace
         try: 
-            os_namespace = self.__os_client.get_namespace().data
+            self.__os_namespace = self.__os_client.get_namespace().data
         except Exception as e:
             raise RuntimeError("Error in __os_read_buckets could not load namespace " + str(e.args))
 
@@ -502,13 +495,13 @@ class CIS_Report:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     buckets_data = oci.pagination.list_call_get_all_results(
                         self.__os_client.list_buckets,
-                        os_namespace,
+                        self.__os_namespace,
                         compartment.id
                     ).data
 
                     # Getting Bucket Info
                     for bucket in buckets_data:
-                        bucket_info = self.__os_client.get_bucket(os_namespace,bucket.name).data
+                        bucket_info = self.__os_client.get_bucket(self.__os_namespace,bucket.name).data
                         record = {
                             "id" : bucket_info.id,
                             "name" : bucket_info.name,
@@ -533,7 +526,7 @@ class CIS_Report:
     ##########################################################################
     def __network_read_network_security_groups_rules(self):
         
-        print("Loading Network Security Groups...")
+        print("Processing Network Security Groups...")
         # print(network)
         # print(compartments)
         # Loopig Through Compartments Except Mnaaged
@@ -592,7 +585,7 @@ class CIS_Report:
     ##########################################################################
     def __network_read_network_security_lists(self):
         
-        print("Loading Network Security Lists...")
+        print("Processing Network Security Lists...")
         # print(network)
         # print(compartments)
         # Loopig Through Compartments Except Mnaaged
@@ -651,7 +644,7 @@ class CIS_Report:
     # Network Subnets Lists
     ##########################################################################
     def __network_read_network_subnets(self):
-        print("Loading Network Subnets...")
+        print("Processing Network Subnets...")
         try:
             # Looping through compartments in tenancy
             for compartment in self.__compartments:
@@ -695,7 +688,7 @@ class CIS_Report:
     ##########################################################################
     def __events_read_event_rules(self):
 
-        print("Loading Event Rules...")
+        print("Processing Event Rules...")
         try:
             for compartment in self.__compartments:
                 if self.__if_not_managed_paas_compartment(compartment.name):
@@ -726,7 +719,7 @@ class CIS_Report:
     ##########################################################################
     def __logging_read_log_groups_and_logs(self):
 
-        print("Loading Log Groups and Logs...")
+        print("Processing Log Groups and Logs...")
 
         try:
             # Looping through compartments
@@ -795,7 +788,7 @@ class CIS_Report:
     # Vault Keys 
     ##########################################################################
     def __vault_read_vaults(self):
-        print("Loading Vaults and Keys...")
+        print("Processing Vaults and Keys...")
         # Iterating through compartments
         for compartment in self.__compartments:
             if self.__if_not_managed_paas_compartment(compartment.name):
@@ -816,10 +809,9 @@ class CIS_Report:
                         "vault_type" : vlt.time_created,
                         "keys" : []
                         }
-                    print("\nConnecting to Key Management Service...")
                     # Checking for active Vaults only
                     if vlt.lifecycle_state == 'ACTIVE':
-                        cur_key_client = oci.key_management.KmsManagementClient(self._config, vlt.management_endpoint)
+                        cur_key_client = oci.key_management.KmsManagementClient(self.__config, vlt.management_endpoint)
                         keys = oci.pagination.list_call_get_all_results(
                             cur_key_client.list_keys,
                             compartment.id
@@ -853,7 +845,7 @@ class CIS_Report:
     ##########################################################################
     def __audit_read__tenancy_audit_configuration(self):
         # Pulling the Audit Configuration
-        print("Loading Audit Configuration...")
+        print("Processing Audit Configuration...")
 
         try:
             self.__audit_retention_period = self.__audit.get_configuration(self.__tenancy.id).data.retention_period_days
@@ -865,7 +857,7 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
-        print("Loading Cloud Guard configuration..")
+        print("Processing Cloud Guard configuration...")
         try:
             self.__cloud_guard_config = self.__cloud_guard.get_configuration(self.__tenancy.id).data
             return self.__cloud_guard_config
@@ -876,7 +868,7 @@ class CIS_Report:
     # Identity Password Policy 
     ##########################################################################
     def __identity_read_tenancy_password_policy(self):
-        print("Loading Tenancy Password Policy...")
+        print("Processing Tenancy Password Policy...")
         try:
             self.__tenancy_password_policy = self.__identity.get_authentication_policy(self.__tenancy.id).data
 
@@ -887,7 +879,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
-        print("Loading Subscriptions..")
+        print("Processing Subscriptions..")
         try:
             # Iterate through compartments to get all subscriptions
             for compartment in self.__compartments:
@@ -917,7 +909,7 @@ class CIS_Report:
     # Identity Tag Default
     ##########################################################################
     def __identity_read_tag_defaults(self):
-        print("Loading Tag Defaults..")
+        print("Processing Tag Defaults..")
         try:
             # Getting Tag Default for the Root Compartment - Only
             tag_defaults = oci.pagination.list_call_get_all_results(
@@ -961,7 +953,7 @@ class CIS_Report:
     ##########################################################################
     def __search_resources_in_root_compartment(self):
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
-        print("Load resources in root compartment...")
+        print("Processing resources in the oot compartment...")
         resources_in_root_data = self.__search_run_structured_query(query)
         for item in resources_in_root_data:
             record = {
@@ -975,7 +967,7 @@ class CIS_Report:
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report 
     ##########################################################################
-    def report_analyze_tenancy_data(self):
+    def __report_analyze_tenancy_data(self):
         #print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
 
 
@@ -988,8 +980,8 @@ class CIS_Report:
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
                     policy_counter+=1
             if policy_counter < 3:
-                cis_foundations_benchmark_1_1['1.1']['Status'] = False
-                cis_foundations_benchmark_1_1['1.1']['Findings'].append(policy)
+                self.cis_foundations_benchmark_1_1['1.1']['Status'] = False
+                self.cis_foundations_benchmark_1_1['1.1']['Findings'].append(policy)
 
         # 1.2 Check
         for policy in self.__policies:
@@ -998,8 +990,8 @@ class CIS_Report:
                     and "to manage all-resources in tenancy".upper() in statement.upper() \
                     and policy['name'].upper() != "Tenant Admin Policy".upper():
 
-                    cis_foundations_benchmark_1_1['1.2']['Status'] = False
-                    cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
+                    self.cis_foundations_benchmark_1_1['1.2']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['1.2']['Findings'].append(policy)
 
 
         # 1.3 Check - May want to add a service check
@@ -1009,30 +1001,30 @@ class CIS_Report:
                     "to use users in tenancy".upper() in statement.upper() or \
                         "to manage groups in tenancy".upper() in statement.upper() or 
                         "to manage users in tenancy".upper() in statement.upper()):
-                    cis_foundations_benchmark_1_1['1.3']['Status'] = False
-                    cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
+                    self.cis_foundations_benchmark_1_1['1.3']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['1.3']['Findings'].append(policy)
                     # Moving to the next policy 
                     break
 
 
         # 1.4 Check - Password Policy
         if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
-            cis_foundations_benchmark_1_1['1.4']['Status'] = True
+            self.cis_foundations_benchmark_1_1['1.4']['Status'] = True
 
 
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
             if user['external_identifier'] == None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
-                cis_foundations_benchmark_1_1['1.7']['Status'] = False
-                cis_foundations_benchmark_1_1['1.7']['Findings'].append(user)
+                self.cis_foundations_benchmark_1_1['1.7']['Status'] = False
+                self.cis_foundations_benchmark_1_1['1.7']['Findings'].append(user)
 
         # 1.8 Check - API Keys over 90
         for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        cis_foundations_benchmark_1_1['1.8']['Status'] = False
+                        self.cis_foundations_benchmark_1_1['1.8']['Status'] = False
                         finding = {
                             "user_name" : user['name'],
                             "user_id" : user['id'],
@@ -1043,14 +1035,14 @@ class CIS_Report:
                             'time_created' : key['time_created']
                         }
                         
-                        cis_foundations_benchmark_1_1['1.8']['Findings'].append(finding)
+                        self.cis_foundations_benchmark_1_1['1.8']['Findings'].append(finding)
 
         # CIS 1.9 Check - Old Customer Secrets
         for user in self.__users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        cis_foundations_benchmark_1_1['1.9']['Status'] = False
+                        self.cis_foundations_benchmark_1_1['1.9']['Status'] = False
 
                         finding = {
                             "user_name" : user['name'],
@@ -1063,7 +1055,7 @@ class CIS_Report:
                             'time_expires' : key['time_expires'],     
                         }
                         
-                        cis_foundations_benchmark_1_1['1.9']['Findings'].append(finding)
+                        self.cis_foundations_benchmark_1_1['1.9']['Findings'].append(finding)
 
         
         # CIS 1.10 Check - Old Auth Tokens
@@ -1071,7 +1063,7 @@ class CIS_Report:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        cis_foundations_benchmark_1_1['1.10']['Status'] = False
+                        self.cis_foundations_benchmark_1_1['1.10']['Status'] = False
 
                         finding = {
                             "user_name" : user['name'],
@@ -1085,22 +1077,22 @@ class CIS_Report:
                             "token" : key['token']   
                         }
                         
-                        cis_foundations_benchmark_1_1['1.10']['Findings'].append(finding)
+                        self.cis_foundations_benchmark_1_1['1.10']['Findings'].append(finding)
 
         # CIS 1.11 Active Admins with API keys
         # Iterrating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
-                cis_foundations_benchmark_1_1['1.11']['Status'] = False
-                cis_foundations_benchmark_1_1['1.11']['Findings'].append(user)
+                self.cis_foundations_benchmark_1_1['1.11']['Status'] = False
+                self.cis_foundations_benchmark_1_1['1.11']['Findings'].append(user)
 
 
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterrating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if user['external_identifier'] == None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
-                cis_foundations_benchmark_1_1['1.12']['Status'] = False
-                cis_foundations_benchmark_1_1['1.12']['Findings'].append(user)
+                self.cis_foundations_benchmark_1_1['1.12']['Status'] = False
+                self.cis_foundations_benchmark_1_1['1.12']['Findings'].append(user)
 
         
        # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on port 22, 3389
@@ -1111,15 +1103,15 @@ class CIS_Report:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
                         if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
-                            cis_foundations_benchmark_1_1['2.1']['Status'] = False
-                            cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
+                            self.cis_foundations_benchmark_1_1['2.1']['Status'] = False
+                            self.cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
                         elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
-                            cis_foundations_benchmark_1_1['2.2']['Status'] = False
-                            cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+                            self.cis_foundations_benchmark_1_1['2.2']['Status'] = False
+                            self.cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
                 # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
-                    cis_foundations_benchmark_1_1['2.5']['Status'] = False
-                    cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
+                    self.cis_foundations_benchmark_1_1['2.5']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
 
 
        # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
@@ -1129,26 +1121,26 @@ class CIS_Report:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
                         if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
-                            cis_foundations_benchmark_1_1['2.3']['Status'] = False           
-                            cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
+                            self.cis_foundations_benchmark_1_1['2.3']['Status'] = False           
+                            self.cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
                         elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-                            cis_foundations_benchmark_1_1['2.4']['Status'] = False
-                            cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
+                            self.cis_foundations_benchmark_1_1['2.4']['Status'] = False
+                            self.cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
 
         
         # CIS 3.1 Check - Ensure Audit log retention == 365
         if self.__audit_retention_period >= 365:
-            cis_foundations_benchmark_1_1['3.1']['Status'] = True
+            self.cis_foundations_benchmark_1_1['3.1']['Status'] = True
 
         # CIS Check 3.2 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
             if tag['value'] == "${iam.principal.name}":
-                cis_foundations_benchmark_1_1['3.2']['Status'] = True
+                self.cis_foundations_benchmark_1_1['3.2']['Status'] = True
 
       # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.__subscriptions) > 0:
-            cis_foundations_benchmark_1_1['3.3']['Status'] = True
+            self.cis_foundations_benchmark_1_1['3.3']['Status'] = True
 
 
         # CIS Checks 3.4 - 3.13 
@@ -1158,30 +1150,30 @@ class CIS_Report:
             jsonable_str = event['condition'].lower().replace("'", "\"")
             event_dict = json.loads(jsonable_str)
             
-            for key,changes in cis_monitoring_checks.items():
+            for key,changes in self.cis_monitoring_checks.items():
                 #Checking if all cis change list is a subset of event condition
                 # if(all(x in test_list for x in sub_list)): 
                 if(all(x in event_dict['eventtype'] for x in changes)):
-                    cis_foundations_benchmark_1_1[key]['Status'] = True
+                    self.cis_foundations_benchmark_1_1[key]['Status'] = True
 
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             if not(subnet['id'] in self.__subnet_logs):
-                cis_foundations_benchmark_1_1['3.14']['Status'] = False
-                cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
+                self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
+                self.cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
 
 
         # if(all(x in self.__subnet_logs for x in all_subnet_ids)):
-        #     cis_foundations_benchmark_1_1['3.14']['Status'] = True
+        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = True
         # else:
-        #     cis_foundations_benchmark_1_1['3.14']['Status'] = False
+        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
 
         # CIS Check 3.15 - Cloud Guard enabled
         if self.__cloud_guard_config.status == 'ENABLED':
-            cis_foundations_benchmark_1_1['3.15']['Status'] = True
+            self.cis_foundations_benchmark_1_1['3.15']['Status'] = True
         else:
-            cis_foundations_benchmark_1_1['3.15']['Status'] = False
+            self.cis_foundations_benchmark_1_1['3.15']['Status'] = False
 
 
         # CIS Check 3.16 - Encryption keys over 365
@@ -1189,50 +1181,63 @@ class CIS_Report:
             for key in vault['keys']:
                 #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
                 if self.kms_key_time_max_datetime >= key['time_created'] :
-                    cis_foundations_benchmark_1_1['3.16']['Status'] = False
-                    cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
+                    self.cis_foundations_benchmark_1_1['3.16']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['3.16']['Findings'].append(key)
         
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
         for bucket in self.__buckets:
             if not(bucket['name'] in self.__write_bucket_logs):
-                cis_foundations_benchmark_1_1['3.17']['Status'] = False
-                cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
+                self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
+                self.cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
 
 
         # for bucket in all
         # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
         # if(all(x in  all_bucket_names for x in self.__write_bucket_logs)):
-        #     cis_foundations_benchmark_1_1['3.17']['Status'] = True
+        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = True
         # else:
-        #     cis_foundations_benchmark_1_1['3.17']['Status'] = False
+        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
 
 
         # CIS Section 4 Checks
         for bucket in self.__buckets:
             if bucket['public_access_type'] != 'NoPublicAccess':
-                cis_foundations_benchmark_1_1['4.1']['Status'] = False
-                cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
+                self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
+                self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
             elif not(bucket['kms_key_id']):
-                cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
-                cis_foundations_benchmark_1_1['4.2']['Status'] = False
+                self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
+                self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
 
 
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment 
         if len(self.__compartments) < 2:
-            cis_foundations_benchmark_1_1['5.1']['Status'] = False
+            self.cis_foundations_benchmark_1_1['5.1']['Status'] = False
         
         if len(self.__resources_in_root_compartment) > 0:
             for item in self.__resources_in_root_compartment:
-                cis_foundations_benchmark_1_1['5.2']['Status'] = False
-                cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
+                self.cis_foundations_benchmark_1_1['5.2']['Status'] = False
+                self.cis_foundations_benchmark_1_1['5.2']['Findings'].append(item)
 
-    def report_generate_output_csv(self):
+    
+    ##########################################################################
+    # Orchestras data collection - analysis and report generation
+    ##########################################################################
+
+    def report_generate_cis_report(self):
         # This function reports generates CSV reports
+        
+        # Collecting all the tenancy data
+        self.__report_collect_tenancy_data()
+        
+        # Analyzing Data in reports 
+        self.__report_analyze_tenancy_data()
+
+        # Creating summary report
         summary_report = []
-        for key, recommendation in cis_foundations_benchmark_1_1.items():            
+        for key, recommendation in self.cis_foundations_benchmark_1_1.items():            
             record = {
                 "Recommendation #" : key,
                 "Section" : recommendation['section'],
@@ -1249,17 +1254,31 @@ class CIS_Report:
         
         # Screen output for CIS Summary Report
         self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        print('Num' + "\t" + "Level " + \
+              "\t" "Status " + "\t" + "Findings  " + "\t" +'Title')
+        print('#' * 90)
         for finding in summary_report:
-            print(finding['Recommendation #'] + "\t" + " Level: " + \
-            finding['Level'] + "\t" "Status: " + finding['Status'] + "\t" +
-                    "Findings:  " + finding['Findings'] + "\t" + finding['Title'])
+            print(finding['Recommendation #'] + "\t" + \
+            finding['Level'] + "\t" + finding['Status'] + "\t" +
+                    finding['Findings'] + "\t\t" + finding['Title'])
         
         # Generating Summary report CSV
-        self.__print_to_csv_file("cis", "summary_report", summary_report)
+        self.__print_header("Writing reports to CSV")
+        summary_file_name = self.__print_to_csv_file("cis", "summary_report", summary_report)
+        # Out putting to a bucket if I have one
+        if summary_file_name and self.__output_bucket:
+            self.__os_copy_report_to_object_storage(self.__output_bucket,self.start_date,summary_file_name)
+
+        for key, recommendation in self.cis_foundations_benchmark_1_1.items():
+            report_file_name = self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
+            if report_file_name and self.__output_bucket:
+                self.__os_copy_report_to_object_storage(self.__output_bucket,self.start_date,report_file_name)
+    
+    def __report_collect_tenancy_data(self):
         
+        self.__print_header("Procesing Tenancy Data for " + self.__tenancy.name)
 
-    def report_collect_tenancy_data(self):
-
+        self.__compartments = self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
         self.__vault_read_vaults()
         self.__audit_read__tenancy_audit_configuration()
@@ -1278,6 +1297,21 @@ class CIS_Report:
         self.__identity_read_tag_defaults()
 
     ##########################################################################
+    # Copy Report to Object Storage
+    ##########################################################################
+    def __os_copy_report_to_object_storage(self, bucketname, prefix, filename):
+        object_name = prefix + "/" + filename
+        #print(self.__os_namespace)
+        try:
+            with open(filename, "rb") as f:
+                try:
+                    self.__os_client.put_object(self.__os_namespace, bucketname, object_name, f)
+                except Exception as e:
+                    raise Exception("Error uploading file os_copy_report_to_object_storage: " + str(e.args))
+        except Exception as e:
+            raise Exception("Error opening file os_copy_report_to_object_storage: " + str(e.args))
+
+    ##########################################################################
     # Print to CSV 
     ##########################################################################
     def __print_to_csv_file(self, header, file_subject, data):
@@ -1285,7 +1319,7 @@ class CIS_Report:
         try:
             # if no data
             if len(data) == 0:
-                return
+                return None
 
             # get the file name of the CSV
             file_name =  header + "_" + file_subject + ".csv"
@@ -1306,10 +1340,12 @@ class CIS_Report:
                     writer.writerow(row)
 
             print("CSV: " + file_subject.ljust(22) + " --> " + file_name)
+            # Used by Uplaoad to 
+            return file_name
 
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
-
+            
     ##########################################################################
     # Print header centered
     ##########################################################################
@@ -1437,6 +1473,8 @@ def execute_report():
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
     parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
+    parser.add_argument('--output-to-bucket', default="", dest='output_bucket', help='Set Output bucket name (i.e. my-reporting-bucket) ')
+
     parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
     parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
     cmd = parser.parse_args()
@@ -1448,16 +1486,14 @@ def execute_report():
 
     # Identity extract compartments
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy)
-    report.report_collect_tenancy_data()
-    report.report_analyze_tenancy_data()
-    report.report_generate_output_csv()
+    report = CIS_Report(config, signer, cmd.proxy,cmd.output_bucket)
+    
+    report.report_generate_cis_report()
     
 
 ##########################################################################
 # Main
 ##########################################################################
-
 
 execute_report()
 

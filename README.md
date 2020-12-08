@@ -1,9 +1,9 @@
 # CIS OCI Landing Zone Quickstart Template
 
 ## Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations with workloads needing to comply with the CIS Oracle Cloud Foundations Benchmark v1.1.    
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the CIS OCI Foundations Benchmark v1.1.    
 
-The Landing Zone template deploys a standard three-tier web architecture using a single VCN with multiple compartments to segregate access to various resources. The template configures the OCI tenancy to meet CIS OCI Foundations Benchmark settings related to:
+The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
 
 - IAM (Identity & Access Management)
 - Networking
@@ -14,8 +14,14 @@ The Landing Zone template deploys a standard three-tier web architecture using a
 - Notifications
 - Object Storage
 
+ ## Deliverables
+ The template encloses two deliverables:
+
+- A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
+- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations.
+
  ## Architecture 
- The template creates a three-tier web architecture in a single VCN. The three tiers are divided into:
+ The Terraform code deploys a standard three-tier network architecture within a single Virtual Cloud Network (VCN). The three tiers are divided into:
  
  - One public subnet for load balancers and bastion servers;
  - Two private subnets: one for the application tier and one for the database tier.
@@ -27,15 +33,18 @@ The Landing Zone template deploys a standard three-tier web architecture using a
  - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 
  - A database compartment: for all database resources. 
 
-The architecture diagram below does not show the database compartment, because no resources are initially provisioned into that compartment.
-The greyed out icons in the AppDev compartment indicate services not provisioned by this template.
+The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
 
-The resources are provisioned using a single user account with broad tenancy administration privileges.
+The diagram below shows services and resources that are deployed:
 
 ![Architecture](images/Architecture.png)
 
-## How the Code is Organized 
-The code consists of a single Terraform root module configuration defined within the *config* folder along with a few children modules within the *modules* folder.
+The diagram does not show the database compartment, because no resources are initially provisioned into that compartment. The greyed out icons in the AppDev compartment indicate services not provisioned by the template.
+
+The resources are provisioned using a single user account with broad tenancy administration privileges.
+
+## How the Terraform Code is Organized 
+The Terraform code consists of a single root module configuration defined within the *config* folder along with a few children modules within the *modules* folder.
 
 Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
 
@@ -138,9 +147,11 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
-# CIS Reports Script
+# Compliance Checking Script
 ## Overview
-The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud.  The script outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
+The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud. 
+
+The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
 
 Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder with current day's date ex. ```2020-12-08```.
 
@@ -154,7 +165,7 @@ Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to t
 ```
 python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile_Name>
 ```
-where \<Profile_Name> is the profile name in OCI client config file (typically located under $HOME/.oci). The profile name defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
+where \<Profile_Name> is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
 
 	[the_profile_name]
 	tenancy=ocid1.tenancy.oc1..aaaaaaaagfqbe4notarealocidreallygzinrxt6h6hfshjokfgfi5nzquxmfpzkyq

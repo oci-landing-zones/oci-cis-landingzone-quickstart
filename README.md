@@ -15,7 +15,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Object Storage
 
  ## Deliverables
- The template encloses two deliverables:
+ This repository encloses two deliverables:
 
 - A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
 - A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations.

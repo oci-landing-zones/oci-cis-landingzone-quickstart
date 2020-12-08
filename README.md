@@ -154,9 +154,42 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
+
+# CIS Reports Script
+## Overview
+The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud.  The script outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
+
+Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder with current day's date ex. ```2020-12-08```.
+
+## Usage 
+
+### Executing on local machine
+
+1. [Setup and Prerequisites](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs) 
+
+1. Run
+```
+python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile Name>
+```
+
+### Executing using Cloud Shell:
+1. install oci sdk
+
+```
+pip3 install --user oci
+```
+
+1. Copy the cis_reports.py to the directory
+
+1. Run
+```
+python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
+``` 
+
+
 # Known Issues
 ## Deployment via Resource Manager or Terraform
 - Destroying the stack
-	- Vaults have a delayed delete of 7 days
+	- Vaults have a delayed delete of 30 days
 	- Compartments may not delete 
 	- Tag namespace fails to delete on the first destroy.  Run destroy again to remove.

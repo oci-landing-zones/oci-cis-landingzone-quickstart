@@ -5,6 +5,10 @@ resource "oci_kms_vault" "this" {
     compartment_id = var.compartment_id
     display_name   = var.vault_name
     vault_type     = var.vault_type
+    
+    lifecycle {
+      prevent_destroy = true
+    }
 }
 
 resource "oci_kms_key" "these" {
@@ -16,5 +20,9 @@ resource "oci_kms_key" "these" {
     key_shape {
       algorithm = each.value.key_shape_algorithm
       length    = each.value.key_shape_length
-  }
+    }
+
+    lifecycle {
+      prevent_destroy = true
+    }
 }

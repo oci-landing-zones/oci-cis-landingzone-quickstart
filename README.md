@@ -148,8 +148,9 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ## How to Customize the Terraform Configuration
-The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. For managing extra resources, like new compartments or VCNs, you can simply add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. For adding extra subnets to the existing VCN, for instance, simply add the extra subnet resources to the existing subnets map.
+The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. For managing extra resources, like new compartments or VCNs, you can simply add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. 
 
+For adding extra subnets to the existing VCN, for instance, simply add the extra subnet resources to the existing subnets map.
 Looking at the net_vcn.tf file, we have:
 
 ```

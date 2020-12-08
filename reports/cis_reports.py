@@ -1242,7 +1242,7 @@ class CIS_Report:
                 "Recommendation #" : key,
                 "Section" : recommendation['section'],
                 "Level" : str(recommendation['Level']),
-                "Status" : str(recommendation['Status']),
+                "Compliant" : ('Yes' if recommendation['Status'] else 'No'),
                 "Findings" : str(len(recommendation['Findings'])),
                 "Title" : recommendation['Title']
             }
@@ -1255,11 +1255,11 @@ class CIS_Report:
         # Screen output for CIS Summary Report
         self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
         print('Num' + "\t" + "Level " + \
-              "\t" "Status " + "\t" + "Findings  " + "\t" +'Title')
+              "\t" "Compliant" + "\t" + "Findings  " + "\t" +'Title')
         print('#' * 90)
         for finding in summary_report:
             print(finding['Recommendation #'] + "\t" + \
-            finding['Level'] + "\t" + finding['Status'] + "\t" +
+            finding['Level'] + "\t" + finding['Status'] + "\t\t" +
                     finding['Findings'] + "\t\t" + finding['Title'])
         
         # Generating Summary report CSV

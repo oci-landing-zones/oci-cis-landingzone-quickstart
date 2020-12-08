@@ -147,6 +147,44 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
+## How to Customize the Terraform Configuration
+The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. For managing extra resources, like new compartments or VCNs, you can simply add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. For adding extra subnets to the existing VCN, for instance, simply add the extra subnet resources to the existing subnets map.
+
+Looking at the net_vcn.tf file, we have:
+
+```
+  module "cis_vcn" {
+  	source               = "../modules/network/vcn"
+  	compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
+  	...
+  	is_create_drg        = tobool(var.is_vcn_onprem_connected)
+
+  	subnets = {
+    (local.public_subnet_name) = {
+      compartment_id    = null
+      ...
+      cidr              = var.public_subnet_cidr
+      ...
+      dns_label         = "public"
+      private           = false
+      ...
+      route_table_id    = module.cis_vcn.route_tables[local.public_subnet_route_table_name].id
+      security_list_ids = [module.cis_security_lists.security_lists[local.public_subnet_security_list_name].id]
+    }, 
+    (local.private_subnet_app_name) = {
+      compartment_id    = null
+      ...
+      cidr              = var.private_subnet_app_cidr
+      ...
+      dns_label         = "appsubnet"
+      private           = true
+      ...
+      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_app_route_table_name].id
+      security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_app_security_list_name].id]
+	  ...
+```
+Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. You need to make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
+
 # Compliance Checking Script
 ## Overview
 The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud. 
@@ -190,7 +228,7 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ## Destroying Resources
 - By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
 - By design, compartments are not destroyed immediately. 
-- Tag namespace may fail to delete on the first destroy.  Run destroy again to remove.
+- Tag namespaces may fail to delete on the first destroy.  Run destroy again to remove.
 
 # Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

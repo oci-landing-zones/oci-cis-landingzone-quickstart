@@ -3,8 +3,9 @@
 
 module "cis_cloud_guard" {
   source                = "../modules/monitoring/cloud-guard"
+  providers             = { oci = oci.home }
   compartment_id        = var.tenancy_ocid
-  reporting_region      = var.region
+  reporting_region      = var.home_region
   status                = var.cloud_guard_configuration_status
   self_manage_resources = var.cloud_guard_configuration_self_manage_resources
   service_label         = var.service_label 

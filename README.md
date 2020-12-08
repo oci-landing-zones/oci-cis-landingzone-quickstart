@@ -43,48 +43,31 @@ Within the config folder, the Terraform files are named after the use cases they
 
 ## Input Variables
 Input variables used in the configuration are all defined (and defaulted) in config/variables.tf:
-- **tenancy_ocid**: the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console.
-	- Required, no default
-- **user_ocid**: the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources.
-	- Required, no default
-- **fingerprint**: the user's public key fingerprint. This information can be obtained in OCI Console.
-	- Required, no default
-- **private_key_path**: the local path to the user private key.
-	- Required, no default
-- **private_key_password**: the private key password, if any.
-	- Optional, default ""
-- **home_region**: the tenancy home region identifier where Terraform should provision IAM resources (for a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)
-	- Required, no default	
-- **region**: the tenancy region identifier where the Terraform should provision the resources.
-	- Required, no default
-- **region_key**: the 3-letter region key
-	- Required, no default
-- **service_label**: a label that is used as a prefix when naming provisioned resources.
-	- Required, no default
-- **vcn_cidr**: the VCN CIDR block
-	- Optional, default 10.0.0.0/16
-- **public_subnet_cidr**: the public subnet CIDR block.
-	- Optional, default 10.0.1.0/24
-- **private_subnet_app_cidr**: the App private subnet CIDR block.
-	- Optional, default 10.0.2.0/24
-- **private_subnet_db_cidr**: the DB private subnet CIDR block.
-	- Optional, default 10.0.3.0/24
-- **public_src_bastion_cidr**: the external CIDR block that is allowed to ingress into the bastions servers in the public subnet.
-	- Required, no default
-- **public_src_lbr_cidr**: the external CIDR block that is allowed to ingress into the load balancer in the public subnet.
-	- Optional, default 0.0.0.0/0
-- **is_vcn_onprem_connected**: whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN.
-	- Required, default false	
-- **onprem_cidr**: the on-premises CIDR block. Only used if is_vcn_onprem_connected == true
-	- Optional, default 0.0.0.0/0	
-- **network_admin_email_endpoint**: an email to receive notifications for network related events.
-	- Required, no default
-- **security_admin_email_endpoint**: an email to receive notifications for security related events.
-	- Required, no default
-- **cloud_guard_configuration_status**: whether Cloud Guard is enabled or not.
-	- Optional, default ENABLED
-- **cloud_guard_configuration_self_manage_resources**: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities.
-	- Optional, default false
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console | Yes | None
+**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources | Yes | None
+**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | None
+**private_key_path** | the local path to the user private key | Yes | None
+**private_key_password** | the private key password, if any | No | ""
+**home_region** \* | the tenancy home region identifier where Terraform should provision IAM resources | Yes | None
+**region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None
+**region_key** \* | the 3-letter region key | Yes | None
+**service_label** | a label used as a prefix for naming resources | Yes | None
+**vcn_cidr** | the VCN CIDR block | Yes | 10.0.0.0/16
+**public_subnet_cidr** | the public subnet CIDR block | Yes | 10.0.1.0/24
+**private_subnet_app_cidr** | the App private subnet CIDR block | Yes | 10.0.2.0/24
+**private_subnet_db_cidr** | the DB private subnet CIDR block | Yes | 10.0.3.0/24
+**public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet | Yes | None
+**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet | Yes | 0.0.0.0/0
+**is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN | Yes | false
+**onprem_cidr** | the on-premises CIDR block. Only used if is_vcn_onprem_connected == true | No | 0.0.0.0/0
+**network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
+**security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
+**cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
+**cloud_guard_configuration_self_manage_resources**: whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
+
+\* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
 
 ## How to Execute the Code Using Terraform CLI
 Within the config folder, provide variable values in the existing *quickstart-input.tfvars* file.
@@ -185,7 +168,6 @@ pip3 install --user oci
 ```
 python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
-
 
 # Known Issues
 ## Deployment via Resource Manager or Terraform

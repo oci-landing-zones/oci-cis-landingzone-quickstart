@@ -55,14 +55,14 @@ Variable Name | Description | Required | Default Value
 **region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None
 **region_key** \* | the 3-letter region key | Yes | None
 **service_label** | a label used as a prefix for naming resources | Yes | None
-**vcn_cidr** | the VCN CIDR block | Yes | 10.0.0.0/16
-**public_subnet_cidr** | the public subnet CIDR block | Yes | 10.0.1.0/24
-**private_subnet_app_cidr** | the App private subnet CIDR block | Yes | 10.0.2.0/24
-**private_subnet_db_cidr** | the DB private subnet CIDR block | Yes | 10.0.3.0/24
+**vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
+**public_subnet_cidr** | the public subnet CIDR block | Yes | "10.0.1.0/24"
+**private_subnet_app_cidr** | the App private subnet CIDR block | Yes | "10.0.2.0/24"
+**private_subnet_db_cidr** | the DB private subnet CIDR block | Yes | "10.0.3.0/24"
 **public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet | Yes | None
-**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet | Yes | 0.0.0.0/0
+**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet | Yes | "0.0.0.0/0"
 **is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN | Yes | false
-**onprem_cidr** | the on-premises CIDR block. Only used if is_vcn_onprem_connected == true | No | 0.0.0.0/0
+**onprem_cidr** | the on-premises CIDR block. Only used if is_vcn_onprem_connected == true | No | "0.0.0.0/0"
 **network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
 **security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
 **cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
@@ -177,9 +177,9 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
 # Known Facts
 ## Destroying Resources
-	- By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
-	- By design, compartments are not destroyed immediately. 
-	- Tag namespace may fail to delete on the first destroy.  Run destroy again to remove.
+- By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
+- By design, compartments are not destroyed immediately. 
+- Tag namespace may fail to delete on the first destroy.  Run destroy again to remove.
 
 # Feedback
-We welcome your feedback about this template. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	
+We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

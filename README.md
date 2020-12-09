@@ -119,11 +119,13 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 ![Folder Stack](images/FolderStack_2.png)
 
-Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for variables description.
+Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for the variables description. Notice that *TENANCY_OCID* and *REGION* have default variables. They are automatically picked by ORM based on the executing context. The other defaulted variables, like *VCN_CIDR*, for instance, have their values picked from the stack's variables.tf file.
 
 ![Folder Stack](images/FolderStack_3.png)
 
-Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
+Once variable values are provided, click Next, review stack values and create the stack. 
+
+Next, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ![Run Stack](images/RunStack.png)
 

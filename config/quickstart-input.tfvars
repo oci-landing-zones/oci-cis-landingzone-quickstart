@@ -14,8 +14,8 @@ service_label        = "<a_label_to_prefix_resource_names_with>"
 ### For Networking
 is_vcn_onprem_connected       = <false_or_true>
 onprem_cidr                   = "<onprem_cidr_block_range>"
-public_src_bastion_cidr       ="<external_cidr_block_range_allowed_to_connect_to_bastion_servers>"
+public_src_bastion_cidr       = "<external_cidr_block_range_allowed_to_connect_to_bastion_servers>"
 
 ### For Security
-network_admin_email_endpoint  ="<email_to_receive_network_related_notifications>"
-security_admin_email_endpoint ="<email_to_receive_security_related_notifications>"
+network_admin_email_endpoint  = "<email_to_receive_network_related_notifications>"
+security_admin_email_endpoint = "<email_to_receive_security_related_notifications>"

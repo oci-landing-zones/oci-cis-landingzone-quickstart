@@ -119,6 +119,10 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 ![Folder Stack](images/FolderStack_2.png)
 
+Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for variables description.
+
+![Folder Stack](images/FolderStack_3.png)
+
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ![Run Stack](images/RunStack.png)

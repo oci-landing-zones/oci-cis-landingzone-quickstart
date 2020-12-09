@@ -86,7 +86,7 @@ Next, within the config folder, execute:
 
 	terraform init
 	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
-	terraform apply -var-file="quickstart-input.tfvars" plan.out
+	terraform apply plan.out
 
 Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and execute:	
 

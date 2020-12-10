@@ -9,11 +9,11 @@ module "cis_network_admins" {
   providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.network_admin_group_name
-  group_description     = "Group responsible for managing networking in compartment ${local.network_compartment_name_output}."
+  group_description     = "Group responsible for managing networking in compartment ${local.network_compartment_name}."
   user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-NetworkAdmins-Policy"
-  policy_description    = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${local.network_compartment_name_output}."
+  policy_description    = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${local.network_compartment_name}."
   policy_statements     = ["Allow group ${module.cis_network_admins.group_name} to read all-resources in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage virtual-network-family in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage dns in compartment ${local.network_compartment_name}",
@@ -31,11 +31,11 @@ module "cis_security_admins" {
   providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.security_admin_group_name
-  group_description     = "Group responsible for managing security services in compartment ${local.security_compartment_name_output}."
+  group_description     = "Group responsible for managing security services in compartment ${local.security_compartment_name}."
   user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-SecurityAdmins-Policy"
-  policy_description    = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${local.security_compartment_name_output}."
+  policy_description    = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${local.security_compartment_name}."
   policy_statements     = ["Allow group ${module.cis_security_admins.group_name} to read all-resources in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage instance-family in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage policies in tenancy where all {target.policy.name != 'Tenant Admin Policy', target.policy.name != '${var.service_label}-IAMAdmins-Policy'}",
@@ -75,11 +75,11 @@ module "cis_database_admins" {
   providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.database_admin_group_name
-  group_description     = "Group responsible for managing databases in compartment ${local.database_compartment_name_output}."
+  group_description     = "Group responsible for managing databases in compartment ${local.database_compartment_name}."
   user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-DatabaseAdmins-Policy"
-  policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name_output}."
+  policy_description    = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${local.database_compartment_name}."
   policy_statements     = ["Allow group ${module.cis_database_admins.group_name} to read all-resources in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
@@ -103,11 +103,11 @@ module "cis_appdev_admins" {
   providers             = { oci = oci.home }
   tenancy_ocid          = var.tenancy_ocid
   group_name            = local.appdev_admin_group_name
-  group_description     = "Group responsible for managing app development related services in compartment ${local.appdev_compartment_name_output}."
+  group_description     = "Group responsible for managing app development related services in compartment ${local.appdev_compartment_name}."
   user_names            = []
   policy_compartment_id = var.tenancy_ocid
   policy_name           = "${var.service_label}-AppDevAdmins-Policy"
-  policy_description    = "Policy allowing ${var.service_label}-AppDevAdmins group to manage app development related services in compartment ${local.appdev_compartment_name_output}."
+  policy_description    = "Policy allowing ${var.service_label}-AppDevAdmins group to manage app development related services in compartment ${local.appdev_compartment_name}."
   policy_statements     = ["Allow group ${module.cis_appdev_admins.group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage functions-family in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name}",

@@ -9,7 +9,12 @@ variable "service_label" {
   }
 }
 
-variable "tenancy_ocid" {}
+variable "tenancy_ocid" {
+    validation {
+        condition     = length(trim(var.tenancy_ocid,"")) > 0
+        error_message = "The tenancy_ocid variable is required."
+  }
+}
 variable "user_ocid" {
     default = ""
 }

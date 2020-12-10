@@ -10,9 +10,15 @@ variable "service_label" {
 }
 
 variable "tenancy_ocid" {}
-variable "user_ocid" {}
-variable "fingerprint" {}
-variable "private_key_path" {}
+variable "user_ocid" {
+    default = ""
+}
+variable "fingerprint" {
+    default = ""
+}
+variable "private_key_path" {
+    default = ""
+}
 variable "private_key_password" {
     default = ""
 }

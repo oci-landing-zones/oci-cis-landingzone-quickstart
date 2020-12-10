@@ -56,9 +56,9 @@ Input variables used in the configuration are all defined (and defaulted) in con
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console | Yes | None
-**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources | Yes | None
-**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | None
-**private_key_path** | the local path to the user private key | Yes | None
+**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources | Yes | ""
+**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | ""
+**private_key_path** | the local path to the user private key | Yes | ""
 **private_key_password** | the private key password, if any | No | ""
 **home_region** \* | the tenancy home region identifier where Terraform should provision IAM resources | Yes | None
 **region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None

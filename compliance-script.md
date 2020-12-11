@@ -40,15 +40,15 @@ pip3 install --user oci
 python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
 ### Script Output
-The script loops through all resource types referenced in the CIS Benchmark document and outputs a summary report. Each report row corresponds to a recommendation in the benchmark document, identifying if the tenancy is in compliance as well as the offending findings count. The report summary columns are read as:
+The script loops through all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
 
 - **Num**: the recommendation number in the CIS Benchmark document.
-- **Level**: the recommendation level. 1 is lighter than 2, as 2 raises more security concerns. 
+- **Level**: the recommendation level. Level 1 recommendations are less restrictive than Level 2.
 - **Compliant**: whether the tenancy is in compliance with the recommendation.
 - **Findings**: the number of offending findings for the recommendation.
 - **Title**: the recommendation description.
 
-In the sample output below, we can say the tenancy is not compliant with a few recommendations. Among those is item 1.7, that says 12 users do not have MFA enabled for accessing OCI console.
+In the sample output below, we see the tenancy is not compliant with several recommendations. Among those is item 1.7 where the output shows 12 users do not have MFA enabled for accessing OCI Console.
 
 ```
 ##########################################################################################
@@ -119,4 +119,4 @@ CSV: Logging and Monitoring_3.17 --> cis_Logging and Monitoring_3.17.csv
 CSV: Object Storage_4.1     --> cis_Object Storage_4.1.csv
 CSV: Object Storage_4.2     --> cis_Object Storage_4.2.csv
 ```
-Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, we see the 12 users who do not have MFA enabled for accessing OCI console. And so take the appropriate corrective action.
+Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 12 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.

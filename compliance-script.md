@@ -39,6 +39,7 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
 ### Script Output
 The script loops through all resource types referenced in the CIS Benchmark document and outputs a summary report. Each report row corresponds to a recommendation in the benchmark document, identifying if the tenancy is in compliance as well as the offending findings count. The report summary columns are read as:
+
 - Num: the recommendation number in the CIS Benchmark document.
 - Level: the CIS level. 1 is lighter than 2, as 2 raises more security concerns. 
 - Compliant: whether the tenancy is in compliance with the recommendation.
@@ -116,4 +117,4 @@ CSV: Logging and Monitoring_3.17 --> cis_Logging and Monitoring_3.17.csv
 CSV: Object Storage_4.1     --> cis_Object Storage_4.1.csv
 CSV: Object Storage_4.2     --> cis_Object Storage_4.2.csv
 ```
-Back to our example, by looking at cis_Identity and Access Management_1.7.csv file, we see the 12 users who do not have MFA enabled for accessing OCI console. And so take the appropriate corrective action.
+Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, we see the 12 users who do not have MFA enabled for accessing OCI console. And so take the appropriate corrective action.

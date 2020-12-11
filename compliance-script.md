@@ -28,7 +28,7 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	key_file=/path_to_my_private_key_file.pem
 
 #### Executing using Cloud Shell:
-1. install OCI SDK, running
+1. Install OCI SDK, running
 ```
 pip3 install --user oci
 ```

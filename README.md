@@ -80,9 +80,9 @@ Variable Name | Description | Required | Default Value
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
 
 ## How to Execute the Code Using Terraform CLI
-Within the config folder, provide variable values in the existing *quickstart-input.tfvars* file.
+Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.
 
-Next, within the config folder, execute:
+Next, within the *config* folder, execute:
 
 	terraform init
 	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
@@ -197,17 +197,17 @@ For adding extra objects to an existing container object (like adding subnets to
 ```
 In this code excerpt, the *subnets* variable is a map of subnet objects. Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. Make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
 
-# Compliance Checking Script
-## Overview
+## Compliance Checking Script
+### Overview
 The CIS Reports Script checks a tenancy's configuration against the CIS Foundations Benchmark for Oracle Cloud. 
 
 The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
 
 Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder with current day's date ex. ```2020-12-08```.
 
-## Usage 
+### Usage 
 
-### Executing on local machine
+#### Executing on local machine
 
 1. [Setup and Prerequisites](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs) 
 
@@ -224,7 +224,7 @@ where \<Profile_Name> is the profile name in OCI client config file (typically l
 	fingerprint=c8:91:41:8p:65:56:68:02:2e:54:80:kk:36:76:69:39
 	key_file=/path_to_my_private_key_file.pem
 
-### Executing using Cloud Shell:
+#### Executing using Cloud Shell:
 1. install OCI sdk
 
 ```
@@ -236,19 +236,20 @@ pip3 install --user oci
 ```
 python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 
-# Known Facts
-## Destroying Resources
+## Known Facts
+### Destroying Resources
 - By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
 - By design, compartments are not destroyed immediately. 
 - Tag namespaces may fail to delete on the first destroy.  Run destroy again to remove.
 
-# Acknowledgement
-Parts of the Terraform code reuse and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
-The Compliance Check script uses [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
+## Acknowledgements
+Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
 
-# Contributors
+The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
+
+## Contributors
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/halimer)
 - **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
 
-# Feedback
+## Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

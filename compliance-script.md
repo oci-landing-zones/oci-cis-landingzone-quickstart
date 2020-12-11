@@ -1,6 +1,6 @@
 ## Compliance Checking Script
 ### Overview
-The CIS Reports Script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. 
+The Compliance Checking script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. 
 
 The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
 
@@ -12,7 +12,9 @@ Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to t
 
 1. [Setup and Prerequisites](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs) 
 
-1. Run
+2. Download [cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py)
+
+3. Run
 ```
 python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile_Name>
 ```
@@ -26,14 +28,15 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	key_file=/path_to_my_private_key_file.pem
 
 #### Executing using Cloud Shell:
-1. install OCI sdk
-
+1. install OCI SDK, running
 ```
 pip3 install --user oci
 ```
-1. Copy the cis_reports.py to the directory
-
-1. Run
+2. Run
+```
+wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py
+```
+3. Run
 ```
 python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ``` 

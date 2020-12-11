@@ -49,9 +49,8 @@ The resources are provisioned using a single user account with broad tenancy adm
 - [Compliance Checking](compliance-script.md)
 
 ## Acknowledgements
-Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
-
-The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
+- Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
+- The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
 
 ## Contributors
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/halimer)

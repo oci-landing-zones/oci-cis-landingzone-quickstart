@@ -12,7 +12,7 @@ Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to t
 
 1. [Setup and Prerequisites](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs) 
 
-2. Download [cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py)
+2. Download cis_reports.py:[https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py)
 
 3. Run
 ```

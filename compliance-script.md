@@ -40,11 +40,11 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 ### Script Output
 The script loops through all resource types referenced in the CIS Benchmark document and outputs a summary report. Each report row corresponds to a recommendation in the benchmark document, identifying if the tenancy is in compliance as well as the offending findings count. The report summary columns are read as:
 
-- Num: the recommendation number in the CIS Benchmark document.
-- Level: the CIS level. 1 is lighter than 2, as 2 raises more security concerns. 
-- Compliant: whether the tenancy is in compliance with the recommendation.
-- Findings: the number of offending findings for the recommendation.
-- Title: the recommendation description.
+- **Num**: the recommendation number in the CIS Benchmark document.
+- **Level**: the CIS level. 1 is lighter than 2, as 2 raises more security concerns. 
+- **Compliant**: whether the tenancy is in compliance with the recommendation.
+- **Findings**: the number of offending findings for the recommendation.
+- **Title**: the recommendation description.
 
 In the sample output below, we can say the tenancy is not compliant with a few recommendations. Among those is item 1.7, that says 12 users do not have MFA enabled for accessing OCI console.
 

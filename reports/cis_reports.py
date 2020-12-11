@@ -953,7 +953,7 @@ class CIS_Report:
     ##########################################################################
     def __search_resources_in_root_compartment(self):
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
-        print("Processing resources in the oot compartment...")
+        print("Processing resources in the root compartment...")
         resources_in_root_data = self.__search_run_structured_query(query)
         for item in resources_in_root_data:
             record = {
@@ -1259,7 +1259,7 @@ class CIS_Report:
         print('#' * 90)
         for finding in summary_report:
             print(finding['Recommendation #'] + "\t" + \
-            finding['Level'] + "\t" + finding['Status'] + "\t\t" +
+            finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
                     finding['Findings'] + "\t\t" + finding['Title'])
         
         # Generating Summary report CSV

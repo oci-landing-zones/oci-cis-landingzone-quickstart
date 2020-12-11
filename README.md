@@ -1,5 +1,8 @@
 # CIS OCI Landing Zone Quick Start Template
 
+[uri-oracle-terraform-modules]: https://github.com/oracle-terraform-modules
+[uri-showoci]: https://github.com/adizohar/showoci
+
 ## Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the CIS OCI Foundations Benchmark v1.1.    
 
@@ -241,6 +244,21 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 - By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
 - By design, compartments are not destroyed immediately. 
 - Tag namespaces may fail to delete on the first destroy.  Run destroy again to remove.
+
+# Acknowledgement
+Parts of the Terraform code reuse and adapts from [Oracle Terraform Modules] [uri-oracle-terraform-modules].
+
+The Compliance Check script uses [Adi Zohar's showoci OCI Reporting tool] [uri-showoci].
+
+# Contributors
+**Owners**: @andrecorreaneto, @halimer
+**Contributors**: @herosjourney, @flynnkc 
+
+# License
+Copyright &copy; 2019 Oracle and/or its associates. All rights reserved.
+
+Licensed under the [Universal Permissive License 1.0][uri-license] as shown at 
+[https://oss.oracle.com/licenses/upl][uri-canonical-license].
 
 # Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

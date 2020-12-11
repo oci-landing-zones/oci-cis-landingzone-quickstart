@@ -247,16 +247,14 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 
 # Acknowledgement
 Parts of the Terraform code reuse and adapts from [Oracle Terraform Modules] [uri-oracle-terraform-modules].
-
 The Compliance Check script uses [Adi Zohar's showoci OCI Reporting tool] [uri-showoci].
 
 # Contributors
-**Owners**: @andrecorreaneto, @halimer
-**Contributors**: @herosjourney, @flynnkc 
+- **Owners**: @andrecorreaneto, @halimer
+- **Contributors**: @herosjourney, @flynnkc 
 
 # License
 Copyright &copy; 2019 Oracle and/or its associates. All rights reserved.
-
 Licensed under the [Universal Permissive License 1.0][uri-license] as shown at 
 [https://oss.oracle.com/licenses/upl][uri-canonical-license].
 

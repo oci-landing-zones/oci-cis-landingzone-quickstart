@@ -16,7 +16,7 @@ Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to t
 ```
 python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile_Name>
 ```
-where ```\<Profile_Name>``` is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
+where ```<Profile_Name>``` is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
 
 	[the_profile_name]
 	tenancy=ocid1.tenancy.oc1..aaaaaaaagfqbe4notarealocidreallygzinrxt6h6hfshjokfgfi5nzquxmfpzkyq

@@ -243,17 +243,12 @@ python3 cis_reports.py -dt --output-to-bucket 'my-example-bucket-1'
 - Tag namespaces may fail to delete on the first destroy.  Run destroy again to remove.
 
 # Acknowledgement
-
-[uri-oracle-terraform-modules]: https://github.com/oracle-terraform-modules
-[uri-showoci]: https://github.com/adizohar/showoci
-
-Parts of the Terraform code reuse and adapts from [Oracle Terraform Modules][uri-oracle-terraform-modules].
-
-The Compliance Check script uses Adi Zohar's showoci OCI Reporting tool][uri-showoci].
+Parts of the Terraform code reuse and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
+The Compliance Check script uses [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
 
 # Contributors
-- **Owners**: Andre Correa (@andrecorreaneto), Josh Hammer (@halimer)
-- **Contributors**: (Logan Kleier (@herosjourney), KC Flynn (@flynnkc), Ryan Cronk 
+- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/halimer)
+- **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
 
 # Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

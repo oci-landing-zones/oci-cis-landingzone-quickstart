@@ -28,9 +28,11 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	key_file=/path_to_my_private_key_file.pem
 
 #### Executing using Cloud Shell:
-1. Install OCI SDK, running
+1. Install setup venv and install OCI
 ```
-pip3 install --user oci
+python3 -m venv python-venv
+source python_venv/bin/activate
+pip3 install oci
 ```
 2. Run
 ```

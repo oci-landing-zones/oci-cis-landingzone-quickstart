@@ -116,3 +116,4 @@ CSV: Logging and Monitoring_3.17 --> cis_Logging and Monitoring_3.17.csv
 CSV: Object Storage_4.1     --> cis_Object Storage_4.1.csv
 CSV: Object Storage_4.2     --> cis_Object Storage_4.2.csv
 ```
+Back to our example, by looking at cis_Identity and Access Management_1.7.csv file, we see the 12 users who do not have MFA enabled for accessing OCI console. And so take the appropriate corrective action.

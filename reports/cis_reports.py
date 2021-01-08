@@ -849,10 +849,12 @@ class CIS_Report:
 
         try:
             self.__audit_retention_period = self.__audit.get_configuration(self.__tenancy.id).data.retention_period_days
-            return self.__audit_retention_period
         except Exception as e:
-            raise RuntimeError("Error in get__tenancy_audit_configuration " + str(e.args))
+            print(" Access to audit retention requires the user to be part of the Administrator group")
+            self.__audit_retention_period = -1
 
+        return self.__audit_retention_period
+ 
     ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################

@@ -39,7 +39,7 @@ The diagram below shows services and resources that are deployed:
 
 ![Architecture](images/Architecture.png)
 
-The diagram does not show the database compartment, because no resources are initially provisioned into that compartment. The greyed out icons in the AppDev compartment indicate services not provisioned by the template.
+The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
 
 The resources are provisioned using a single user account with broad tenancy administration privileges.
 

@@ -18,7 +18,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
  This repository encloses two deliverables:
 
 - A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
-- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations.
+- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations. The script is completely independent of the Terraform code and can be used against any existing tenancy.
 
  ## Architecture 
  The Terraform code deploys a standard three-tier network architecture within a single Virtual Cloud Network (VCN). The three tiers are divided into:

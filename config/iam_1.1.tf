@@ -156,5 +156,6 @@ module "cis_tenancy_auditors" {
                           "Allow group ${module.cis_tenancy_auditors.group_name} to read instance-configurations in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read network-security-groups in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read resource-availability in tenancy",
-                          "Allow Group ${module.cis_tenancy_auditors.group_name} to read audit-events in tenancy"]
+                          "Allow Group ${module.cis_tenancy_auditors.group_name} to read audit-events in tenancy",
+                          "Allow Group ${module.cis_tenancy_auditors.group_name} to use cloud-shell in tenancy"]
 }

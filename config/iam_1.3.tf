@@ -28,5 +28,6 @@ module "cis_iam_admins" {
                       "Allow group ${module.cis_iam_admins.group_name} to manage credentials in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage orm-stacks in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage orm-jobs in tenancy",
-                      "Allow group ${module.cis_iam_admins.group_name} to manage orm-config-source-providers in tenancy"]
+                      "Allow group ${module.cis_iam_admins.group_name} to manage orm-config-source-providers in tenancy",
+                      "Allow Group ${module.cis_iam_admins.group_name} to read audit-events in tenancy"]
 } 

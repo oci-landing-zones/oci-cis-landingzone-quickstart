@@ -3,17 +3,17 @@
 
 module "cis_notification_iam_group_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id     = var.tenancy_ocid
   rule_display_name  = "${var.service_label}-notify-on-iam-group-changes"    
   rule_description   = "Sends notification when IAM groups are created, updated or deleted."
   rule_is_enabled    = true
   rule_condition     = <<EOT
   {"eventType": 
-    ["com.oraclecloud.identityControlPlane.AddUserToGroup",
-     "com.oraclecloud.identityControlPlane.CreateGroup",
-     "com.oraclecloud.identityControlPlane.DeleteGroup",
-     "com.oraclecloud.identityControlPlane.RemoveUserFromGroup",
-     "com.oraclecloud.identityControlPlane.UpdateGroup"]
+    ["com.oraclecloud.identitycontrolplane.addusertogroup",
+     "com.oraclecloud.identitycontrolplane.creategroup",
+     "com.oraclecloud.identitycontrolplane.deletegroup",
+     "com.oraclecloud.identitycontrolplane.removeuserfromgroup",
+     "com.oraclecloud.identitycontrolplane.updategroup"]
   }
   EOT
   

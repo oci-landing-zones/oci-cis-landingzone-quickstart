@@ -3,7 +3,7 @@
 
 module "cis_notification_security_list_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id     = var.tenancy_ocid
   rule_display_name  = "${var.service_label}-notify-on-security-list-changes"    
   rule_description   = "Sends notification when security lists are created, updated, deleted, or moved."
   rule_is_enabled    = true

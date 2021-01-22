@@ -3,7 +3,7 @@
 
 module "cis_notification_nsg_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id     = var.tenancy_ocid
   rule_display_name  = "${var.service_label}-notify-on-nsg-changes"    
   rule_description   = "Sends notification when network security groups are created, updated, deleted, or moved."
   rule_is_enabled    = true
@@ -12,6 +12,7 @@ module "cis_notification_nsg_changes" {
     ["com.oraclecloud.virtualnetwork.createnetworksecuritygroup",
      "com.oraclecloud.virtualnetwork.deletenetworksecuritygroup",
      "com.oraclecloud.virtualnetwork.updatenetworksecuritygroup",
+     "com.oraclecloud.virtualnetwork.updatenetworksecuritygroupsecurityrules",
      "com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment"]
   }
   EOT

@@ -3,15 +3,15 @@
 
 module "cis_notification_idp_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id     = var.tenancy_ocid
   rule_display_name  = "${var.service_label}-notify-on-idp-changes"    
   rule_description   = "Sends notification when Identity Providers are created, updated or deleted."
   rule_is_enabled    = true
   rule_condition     = <<EOT
   {"eventType": 
-    ["com.oraclecloud.identityControlPlane.CreateIdentityProvider",
-     "com.oraclecloud.identityControlPlane.DeleteIdentityProvider",
-     "com.oraclecloud.identityControlPlane.UpdateIdentityProvider"]
+    ["com.oraclecloud.identitycontrolplane.createidentityprovider",
+     "com.oraclecloud.identitycontrolplane.deleteidentityprovider",
+     "com.oraclecloud.identitycontrolplane.updateidentityprovider"]
   }
   EOT
   

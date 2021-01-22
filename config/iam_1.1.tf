@@ -22,7 +22,8 @@ module "cis_network_admins" {
                           "Allow group ${module.cis_network_admins.group_name} to manage metrics in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage orm-stacks in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage orm-jobs in compartment ${local.network_compartment_name}",
-                          "Allow group ${module.cis_network_admins.group_name} to manage orm-config-source-providers in compartment ${local.network_compartment_name}"]
+                          "Allow group ${module.cis_network_admins.group_name} to manage orm-config-source-providers in compartment ${local.network_compartment_name}",
+                          "Allow Group ${module.cis_network_admins.group_name} to read audit-events in compartment ${local.network_compartment_name}"]
 }
 
 ### Security services
@@ -44,7 +45,8 @@ module "cis_security_admins" {
                           "Allow group ${module.cis_security_admins.group_name} to manage keys in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage secret-family in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage logging-family in compartment ${local.security_compartment_name}",
-                          "Allow group ${module.cis_security_admins.group_name} to manage cloudevents-rules in compartment ${local.security_compartment_name}",
+                          #"Allow group ${module.cis_security_admins.group_name} to manage cloudevents-rules in compartment ${local.security_compartment_name}",
+                          "Allow group ${module.cis_security_admins.group_name} to manage cloudevents-rules in tenancy",
                           "Allow group ${module.cis_security_admins.group_name} to manage serviceconnectors in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage streams in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage ons-family in compartment ${local.security_compartment_name}",
@@ -85,6 +87,7 @@ module "cis_database_admins" {
                           "Allow group ${module.cis_database_admins.group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage alarms in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage metrics in compartment ${local.database_compartment_name}",
+                          "Allow group ${module.cis_database_admins.group_name} to manage object-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to use vnics in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to use subnets in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.database_compartment_name}",
@@ -94,7 +97,8 @@ module "cis_database_admins" {
                           "Allow group ${module.cis_database_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage orm-stacks in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage orm-jobs in compartment ${local.database_compartment_name}",
-                          "Allow group ${module.cis_database_admins.group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}"]
+                          "Allow group ${module.cis_database_admins.group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}",
+                          "Allow Group ${module.cis_database_admins.group_name} to read audit-events in compartment ${local.database_compartment_name}"]
 }
 
 ### Application Development services - Combined AppDev with Compute and storage
@@ -125,6 +129,8 @@ module "cis_appdev_admins" {
                           "Allow group ${module.cis_appdev_admins.group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to use vnics in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to use load-balancers in compartment ${local.network_compartment_name}",
+                          "Allow group ${module.cis_appdev_admins.group_name} to read autonomous-database-family in compartment ${local.database_compartment_name}",
+                          "Allow group ${module.cis_appdev_admins.group_name} to read database-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to read vaults in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to inspect keys in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to read app-catalog-listing in tenancy",
@@ -132,7 +138,8 @@ module "cis_appdev_admins" {
                           "Allow group ${module.cis_appdev_admins.group_name} to manage repos in tenancy",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
-                          "Allow group ${module.cis_appdev_admins.group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}"]
+                          "Allow group ${module.cis_appdev_admins.group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}",
+                          "Allow Group ${module.cis_appdev_admins.group_name} to read audit-events in compartment ${local.appdev_compartment_name}"]
 }
 
 ### Auditors

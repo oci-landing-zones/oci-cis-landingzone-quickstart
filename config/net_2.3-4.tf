@@ -184,7 +184,7 @@ module "cis_nsgs" {
           src_port      = null
           dst_port      = {
             min = 1521
-            max = 1521
+            max = 1522
           }
           icmp_code     = null
           icmp_type     = null

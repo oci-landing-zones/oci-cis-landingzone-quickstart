@@ -18,7 +18,7 @@
 module "cis_nsgs" {
   source                  = "../modules/network/security"
   default_compartment_id  = module.cis_compartments.compartments[local.network_compartment_name].id
-  vcn_id                  = module.cis_vcn.vcn_id
+  vcn_id                  = module.cis_vcn.vcn.id
   
   nsgs                  = {
     (local.bastion_nsg_name) = { # Bastion NSG
@@ -184,7 +184,7 @@ module "cis_nsgs" {
           src_port      = null
           dst_port      = {
             min = 1521
-            max = 1521
+            max = 1522
           }
           icmp_code     = null
           icmp_type     = null

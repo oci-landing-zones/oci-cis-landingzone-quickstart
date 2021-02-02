@@ -8,8 +8,8 @@
 module "cis_security_lists" {
   source                   = "../modules/network/security"
   default_compartment_id   = module.cis_compartments.compartments[local.network_compartment_name].id
-  vcn_id                   = module.cis_vcn.vcn_id
-  default_security_list_id = module.cis_vcn.default_security_list_id
+  vcn_id                   = module.cis_vcn.vcn.id
+  default_security_list_id = module.cis_vcn.vcn.default_security_list_id
   
   security_lists = { 
     (local.public_subnet_security_list_name) = { 

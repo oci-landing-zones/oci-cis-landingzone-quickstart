@@ -75,13 +75,13 @@ module "cis_vcn" {
           is_create         = true
           destination       = local.anywhere
           destination_type  = "CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.internet_gateway_id
+          network_entity_id = module.cis_vcn.internet_gateway.id
         },
         {
           is_create         = tobool(var.is_vcn_onprem_connected)
           destination       = var.onprem_cidr
           destination_type  = "CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.drg_id
+          network_entity_id = module.cis_vcn.drg != null ? module.cis_vcn.drg.id : null
         }
       ]
     },
@@ -91,13 +91,13 @@ module "cis_vcn" {
           is_create         = true
           destination       = local.valid_service_gateway_cidrs[0]
           destination_type  = "SERVICE_CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.service_gateway_id
+          network_entity_id = module.cis_vcn.service_gateway.id
         },
         {
           is_create         = true
           destination       = local.anywhere
           destination_type  = "CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.nat_gateway_id
+          network_entity_id = module.cis_vcn.nat_gateway.id
         }
       ]
     },
@@ -107,7 +107,7 @@ module "cis_vcn" {
           is_create         = true
           destination       = local.valid_service_gateway_cidrs[0]
           destination_type  = "SERVICE_CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.service_gateway_id
+          network_entity_id = module.cis_vcn.service_gateway.id
         }
       ]  
     }

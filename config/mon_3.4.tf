@@ -19,5 +19,5 @@ module "cis_notification_idp_changes" {
   rule_actions_actions_is_enabled  = true
   rule_actions_actions_description = "Sends notification via ONS"
 
-  topic_id = module.cis_security_topic.topic_id
+  topic_id = module.cis_security_topic.topic.id
 }  

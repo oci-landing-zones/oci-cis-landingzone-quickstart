@@ -1,5 +1,15 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+variable "username" {
+  default = "devops"
+}
+variable "controller_ip" {
+  default = "3.128.6.52"
+}
+variable "password" {
+  default = "#Aviatrix1234"
+}
+
 
 # General
 variable "service_label" {

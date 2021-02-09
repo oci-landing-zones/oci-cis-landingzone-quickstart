@@ -6,19 +6,19 @@
 module "cis_compartments" {
   source       = "../modules/iam/iam-compartment"
   providers    = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
+  tenancy_ocid = var.tenancy_ocid        
   compartments = {
-    (local.security_compartment_name) = {
-      description = "Compartment for all security related resources: vaults."
-    },
-    (local.network_compartment_name) = {
-      description = "Compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs."
-    },
-    (local.appdev_compartment_name) = {
-      description = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming, notifications."
-    },
-    (local.database_compartment_name) = {
-      description = "Compartment for all database related resources."
-    }
+      (local.security_compartment_name) = {
+        description = "Compartment for all security related resources: vaults."
+      },
+      (local.network_compartment_name) = {
+        description = "Compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs."
+      },
+      (local.appdev_compartment_name) = {
+        description = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming, notifications."
+      },
+      (local.database_compartment_name) = {
+        description = "Compartment for all database related resources."
+      }
   }
 }

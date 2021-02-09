@@ -10,15 +10,15 @@ module "cis_security_lists" {
   default_compartment_id   = module.cis_compartments.compartments[local.network_compartment_name].id
   vcn_id                   = module.cis_vcn.vcn_id
   default_security_list_id = module.cis_vcn.default_security_list_id
-
-  security_lists = {
-    (local.public_subnet_security_list_name) = {
-      compartment_id = null
-      defined_tags   = null
-      freeform_tags  = null
-      ingress_rules  = null
-      egress_rules   = null
-      /*  
+  
+  security_lists = { 
+    (local.public_subnet_security_list_name) = { 
+      compartment_id  = null
+      defined_tags    = null
+      freeform_tags   = null
+      ingress_rules   = null
+      egress_rules    = null
+    /*  
       ingress_rules   = [{
         stateless     = false
         protocol      = "6"
@@ -45,22 +45,22 @@ module "cis_security_lists" {
         icmp_type     = null
         icmp_code     = null
       }]
-    */
+    */  
     },
-    (local.private_subnet_app_security_list_name) = {
-      compartment_id = null
-      defined_tags   = null
-      freeform_tags  = null
-      ingress_rules  = null
-      egress_rules   = null
+    (local.private_subnet_app_security_list_name) = { 
+      compartment_id  = null
+      defined_tags    = null
+      freeform_tags   = null
+      ingress_rules   = null
+      egress_rules    = null
     },
-    (local.private_subnet_db_security_list_name) = {
-      is_create      = true
-      compartment_id = null
-      defined_tags   = null
-      freeform_tags  = null
-      ingress_rules  = null
-      egress_rules   = null
-    }
+    (local.private_subnet_db_security_list_name) = { 
+      is_create       = true
+      compartment_id  = null
+      defined_tags    = null
+      freeform_tags   = null
+      ingress_rules   = null
+      egress_rules    = null
+    } 
   }
 }  

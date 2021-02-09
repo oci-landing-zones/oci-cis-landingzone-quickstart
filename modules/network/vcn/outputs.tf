@@ -3,11 +3,6 @@ output "vcn_id" {
   value       = oci_core_vcn.this.id
 }
 
-output "vcn" {
-  description = "ocid of created VCN. "
-  value       = oci_core_vcn.this
-}
-
 output "default_security_list_id" {
   description = "ocid of default security list. "
   value       = oci_core_vcn.this.default_security_list_id
@@ -46,22 +41,12 @@ output "subnets" {
     } : null
 }
 
-output "subnet_objects" {
-  description = "The managed subnet objects."
-  value = oci_core_subnet.these
-}
-
 output "route_tables" {
   description = "The managed route tables, indexed by display_name."
   value = (oci_core_route_table.these != null && length(oci_core_route_table.these) > 0) ? {
     for rt in oci_core_route_table.these : 
       rt.display_name => rt
     } : null
-}
-
-output "rt_objects" {
-  description = "The managed route table objects."
-  value = oci_core_route_table.these
 }
 
 output "all_services" {

@@ -2,12 +2,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "cis_notification_idp_group_mappings_changes" {
-  source            = "../modules/monitoring/notifications"
-  compartment_id    = var.tenancy_ocid
-  rule_display_name = "${var.service_label}-notify-on-idp-group-mapping-changes"
-  rule_description  = "Sends notification when Identity Provider Group Mappings are created, updated or deleted."
-  rule_is_enabled   = true
-  rule_condition    = <<EOT
+  source             = "../modules/monitoring/notifications"
+  compartment_id     = var.tenancy_ocid
+  rule_display_name  = "${var.service_label}-notify-on-idp-group-mapping-changes"    
+  rule_description   = "Sends notification when Identity Provider Group Mappings are created, updated or deleted."
+  rule_is_enabled    = true
+  rule_condition     = <<EOT
   {"eventType": 
     ["com.oraclecloud.identitycontrolplane.createidpgroupmapping",
      "com.oraclecloud.identitycontrolplane.deleteidpgroupmapping",

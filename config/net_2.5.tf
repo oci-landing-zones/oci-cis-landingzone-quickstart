@@ -12,7 +12,7 @@ resource "oci_core_default_security_list" "default_security_list" {
     icmp_options {
       type = 3
       code = 4
-    }
+      }
   }
   ingress_security_rules {
     protocol  = "1"
@@ -21,6 +21,6 @@ resource "oci_core_default_security_list" "default_security_list" {
     icmp_options {
       type = 3
       code = null
-    }
+      }
   }
 }

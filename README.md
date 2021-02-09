@@ -37,7 +37,7 @@ The compartment design reflects a basic functional structure observed across dif
 
 The diagram below shows services and resources that are deployed:
 
-![Architecture](images/CIS-Multicloud-Architecture.png)
+![Architecture](images/Architecture.png)
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
 
@@ -54,7 +54,7 @@ The resources are provisioned using a single user account with broad tenancy adm
 
 ## Contributors
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/halimer)
-- **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk [Travis Mitchell](https://github.com/trvsmtchll)
+- **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
 
 ## Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

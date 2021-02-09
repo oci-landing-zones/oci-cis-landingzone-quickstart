@@ -33,7 +33,7 @@ module "cis_vcn" {
       dhcp_options_id   = null
       route_table_id    = module.cis_vcn.route_tables[local.public_subnet_route_table_name].id
       security_list_ids = [module.cis_security_lists.security_lists[local.public_subnet_security_list_name].id]
-    },
+    }, 
     (local.private_subnet_app_name) = {
       compartment_id    = null
       defined_tags      = null
@@ -68,14 +68,14 @@ module "cis_vcn" {
     }
   }
 
-  route_tables = {
+  route_tables         = {
     (local.public_subnet_route_table_name) = {
       compartment_id = null
       route_rules = [{
-        is_create         = true
-        destination       = local.anywhere
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.cis_vcn.internet_gateway_id
+          is_create         = true
+          destination       = local.anywhere
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.internet_gateway_id
         },
         {
           is_create         = tobool(var.is_vcn_onprem_connected)
@@ -88,10 +88,10 @@ module "cis_vcn" {
     (local.private_subnet_app_route_table_name) = {
       compartment_id = null
       route_rules = [{
-        is_create         = true
-        destination       = local.valid_service_gateway_cidrs[0]
-        destination_type  = "SERVICE_CIDR_BLOCK"
-        network_entity_id = module.cis_vcn.service_gateway_id
+          is_create         = true
+          destination       = local.valid_service_gateway_cidrs[0]
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.service_gateway_id
         },
         {
           is_create         = true
@@ -104,12 +104,12 @@ module "cis_vcn" {
     (local.private_subnet_db_route_table_name) = {
       compartment_id = null
       route_rules = [{
-        is_create         = true
-        destination       = local.valid_service_gateway_cidrs[0]
-        destination_type  = "SERVICE_CIDR_BLOCK"
-        network_entity_id = module.cis_vcn.service_gateway_id
+          is_create         = true
+          destination       = local.valid_service_gateway_cidrs[0]
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.service_gateway_id
         }
-      ]
+      ]  
     }
   }
 }

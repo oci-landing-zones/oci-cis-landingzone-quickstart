@@ -2,12 +2,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "cis_notification_iam_policy_changes" {
-  source            = "../modules/monitoring/notifications"
-  compartment_id    = var.tenancy_ocid
-  rule_display_name = "${var.service_label}-notify-on-iam-policy-changes"
-  rule_description  = "Sends notification when IAM policies are created, updated or deleted."
-  rule_is_enabled   = true
-  rule_condition    = <<EOT
+  source             = "../modules/monitoring/notifications"
+  compartment_id     = var.tenancy_ocid
+  rule_display_name  = "${var.service_label}-notify-on-iam-policy-changes"    
+  rule_description   = "Sends notification when IAM policies are created, updated or deleted."
+  rule_is_enabled    = true
+  rule_condition     = <<EOT
   {"eventType":
     ["com.oraclecloud.identitycontrolplane.createpolicy",
      "com.oraclecloud.identitycontrolplane.deletepolicy",

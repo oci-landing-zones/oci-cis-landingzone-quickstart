@@ -12,23 +12,23 @@ module "cis_tags" {
   tag_namespace_name           = var.service_label
   tag_namespace_description    = "${var.service_label} tag namespace"
   tag_defaults_compartment_id  = var.tenancy_ocid
-
+  
   tags = { # the map keys are meant to be the tag names.
-    (local.createdby_tag_name) = {
-      tag_description         = "Identifies who created the resource."
-      tag_is_cost_tracking    = true
-      tag_is_retired          = false
-      make_tag_default        = true
-      tag_default_value       = "$${iam.principal.name}"
-      tag_default_is_required = false
-    },
-    (local.createdon_tag_name) = {
-      tag_description         = "Identifies when the resource was created."
-      tag_is_cost_tracking    = false
-      tag_is_retired          = false
-      make_tag_default        = true
-      tag_default_value       = "$${oci.datetime}"
-      tag_default_is_required = false
-    }
+      (local.createdby_tag_name) = {
+        tag_description         = "Identifies who created the resource."
+        tag_is_cost_tracking    = true
+        tag_is_retired          = false
+        make_tag_default        = true
+        tag_default_value       = "$${iam.principal.name}"
+        tag_default_is_required = false
+      },
+      (local.createdon_tag_name) = {
+        tag_description         = "Identifies when the resource was created."
+        tag_is_cost_tracking    = false
+        tag_is_retired          = false
+        make_tag_default        = true
+        tag_default_value       = "$${oci.datetime}"
+        tag_default_is_required = false
+      }
   }
 } 

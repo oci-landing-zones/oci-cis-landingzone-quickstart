@@ -1,9 +1,11 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-resource "oci_identity_compartment" "these" {
-  for_each = var.compartments
-    compartment_id = var.tenancy_ocid
+### Group policy
+resource "oci_identity_policy" "these" {
+  for_each = var.policies
     name           = each.key
     description    = each.value.description
+    compartment_id = each.value.compartment_id
+    statements     = each.value.statements
 }

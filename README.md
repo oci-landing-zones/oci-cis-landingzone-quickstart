@@ -1,6 +1,10 @@
 # CIS OCI Landing Zone Quick Start Template
 
-## Overview
+## Table of Contents
+1. [Overview](#overview)
+1. [Deliverables](#deliverables)
+
+## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the CIS OCI Foundations Benchmark v1.1.    
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:

@@ -3,6 +3,14 @@
 ## Table of Contents
 1. [Overview](#overview)
 1. [Deliverables](#deliverables)
+1. [Architecture](#architecture)
+1. [Executing Instructions](#instructions)
+    1. [Terraform Configuration](terraform.md)
+    1. [Compliance Checking](compliance-script.md)
+1. [Acknowledgements](#acknowledgements)
+1. [The Team](#team)
+1. [Feedback](#feedback)
+1. [Contribute](#contribute)
 
 ## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the CIS OCI Foundations Benchmark v1.1.    
@@ -18,13 +26,13 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Notifications
 - Object Storage
 
- ## Deliverables
+ ## <a name="deliverables"></a>Deliverables
  This repository encloses two deliverables:
 
 - A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
 - A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations. The script is completely independent of the Terraform code and can be used against any existing tenancy.
 
- ## Architecture 
+ ## <a name="architecture"></a>Architecture 
  The Terraform code deploys a standard three-tier network architecture within a single Virtual Cloud Network (VCN). The three tiers are divided into:
  
  - One public subnet for load balancers and bastion servers;
@@ -47,18 +55,22 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 
 The resources are provisioned using a single user account with broad tenancy administration privileges.
 
-## Executing Instructions
+## <a name="instructions"></a>Executing Instructions
 
 - [Terraform Configuration](terraform.md)
 - [Compliance Checking](compliance-script.md)
 
-## Acknowledgements
+## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
 - The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
 
-## Contributors
-- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/halimer)
+## <a name="team"></a>The Team
+- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
 - **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
 
-## Feedback
+## <a name="feedback">Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	
+
+## <a name="contribute"></a>Contribute
+
+Interested in contributing?  See our contribution [guidelines](CONTRIBUTING.md) for details.

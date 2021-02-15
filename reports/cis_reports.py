@@ -155,7 +155,7 @@ class CIS_Report:
     }
 
     # Class variables
-    _DAYS_OLD = 90
+    __DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
     
     # Tenancy Data
@@ -199,7 +199,7 @@ class CIS_Report:
     
     # For User based key checks
     start_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    api_key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
+    api_key_time_max_datetime = start_datetime - datetime.timedelta(days=__DAYS_OLD)
 
     # For KMS check
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=__KMS_DAYS_OLD)
@@ -1309,7 +1309,7 @@ class CIS_Report:
                 try:
                     self.__os_client.put_object(self.__os_namespace, bucketname, object_name, f)
                 except Exception as e:
-                    raise Exception("Error uploading file os_copy_report_to_object_storage: " + str(e.args))
+                    raise Exception("Error uploading file os_copy_report_to_object_storage please check you have the appriorate permissions: " + str(e.args))
         except Exception as e:
             raise Exception("Error opening file os_copy_report_to_object_storage: " + str(e.args))
 
@@ -1426,20 +1426,23 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
     # config file authentication
     # -----------------------------
     else:
-        config = oci.config.from_file(
-            oci.config.DEFAULT_LOCATION,
-            (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
-        )
-        signer = oci.signer.Signer(
-            tenancy=config["tenancy"],
-            user=config["user"],
-            fingerprint=config["fingerprint"],
-            private_key_file_location=config.get("key_file"),
-            pass_phrase=oci.config.get_config_value_or_default(config, "pass_phrase"),
-            private_key_content=config.get("key_content")
-        )
-        return config, signer
-
+        try:
+            config = oci.config.from_file(
+                oci.config.DEFAULT_LOCATION,
+                (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
+            )
+            signer = oci.signer.Signer(
+                tenancy=config["tenancy"],
+                user=config["user"],
+                fingerprint=config["fingerprint"],
+                private_key_file_location=config.get("key_file"),
+                pass_phrase=oci.config.get_config_value_or_default(config, "pass_phrase"),
+                private_key_content=config.get("key_content")
+            )
+            return config, signer
+        except Exception:
+            print(f'**{oci.config.DEFAULT_LOCATION} not found or env varibles missing, aborting**')
+            raise SystemExit
 
 ##########################################################################
 # Arg Parsing function to be updated 

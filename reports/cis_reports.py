@@ -4,7 +4,7 @@
 #
 # cis_reports.py
 # @author base: Adi Zohar
-# @author: Andre Luiz Correa and Josh Hammer
+# @author: Josh Hammer and Andre Correa
 #
 # Supports Python 3 and above
 #
@@ -155,7 +155,7 @@ class CIS_Report:
     }
 
     # Class variables
-    __DAYS_OLD = 90
+    _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
     
     # Tenancy Data
@@ -199,7 +199,7 @@ class CIS_Report:
     
     # For User based key checks
     start_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    api_key_time_max_datetime = start_datetime - datetime.timedelta(days=__DAYS_OLD)
+    api_key_time_max_datetime = start_datetime - datetime.timedelta(days=_DAYS_OLD)
 
     # For KMS check
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=__KMS_DAYS_OLD)
@@ -207,8 +207,8 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket):
         # Start print time info
-        self.__print_header("Running CIS Reports")
-        print("Written By Andre Luiz Correa Neto & Josh Hammer, November 2020")
+        self.__print_header("Running CIS Reports...")
+        print("Written by Josh Hammer & Andre Correa, updated February 2021.")
         print("Starts at " + self.start_time_str )
         self.__config = config
         self.__signer = signer
@@ -292,7 +292,7 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
-        print("Processing User Groups and Group Membership...")
+        print("Processing User Groups and Group Memberships...")
         try:
             # Getting all Groups in the Tenancy
             groups_data = oci.pagination.list_call_get_all_results(
@@ -481,7 +481,7 @@ class CIS_Report:
     # Get Objects Store Buckets
     ##########################################################################
     def __os_read_buckets(self):
-        print("Processing Object Store Buckets")
+        print("Processing Object Store Buckets...")
         # Getting OS Namespace
         try: 
             self.__os_namespace = self.__os_client.get_namespace().data
@@ -859,7 +859,7 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
-        print("Processing Cloud Guard configuration...")
+        print("Processing Cloud Guard Configuration...")
         try:
             self.__cloud_guard_config = self.__cloud_guard.get_configuration(self.__tenancy.id).data
             return self.__cloud_guard_config
@@ -881,7 +881,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
-        print("Processing Subscriptions..")
+        print("Processing Subscriptions...")
         try:
             # Iterate through compartments to get all subscriptions
             for compartment in self.__compartments:
@@ -1090,46 +1090,54 @@ class CIS_Report:
 
 
         # CIS 1.12 Check - This check is complete uses email verification
-        # Iterrating through all users to see if they have API Keys and if they are active users
+        # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if user['external_identifier'] == None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
                 self.cis_foundations_benchmark_1_1['1.12']['Status'] = False
                 self.cis_foundations_benchmark_1_1['1.12']['Findings'].append(user)
 
         
-       # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on port 22, 3389
-
-        # Iterrating through all users to see if they have API Keys and if they are active users
+        # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
+                
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
-                        if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
-                            self.cis_foundations_benchmark_1_1['2.1']['Status'] = False
-                            self.cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
-                        elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
-                            self.cis_foundations_benchmark_1_1['2.2']['Status'] = False
-                            self.cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+                        try:
+                            if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
+                                self.cis_foundations_benchmark_1_1['2.1']['Status'] = False
+                                self.cis_foundations_benchmark_1_1['2.1']['Findings'].append(sl)
+                            elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+                                self.cis_foundations_benchmark_1_1['2.2']['Status'] = False
+                                self.cis_foundations_benchmark_1_1['2.2']['Findings'].append(sl)
+                        except (AttributeError):
+                            #### Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
+                            self.cis_foundations_benchmark_1_1['2.5']['Status'] = False
+                            self.cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl)
+                
                 # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
                     self.cis_foundations_benchmark_1_1['2.5']['Status'] = False
                     self.cis_foundations_benchmark_1_1['2.5']['Findings'].append(sl) 
 
 
-       # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on port 22 or 3389
-        # Iterrating through all users to see if they have API Keys and if they are active users
+        # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on ports 22, 3389
         for nsg in self.__network_security_groups:
             for rule in nsg['rules']:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
-                        if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
-                            self.cis_foundations_benchmark_1_1['2.3']['Status'] = False           
+                        try:
+                            if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
+                                self.cis_foundations_benchmark_1_1['2.3']['Status'] = False           
+                                self.cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
+                            elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
+                                self.cis_foundations_benchmark_1_1['2.4']['Status'] = False
+                                self.cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
+                        except (AttributeError):
+                            #### Temporarily adding unfettered access to rule 2.3. Move this once a proper rule is available.
+                            self.cis_foundations_benchmark_1_1['2.3']['Status'] = False
                             self.cis_foundations_benchmark_1_1['2.3']['Findings'].append(nsg)
-                        elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-                            self.cis_foundations_benchmark_1_1['2.4']['Status'] = False
-                            self.cis_foundations_benchmark_1_1['2.4']['Findings'].append(nsg)
 
-        
         # CIS 3.1 Check - Ensure Audit log retention == 365
         if self.__audit_retention_period >= 365:
             self.cis_foundations_benchmark_1_1['3.1']['Status'] = True
@@ -1278,7 +1286,7 @@ class CIS_Report:
     
     def __report_collect_tenancy_data(self):
         
-        self.__print_header("Procesing Tenancy Data for " + self.__tenancy.name)
+        self.__print_header("Processing Tenancy Data for " + self.__tenancy.name + "...")
 
         self.__compartments = self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
@@ -1309,7 +1317,7 @@ class CIS_Report:
                 try:
                     self.__os_client.put_object(self.__os_namespace, bucketname, object_name, f)
                 except Exception as e:
-                    raise Exception("Error uploading file os_copy_report_to_object_storage please check you have the appriorate permissions: " + str(e.args))
+                    raise Exception("Error uploading file os_copy_report_to_object_storage: " + str(e.args))
         except Exception as e:
             raise Exception("Error opening file os_copy_report_to_object_storage: " + str(e.args))
 
@@ -1444,6 +1452,7 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
             print(f'**{oci.config.DEFAULT_LOCATION} not found or env varibles missing, aborting**')
             raise SystemExit
 
+
 ##########################################################################
 # Arg Parsing function to be updated 
 ##########################################################################
@@ -1501,5 +1510,4 @@ def execute_report():
 ##########################################################################
 
 execute_report()
-
 

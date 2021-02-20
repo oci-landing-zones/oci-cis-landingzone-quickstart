@@ -17,21 +17,3 @@ variable "user_names" {
   description = "List of user names. "
   default     = []
 }
-
-variable "policy_name" {
-  description = "The name you assign to the policy during creation.  "
-}
-
-variable "policy_description" {
-  description = "The description you assign to the policy. Does not have to be unique, and it's changeable. "
-  default = ""
-}
-
-variable "policy_statements" {
-  description = "Define policy consists of one or more policy statements. "
-  default     = []
-}
-
-variable "policy_compartment_id" {
-  description = "The compartment id assign to policy."
-}

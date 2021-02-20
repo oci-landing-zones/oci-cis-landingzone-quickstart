@@ -2,6 +2,7 @@ env-vars.*
 **/*.tfstate*
 **/*.out
 **/.terraform/*
+**/.terraform.*
 **/.DS_Store
 **/crash.log
 **/.csv

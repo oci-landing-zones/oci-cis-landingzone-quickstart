@@ -20,13 +20,4 @@ data "oci_identity_users" "these" {
   count = length(data.oci_identity_users.these.users)
   user_id  = data.oci_identity_users.these.users[count.index].id
   group_id = oci_identity_group.this.id
-} 
-
-### Group policy
-resource "oci_identity_policy" "this" {
-  depends_on     = [oci_identity_group.this]
-  name           = var.policy_name
-  description    = var.policy_description
-  compartment_id = var.policy_compartment_id
-  statements     = var.policy_statements
 }

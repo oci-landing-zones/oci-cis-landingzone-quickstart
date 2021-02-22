@@ -8,7 +8,3 @@ output "group_id" {
 output "group_name" {
   value = var.group_name
 }
-
-output "group_policy_name" {
-  value = var.policy_name
-}

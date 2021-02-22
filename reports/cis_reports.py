@@ -205,14 +205,27 @@ class CIS_Report:
     kms_key_time_max_datetime = start_datetime - datetime.timedelta(days=__KMS_DAYS_OLD)
 
 
-    def __init__(self, config, signer, proxy, output_bucket):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
         self.__print_header("Running CIS Reports...")
         print("Written by Josh Hammer & Andre Correa, updated February 2021.")
         print("Starts at " + self.start_time_str )
         self.__config = config
         self.__signer = signer
+        # Working with input variables from 
         self.__output_bucket = output_bucket
+        # By Default it is today's date
+        if report_directory:
+            self.__report_directory = report_directory
+        else:
+            self.__report_directory = self.start_date
+
+        # By Default it is passed True to print all output
+        if print_to_screen.upper() == 'TRUE':
+            self.__print_to_screen = True
+        else:
+            self.__print_to_screen = False
+
         try:
             self.__identity = oci.identity.IdentityClient(self.__config, signer=self.__signer)
             if proxy:
@@ -1260,7 +1273,7 @@ class CIS_Report:
             summary_report.append(record)
 
             # Generate Findings report
-            self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )            
+            #self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )            
         
         # Screen output for CIS Summary Report
         self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
@@ -1268,21 +1281,27 @@ class CIS_Report:
               "\t" "Compliant" + "\t" + "Findings  " + "\t" +'Title')
         print('#' * 90)
         for finding in summary_report:
-            print(finding['Recommendation #'] + "\t" + \
-            finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
-                    finding['Findings'] + "\t\t" + finding['Title'])
+            # If print_to_screen is False it will only print non-compliant findings
+            if not(self.__print_to_screen) and finding['Compliant'] == 'No':            
+                print(finding['Recommendation #'] + "\t" + \
+                finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
+                        finding['Findings'] + "\t\t" + finding['Title'])
+            elif self.__print_to_screen:
+                print(finding['Recommendation #'] + "\t" + \
+                finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
+                        finding['Findings'] + "\t\t" + finding['Title'])
         
         # Generating Summary report CSV
         self.__print_header("Writing reports to CSV")
-        summary_file_name = self.__print_to_csv_file("cis", "summary_report", summary_report)
+        summary_file_name = self.__print_to_csv_file(self.__report_directory, "cis", "summary_report", summary_report)
         # Out putting to a bucket if I have one
         if summary_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(self.__output_bucket,self.start_date,summary_file_name)
+            self.__os_copy_report_to_object_storage(self.__output_bucket, summary_file_name)
 
         for key, recommendation in self.cis_foundations_benchmark_1_1.items():
-            report_file_name = self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
+            report_file_name = self.__print_to_csv_file(self.__report_directory,  "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
             if report_file_name and self.__output_bucket:
-                self.__os_copy_report_to_object_storage(self.__output_bucket,self.start_date,report_file_name)
+                self.__os_copy_report_to_object_storage(self.__output_bucket, report_file_name)
     
     def __report_collect_tenancy_data(self):
         
@@ -1309,8 +1328,8 @@ class CIS_Report:
     ##########################################################################
     # Copy Report to Object Storage
     ##########################################################################
-    def __os_copy_report_to_object_storage(self, bucketname, prefix, filename):
-        object_name = prefix + "/" + filename
+    def __os_copy_report_to_object_storage(self, bucketname, filename):
+        object_name = filename
         #print(self.__os_namespace)
         try:
             with open(filename, "rb") as f:
@@ -1324,15 +1343,26 @@ class CIS_Report:
     ##########################################################################
     # Print to CSV 
     ##########################################################################
-    def __print_to_csv_file(self, header, file_subject, data):
+    def __print_to_csv_file(self, report_directory, header, file_subject, data):
 
+        try:
+            # Creating report directory 
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception("Error in creating report directory: " + str(e.args))
+       
         try:
             # if no data
             if len(data) == 0:
                 return None
 
             # get the file name of the CSV
+            
             file_name =  header + "_" + file_subject + ".csv"
+            file_path = os.path.join(report_directory, file_name)
+
             
             # add start_date to each dictionary
             result = [dict(item, extract_date=self.start_time_str) for item in data]
@@ -1340,7 +1370,7 @@ class CIS_Report:
             # generate fields
             fields = [key for key in result[0].keys()]
 
-            with open(file_name, mode='w', newline='') as csv_file:
+            with open(file_path, mode='w', newline='') as csv_file:
                 writer = csv.DictWriter(csv_file, fieldnames=fields)
 
                 # write header
@@ -1349,9 +1379,9 @@ class CIS_Report:
                 for row in result:
                     writer.writerow(row)
 
-            print("CSV: " + file_subject.ljust(22) + " --> " + file_name)
+            print("CSV: " + file_subject.ljust(22) + " --> " + file_path)
             # Used by Uplaoad to 
-            return file_name
+            return file_path
 
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
@@ -1434,19 +1464,23 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
     # config file authentication
     # -----------------------------
     else:
-        config = oci.config.from_file(
-            oci.config.DEFAULT_LOCATION,
-            (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
-        )
-        signer = oci.signer.Signer(
-            tenancy=config["tenancy"],
-            user=config["user"],
-            fingerprint=config["fingerprint"],
-            private_key_file_location=config.get("key_file"),
-            pass_phrase=oci.config.get_config_value_or_default(config, "pass_phrase"),
-            private_key_content=config.get("key_content")
-        )
-        return config, signer
+        try:
+            config = oci.config.from_file(
+                oci.config.DEFAULT_LOCATION,
+                (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
+            )
+            signer = oci.signer.Signer(
+                tenancy=config["tenancy"],
+                user=config["user"],
+                fingerprint=config["fingerprint"],
+                private_key_file_location=config.get("key_file"),
+                pass_phrase=oci.config.get_config_value_or_default(config, "pass_phrase"),
+                private_key_content=config.get("key_content")
+            )
+            return config, signer
+        except Exception:
+            print(f'** OCI Config was not found here : {oci.config.DEFAULT_LOCATION} or env varibles missing, aborting **')
+            raise SystemExit
 
 
 ##########################################################################
@@ -1484,7 +1518,8 @@ def execute_report():
     parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
     parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
     parser.add_argument('--output-to-bucket', default="", dest='output_bucket', help='Set Output bucket name (i.e. my-reporting-bucket) ')
-
+    parser.add_argument('--report-directory', default=None, dest='report_directory', help='Set Output report directory by default it is the current date (i.e. reports-date) ')
+    parser.add_argument('--print-to-screen', default='True', dest='print_to_screen', help='Set to False if you want to see only non-compliant findings (i.e. False) ')
     parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
     parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
     cmd = parser.parse_args()
@@ -1496,8 +1531,8 @@ def execute_report():
 
     # Identity extract compartments
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy,cmd.output_bucket)
-    
+    report = CIS_Report(config, signer, cmd.proxy,cmd.output_bucket, cmd.report_directory, cmd.print_to_screen)
+
     report.report_generate_cis_report()
     
 
@@ -1506,5 +1541,4 @@ def execute_report():
 ##########################################################################
 
 execute_report()
-
 

@@ -20,6 +20,7 @@ module "cis_network_admins" {
 module "cis_network_admins_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
   policies              = {
     ("${var.service_label}-NetworkAdmins-Policy") = {
       compartment_id         = var.tenancy_ocid
@@ -58,6 +59,7 @@ module "cis_security_admins" {
 module "cis_security_admins_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
   policies              = {
     ("${var.service_label}-SecurityAdmins-Policy") = {
       compartment_id         = var.tenancy_ocid
@@ -117,6 +119,7 @@ module "cis_database_admins" {
 module "cis_database_admins_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
   policies              = {
     ("${var.service_label}-DatabaseAdmins-Policy") = {
       compartment_id         = var.tenancy_ocid
@@ -162,6 +165,7 @@ module "cis_appdev_admins" {
 module "cis_appdev_admins_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
   policies              = {
     ("${var.service_label}-AppDevAdmins-Policy") = {
       compartment_id         = var.tenancy_ocid
@@ -218,6 +222,7 @@ module "cis_tenancy_auditors" {
 module "cis_tenancy_auditors_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
   policies              = {
     ("${var.service_label}-AuditorAccess-Policy") = {
       compartment_id         = var.tenancy_ocid
@@ -234,6 +239,36 @@ module "cis_tenancy_auditors_policy" {
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read resource-availability in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read audit-events in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to use cloud-shell in tenancy"]
+    }
+  }
+}
+
+################################################################################
+
+
+################################################################################
+######################## Announcement Artifacts #################################
+
+### Announcement Readers group
+module "cis_tenancy_announcment_readers" {
+  source                = "../modules/iam/iam-group"
+  providers             = { oci = oci.home }
+  tenancy_ocid          = var.tenancy_ocid
+  group_name            = local.announcement_readers_group_name
+  group_description     = "Group responsible for Console Announcements"
+  user_names            = []
+  }
+
+### Announcement Readers policy
+module "cis_tenancy_announcment_readers_policy" {
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
+  policies              = {
+    ("${var.service_label}-AnnouncementReader-Policy") = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing ${var.service_label}-AnnouncementReaders group to audit tenancy."
+      statements             = ["Allow group ${module.cis_tenancy_announcment_readers.group_name} to read announcements in tenancy"]
     }
   }
 }

@@ -21,11 +21,6 @@ data "oci_identity_tag_namespaces" "this" {
     }    
 }
 
-data "oci_identity_tags" "these" {
-    ## Looking for tags in the oracle default tag namespace
-    tag_namespace_id = length(data.oci_identity_tag_namespaces.this.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.this.tag_namespaces[0].id : "null"
-}
-
 data "oci_identity_tag_defaults" "these" {
     ## Looking for tag defaults for tags in the oracle default tag namespace
     compartment_id = var.tag_defaults_compartment_id

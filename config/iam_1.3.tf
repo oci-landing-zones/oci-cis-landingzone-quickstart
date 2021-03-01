@@ -15,11 +15,11 @@ module "cis_iam_admins" {
 module "cis_iam_admins_policy" {
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.cis_compartments] ### Requires compartments to pre-exist but is not automatically detected.
+  depends_on            = [module.cis_iam_admins] ### Explicitly declaring dependency on the group module.
   policies = {
     ("${var.service_label}-IAMAdmins-Policy") = {
       compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing IAMAdmins group to manage IAM resources in tenancy, except changing Administrators group assignments."
+      description            = "Policy allowing ${module.cis_iam_admins.group_name} group to manage IAM resources in tenancy, except changing Administrators group assignments."
       statements = ["Allow group ${module.cis_iam_admins.group_name} to manage users in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to inspect groups in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage groups in tenancy where target.group.name != 'Administrators'",

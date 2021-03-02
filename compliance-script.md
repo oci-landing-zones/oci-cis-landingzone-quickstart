@@ -2,9 +2,11 @@
 ### Overview
 The Compliance Checking script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. 
 
-The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered.
+The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with current day's date ex. ```2020-12-08```. 
 
-Using the --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder with current day's date ex. ```2020-12-08```.
+Using --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder(default location) with current day's date ex. ```2020-12-08```.
+
+Using --report-directory ```<directory-name>``` the reports will be copied to the specified directory. If used with --output-to-bucket the reports will be copied to the Object Storage bucket in a folder specified  in --report-directory ```<directory-name>```.
 
 ### Usage 
 
@@ -123,3 +125,48 @@ CSV: Object Storage_4.1     --> cis_Object Storage_4.1.csv
 CSV: Object Storage_4.2     --> cis_Object Storage_4.2.csv
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 12 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
+
+#### **Output Non-compliant Findings Only**
+
+Using --print-to-screen ```False``` will only print non-compliant findings to the screen. 
+
+In the sample output below:
+
+```
+##########################################################################################
+#                      CIS Foundations Benchmark 1.1 Summary Report                      #
+##########################################################################################
+Num     Level   Compliant       Findings        Title
+##########################################################################################
+1.1     1       No              4               Ensure service level admins are created to manage resources of particular service
+1.3     1       No              4               Ensure IAM administrators cannot update tenancy Administrators group
+1.7     1       No              5               Ensure MFA is enabled for all users with a console password
+1.8     1       No              1               Ensure user API keys rotate within 90 days or less
+1.11    1       No              1               Ensure API keys are not created for tenancy administrator users
+1.12    1       No              5               Ensure all OCI IAM user accounts have a valid and current email address
+2.1     1       No              4               Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
+2.5     1       No              6               Ensure the default security list of every VCN restricts all traffic except ICMP
+3.14    2       No              4               Ensure VCN flow logging is enabled for all subnets
+3.17    2       No              7               Ensure write level Object Storage logging is enabled for all buckets
+4.1     1       No              2               Ensure no Object Storage buckets are publicly visible
+4.2     2       No              3               Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)
+5.2     1       No              3               Ensure no resources are created in the root compartment
+
+##########################################################################################
+#                                 Writing reports to CSV                                 #
+##########################################################################################
+CSV: summary_report         --> 2021-02-21/cis_summary_report.csv
+CSV: Identity and Access Management_1.1 --> 2021-02-21/cis_Identity and Access Management_1.1.csv
+CSV: Identity and Access Management_1.3 --> 2021-02-21/cis_Identity and Access Management_1.3.csv
+CSV: Identity and Access Management_1.7 --> 2021-02-21/cis_Identity and Access Management_1.7.csv
+CSV: Identity and Access Management_1.8 --> 2021-02-21/cis_Identity and Access Management_1.8.csv
+CSV: Identity and Access Management_1.11 --> 2021-02-21/cis_Identity and Access Management_1.11.csv
+CSV: Identity and Access Management_1.12 --> 2021-02-21/cis_Identity and Access Management_1.12.csv
+CSV: Networking_2.1         --> 2021-02-21/cis_Networking_2.1.csv
+CSV: Networking_2.5         --> 2021-02-21/cis_Networking_2.5.csv
+CSV: Logging and Monitoring_3.14 --> 2021-02-21/cis_Logging and Monitoring_3.14.csv
+CSV: Logging and Monitoring_3.17 --> 2021-02-21/cis_Logging and Monitoring_3.17.csv
+CSV: Object Storage_4.1     --> 2021-02-21/cis_Object Storage_4.1.csv
+CSV: Object Storage_4.2     --> 2021-02-21/cis_Object Storage_4.2.csv
+CSV: Asset Management_5.2   --> 2021-02-21/cis_Asset Management_5.2.csv
+```

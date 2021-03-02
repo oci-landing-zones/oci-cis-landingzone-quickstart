@@ -19,6 +19,7 @@ locals {
     appdev_admin_group_name   = "${var.service_label}-AppDevAdmins"
     iam_admin_group_name      = "${var.service_label}-IAMAdmins"
     auditor_group_name        = "${var.service_label}-Auditors"
+    announcement_readers_group_name = "${var.service_label}-AnnouncementReaders"
 
     # Tags
     createdby_tag_name = "CreatedBy"

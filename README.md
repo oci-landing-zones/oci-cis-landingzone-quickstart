@@ -66,7 +66,7 @@ The resources are provisioned using a single user account with broad tenancy adm
 
 ## <a name="team"></a>The Team
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
+- **Contributors**: Pulkit Sharma, [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
 
 ## <a name="feedback">Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

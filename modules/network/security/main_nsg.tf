@@ -72,7 +72,10 @@ locals {
         src             = i.src
         src_type        = i.src_type
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) 
+      } if (i.protocol == "6" && i.src_port == null && i.dst_port != null) ? (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) : false
+      # This weird construct above prevents the inadvertent creation of a security rule allowing wide open access on specific ports.
+      # It is written in this way because Terraform does not short-circuit logical binary operators: https://github.com/hashicorp/terraform/issues/24128
+      # There are 3 more occurrences on such pattern in this file.
     ]
   ] )
   n_ingress_rules_tcp_src_dst = flatten( [ for k,v in var.nsgs != null ? var.nsgs : {} :
@@ -86,7 +89,7 @@ locals {
         src_type        = i.src_type
         src_port        = i.src_port
         dst_port        = i.dst_port
-      } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+      } if (i.protocol == "6" && i.src_port != null && i.dst_port != null) ? (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) : false
     ]
   ] )
 
@@ -191,7 +194,7 @@ locals {
       src               = i.src
       src_type          = i.src_type
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port == null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+    } if (i.protocol == "6" && i.src_port == null && i.dst_port != null) ? (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) : false
   ] )
   s_ingress_rules_tcp_src_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
     {
@@ -203,7 +206,7 @@ locals {
       src_type          = i.src_type
       src_port          = i.src_port
       dst_port          = i.dst_port
-    } if i.protocol == "6" && i.src_port != null && i.dst_port != null && (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0))
+    } if (i.protocol == "6" && i.src_port != null && i.dst_port != null) ? (i.src != var.anywhere_cidr || (i.src == var.anywhere_cidr && length(setintersection(range(i.dst_port.min,i.dst_port.max+1),var.ports_not_allowed_from_anywhere_cidr)) == 0)) : false
   ] )
 
   s_ingress_rules_udp_src_no_dst = flatten( [ for i in var.standalone_nsg_rules.ingress_rules :
@@ -709,8 +712,8 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_typ
   stateless             = local.ingress_rules_icmp_type_code[count.index].stateless
 
   icmp_options {
-    type                = local.ingress_rules_icmp_type_code.icmp_type
-    code                = local.ingress_rules_icmp_type_code.icmp_code
+    type                = local.ingress_rules_icmp_type_code[count.index].icmp_type
+    code                = local.ingress_rules_icmp_type_code[count.index].icmp_code
   }
 }
 

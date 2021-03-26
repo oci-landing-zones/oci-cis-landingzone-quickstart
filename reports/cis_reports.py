@@ -514,21 +514,32 @@ class CIS_Report:
 
                     # Getting Bucket Info
                     for bucket in buckets_data:
-                        bucket_info = self.__os_client.get_bucket(self.__os_namespace,bucket.name).data
-                        record = {
-                            "id" : bucket_info.id,
-                            "name" : bucket_info.name,
-                            "kms_key_id" : bucket_info.kms_key_id,
-                            "namespace" : bucket_info.namespace,
-                            "object_events_enabled" : bucket_info.object_events_enabled,
-                            "public_access_type" : bucket_info.public_access_type,
-                            "replication_enabled" : bucket_info.replication_enabled,
-                            "is_read_only" : bucket_info.is_read_only,
-                            "storage_tier" : bucket_info.storage_tier,
-                            "time_created" : bucket_info.time_created,
-                            "versioning" : bucket_info.versioning
-                        }
-                        self.__buckets.append(record)
+                        try:
+                            bucket_info = self.__os_client.get_bucket(self.__os_namespace,bucket.name).data
+                            record = {
+                                "id" : bucket_info.id,
+                                "name" : bucket_info.name,
+                                "kms_key_id" : bucket_info.kms_key_id,
+                                "namespace" : bucket_info.namespace,
+                                "compartment_id": bucket_info.compartment_id,
+                                "object_events_enabled" : bucket_info.object_events_enabled,
+                                "public_access_type" : bucket_info.public_access_type,
+                                "replication_enabled" : bucket_info.replication_enabled,
+                                "is_read_only" : bucket_info.is_read_only,
+                                "storage_tier" : bucket_info.storage_tier,
+                                "time_created" : bucket_info.time_created,
+                                "versioning" : bucket_info.versioning,
+                                "notes": ''
+                            }
+                            self.__buckets.append(record)
+                        except Exception as e:
+                            record = {
+                                "name": bucket.name,
+                                "namespace": bucket.namespace,
+                                "compartment_id": bucket.compartment_id,
+                                "notes": str(e)
+                            }
+                            self.__buckets.append(record)
             # Returning Buckets
             return self.__buckets
         except Exception as e:
@@ -1226,10 +1237,16 @@ class CIS_Report:
 
         # CIS Section 4 Checks
         for bucket in self.__buckets:
-            if bucket['public_access_type'] != 'NoPublicAccess':
-                self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
-                self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
-            elif not(bucket['kms_key_id']):
+            if 'public_access_type' in bucket:
+                if bucket['public_access_type'] != 'NoPublicAccess':
+                    self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
+            
+            if 'kms_key_id' in bucket:
+                if not(bucket['kms_key_id']):
+                    self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
+                    self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
+            else:
                 self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
                 self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
 

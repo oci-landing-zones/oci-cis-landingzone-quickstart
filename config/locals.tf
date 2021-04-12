@@ -3,15 +3,13 @@
 
 locals {
     ### IAM
+    top_compartment_name      = "${var.service_label}-Top"
     security_compartment_name = "${var.service_label}-Security"
     network_compartment_name  = "${var.service_label}-Network"
     database_compartment_name = "${var.service_label}-Database"
     appdev_compartment_name   = "${var.service_label}-AppDev" 
 
-    /* security_compartment_name_output = module.cis_compartments.compartments[local.security_compartment_name].name
-    network_compartment_name_output  = module.cis_compartments.compartments[local.network_compartment_name].name
-    database_compartment_name_output = module.cis_compartments.compartments[local.database_compartment_name].name
-    appdev_compartment_name_output   = module.cis_compartments.compartments[local.appdev_compartment_name].name */
+    pol_attach_compartment_id = var.top_compartment == true ? module.cis_top_compartment[0].compartments[var.top_compartment.name].id : var.tenancy_ocid
 
     security_admin_group_name = "${var.service_label}-SecurityAdmins"
     network_admin_group_name  = "${var.service_label}-NetworkAdmins"

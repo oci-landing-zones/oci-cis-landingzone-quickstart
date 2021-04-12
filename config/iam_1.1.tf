@@ -23,9 +23,9 @@ module "cis_network_admins_policy" {
   depends_on            = [module.cis_network_admins, module.cis_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies              = {
     ("${var.service_label}-NetworkAdmins-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${module.cis_compartments.compartments[local.network_compartment_name].name}."
-      statements             = ["Allow group ${module.cis_network_admins.group_name} to read all-resources in compartment ${local.network_compartment_name}",
+      compartment_id    = local.pol_attach_compartment_id
+      description       = "Policy allowing ${var.service_label}-NetworkAdmins group to manage virtual-network-family in compartment ${module.cis_compartments.compartments[local.network_compartment_name].name}."
+      statements        = ["Allow group ${module.cis_network_admins.group_name} to read all-resources in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage virtual-network-family in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage dns in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage load-balancers in compartment ${local.network_compartment_name}",
@@ -62,9 +62,9 @@ module "cis_security_admins_policy" {
   depends_on            = [module.cis_security_admins, module.cis_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies              = {
     ("${var.service_label}-SecurityAdmins-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${module.cis_compartments.compartments[local.security_compartment_name].name}."
-      statements             = ["Allow group ${module.cis_security_admins.group_name} to read all-resources in compartment ${local.security_compartment_name}",
+      compartment_id    = local.pol_attach_compartment_id
+      description       = "Policy allowing ${var.service_label}-SecurityAdmins group to manage security related services in compartment ${module.cis_compartments.compartments[local.security_compartment_name].name}."
+      statements        = ["Allow group ${module.cis_security_admins.group_name} to read all-resources in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage instance-family in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage policies in tenancy where all {target.policy.name != 'Tenant Admin Policy', target.policy.name != '${var.service_label}-IAMAdmins-Policy'}",
                           "Allow group ${module.cis_security_admins.group_name} to manage policies in compartment ${local.security_compartment_name}",
@@ -122,9 +122,9 @@ module "cis_database_admins_policy" {
   depends_on            = [module.cis_database_admins, module.cis_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies              = {
     ("${var.service_label}-DatabaseAdmins-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${module.cis_compartments.compartments[local.database_compartment_name].name}."
-      statements             = ["Allow group ${module.cis_database_admins.group_name} to read all-resources in compartment ${local.database_compartment_name}",
+      compartment_id    = local.pol_attach_compartment_id
+      description       = "Policy allowing ${var.service_label}-DatabaseAdmins group to manage database-family in compartment ${module.cis_compartments.compartments[local.database_compartment_name].name}."
+      statements        = ["Allow group ${module.cis_database_admins.group_name} to read all-resources in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage database-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage alarms in compartment ${local.database_compartment_name}",
@@ -168,9 +168,9 @@ module "cis_appdev_admins_policy" {
   depends_on            = [module.cis_appdev_admins, module.cis_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies              = {
     ("${var.service_label}-AppDevAdmins-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${var.service_label}-AppDevAdmins group to manage app development related services in compartment ${module.cis_compartments.compartments[local.appdev_compartment_name].name}."
-      statements             = ["Allow group ${module.cis_appdev_admins.group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
+      compartment_id    = local.pol_attach_compartment_id
+      description       = "Policy allowing ${var.service_label}-AppDevAdmins group to manage app development related services in compartment ${module.cis_compartments.compartments[local.appdev_compartment_name].name}."
+      statements        = ["Allow group ${module.cis_appdev_admins.group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage functions-family in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage ons-family in compartment ${local.appdev_compartment_name}",
@@ -225,9 +225,9 @@ module "cis_tenancy_auditors_policy" {
   depends_on            = [module.cis_tenancy_auditors] ### Explicitly declaring dependency on the group module.
   policies              = {
     ("${var.service_label}-AuditorAccess-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${module.cis_tenancy_auditors.group_name} group to audit tenancy."
-      statements             = ["Allow group ${module.cis_tenancy_auditors.group_name} to inspect all-resources in tenancy",
+      compartment_id    = local.pol_attach_compartment_id
+      description       = "Policy allowing ${module.cis_tenancy_auditors.group_name} group to audit tenancy."
+      statements        = ["Allow group ${module.cis_tenancy_auditors.group_name} to inspect all-resources in tenancy",
                           "Allow group ${module.cis_tenancy_auditors.group_name} to read instances in tenancy",
                           "Allow group ${module.cis_tenancy_auditors.group_name} to read load-balancers in tenancy",
                           "Allow group ${module.cis_tenancy_auditors.group_name} to read buckets in tenancy",

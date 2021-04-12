@@ -18,13 +18,13 @@ module "cis_iam_admins_policy" {
   depends_on            = [module.cis_iam_admins] ### Explicitly declaring dependency on the group module.
   policies = {
     ("${var.service_label}-IAMAdmins-Policy") = {
-      compartment_id         = var.tenancy_ocid
-      description            = "Policy allowing ${module.cis_iam_admins.group_name} group to manage IAM resources in tenancy, except changing Administrators group assignments."
+      compartment_id    = var.tenancy_ocid
+      description       = "Policy allowing ${module.cis_iam_admins.group_name} group to manage IAM resources in tenancy, except changing Administrators group assignments."
       statements = ["Allow group ${module.cis_iam_admins.group_name} to manage users in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to inspect groups in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage groups in tenancy where target.group.name != 'Administrators'",
                       "Allow group ${module.cis_iam_admins.group_name} to inspect policies in tenancy",
-                      "Allow group ${module.cis_iam_admins.group_name} to manage policies in tenancy where target.policy.name != 'Tenant Admin Policy'",
+                    #  "Allow group ${module.cis_iam_admins.group_name} to manage policies in tenancy where target.policy.name != 'Tenant Admin Policy'",
                       "Allow group ${module.cis_iam_admins.group_name} to manage dynamic-groups in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage compartments in tenancy",
                       "Allow group ${module.cis_iam_admins.group_name} to manage authentication-policies in tenancy",

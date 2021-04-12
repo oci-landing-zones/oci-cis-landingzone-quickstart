@@ -13,5 +13,4 @@ module "cis_buckets" {
             compartment_id = module.cis_compartments.compartments[local.appdev_compartment_name].id
         }
     }
-}  
-
+}

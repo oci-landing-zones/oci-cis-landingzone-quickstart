@@ -127,3 +127,8 @@ variable "cloud_guard_configuration_self_manage_resources" {
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
 }
+
+variable "top_compartment" {
+    type    = boolean
+    default = false
+}

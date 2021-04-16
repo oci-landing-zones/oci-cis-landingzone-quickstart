@@ -129,14 +129,14 @@ variable "cloud_guard_configuration_self_manage_resources" {
 }
 
 # Vulnerability Scanning Service
-variable "vss_enabled" {
-    description = "Whether or not the Vulnerability Scanning Service is to be enabled in the Landing Zone."
+variable "vss_create" {
+    description = "Whether or not Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone."
     type = bool
     default = true
 }
 # Vulnerability Scanning Service
 variable "vss_scan_schedule" {
-    description = "The scan schedule for the Vulnerability Scanning Service, if enabled. Valid values are WEEKLY or DAILY."
+    description = "The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY."
     type = string
     default = "WEEKLY"
     validation {
@@ -146,7 +146,7 @@ variable "vss_scan_schedule" {
 }
 # Vulnerability Scanning Service
 variable "vss_scan_day" {
-    description = "The week day for the Vulnerability Scanning Service, if enabled. Only applies if vss_scan_schedule is WEEKLY."
+    description = "The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY."
     type = string
     default = "SUNDAY"
     validation {

@@ -4,7 +4,7 @@
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
 module "cis_scanning" {
     source       = "../modules/security/scanning"
-    scan_recipes = var.vss_enabled == true ? {
+    scan_recipes = var.vss_create == true ? {
         (local.scan_std_weekly_recipe_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
             port_scan_level = "STANDARD" 
@@ -29,7 +29,7 @@ module "cis_scanning" {
             defined_tags = null
         }
     } : {}
-    scan_targets = var.vss_enabled == true ? {
+    scan_targets = var.vss_create == true ? {
         (local.security_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.security_compartment_name} compartment Scanning target."

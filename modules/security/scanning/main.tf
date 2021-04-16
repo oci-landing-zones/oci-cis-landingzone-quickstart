@@ -23,9 +23,6 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
             cis_benchmark_settings {
                 scan_level = each.value.agent_cis_benchmark_settings_scan_level
             }
-            endpoint_protection_settings {
-                scan_level = each.value.agent_endpoint_protection_settings_scan_level
-            }
         }
     }
     #Optional

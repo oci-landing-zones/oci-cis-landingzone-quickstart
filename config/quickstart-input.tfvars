@@ -33,6 +33,9 @@ security_admin_email_endpoint = "<email_to_receive_security_related_notification
 # public_src_lbr_cidr                             = "0.0.0.0/0" 
 # cloud_guard_configuration_status                = "ENABLED" 
 # cloud_guard_configuration_self_manage_resources = false 
+# vss_enabled                                     = true
+# vss_scan_schedule                               = "WEEKLY"
+# vss_scan_day                                    = "SUNDAY"
 
 
 

@@ -114,8 +114,8 @@ variable "security_admin_email_endpoint" {
 variable "cloud_guard_configuration_status" {
   default = "ENABLED"
   validation {
-      condition = var.cloud_guard_configuration_status == "ENABLED" || var.cloud_guard_configuration_status == "DISABLED"
-      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
+      condition = contains(["ENABLED","DISABLED"], upper(var.cloud_guard_configuration_status))
+      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values (case insensitive): ENABLED or DISABLED."
   }
 }
 # Setting this variable to true lets the user seed the oracle managed entities with minimal changes to the original entities.
@@ -126,4 +126,31 @@ variable "cloud_guard_configuration_self_manage_resources" {
       condition = can(tobool(var.cloud_guard_configuration_self_manage_resources))
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
+}
+
+# Vulnerability Scanning Service
+variable "vss_enabled" {
+    description = "Whether or not the Vulnerability Scanning Service is to be enabled in the Landing Zone."
+    type = bool
+    default = true
+}
+# Vulnerability Scanning Service
+variable "vss_scan_schedule" {
+    description = "The scan schedule for the Vulnerability Scanning Service, if enabled. Valid values are WEEKLY or DAILY."
+    type = string
+    default = "WEEKLY"
+    validation {
+        condition = contains(["WEEKLY","DAILY"], upper(var.vss_scan_schedule))
+        error_message = "Invalid value for provided for vss_scan_schedule. Valid values (case insensitive): WEEKLY or DAILY."
+    }
+}
+# Vulnerability Scanning Service
+variable "vss_scan_day" {
+    description = "The week day for the Vulnerability Scanning Service, if enabled. Only applies if vss_scan_schedule is WEEKLY."
+    type = string
+    default = "SUNDAY"
+    validation {
+        condition = contains(["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"], upper(var.vss_scan_day))
+        error_message = "Invalid value for provided for vss_scan_day. Valid values (case insensitive): SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY."
+    }
 }

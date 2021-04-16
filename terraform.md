@@ -72,7 +72,7 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 3. In **Working Directory**, make sure the config folder is selected.
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
-6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+6. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
 ![Folder Stack](images/ZipStack_2.png)
 

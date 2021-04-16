@@ -31,6 +31,9 @@ Variable Name | Description | Required | Default Value
 **security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
 **cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
 **cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
+**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true
+**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | Yes | WEEKLY
+**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | Yes | SUNDAY
 
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
 

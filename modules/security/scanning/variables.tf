@@ -4,7 +4,6 @@ variable "scan_recipes" {
     agent_scan_level                              = string,
     agent_configuration_vendor                    = string,
     agent_cis_benchmark_settings_scan_level       = string,
-    agent_endpoint_protection_settings_scan_level = string,
     port_scan_level                               = string,
     schedule_type                                 = string,
     schedule_day_of_week                          = string,

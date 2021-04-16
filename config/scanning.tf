@@ -4,7 +4,7 @@
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
 module "cis_scanning" {
     source       = "../modules/security/scanning"
-    scan_recipes = {
+    scan_recipes = var.vss_enabled == true ? {
         (local.scan_std_weekly_recipe_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
             port_scan_level = "STANDARD" 
@@ -12,8 +12,8 @@ module "cis_scanning" {
             # STANDARD checks the 1000 most common port numbers.
             # LIGHT checks the 100 most common port numbers.
             # NONE does not check for open ports.
-            schedule_type = "WEEKLY"
-            schedule_day_of_week = "SUNDAY"
+            schedule_type = upper(var.vss_scan_schedule)
+            schedule_day_of_week = upper(var.vss_scan_day)
             agent_scan_level = "STANDARD"
             # Valid values: STANDARD, NONE
             # STANDARD enables agent-based scanning.
@@ -26,13 +26,10 @@ module "cis_scanning" {
             # MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. 
             # LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High.
             # NONE: disables cis benchmark scanning.
-            agent_endpoint_protection_settings_scan_level = "MEDIUM"
-            # Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE
-            # NONE: disables endpoint protection scanning.
             defined_tags = null
         }
-    }
-    scan_targets = {
+    } : {}
+    scan_targets = var.vss_enabled == true ? {
         (local.security_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.security_compartment_name} compartment Scanning target."
@@ -61,5 +58,5 @@ module "cis_scanning" {
             target_compartment_id = module.cis_compartments.compartments[local.database_compartment_name].id
             defined_tags = null
         }
-    }
+    } : {}
 }

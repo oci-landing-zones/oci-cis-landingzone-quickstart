@@ -534,9 +534,18 @@ class CIS_Report:
                             self.__buckets.append(record)
                         except Exception as e:
                             record = {
+                                "id" : "",
                                 "name": bucket.name,
+                                "kms_key_id" : "",
                                 "namespace": bucket.namespace,
                                 "compartment_id": bucket.compartment_id,
+                                "object_events_enabled" : "",
+                                "public_access_type" : "",
+                                "replication_enabled" : "",
+                                "is_read_only" : "",
+                                "storage_tier" : "",
+                                "time_created" : bucket.time_created,
+                                "versioning" : "",
                                 "notes": str(e)
                             }
                             self.__buckets.append(record)

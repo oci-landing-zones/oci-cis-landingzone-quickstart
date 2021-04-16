@@ -96,7 +96,7 @@ module "cis_security_admins_policy" {
                           "Allow group ${module.cis_security_admins.group_name} to manage orm-stacks in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}",
-                          "Allow group ${module.cis_security_admins.group_name} to manage vss-family in tenacy"]
+                          "Allow group ${module.cis_security_admins.group_name} to manage vss-family in tenancy"]
     }
   }
 }

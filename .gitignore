@@ -15,7 +15,6 @@ cis-monitoring
 cis-network
 cis-object-storage
 cis-tenancy.sh
-reports
 modules/queries
 scripts
 reporting

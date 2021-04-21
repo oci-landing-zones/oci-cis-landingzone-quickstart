@@ -56,7 +56,7 @@ class CIS_Report:
         '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
         '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-        '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.9': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
@@ -678,31 +678,61 @@ class CIS_Report:
                         compartment.id
                     ).data
                     # Looping through subnets in a compartment
-                    for subnet in subnets_data:
-                        record = {
-                            "id" : subnet.id,
-                            "availability_domain" : subnet.availability_domain,
-                            "cidr_block" : subnet.cidr_block,
-                            "compartment_id" : subnet.compartment_id,
-                            "dhcp_options_id" : subnet.dhcp_options_id,
-                            "display_name" : subnet.display_name,
-                            "dns_label" : subnet.dns_label,
-                            "ipv6_cidr_block" : subnet.ipv6_cidr_block,
-                            "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
-                            "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
-                            "lifecycle_state" : subnet.lifecycle_state,
-                            "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
-                            "route_table_id" : subnet.route_table_id,
-                            "security_list_ids" : subnet.security_list_ids,
-                            "subnet_domain_name" : subnet.subnet_domain_name,
-                            "time_created" : subnet.time_created,
-                            "vcn_id" : subnet.vcn_id,
-                            "virtual_router_ip" : subnet.virtual_router_ip,
-                            "virtual_router_mac" : subnet.virtual_router_mac
+                    try: 
+                        for subnet in subnets_data:
+                            print("Subnet Display Name: " + str(subnet.display_name))
+                            record = {
+                                "id" : subnet.id,
+                                "availability_domain" : subnet.availability_domain,
+                                "cidr_block" : subnet.cidr_block,
+                                "compartment_id" : subnet.compartment_id,
+                                "dhcp_options_id" : subnet.dhcp_options_id,
+                                "display_name" : subnet.display_name,
+                                "dns_label" : subnet.dns_label,
+                                "ipv6_cidr_block" : subnet.ipv6_cidr_block,
+                                "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
+                                "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
+                                "lifecycle_state" : subnet.lifecycle_state,
+                                "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
+                                "route_table_id" : subnet.route_table_id,
+                                "security_list_ids" : subnet.security_list_ids,
+                                "subnet_domain_name" : subnet.subnet_domain_name,
+                                "time_created" : subnet.time_created,
+                                "vcn_id" : subnet.vcn_id,
+                                "virtual_router_ip" : subnet.virtual_router_ip,
+                                "virtual_router_mac" : subnet.virtual_router_mac
 
-                        }
-                        # Adding subnet to subnet list
-                        self.__network_subnets.append(record)
+                            }
+                            # Adding subnet to subnet list
+                            self.__network_subnets.append(record)
+                    except:
+                            record = {
+                                "id" : subnet.id,
+                                "availability_domain" : subnet.availability_domain,
+                                "cidr_block" : subnet.cidr_block,
+                                "compartment_id" : subnet.compartment_id,
+                                "dhcp_options_id" : subnet.dhcp_options_id,
+                                "display_name" : subnet.display_name,
+                                "dns_label" : subnet.dns_label,
+                                # "ipv6_cidr_block" : subnet.ipv6_cidr_block,
+                                # "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
+                                # "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
+                                "ipv6_cidr_block" : "",
+                                "ipv6_public_cidr_block" : "",
+                                "ipv6_virtual_router_ip" : "",                                
+                                "lifecycle_state" : subnet.lifecycle_state,
+                                "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
+                                "route_table_id" : subnet.route_table_id,
+                                "security_list_ids" : subnet.security_list_ids,
+                                "subnet_domain_name" : subnet.subnet_domain_name,
+                                "time_created" : subnet.time_created,
+                                "vcn_id" : subnet.vcn_id,
+                                "virtual_router_ip" : subnet.virtual_router_ip,
+                                "virtual_router_mac" : subnet.virtual_router_mac
+
+                            }
+                            self.__network_subnets.append(record)
+
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError("Error in __network_read_network_subnets " + str(e.args))

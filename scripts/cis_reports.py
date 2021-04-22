@@ -56,7 +56,7 @@ class CIS_Report:
         '3.6': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.6', 'Title' : 'Ensure a notification is configured for IAM group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.7': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.7', 'Title' : 'Ensure a notification is configured for IAM policy changes','Status' : True, 'Level' : 1 , 'Findings' : []},
         '3.8': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.8', 'Title' : 'Ensure a notification is configured for user changes','Status' : False, 'Level' : 1 , 'Findings' : []},
-        '3.9': {'section' : 'Lexogging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
+        '3.9': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.9', 'Title' : 'Ensure a notification is configured for VCN changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.10': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.10', 'Title' : 'Ensure a notification is configured for  changes to route tables','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.11': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.11', 'Title' : 'Ensure a notification is configured for  security list changes','Status' : False, 'Level' : 1 , 'Findings' : []},
         '3.12': {'section' : 'Logging and Monitoring', 'recommendation_#' : '3.12', 'Title' : 'Ensure a notification is configured for  network security group changes','Status' : False, 'Level' : 1 , 'Findings' : []},
@@ -208,7 +208,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Written by Josh Hammer & Andre Correa, updated February 2021.")
+        print("Written by Josh Hammer & Andre Correa, updated April 22, 2021.")
         print("Starts at " + self.start_time_str )
         self.__config = config
         self.__signer = signer
@@ -514,21 +514,41 @@ class CIS_Report:
 
                     # Getting Bucket Info
                     for bucket in buckets_data:
-                        bucket_info = self.__os_client.get_bucket(self.__os_namespace,bucket.name).data
-                        record = {
-                            "id" : bucket_info.id,
-                            "name" : bucket_info.name,
-                            "kms_key_id" : bucket_info.kms_key_id,
-                            "namespace" : bucket_info.namespace,
-                            "object_events_enabled" : bucket_info.object_events_enabled,
-                            "public_access_type" : bucket_info.public_access_type,
-                            "replication_enabled" : bucket_info.replication_enabled,
-                            "is_read_only" : bucket_info.is_read_only,
-                            "storage_tier" : bucket_info.storage_tier,
-                            "time_created" : bucket_info.time_created,
-                            "versioning" : bucket_info.versioning
-                        }
-                        self.__buckets.append(record)
+                        try:
+                            bucket_info = self.__os_client.get_bucket(self.__os_namespace,bucket.name).data
+                            record = {
+                                "id" : bucket_info.id,
+                                "name" : bucket_info.name,
+                                "kms_key_id" : bucket_info.kms_key_id,
+                                "namespace" : bucket_info.namespace,
+                                "compartment_id": bucket_info.compartment_id,
+                                "object_events_enabled" : bucket_info.object_events_enabled,
+                                "public_access_type" : bucket_info.public_access_type,
+                                "replication_enabled" : bucket_info.replication_enabled,
+                                "is_read_only" : bucket_info.is_read_only,
+                                "storage_tier" : bucket_info.storage_tier,
+                                "time_created" : bucket_info.time_created,
+                                "versioning" : bucket_info.versioning,
+                                "notes": ''
+                            }
+                            self.__buckets.append(record)
+                        except Exception as e:
+                            record = {
+                                "id" : "",
+                                "name" : bucket.name,
+                                "kms_key_id" : "",
+                                "namespace": bucket.namespace,
+                                "compartment_id": bucket.compartment_id,
+                                "object_events_enabled" : "",
+                                "public_access_type" : "",
+                                "replication_enabled" : "",
+                                "is_read_only" : "",
+                                "storage_tier" : "",
+                                "time_created" : bucket.time_created,
+                                "versioning" : "",
+                                "notes": str(e)
+                            }
+                            self.__buckets.append(record)
             # Returning Buckets
             return self.__buckets
         except Exception as e:
@@ -664,34 +684,59 @@ class CIS_Report:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     subnets_data = oci.pagination.list_call_get_all_results(
                         self.__network.list_subnets,
-                        compartment.id
+                        compartment.id,
+                        lifecycle_state="AVAILABLE"
                     ).data
                     # Looping through subnets in a compartment
-                    for subnet in subnets_data:
-                        record = {
-                            "id" : subnet.id,
-                            "availability_domain" : subnet.availability_domain,
-                            "cidr_block" : subnet.cidr_block,
-                            "compartment_id" : subnet.compartment_id,
-                            "dhcp_options_id" : subnet.dhcp_options_id,
-                            "display_name" : subnet.display_name,
-                            "dns_label" : subnet.dns_label,
-                            "ipv6_cidr_block" : subnet.ipv6_cidr_block,
-                            "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
-                            "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
-                            "lifecycle_state" : subnet.lifecycle_state,
-                            "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
-                            "route_table_id" : subnet.route_table_id,
-                            "security_list_ids" : subnet.security_list_ids,
-                            "subnet_domain_name" : subnet.subnet_domain_name,
-                            "time_created" : subnet.time_created,
-                            "vcn_id" : subnet.vcn_id,
-                            "virtual_router_ip" : subnet.virtual_router_ip,
-                            "virtual_router_mac" : subnet.virtual_router_mac
+                    try: 
+                        for subnet in subnets_data:
+                            record = {
+                                "id" : subnet.id,
+                                "availability_domain" : subnet.availability_domain,
+                                "cidr_block" : subnet.cidr_block,
+                                "compartment_id" : subnet.compartment_id,
+                                "dhcp_options_id" : subnet.dhcp_options_id,
+                                "display_name" : subnet.display_name,
+                                "dns_label" : subnet.dns_label,
+                                "ipv6_cidr_block" : subnet.ipv6_cidr_block,
+                                "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
+                                "lifecycle_state" : subnet.lifecycle_state,
+                                "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
+                                "route_table_id" : subnet.route_table_id,
+                                "security_list_ids" : subnet.security_list_ids,
+                                "subnet_domain_name" : subnet.subnet_domain_name,
+                                "time_created" : subnet.time_created,
+                                "vcn_id" : subnet.vcn_id,
+                                "virtual_router_ip" : subnet.virtual_router_ip,
+                                "virtual_router_mac" : subnet.virtual_router_mac
 
-                        }
-                        # Adding subnet to subnet list
-                        self.__network_subnets.append(record)
+                            }
+                            # Adding subnet to subnet list
+                            self.__network_subnets.append(record)
+                    except:
+                            record = {
+                                "id" : subnet.id,
+                                "availability_domain" : subnet.availability_domain,
+                                "cidr_block" : subnet.cidr_block,
+                                "compartment_id" : subnet.compartment_id,
+                                "dhcp_options_id" : subnet.dhcp_options_id,
+                                "display_name" : subnet.display_name,
+                                "dns_label" : subnet.dns_label,
+                                "ipv6_cidr_block" : "",
+                                "ipv6_virtual_router_ip" : "",                                
+                                "lifecycle_state" : subnet.lifecycle_state,
+                                "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
+                                "route_table_id" : subnet.route_table_id,
+                                "security_list_ids" : subnet.security_list_ids,
+                                "subnet_domain_name" : subnet.subnet_domain_name,
+                                "time_created" : subnet.time_created,
+                                "vcn_id" : subnet.vcn_id,
+                                "virtual_router_ip" : subnet.virtual_router_ip,
+                                "virtual_router_mac" : subnet.virtual_router_mac
+
+                            }
+                            self.__network_subnets.append(record)
+
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError("Error in __network_read_network_subnets " + str(e.args))
@@ -1226,10 +1271,16 @@ class CIS_Report:
 
         # CIS Section 4 Checks
         for bucket in self.__buckets:
-            if bucket['public_access_type'] != 'NoPublicAccess':
-                self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
-                self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
-            elif not(bucket['kms_key_id']):
+            if 'public_access_type' in bucket:
+                if bucket['public_access_type'] != 'NoPublicAccess':
+                    self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
+                    self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(bucket)
+            
+            if 'kms_key_id' in bucket:
+                if not(bucket['kms_key_id']):
+                    self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
+                    self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
+            else:
                 self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(bucket)
                 self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
 

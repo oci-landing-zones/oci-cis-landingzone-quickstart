@@ -208,7 +208,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Written by Josh Hammer & Andre Correa, updated February 2021.")
+        print("Written by Josh Hammer & Andre Correa, updated April 22, 2021.")
         print("Starts at " + self.start_time_str )
         self.__config = config
         self.__signer = signer
@@ -534,9 +534,18 @@ class CIS_Report:
                             self.__buckets.append(record)
                         except Exception as e:
                             record = {
-                                "name": bucket.name,
+                                "id" : "",
+                                "name" : bucket.name,
+                                "kms_key_id" : "",
                                 "namespace": bucket.namespace,
                                 "compartment_id": bucket.compartment_id,
+                                "object_events_enabled" : "",
+                                "public_access_type" : "",
+                                "replication_enabled" : "",
+                                "is_read_only" : "",
+                                "storage_tier" : "",
+                                "time_created" : bucket.time_created,
+                                "versioning" : "",
                                 "notes": str(e)
                             }
                             self.__buckets.append(record)
@@ -675,12 +684,12 @@ class CIS_Report:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     subnets_data = oci.pagination.list_call_get_all_results(
                         self.__network.list_subnets,
-                        compartment.id
+                        compartment.id,
+                        lifecycle_state="AVAILABLE"
                     ).data
                     # Looping through subnets in a compartment
                     try: 
                         for subnet in subnets_data:
-                            print("Subnet Display Name: " + str(subnet.display_name))
                             record = {
                                 "id" : subnet.id,
                                 "availability_domain" : subnet.availability_domain,
@@ -690,7 +699,6 @@ class CIS_Report:
                                 "display_name" : subnet.display_name,
                                 "dns_label" : subnet.dns_label,
                                 "ipv6_cidr_block" : subnet.ipv6_cidr_block,
-                                "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
                                 "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
                                 "lifecycle_state" : subnet.lifecycle_state,
                                 "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,
@@ -714,11 +722,7 @@ class CIS_Report:
                                 "dhcp_options_id" : subnet.dhcp_options_id,
                                 "display_name" : subnet.display_name,
                                 "dns_label" : subnet.dns_label,
-                                # "ipv6_cidr_block" : subnet.ipv6_cidr_block,
-                                # "ipv6_public_cidr_block" : subnet.ipv6_public_cidr_block,
-                                # "ipv6_virtual_router_ip" : subnet.ipv6_virtual_router_ip,
                                 "ipv6_cidr_block" : "",
-                                "ipv6_public_cidr_block" : "",
                                 "ipv6_virtual_router_ip" : "",                                
                                 "lifecycle_state" : subnet.lifecycle_state,
                                 "prohibit_public_ip_on_vnic" : subnet.prohibit_public_ip_on_vnic,

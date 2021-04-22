@@ -1,0 +1,9 @@
+**/*.tfstate*
+**/*.out
+**/.terraform/*
+**/.terraform.*
+**/.DS_Store
+**/crash.log
+**/.csv
+private_key.pem
+config/terraform.tfvars

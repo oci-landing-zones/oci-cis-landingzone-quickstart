@@ -1,4 +1,7 @@
 resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
+  lifecycle {
+      create_before_destroy = true
+  }  
   for_each = var.scan_recipes
     compartment_id = each.value.compartment_id
     display_name = each.key 

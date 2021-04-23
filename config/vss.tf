@@ -3,9 +3,9 @@
 
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
 module "cis_scanning" {
-    source       = "../modules/security/scanning"
+    source       = "../modules/security/vss"
     scan_recipes = var.vss_create == true ? {
-        (local.scan_std_weekly_recipe_name) = {
+        (local.scan_default_recipe_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
             port_scan_level = "STANDARD" 
             # Valid values: STANDARD, LIGHT, NONE 
@@ -33,28 +33,28 @@ module "cis_scanning" {
         (local.security_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.security_compartment_name} compartment Scanning target."
-            scan_recipe_name = local.scan_std_weekly_recipe_name
+            scan_recipe_name = local.scan_default_recipe_name
             target_compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
             defined_tags = null
         },
         (local.network_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.network_compartment_name} compartment Scanning target."
-            scan_recipe_name = local.scan_std_weekly_recipe_name
+            scan_recipe_name = local.scan_default_recipe_name
             target_compartment_id = module.cis_compartments.compartments[local.network_compartment_name].id
             defined_tags = null
         },
         (local.appdev_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.appdev_compartment_name} compartment Scanning target."
-            scan_recipe_name = local.scan_std_weekly_recipe_name
+            scan_recipe_name = local.scan_default_recipe_name
             target_compartment_id = module.cis_compartments.compartments[local.appdev_compartment_name].id
             defined_tags = null
         },
         (local.database_cmp_target_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id 
             description = "${local.database_compartment_name} compartment Scanning target."
-            scan_recipe_name = local.scan_std_weekly_recipe_name
+            scan_recipe_name = local.scan_default_recipe_name
             target_compartment_id = module.cis_compartments.compartments[local.database_compartment_name].id
             defined_tags = null
         }

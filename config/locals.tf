@@ -58,4 +58,11 @@ locals {
     bucket_name  = "${var.service_label}-bucket"
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
+
+    ### Service Connector Hub
+    sch_audit_display_name = "${var.service_label}-SCH-Audit"
+    sch_audit_bucket_name = "${var.service_label}-SCH-Audit-Bucket"
+    
+    sch_vcnFlowLogs_display_name = "${var.service_label}-SCH-VCNFlowLogs"
+    sch_vcnFlowLogs_bucket_name = "${var.service_label}-SCH-VCNFlowLogs-Bucket"
 }

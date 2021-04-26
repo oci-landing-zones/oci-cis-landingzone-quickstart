@@ -17,13 +17,4 @@ variable "vault_type" {
   type        = string
   description = "Vault Type - DEFAULT (Shared)"
   default     = "DEFAULT"
-}  
-
-variable "keys" {
-  type = map(object({
-    key_shape_algorithm = string,
-    key_shape_length = string
-  }))
 }
-
-

@@ -3,21 +3,27 @@
 
 locals {
     ### IAM
-    top_compartment_name      = "${var.service_label}-Top"
-    security_compartment_name = "${var.service_label}-Security"
-    network_compartment_name  = "${var.service_label}-Network"
-    database_compartment_name = "${var.service_label}-Database"
-    appdev_compartment_name   = "${var.service_label}-AppDev" 
+    # Default compartment names
+    default_top_compartment_name = "${var.service_label}-Top"
+    security_compartment_name    = "${var.service_label}-Security"
+    network_compartment_name     = "${var.service_label}-Network"
+    database_compartment_name    = "${var.service_label}-Database"
+    appdev_compartment_name      = "${var.service_label}-AppDev" 
 
-    pol_attach_compartment_id = var.top_compartment == true ? module.cis_top_compartment[0].compartments[var.top_compartment.name].id : var.tenancy_ocid
+    # Whether or not to create a top level compartment
+    parent_compartment_id = var.top_compartment == true ? (var.use_existing_top_compartment == true ? data.oci_identity_compartments.existing_top_compartment.compartments[0].id : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : var.tenancy_ocid
+    parent_compartment_name = var.top_compartment == true ? (var.use_existing_top_compartment == true ? var.existing_top_compartment_name : local.default_top_compartment_name) : "tenancy"
+    policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
-    security_admin_group_name = "${var.service_label}-SecurityAdmins"
-    network_admin_group_name  = "${var.service_label}-NetworkAdmins"
-    database_admin_group_name = "${var.service_label}-DatabaseAdmins"
-    appdev_admin_group_name   = "${var.service_label}-AppDevAdmins"
-    iam_admin_group_name      = "${var.service_label}-IAMAdmins"
-    auditor_group_name        = "${var.service_label}-Auditors"
-    announcement_readers_group_name = "${var.service_label}-AnnouncementReaders"
+    # Default group names and whether or not to use existing IAM groups
+    security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-SecurityAdmins" : var.security_admin_group_name
+    network_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-NetworkAdmins" : var.network_admin_group_name
+    database_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-DatabaseAdmins" : var.database_admin_group_name
+    appdev_admin_group_name         = var.use_existing_iam_groups == false ? "${var.service_label}-AppDevAdmins" : var.appdev_admin_group_name
+    iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-IAMAdmins" : var.iam_admin_group_name
+    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredAdmins" : var.cred_admin_group_name
+    auditors_group_name             = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : var.auditors_group_name
+    announcement_readers_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_readers_group_name
 
     # Tags
     createdby_tag_name = "CreatedBy"

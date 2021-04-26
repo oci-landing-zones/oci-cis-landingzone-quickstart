@@ -4,11 +4,11 @@
 ### This Terraform configuration provisions compartments in the tenancy.
 
 module "cis_top_compartment" {
-  count        = var.top_compartment == true ? 1 : 0   
+  count        = var.top_compartment == true && var.use_existing_top_compartment == false ? 1 : 0   
   source       = "../modules/iam/iam-compartment"
   providers    = { oci = oci.home }
   compartments = {
-    (local.top_compartment_name) = {
+    (local.default_top_compartment_name) = {
       parent_id = var.tenancy_ocid
       description = "Top compartment, enclosing all Landing Zone compartments."
     }
@@ -20,19 +20,23 @@ module "cis_compartments" {
   providers       = { oci = oci.home }
   compartments = {
       (local.security_compartment_name) = {
-        parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
+        parent_id   = local.parent_compartment_id
+        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all security related resources: vaults, topics, notifications, logs."
       },
       (local.network_compartment_name) = {
-        parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
+        parent_id   = local.parent_compartment_id
+        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs."
       },
       (local.appdev_compartment_name) = {
-        parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
+        parent_id   = local.parent_compartment_id
+        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming."
       },
       (local.database_compartment_name) = {
-        parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
+        parent_id   = local.parent_compartment_id
+        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all database related resources."
       }
   }

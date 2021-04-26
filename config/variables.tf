@@ -129,6 +129,61 @@ variable "cloud_guard_configuration_self_manage_resources" {
 }
 
 variable "top_compartment" {
-    type    = boolean
+    type    = bool
     default = false
+}
+
+variable "use_existing_top_compartment" {
+    type    = bool
+    default = false
+}
+
+variable "existing_top_compartment_name" {
+    type    = string
+    default = ""
+}
+
+variable "use_existing_iam_groups" {
+    type    = bool
+    default = false
+}
+
+variable "iam_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "cred_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "security_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "network_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "appdev_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "database_admin_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "auditors_group_name" {
+    type    = string
+    default = ""
+}
+
+variable "announcement_readers_group_name" {
+    type    = string
+    default = ""
 }

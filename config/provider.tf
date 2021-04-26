@@ -19,11 +19,3 @@ provider "oci" {
   private_key_path     = var.private_key_path
   private_key_password = var.private_key_password
 }
-
-terraform {
-  required_providers {
-    oci = {
-      version = "~> 4.2.0"
-    }
-  }
-}

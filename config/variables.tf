@@ -127,3 +127,88 @@ variable "cloud_guard_configuration_self_manage_resources" {
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
 }
+
+# Service Connector Hub related configuration
+variable "create_service_connector_audit" {
+    type = bool
+    default = false
+    description = "create service connector for audit logs"
+}
+
+variable "create_service_connector_vcnFlowLogs" {
+    type = bool
+    default = false
+    description = "create service connector for vcn flow logs"
+}
+
+variable "service_connector_audit_target" {
+    type = string
+    default = "objectStorage"
+    description = "destination for audit logs service connector. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID in the variable below"
+}
+
+variable "service_connector_audit_state" {
+    type = string
+    default = "INACTIVE"
+    description = "state in which to create the service connector for audit logs. valid values are 'ACTIVE' and 'INACTIVE'"
+}
+
+variable "service_connector_vcnFlowLogs_state" {
+    type = string
+    default = "INACTIVE"
+    description = "state in which to create the service connector for vcn flow logs. valid values are 'ACTIVE' and 'INACTIVE'"
+}
+
+variable "service_connector_vcnFlowLogs_target" {
+    type = string
+    default = "objectStorage"
+    description = "destination for vcn flow logs service connector. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID in the variable below"
+}
+
+variable "service_connector_audit_target_OCID" {
+    type = string
+    default = ""
+    description = "OCID of stream/function target for the audit logs service connector"
+}
+
+variable "service_connector_vcnFlowLogs_target_OCID" {
+    type =string
+    default = ""
+    description = "OCID of stream/function target for the vcn flowLogs logs service connector"
+}
+
+variable "sch_audit_target_rollover_MBs" {
+    type = number
+    default = 100
+    description = "target rollover size in MBs for audit logs"
+}
+
+variable "sch_audit_target_rollover_MSs" {
+    type = number
+    default = 7 * 60 * 1000 // 7 minutes
+    description = "target rollover time in MBs for audit logs"
+}
+
+variable "sch_vcnFlowLogs_target_rollover_MBs" {
+    type = number
+    default = 100
+    description = "target rollover size in MBs for audit logs"
+}
+
+variable "sch_vcnFlowLogs_target_rollover_MSs" {
+    type = number
+    default = 7 * 60 * 1000 // 7 minutes
+    description = "target rollover time in MBs for audit logs"
+}
+
+variable "sch_audit_objStore_objNamePrefix" {
+    type = string
+    default = "sch-audit"
+    description = "The prefix of the objects"
+}
+
+variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
+    type = string
+    default = "sch-vcnFlowLogs"
+    description = "The prefix of the objects"
+}

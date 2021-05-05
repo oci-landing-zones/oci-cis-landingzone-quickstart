@@ -32,7 +32,6 @@ module "lz_provisioning_group_policy" {
 module "lz_security_admin_policy" {
   count             = var.create_lz_groups == true ? 1 : 0
   source                = "../modules/iam/iam-policy"
-  depends_on            = [module.lz_security_admin_policy] ### Explicitly declaring dependencies on the group and compartments modules.
   policies              = {
     (local.security_admin_policy_name) = {
       compartment_id    = var.tenancy_ocid

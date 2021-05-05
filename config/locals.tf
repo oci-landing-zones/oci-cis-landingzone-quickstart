@@ -2,6 +2,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+
+    runner_group_ids = data.oci_identity_user_group_memberships.runner.memberships != null ? [for m in data.oci_identity_user_group_memberships.runner.memberships : m.group_id] : []
+    is_runner_an_admin = contains([for g in data.oci_identity_group.runner_group : g.name], "Administrators")
+
     ### IAM
     # Default compartment names
     default_top_compartment_name = "${var.service_label}-Top"
@@ -11,8 +15,8 @@ locals {
     appdev_compartment_name      = "${var.service_label}-AppDev" 
 
     # Whether or not to create a top level compartment
-    parent_compartment_id = var.top_compartment == true ? (var.use_existing_top_compartment == true ? data.oci_identity_compartments.existing_top_compartment.compartments[0].id : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : var.tenancy_ocid
-    parent_compartment_name = var.top_compartment == true ? (var.use_existing_top_compartment == true ? var.existing_top_compartment_name : local.default_top_compartment_name) : "tenancy"
+    parent_compartment_id = var.top_compartment == true ? (var.existing_top_compartment_name != null ? data.oci_identity_compartments.existing_top_compartment.compartments[0].id : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : local.is_runner_an_admin == true ? var.tenancy_ocid : try(tolist({}))
+    parent_compartment_name = var.top_compartment == true ? (var.existing_top_compartment_name != null ? var.existing_top_compartment_name : local.default_top_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
     # Default group names and whether or not to use existing IAM groups

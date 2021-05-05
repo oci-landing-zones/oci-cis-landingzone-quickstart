@@ -5,3 +5,13 @@ data "oci_identity_compartments" "existing_top_compartment" {
     compartment_id = var.tenancy_ocid
     name = var.existing_top_compartment_name
 }
+
+data "oci_identity_user_group_memberships" "runner" {
+    compartment_id = var.tenancy_ocid
+    user_id = var.user_ocid
+}
+
+data "oci_identity_group" "runner_group" {
+    for_each = toset(local.runner_group_ids)
+        group_id = each.key
+}

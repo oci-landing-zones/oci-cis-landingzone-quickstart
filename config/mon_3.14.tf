@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### This Terraform configuration provisions flow logs for all subnets provisioned in the cis-network configuration.
+/* ### This Terraform configuration provisions flow logs for all subnets provisioned in the cis-network configuration.
 locals {
     flow_logs = {for k,v in module.cis_vcn.subnets : k => 
         {
@@ -25,4 +25,4 @@ module "cis_flow_logs" {
   log_group_display_name = "${var.service_label}-FlowLogsGroup"
   log_group_description  = "${var.service_label} flow logs group."
   target_resources = local.flow_logs 
-}  
+}  */ 

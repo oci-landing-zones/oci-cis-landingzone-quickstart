@@ -133,14 +133,14 @@ variable "top_compartment" {
     default = false
 }
 
-variable "use_existing_top_compartment" {
-    type    = bool
-    default = false
-}
-
 variable "existing_top_compartment_name" {
     type    = string
-    default = ""
+    default = null
+}
+
+variable "create_iam_tenancy_level_permissions" {
+    type = bool
+    default = false
 }
 
 variable "use_existing_iam_groups" {
@@ -150,40 +150,40 @@ variable "use_existing_iam_groups" {
 
 variable "iam_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "cred_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "security_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "network_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "appdev_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "database_admin_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "auditors_group_name" {
     type    = string
-    default = ""
+    default = null
 }
 
 variable "announcement_readers_group_name" {
     type    = string
-    default = ""
+    default = null
 }

@@ -6,5 +6,5 @@ output "group_id" {
 }
 
 output "group_name" {
-  value = var.group_name
+  value = oci_identity_group.this.name
 }

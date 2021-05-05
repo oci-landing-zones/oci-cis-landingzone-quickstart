@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### Creates a vault and multiple keys in the vault.
+/* ### Creates a vault and multiple keys in the vault.
 module "cis_keys" {
     source            = "../modules/vault/keys"
     compartment_id    = module.cis_compartments.compartments[local.security_compartment_name].id
@@ -21,7 +21,7 @@ module "cis_keys_policies" {
     providers = { oci = oci.home }
     policies  = {
         "${local.oss_key_name}-Policy" = {
-            compartment_id = var.tenancy_ocid
+            compartment_id = local.parent_compartment_id
             description = "Policy allowing OCI services to access ${module.cis_keys.keys[local.oss_key_name].display_name} in the Vault service."
             statements = [
                 "Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment_name} where target.key.id = '${module.cis_keys.keys[local.oss_key_name].id}'",
@@ -30,4 +30,4 @@ module "cis_keys_policies" {
             ]
         }
     } 
-}
+} */

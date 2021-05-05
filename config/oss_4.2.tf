@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### Creates a bucket in the specified compartment 
+/* ### Creates a bucket in the specified compartment 
 module "cis_buckets" {
     depends_on   = [ module.cis_keys_policies ]
     source       = "../modules/object-storage/bucket"
@@ -13,4 +13,4 @@ module "cis_buckets" {
             compartment_id = module.cis_compartments.compartments[local.appdev_compartment_name].id
         }
     }
-}
+} */

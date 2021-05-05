@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-locals {
+/* locals {
     oss_bucket_logs = {for bkt in module.cis_buckets.oci_objectstorage_buckets : bkt.name => {
             log_display_name              = "${bkt.name}-ObjectStorageLog",
             log_type                      = "SERVICE",
@@ -24,4 +24,4 @@ module "cis_oss_logs" {
   log_group_display_name = "${var.service_label}-ObjectStorageLogGroup"
   log_group_description  = "${var.service_label} Object Storage log group."
   target_resources       = local.oss_bucket_logs 
-}
+} */

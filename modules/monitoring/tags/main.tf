@@ -14,7 +14,7 @@ locals {
 
 ## Looking for the oracle default tag namespace
 data "oci_identity_tag_namespaces" "this" {
-    compartment_id = var.tag_namespace_compartment_id
+    compartment_id = var.tenancy_ocid
     filter {
         name  = "name"
         values = [var.oracle_default_namespace_name]
@@ -23,7 +23,7 @@ data "oci_identity_tag_namespaces" "this" {
 
 data "oci_identity_tag_defaults" "these" {
     ## Looking for tag defaults for tags in the oracle default tag namespace
-    compartment_id = var.tag_defaults_compartment_id
+    compartment_id = var.tenancy_ocid
     filter {
         name = "tag_namespace_id"
         values = [length(data.oci_identity_tag_namespaces.this.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.this.tag_namespaces[0].id : "null"]

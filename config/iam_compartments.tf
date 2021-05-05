@@ -4,7 +4,7 @@
 ### This Terraform configuration provisions compartments in the tenancy.
 
 module "cis_top_compartment" {
-  count        = var.top_compartment == true && var.use_existing_top_compartment == false ? 1 : 0   
+  count        = var.top_compartment == true && var.existing_top_compartment_name != null ? 1 : 0   
   source       = "../modules/iam/iam-compartment"
   providers    = { oci = oci.home }
   compartments = {

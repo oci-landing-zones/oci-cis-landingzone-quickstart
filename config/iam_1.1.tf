@@ -57,6 +57,42 @@ module "cis_security_admins" {
   user_names        = []
 }
 
+locals {
+  security_tenancy_level_permissions = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
+                          "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
+                          "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
+                          "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy"]
+
+  security_topcmp_level_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to read audit-events in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to read app-catalog-listing in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_level}"]                        
+
+  security_cmp_level_permissions = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage keys in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage secret-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage logging-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage serviceconnectors in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage streams in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage ons-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage functions-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage waas-family in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage security-zone in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to use subnets in compartment ${local.network_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to use vnics in compartment ${local.network_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage orm-stacks in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
+                          "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"]  
+
+  security_permissions = local.is_runner_an_admin == true ? concat(local.security_tenancy_level_permissions, local.security_topcmp_level_permissions, local.security_cmp_level_permissions) : concat(local.security_topcmp_level_permissions, local.security_cmp_level_permissions)
+}
+
 ### Security admin policy
 module "cis_security_admins_policy" {
   source                = "../modules/iam/iam-policy"
@@ -66,7 +102,9 @@ module "cis_security_admins_policy" {
     ("${var.service_label}-SecurityAdmins-Policy") = {
       compartment_id    = local.parent_compartment_id
       description       = "Policy allowing ${local.security_admin_group_name} group to manage security related services."
-      statements        = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
+      statements        = local.security_permissions
+      
+                          /* ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
                           "Allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment_name}",
                           #"Allow group ${local.security_admin_group_name} to manage policies in tenancy where all {target.policy.name != 'Tenant Admin Policy', target.policy.name != '${var.service_label}-IAMAdmins-Policy'}",
                           #"Allow group ${local.security_admin_group_name} to manage policies in ${local.policy_level}",
@@ -97,7 +135,7 @@ module "cis_security_admins_policy" {
                           "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_level}",
                           "Allow group ${local.security_admin_group_name} to manage orm-stacks in compartment ${local.security_compartment_name}",
                           "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
-                          "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"]
+                          "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"] */
     }
   }
 }
@@ -197,9 +235,9 @@ module "cis_appdev_admins_policy" {
                           "Allow group ${local.appdev_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
                           "Allow group ${local.appdev_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}",
                           "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_level}",
-                          "Allow group ${local.appdev_admin_group_name} to manage instance-images in ${local.security_compartment_name}",
+                          "Allow group ${local.appdev_admin_group_name} to manage instance-images in compartment ${local.security_compartment_name}",
                           "Allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_level}",
-                          "Allow group ${local.appdev_admin_group_name} to manage repos in ${local.security_compartment_name}",
+                          "Allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment_name}",
                           "Allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_level}",
                           "Allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
                           "Allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
@@ -256,7 +294,7 @@ module "cis_tenancy_auditors_policy" {
 
 ################################################################################
 ######################## Announcement Artifacts #################################
-
+/* 
 ### Announcement Readers group
 module "cis_tenancy_announcement_readers" {
   count             = var.use_existing_iam_groups == false ? 1 : 0
@@ -281,5 +319,36 @@ module "cis_tenancy_announcement_readers_policy" {
     }
   }
 }
+ */
+################################################################################
 
+################################################################################
+######################## Credential Admin Artifacts ############################
+
+module "cis_cred_admins" {
+  count             = var.use_existing_iam_groups == false && var.create_iam_tenancy_level_permissions == true ? 1 : 0
+  source            = "../modules/iam/iam-group"
+  providers         = { oci = oci.home }
+  tenancy_ocid      = var.tenancy_ocid
+  group_name        = local.cred_admin_group_name
+  group_description = "Group responsible for managing users credentials in the tenancy."
+  user_names        = []
+}
+
+module "cis_cred_admins_policy" {
+  count             = var.create_iam_tenancy_level_permissions == true ? 1 : 0
+  source            = "../modules/iam/iam-policy"
+  providers         = { oci = oci.home }
+  depends_on        = [module.cis_cred_admins] ### Explicitly declaring dependency on the group module.
+  policies          = {
+    ("${var.service_label}-CredAdmins-Policy") = {
+      compartment_id = var.tenancy_ocid
+      description    = "Policy allowing ${local.cred_admin_group_name} group to manage credentials in tenancy."
+      statements     = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
+                        "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
+                        "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation='ListApiKeys',request.operation='ListAuthTokens',request.operation='ListCustomerSecretKeys',request.operation='UploadApiKey',request.operation='DeleteApiKey',request.operation='UpdateAuthToken',request.operation='CreateAuthToken',request.operation='DeleteAuthToken',request.operation='CreateSecretKey',request.operation='UpdateCustomerSecretKey',request.operation='DeleteCustomerSecretKey',request.operation='UpdateUserCapabilities'}"
+                       ]
+    }
+  }
+}
 ################################################################################

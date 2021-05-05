@@ -8,10 +8,11 @@
 module "cis_tags" {
   source                       = "../modules/monitoring/tags"
   providers                    = { oci = oci.home }
-  tag_namespace_compartment_id = var.tenancy_ocid
+  tenancy_ocid                 = var.tenancy_ocid
+  tag_namespace_compartment_id = local.parent_compartment_id
   tag_namespace_name           = var.service_label
   tag_namespace_description    = "${var.service_label} tag namespace"
-  tag_defaults_compartment_id  = var.tenancy_ocid
+  tag_defaults_compartment_id  = local.parent_compartment_id
   
   tags = { # the map keys are meant to be the tag names.
       (local.createdby_tag_name) = {

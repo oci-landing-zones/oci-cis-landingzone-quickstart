@@ -3,7 +3,7 @@
 
 module "cis_notification_network_gateways_changes" {
   source             = "../modules/monitoring/notifications"
-  compartment_id     = var.tenancy_ocid
+  compartment_id     = local.parent_compartment_id
   rule_display_name  = "${var.service_label}-notify-on-network-gateways-changes"    
   rule_description   = "Sends notification when network gateways are created, updated, deleted, attached, detached, or moved."
   rule_is_enabled    = true

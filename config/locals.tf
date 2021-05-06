@@ -8,15 +8,15 @@ locals {
 
     ### IAM
     # Default compartment names
-    default_top_compartment_name = "${var.service_label}-Top"
+    default_top_compartment_name = "${var.service_label}-top-cmp"
     security_compartment_name    = "${var.service_label}-Security"
     network_compartment_name     = "${var.service_label}-Network"
     database_compartment_name    = "${var.service_label}-Database"
     appdev_compartment_name      = "${var.service_label}-AppDev" 
 
     # Whether or not to create a top level compartment
-    parent_compartment_id = var.top_compartment == true ? (var.existing_top_compartment_name != null ? data.oci_identity_compartments.existing_top_compartment.compartments[0].id : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : local.is_runner_an_admin == true ? var.tenancy_ocid : try(tolist({}))
-    parent_compartment_name = var.top_compartment == true ? (var.existing_top_compartment_name != null ? var.existing_top_compartment_name : local.default_top_compartment_name) : "tenancy"
+    parent_compartment_id = var.top_compartment == true ? (var.existing_top_compartment_ocid != null ? var.existing_top_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : local.is_runner_an_admin == true ? var.tenancy_ocid : try(tolist({}))
+    parent_compartment_name = var.top_compartment == true ? (var.existing_top_compartment_ocid != null ? data.oci_identity_compartment.existing_top_compartment.name : local.default_top_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
     # Default group names and whether or not to use existing IAM groups

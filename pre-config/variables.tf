@@ -23,10 +23,20 @@ variable "unique_prefix" {
         error_message = "The unique_prefix variable is required and must contain alphanumeric characters only, start with a letter and 8 character max."
   }
 }
-variable "create_lz_provisioning_group" {
-    default = true
+variable "lz_top_compartment_parent_id" {
+    type    = string
+    default = null
 }
-variable "existing_provisioning_group_name" {
+variable "lz_top_compartment_name" {
+    type    = string
+    default = null
+}
+variable "use_existing_provisioning_group" {
+    type = bool
+    default = false
+}
+variable "lz_provisioning_group_name" {
+    type    = string
     default = null
 }
 variable "create_lz_groups" {

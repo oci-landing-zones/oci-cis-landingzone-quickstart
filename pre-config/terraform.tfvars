@@ -13,3 +13,8 @@ private_key_password = ""
 
 unique_prefix = "lzqstart"
 home_region   = "us-ashburn-1"
+
+#use_existing_provisioning_group = true
+#lz_provisioning_group_name = "abc"
+
+#lz_top_compartment_parent_id = "ocid1.compartment.oc1..aaaaaaaabazlzysifrh2bzrqyma742dwdn6ykok72jxsgeqnzahwjde7cf3a"

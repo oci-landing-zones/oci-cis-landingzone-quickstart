@@ -1,7 +1,7 @@
 ### Landing Zone provisioning policy
 module "lz_provisioning_group_policy" {
-  source     = "../modules/iam/iam-policy"
   depends_on = [module.lz_top_compartment, module.lz_provisioning_group]
+  source   = "../modules/iam/iam-policy"
   policies = {
     (local.provisioning_policy_name) = {
       compartment_id = var.tenancy_ocid
@@ -30,9 +30,10 @@ module "lz_provisioning_group_policy" {
 
 ### Landing Zone security admin policy
 module "lz_security_admin_policy" {
-  count             = var.create_lz_groups == true ? 1 : 0
-  source                = "../modules/iam/iam-policy"
-  policies              = {
+  depends_on = [module.lz_security_admin_group]
+  count      = var.create_lz_groups == true ? 1 : 0
+  source     = "../modules/iam/iam-policy"
+  policies   = {
     (local.security_admin_policy_name) = {
       compartment_id    = var.tenancy_ocid
       description       = "Policy allowing ${local.security_admin_group_name} group to manage security related services required by the Landing Zone."

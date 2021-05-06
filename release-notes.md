@@ -2,12 +2,12 @@
 
 It's May 2021. And we have just rolled out some exciting features in CIS OCI Landing Zone:
 
-## 1 - Ability to provision the Landing Zone as a non tenancy administrator:
+## 1 - Ability to provision the Landing Zone as a non tenancy administrator
 
 Before this release, the Landing Zone required a user with tenancy administrator permissions to be provisioned. That has changed. However, the tenancy administrator still has some work to do, as some pre-requisites need to be satisfied. Specifically, the tenancy administrator needs to provide the following:
 	
-1. A group with the required permissions for someone else to provision the Landing Zone;
-2. A top compartment for enclosing the Landing Zone compartments;
+1. A group with the required permissions for someone else to provision the Landing Zone.
+2. A top compartment for enclosing the Landing Zone compartments.
 3. Optionally, Landing Zone required groups for segregation of duties. These groups can then simply be reused when provisioning the Landing Zone.
 4. Optionally, required permissions at the tenancy level granted to Landing Zone groups.
 	
@@ -27,10 +27,10 @@ The following input variables control the pre-config module behavior:
 	
 **create_lz_groups**: a boolean flag indicating whether or not to create all Landing Zone groups used for segregation of duties. If true, the groups and tenancy level permissions (IAM policy) required by these groups are created. Default is true. The IAM policy is created at the root compartment.
 	
-* A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
+(*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
 	
 
-## 2 - Ability to provision Landing Zone within a top level compartment at any level in the compartment hierarchy:
+## 2 - Ability to provision Landing Zone within a top level compartment at any level in the compartment hierarchy
 
 This can be done by the tenancy administrator or a non tenancy administrator. If done by the tenancy administrator, the steps described in the previous section MUST be skipped. If done by a non tenancy administrator, the steps in the previous section are required. A non tenancy administrator is only allowed to provision the Landing Zone in a enclosing compartment previously created by someone with greater compartment and policy management permissions.
 	
@@ -44,7 +44,7 @@ The following input variables control the extended config module behavior:
 	
 The module now detectes whether or not the executing user is a member of the Administrators group. If not and top_compartment is false, the code aborts as that is not a valid combination.
 
-## 3 - Ability to reuse existing groups when provisioning the Landing Zone.
+## 3 - Ability to reuse existing groups when provisioning the Landing Zone
 
 Previously, every Landing Zone execution in a tenancy would create groups. However, it's acknowledged that a customer may want to create multiple Landing Zones but only one set of groups, reusing them across the Landing Zones.
 	

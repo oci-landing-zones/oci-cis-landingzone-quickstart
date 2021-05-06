@@ -65,6 +65,7 @@ locals {
 
   security_topcmp_level_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_level}",
                           "Allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_level}",
+                          "Allow group ${local.security_admin_group_name} to manage repos in ${local.policy_level}",
                           "Allow group ${local.security_admin_group_name} to read audit-events in ${local.policy_level}",
                           "Allow group ${local.security_admin_group_name} to read app-catalog-listing in ${local.policy_level}",
                           "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_level}",

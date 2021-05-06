@@ -127,62 +127,46 @@ variable "cloud_guard_configuration_self_manage_resources" {
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
 }
-
 variable "top_compartment" {
     type    = bool
     default = false
 }
-
 variable "existing_top_compartment_ocid" {
     type    = string
     default = null
 }
-
-variable "create_iam_tenancy_level_permissions" {
-    type = bool
-    default = false
-}
-
 variable "use_existing_iam_groups" {
     type    = bool
     default = false
 }
-
 variable "iam_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "cred_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "security_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "network_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "appdev_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "database_admin_group_name" {
     type    = string
     default = null
 }
-
 variable "auditors_group_name" {
     type    = string
     default = null
 }
-
 variable "announcement_readers_group_name" {
     type    = string
     default = null

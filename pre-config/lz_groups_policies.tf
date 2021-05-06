@@ -29,24 +29,42 @@ module "lz_provisioning_group_policy" {
 }
 
 ### Landing Zone security admin policy
-module "lz_security_admin_policy" {
-  depends_on = [module.lz_security_admin_group]
+module "lz_groups_policy" {
+  depends_on = [module.lz_security_admin_group, module.lz_appdev_admin_group, module.lz_network_admin_group, module.lz_database_admin_group, module.lz_auditor_group]
   count      = var.create_lz_groups == true ? 1 : 0
   source     = "../modules/iam/iam-policy"
   policies   = {
-    (local.security_admin_policy_name) = {
+    (local.tenancy_level_policy_name) = {
       compartment_id    = var.tenancy_ocid
-      description       = "Policy allowing ${local.security_admin_group_name} group to manage security related services required by the Landing Zone."
+      description       = "Tenancy level policies for Landing Zone groups."
       statements        = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
-                          #"Allow group ${local.security_admin_group_name} to manage tag-namespaces in tenancy",
-                          #"Allow group ${local.security_admin_group_name} to manage tag-defaults in tenancy",
+                          "Allow group ${local.security_admin_group_name} to manage tag-namespaces in tenancy",
+                          "Allow group ${local.security_admin_group_name} to manage tag-defaults in tenancy",
                           "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
+                          "Allow group ${local.security_admin_group_name} to manage repos in tenancy",
                           "Allow group ${local.security_admin_group_name} to read audit-events in tenancy",
                           "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
                           "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
                           "Allow group ${local.security_admin_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.security_admin_group_name} to read instance-images in tenancy",
-                          "Allow group ${local.security_admin_group_name} to inspect buckets in tenancy"]
+                          "Allow group ${local.security_admin_group_name} to inspect buckets in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read repos in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read objectstorage-namespaces in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read instance-images in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read repos in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read objectstorage-namespaces in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read app-catalog-listing in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read instance-images in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read repos in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read objectstorage-namespaces in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read app-catalog-listing in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read instance-images in tenancy",
+                          "Allow group ${local.auditor_group_name} to read repos in tenancy",
+                          "Allow group ${local.auditor_group_name} to read objectstorage-namespaces in tenancy",
+                          "Allow group ${local.auditor_group_name} to read app-catalog-listing in tenancy",
+                          "Allow group ${local.auditor_group_name} to read instance-images in tenancy",
+                          "Allow group ${local.auditor_group_name} to inspect buckets in tenancy",]
     }
   }
 }

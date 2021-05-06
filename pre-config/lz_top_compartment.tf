@@ -7,7 +7,7 @@ module "lz_top_compartment" {
   source = "../modules/iam/iam-compartment"
   compartments = {
     (local.top_compartment_name) = {
-      parent_id   = var.tenancy_ocid
+      parent_id   = local.top_compartment_parent_id
       description = "Landing Zone top compartment, for enclosing all Landing Zone compartments."
     }
   }

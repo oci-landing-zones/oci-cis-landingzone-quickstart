@@ -4,7 +4,7 @@
 ### This Terraform configuration optionally provisions groups that are required by the Landing Zone.
 
 module "lz_provisioning_group" {
-  count             = var.create_lz_provisioning_group == true ? 1 : 0
+  count             = var.use_existing_provisioning_group == false ? 1 : 0
   source            = "../modules/iam/iam-group"
   tenancy_ocid      = var.tenancy_ocid
   group_name        = local.provisioning_group_name

@@ -133,7 +133,7 @@ variable "top_compartment" {
     default = false
 }
 
-variable "existing_top_compartment_name" {
+variable "existing_top_compartment_ocid" {
     type    = string
     default = null
 }

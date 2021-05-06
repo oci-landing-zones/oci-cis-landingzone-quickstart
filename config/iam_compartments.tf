@@ -21,22 +21,18 @@ module "cis_compartments" {
   compartments = {
       (local.security_compartment_name) = {
         parent_id   = local.parent_compartment_id
-        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all security related resources: vaults, topics, notifications, logs."
       },
       (local.network_compartment_name) = {
         parent_id   = local.parent_compartment_id
-        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs."
       },
       (local.appdev_compartment_name) = {
         parent_id   = local.parent_compartment_id
-        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming."
       },
       (local.database_compartment_name) = {
         parent_id   = local.parent_compartment_id
-        #parent_id   = length(module.cis_top_compartment) == 0 ? var.tenancy_ocid : module.cis_top_compartment[0].compartments[var.top_compartment.name].id
         description = "Compartment for all database related resources."
       }
   }

@@ -1,18 +1,33 @@
-### Landing Zone provisioning policy
-module "lz_provisioning_group_policy" {
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+### Landing Zone tenancy level provisioning policy
+module "lz_provisioning_tenancy_group_policy" {
   depends_on = [module.lz_top_compartment, module.lz_provisioning_group]
   source   = "../modules/iam/iam-policy"
   policies = {
     (local.provisioning_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "Policy allowing ${local.provisioning_group_name} group to provision the CIS Landing Zone in a tenancy."
+      description    = "Tenancy level policy allowing ${local.provisioning_group_name} group to provision the CIS Landing Zone."
       statements = ["Allow group ${local.provisioning_group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
                     "Allow group ${local.provisioning_group_name} to use tag-namespaces in tenancy",            # ability to check the tag-namespaces at the tenancy level and to apply tag defaults
                     "Allow group ${local.provisioning_group_name} to read tag-defaults in tenancy",             # ability to check for tag-defaults at the tenancy level
                     "Allow group ${local.provisioning_group_name} to manage cloudevents-rules in tenancy",      # for events: create IAM event rules at the tenancy level 
                     "Allow group ${local.provisioning_group_name} to inspect compartments in tenancy",          # for events: access to resources in compartments to select rules actions
-                    "Allow group ${local.provisioning_group_name} to manage cloud-guard-family in tenancy",     # ability to enable Cloud Guard, which can be done only at the tenancy level
-                    "Allow group ${local.provisioning_group_name} to manage compartments in compartment ${local.top_compartment_name}",
+                    "Allow group ${local.provisioning_group_name} to manage cloud-guard-family in tenancy"]     # ability to enable Cloud Guard, which can be done only at the tenancy level
+    }
+  }
+}
+
+### Landing Zone compartment level provisioning policy
+module "lz_provisioning_topcmp_group_policy" {
+  depends_on = [module.lz_top_compartment, module.lz_provisioning_group]
+  source   = "../modules/iam/iam-policy"
+  policies = {
+    (local.provisioning_policy_name) = {
+      compartment_id = module.lz_top_compartment.compartments[local.top_compartment_name].id
+      description    = "Compartment level policy allowing ${local.provisioning_group_name} group to provision the CIS Landing Zone."
+      statements = ["Allow group ${local.provisioning_group_name} to manage compartments in compartment ${local.top_compartment_name}",
                     "Allow group ${local.provisioning_group_name} to manage policies in compartment ${local.top_compartment_name}",
                     "Allow group ${local.provisioning_group_name} to manage virtual-network-family in compartment ${local.top_compartment_name}",
                     "Allow group ${local.provisioning_group_name} to manage logging-family in compartment ${local.top_compartment_name}",

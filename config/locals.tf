@@ -7,8 +7,8 @@ locals {
     is_runner_an_admin = contains([for g in data.oci_identity_group.runner_group : g.name], "Administrators")
 
     runner_policies_statements = data.oci_identity_policies.tenancy_level.policies != null ? [for p in data.oci_identity_policies.tenancy_level.policies : lower(p.statements)] : []
-    #all_statements = [for s in local.runner_policies_statements : s]
-    is_runner_entitled = local.is_runner_an_admin ? true : contains(local.runner_policies_statements,"manage policies in tenancy") #&& contains(local.runner_policies_statements,"manage compartments in ${local.parent_compartment_name}") && contains(local.runner_policies_statements,"manage policies in ${local.parent_compartment_name}")
+    manage_policies_statements = [for s in local.runner_policies_statements : s if length(regexall(".*manage policies in tenancy",s)) > 0]
+    is_runner_entitled = local.is_runner_an_admin ? true : length(local.manage_policies_statements) > 0
     
     ### IAM
     # Default compartment names

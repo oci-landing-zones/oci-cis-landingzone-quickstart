@@ -91,7 +91,7 @@ locals {
                           "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
                           "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"]  
 
-  security_permissions = local.is_runner_an_admin == true ? concat(local.security_tenancy_level_permissions, local.security_topcmp_level_permissions, local.security_cmp_level_permissions) : concat(local.security_topcmp_level_permissions, local.security_cmp_level_permissions)
+  security_permissions = local.is_runner_entitled == true ? concat(local.security_tenancy_level_permissions, local.security_topcmp_level_permissions, local.security_cmp_level_permissions) : concat(local.security_topcmp_level_permissions, local.security_cmp_level_permissions)
 }
 
 ### Security admin policy
@@ -326,8 +326,8 @@ module "cis_tenancy_announcement_readers_policy" {
 ################################################################################
 ######################## Credential Admin Artifacts ############################
 
-module "cis_cred_admins" {
-  count             = var.use_existing_iam_groups == false && var.create_iam_tenancy_level_permissions == true ? 1 : 0
+/* module "cis_cred_admins" {
+  count             = var.use_existing_iam_groups == false ? 1 : 0
   source            = "../modules/iam/iam-group"
   providers         = { oci = oci.home }
   tenancy_ocid      = var.tenancy_ocid
@@ -337,7 +337,6 @@ module "cis_cred_admins" {
 }
 
 module "cis_cred_admins_policy" {
-  count             = var.create_iam_tenancy_level_permissions == true ? 1 : 0
   source            = "../modules/iam/iam-policy"
   providers         = { oci = oci.home }
   depends_on        = [module.cis_cred_admins] ### Explicitly declaring dependency on the group module.
@@ -351,5 +350,5 @@ module "cis_cred_admins_policy" {
                        ]
     }
   }
-}
+} */
 ################################################################################

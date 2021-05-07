@@ -127,11 +127,11 @@ variable "cloud_guard_configuration_self_manage_resources" {
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
 }
-variable "top_compartment" {
+variable "enclosing_compartment" {
     type    = bool
     default = false
 }
-variable "existing_top_compartment_ocid" {
+variable "existing_enclosing_compartment_ocid" {
     type    = string
     default = null
 }
@@ -167,7 +167,7 @@ variable "auditors_group_name" {
     type    = string
     default = null
 }
-variable "announcement_readers_group_name" {
+/* variable "announcement_readers_group_name" {
     type    = string
     default = null
-}
+} */

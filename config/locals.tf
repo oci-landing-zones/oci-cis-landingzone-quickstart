@@ -6,17 +6,21 @@ locals {
     runner_group_ids = data.oci_identity_user_group_memberships.runner.memberships != null ? [for m in data.oci_identity_user_group_memberships.runner.memberships : m.group_id] : []
     is_runner_an_admin = contains([for g in data.oci_identity_group.runner_group : g.name], "Administrators")
 
+    runner_policies_statements = data.oci_identity_policies.tenancy_level.policies != null ? [for p in data.oci_identity_policies.tenancy_level.policies : lower(p.statements)] : []
+    #all_statements = [for s in local.runner_policies_statements : s]
+    is_runner_entitled = local.is_runner_an_admin ? true : contains(local.runner_policies_statements,"manage policies in tenancy") #&& contains(local.runner_policies_statements,"manage compartments in ${local.parent_compartment_name}") && contains(local.runner_policies_statements,"manage policies in ${local.parent_compartment_name}")
+    
     ### IAM
     # Default compartment names
-    default_top_compartment_name = "${var.service_label}-top-cmp"
-    security_compartment_name    = "${var.service_label}-Security"
-    network_compartment_name     = "${var.service_label}-Network"
-    database_compartment_name    = "${var.service_label}-Database"
-    appdev_compartment_name      = "${var.service_label}-AppDev" 
+    default_enclosing_compartment_name = "${var.service_label}-top-cmp"
+    security_compartment_name          = "${var.service_label}-Security"
+    network_compartment_name           = "${var.service_label}-Network"
+    database_compartment_name          = "${var.service_label}-Database"
+    appdev_compartment_name            = "${var.service_label}-AppDev" 
 
-    # Whether or not to create a top level compartment
-    parent_compartment_id = var.top_compartment == true ? (var.existing_top_compartment_ocid != null ? var.existing_top_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_top_compartment_name].id) : local.is_runner_an_admin == true ? var.tenancy_ocid : try(tolist({}))
-    parent_compartment_name = var.top_compartment == true ? (var.existing_top_compartment_ocid != null ? data.oci_identity_compartment.existing_top_compartment.name : local.default_top_compartment_name) : "tenancy"
+    # Whether or not to create an enclosing compartment
+    parent_compartment_id = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : local.is_runner_entitled == true ? var.tenancy_ocid : try(tolist({}))
+    parent_compartment_name = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
     # Default group names and whether or not to use existing IAM groups
@@ -27,7 +31,7 @@ locals {
     iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-IAMAdmins" : var.iam_admin_group_name
     cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredAdmins" : var.cred_admin_group_name
     auditors_group_name             = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : var.auditors_group_name
-    announcement_readers_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_readers_group_name
+    #announcement_readers_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_readers_group_name
 
     # Tags
     createdby_tag_name = "CreatedBy"

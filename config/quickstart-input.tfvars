@@ -31,8 +31,7 @@ security_admin_email_endpoint = "<email_to_receive_security_related_notification
 # private_subnet_app_cidr                         = "10.0.2.0/24" 
 # private_subnet_db_cidr                          = "10.0.3.0/24" 
 # public_src_lbr_cidr                             = "0.0.0.0/0" 
-# cloud_guard_configuration_status                = "ENABLED" 
-# cloud_guard_configuration_self_manage_resources = false 
+# cloud_guard_configuration_status                = "ENABLED"
 
 
 

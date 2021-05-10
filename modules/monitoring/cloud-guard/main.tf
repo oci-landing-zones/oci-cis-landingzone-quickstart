@@ -12,7 +12,7 @@ resource "oci_cloud_guard_cloud_guard_configuration" "this" {
 
 resource "oci_cloud_guard_target" "this" {
   compartment_id       = var.compartment_id
-  display_name         = var.default_target_name
-  target_resource_id   = var.compartment_id
-  target_resource_type = "COMPARTMENT"
+  display_name         = var.default_target.name
+  target_resource_id   = var.default_target.id
+  target_resource_type = var.default_target.type
 }

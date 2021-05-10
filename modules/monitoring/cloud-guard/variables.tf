@@ -20,7 +20,7 @@ variable "self_manage_resources" {
   default     = false
 }
 
-variable "default_target_name" {
-  type        = string
-  description = "The default Cloud Guard target name."
+variable "default_target" {
+  type        = object({name=string, type=string, id=string})
+  description = "The default Cloud Guard target."
 }

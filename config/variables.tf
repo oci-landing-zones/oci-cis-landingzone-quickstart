@@ -118,12 +118,3 @@ variable "cloud_guard_configuration_status" {
       error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
   }
 }
-# Setting this variable to true lets the user seed the oracle managed entities with minimal changes to the original entities.
-# False will delegate this responsibility to CloudGuard for seeding the oracle managed entities.
-variable "cloud_guard_configuration_self_manage_resources" {
-    default = false
-    validation {
-      condition = can(tobool(var.cloud_guard_configuration_self_manage_resources))
-      error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
-  }
-}

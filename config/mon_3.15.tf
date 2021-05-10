@@ -8,5 +8,5 @@ module "cis_cloud_guard" {
   reporting_region      = var.home_region
   status                = var.cloud_guard_configuration_status
   self_manage_resources = false
-  default_target        = {name: "${var.service_label}-cloudgate-root-target", type: "COMPARTMENT", id: var.tenancy_ocid} 
+  default_target        = {name:local.cg_target_name, type:"COMPARTMENT", id:var.tenancy_ocid} 
 }

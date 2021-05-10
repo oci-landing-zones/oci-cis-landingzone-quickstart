@@ -58,4 +58,7 @@ locals {
     bucket_name  = "${var.service_label}-bucket"
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
+
+    ### Cloud Guard
+    cg_target_name = "${var.service_label}-cloudgate-root-target"
 }

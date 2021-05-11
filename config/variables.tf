@@ -118,7 +118,8 @@ variable "cloud_guard_configuration_status" {
       error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
   }
 }
-variable "enable_cloud_guard_responder" {
-  type = bool  
-  default = true
+variable "cloud_guard_enable_responder" {
+  type = bool
+  description = "Whether or not to enable a default Cloud Guard responder for the default Cloud Guard target that gets created for the root compartment."  
+  default = false
 }

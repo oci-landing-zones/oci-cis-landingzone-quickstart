@@ -28,14 +28,14 @@ resource "oci_cloud_guard_target" "this" {
   target_resource_id   = var.default_target.id
   target_resource_type = var.default_target.type
   dynamic "target_detector_recipes" {
-    for_each = length(data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection) > 0 ? toset(data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection[0].items) : toset([])
+    for_each = length(data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection) > 0 ? data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection[0].items : []
     iterator = recipe
     content {
       detector_recipe_id = recipe.value["id"]
     }  
   }
   dynamic "target_responder_recipes" {
-    for_each = var.enable_responder == true && length(data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection) > 0 ? toset(data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection[0].items) : toset([])
+    for_each = var.enable_responder == true && length(data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection) > 0 ? data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection[0].items : []
     iterator = recipe
     content {
       responder_recipe_id = recipe.value["id"]

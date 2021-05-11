@@ -11,7 +11,7 @@ The Landing Zone handles these requirements with a new Terraform root module tha
 1. A group with the required narrower permissions to provision the Landing Zone.
 2. An enclosing compartment for the Landing Zone compartments.
 3. Optionally, Landing Zone required groups for segregation of duties. These groups can then simply be reused when provisioning the Landing Zone.
-4. Optionally, required permissions at the tenancy level granted to Landing Zone groups, like permissions granted to Security administrators.
+4. Optionally, required permissions at the tenancy level granted to Landing Zone groups, like permissions granted to IAM, Security and Network administrators.
 	
 The following input variables control the *pre-config* module behavior:
 	
@@ -19,13 +19,31 @@ The following input variables control the *pre-config* module behavior:
 	
 **use_existing_provisioning_group**: a boolean flag indicating whether or not to use an existing group for provisioning. If false, the module creates a group. Default value is false.
 	
-**lz_provisioning_group_name(*)**: the group name to which Landing Zone required provisioning permissions (IAM policy) are granted. If no group name is given, the module assigns a default name and creates the group if use_existing_provisioning_group is false. The IAM policy is created at the root compartment.
+**existing_provisioning_group_name(*)**: the group name to which Landing Zone required provisioning permissions (IAM policy) are granted. If no group name is given, the module assigns a default name and creates the group if use_existing_provisioning_group is false. The IAM policy is created at the root compartment.
 	
-**lz_top_compartment_name**: A compartment name that will hold the Landing Zone compartments. If no compartment name is given, the module creates the compartment with a default name.
+**enclosing_compartment_name**: A compartment name that will hold the Landing Zone compartments. If no compartment name is given, the module creates the compartment with a default name.
 	
-**lz_top_compartment_parent_id**: the parent compartment ocid of the top compartment, indicating where to insert the top compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the top level compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible.
+**existing_enclosing_compartment_parent_ocid**: the parent compartment ocid of the top compartment, indicating where to insert the top compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the top level compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible.
 	
 **create_lz_groups**: a boolean flag indicating whether or not to create all Landing Zone groups used for segregation of duties. If true, the groups and tenancy level permissions (IAM policy) required by these groups are created. Default is true. The IAM policy is created at the root compartment.
+
+**existing_iam_admin_group_name**: An existing group name for IAM administrators. Ignored if create_lz_groups is true.
+
+**existing_cred_admin_group_name**: An existing group name for credential administrators. Ignored if create_lz_groups is true.
+
+**existing_security_admin_group_name**: An existing group name for security administrators. Ignored if create_lz_groups is true.
+
+**existing_network_admin_group_name**: An existing group name for network administrators. Ignored if create_lz_groups is true.
+
+**existing_appdev_admin_group_name**: An existing group name for application development administrators. Ignored if create_lz_groups is true.
+
+**existing_database_admin_group_name**: An existing group name for database administrators. Ignored if create_lz_groups is true.
+
+**existing_auditor_group_name**: An existing group name for auditors. Ignored if create_lz_groups is true.
+
+**existing_announcement_reader_group_name**: An existing group name for announcement readers. Ignored if create_lz_groups is true.
+
+**create_tenancy_level_policies**: Whether or not tenancy level policies for Landing Zone groups are created. The tenancy administrator has the option of not creating the tenancy level policies. **However, this affects Landing Zone groups to operate properly**. 
 	
 (*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
 	

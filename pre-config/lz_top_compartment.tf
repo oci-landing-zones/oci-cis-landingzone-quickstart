@@ -8,7 +8,7 @@ module "lz_top_compartment" {
   compartments = {
     (local.top_compartment_name) = {
       parent_id   = local.top_compartment_parent_id
-      description = "Landing Zone top compartment, for enclosing all Landing Zone compartments."
+      description = "Landing Zone top compartment, enclosing all Landing Zone compartments."
     }
   }
 }

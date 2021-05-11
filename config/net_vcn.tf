@@ -14,7 +14,7 @@ module "cis_vcn" {
   vcn_cidr             = var.vcn_cidr
   vcn_dns_label        = var.service_label
   service_label        = var.service_label
-  service_gateway_cidr = local.valid_service_gateway_cidrs[0]
+  service_gateway_cidr = local.valid_service_gateway_cidrs[1]
   is_create_drg        = tobool(var.is_vcn_onprem_connected)
 
   subnets = {
@@ -89,7 +89,7 @@ module "cis_vcn" {
       compartment_id = null
       route_rules = [{
           is_create         = true
-          destination       = local.valid_service_gateway_cidrs[0]
+          destination       = local.valid_service_gateway_cidrs[1]
           destination_type  = "SERVICE_CIDR_BLOCK"
           network_entity_id = module.cis_vcn.service_gateway.id
         },
@@ -105,7 +105,7 @@ module "cis_vcn" {
       compartment_id = null
       route_rules = [{
           is_create         = true
-          destination       = local.valid_service_gateway_cidrs[0]
+          destination       = local.valid_service_gateway_cidrs[1]
           destination_type  = "SERVICE_CIDR_BLOCK"
           network_entity_id = module.cis_vcn.service_gateway.id
         }

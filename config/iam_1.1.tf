@@ -34,7 +34,8 @@ module "cis_network_admins_policy" {
                           "Allow group ${module.cis_network_admins.group_name} to manage orm-stacks in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage orm-jobs in compartment ${local.network_compartment_name}",
                           "Allow group ${module.cis_network_admins.group_name} to manage orm-config-source-providers in compartment ${local.network_compartment_name}",
-                          "Allow Group ${module.cis_network_admins.group_name} to read audit-events in compartment ${local.network_compartment_name}"]
+                          "Allow Group ${module.cis_network_admins.group_name} to read audit-events in compartment ${local.network_compartment_name}",
+                          "Allow Group ${module.cis_network_admins.group_name} to read vss-family in compartment ${local.security_compartment_name}"]
     }
   }
 }
@@ -94,7 +95,8 @@ module "cis_security_admins_policy" {
                           "Allow group ${module.cis_security_admins.group_name} to inspect buckets in tenancy",
                           "Allow group ${module.cis_security_admins.group_name} to manage orm-stacks in compartment ${local.security_compartment_name}",
                           "Allow group ${module.cis_security_admins.group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
-                          "Allow group ${module.cis_security_admins.group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"]
+                          "Allow group ${module.cis_security_admins.group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}",
+                          "Allow group ${module.cis_security_admins.group_name} to manage vss-family in compartment ${local.security_compartment_name}"]
     }
   }
 }
@@ -140,7 +142,8 @@ module "cis_database_admins_policy" {
                           "Allow group ${module.cis_database_admins.group_name} to manage orm-stacks in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage orm-jobs in compartment ${local.database_compartment_name}",
                           "Allow group ${module.cis_database_admins.group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}",
-                          "Allow Group ${module.cis_database_admins.group_name} to read audit-events in compartment ${local.database_compartment_name}"]
+                          "Allow Group ${module.cis_database_admins.group_name} to read audit-events in compartment ${local.database_compartment_name}",
+                          "Allow Group ${module.cis_database_admins.group_name} to read vss-family in compartment ${local.security_compartment_name}"]
     }
   }
 }
@@ -197,7 +200,8 @@ module "cis_appdev_admins_policy" {
                           "Allow group ${module.cis_appdev_admins.group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
                           "Allow group ${module.cis_appdev_admins.group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}",
-                          "Allow Group ${module.cis_appdev_admins.group_name} to read audit-events in compartment ${local.appdev_compartment_name}"]
+                          "Allow Group ${module.cis_appdev_admins.group_name} to read audit-events in compartment ${local.appdev_compartment_name}",
+                          "Allow Group ${module.cis_appdev_admins.group_name} to read vss-family in compartment ${local.security_compartment_name}"]
     }
   }
 }
@@ -238,7 +242,8 @@ module "cis_tenancy_auditors_policy" {
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read network-security-groups in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read resource-availability in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read audit-events in tenancy",
-                          "Allow Group ${module.cis_tenancy_auditors.group_name} to use cloud-shell in tenancy"]
+                          "Allow Group ${module.cis_tenancy_auditors.group_name} to use cloud-shell in tenancy",
+                          "Allow Group ${module.cis_tenancy_auditors.group_name} to read vss-family in compartment ${local.security_compartment_name}"]
     }
   }
 }

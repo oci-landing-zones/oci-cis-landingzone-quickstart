@@ -21,6 +21,15 @@ module "lz_iam_admin_group" {
   user_names        = []
 }
 
+module "lz_cred_admin_group" {
+  count             = var.create_lz_groups == true ? 1 : 0
+  source            = "../modules/iam/iam-group"
+  tenancy_ocid      = var.tenancy_ocid
+  group_name        = local.cred_admin_group_name
+  group_description = "Group responsible for managing credentials in Landing Zone."
+  user_names        = []
+}
+
 module "lz_network_admin_group" {
   count             = var.create_lz_groups == true ? 1 : 0
   source            = "../modules/iam/iam-group"

@@ -118,3 +118,7 @@ variable "cloud_guard_configuration_status" {
       error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
   }
 }
+variable "enable_cloud_guard_responder" {
+  type = bool  
+  default = true
+}

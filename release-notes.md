@@ -8,8 +8,8 @@ Before this release, the Landing Zone required a user with wide permissions in t
 
 The Landing Zone handles these requirements with a new Terraform root module that's expected to be executed by a user with wide permissions (typically a member of the *Administrators* group). The module is available in the *pre-config* folder and provisions the following:
 	
-1. A group with the required narrower permissions to provision the Landing Zone.
-2. An enclosing compartment for the Landing Zone compartments.
+1. An enclosing compartment for the Landing Zone compartments. 
+2. Optionally, a group with the required permissions to provision the Landing Zone in the enclosing compartment.
 3. Optionally, Landing Zone required groups for segregation of duties. These groups can then simply be reused when provisioning the Landing Zone.
 4. Optionally, required permissions at the tenancy level granted to Landing Zone groups, like permissions granted to IAM, Security and Network administrators.
 	

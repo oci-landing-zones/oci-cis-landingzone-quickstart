@@ -46,13 +46,15 @@ module "lz_provisioning_topcmp_group_policy" {
 ### Landing Zone security admin policy
 module "lz_groups_policy" {
   depends_on = [module.lz_security_admin_group, module.lz_appdev_admin_group, module.lz_network_admin_group, module.lz_database_admin_group, module.lz_auditor_group]
-  count      = var.create_lz_groups == true ? 1 : 0
+  count      = var.create_tenancy_level_policies == true ? 1 : 0
   source     = "../modules/iam/iam-policy"
   policies   = {
     (local.tenancy_level_policy_name) = {
       compartment_id    = var.tenancy_ocid
       description       = "Tenancy level policies for Landing Zone groups."
-      statements        = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
+      statements        = [
+                          # Security admin
+                          "Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
                           "Allow group ${local.security_admin_group_name} to manage tag-namespaces in tenancy",
                           "Allow group ${local.security_admin_group_name} to manage tag-defaults in tenancy",
                           "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
@@ -63,23 +65,44 @@ module "lz_groups_policy" {
                           "Allow group ${local.security_admin_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.security_admin_group_name} to read instance-images in tenancy",
                           "Allow group ${local.security_admin_group_name} to inspect buckets in tenancy",
+                          # AppDev admin
                           "Allow group ${local.appdev_admin_group_name} to read repos in tenancy",
                           "Allow group ${local.appdev_admin_group_name} to read objectstorage-namespaces in tenancy",
                           "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.appdev_admin_group_name} to read instance-images in tenancy",
+                          # Network admin
                           "Allow group ${local.network_admin_group_name} to read repos in tenancy",
                           "Allow group ${local.network_admin_group_name} to read objectstorage-namespaces in tenancy",
                           "Allow group ${local.network_admin_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.network_admin_group_name} to read instance-images in tenancy",
+                          # Database admin
                           "Allow group ${local.database_admin_group_name} to read repos in tenancy",
                           "Allow group ${local.database_admin_group_name} to read objectstorage-namespaces in tenancy",
                           "Allow group ${local.database_admin_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.database_admin_group_name} to read instance-images in tenancy",
+                          # Cred admin
+                          "Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
+                          "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
+                          "Allow group ${local.cred_admin_group_name} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
+                          # IAM admin
+                          "Allow group ${local.iam_admin_group_name} to inspect users in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${local.cred_admin_group_name}'}",
+                          "Allow group ${local.iam_admin_group_name} to inspect identity-providers in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
+                          "Allow group ${local.iam_admin_group_name} to manage dynamic-groups in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to manage authentication-policies in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to manage network-sources in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to manage quota in tenancy",
+                          "Allow group ${local.iam_admin_group_name} to read audit-events in tenancy",
+                          # Auditor
                           "Allow group ${local.auditor_group_name} to read repos in tenancy",
                           "Allow group ${local.auditor_group_name} to read objectstorage-namespaces in tenancy",
                           "Allow group ${local.auditor_group_name} to read app-catalog-listing in tenancy",
                           "Allow group ${local.auditor_group_name} to read instance-images in tenancy",
-                          "Allow group ${local.auditor_group_name} to inspect buckets in tenancy",]
+                          "Allow group ${local.auditor_group_name} to inspect buckets in tenancy",
+                          # Announcement reader
+                          "Allow group ${local.announcement_reader_group_name} to read announcements in tenancy"]
     }
   }
 }

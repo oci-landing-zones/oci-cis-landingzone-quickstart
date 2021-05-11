@@ -27,4 +27,5 @@ variable "default_target" {
 
 variable "enable_responder" {
   type = bool
+  description = "Whether or not to enable a default responder recipe."
 }

@@ -50,6 +50,11 @@ variable "create_lz_groups" {
     default = true
     description = "Whether or not Landing Zone groups are created. If false, existing group names should be provided."
 }
+variable "create_tenancy_level_policies" {
+    type = bool
+    default = true
+    description = "Whether or not tenancy level policies for Landing Zone groups are created."
+}  
 variable "existing_iam_admin_group_name" {
     type    = string
     default = null
@@ -81,9 +86,4 @@ variable "existing_auditor_group_name" {
 variable "existing_announcement_reader_group_name" {
     type    = string
     default = null
-}
-variable "create_tenancy_level_policies" {
-    type = bool
-    default = true
-    description = "Whether or not tenancy level policies for Landing Zone groups are created."
-}    
+}  

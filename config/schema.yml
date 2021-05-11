@@ -161,7 +161,7 @@ variables:
     title: "On-Premises Network CIDR"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     visible: is_vcn_onprem_connected
-    description: "IP range of your on-premises network in CIDR notation; Must not conflict with VCN CIDR Block range"
+    description: "IP range of your on-premises network in CIDR notation; Must not conflict with VCN CIDR Block range."
 
   network_admin_email_endpoint:
     type: string
@@ -180,14 +180,14 @@ variables:
   cloud_guard_configuration_status:
     type: enum
     title: "Cloud Guard Configuration Status"
-    description: "Activate Cloud Guard as part of Landing Zone deployment"
+    description: "Whether or not to activate Cloud Guard as part of Landing Zone deployment"
     enum:
       - ENABLED
       - DISABLED
 
-  cloud_guard_configuration_self_manage_resources:
+  cloud_guard_enable_responder:
     type: boolean
-    title: "Self-Manage Resources?"
+    title: "Whether or not to enable a default Cloud Guard responder"
     default: false
 
   # Variables not required to display to user

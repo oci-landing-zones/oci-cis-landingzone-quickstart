@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "cis_cloud_guard" {
+  depends_on            = [ module.lz_cloud_guard_policies ]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }
   compartment_id        = var.tenancy_ocid

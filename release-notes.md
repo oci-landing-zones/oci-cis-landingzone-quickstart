@@ -25,7 +25,9 @@ The following input variables control the *pre-config* module behavior:
 	
 **existing_enclosing_compartment_parent_ocid**: the parent compartment ocid of the top compartment, indicating where to insert the top compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the top level compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible.
 	
-**create_lz_groups**: a boolean flag indicating whether or not to create all Landing Zone groups used for segregation of duties. If true, the groups and tenancy level permissions (IAM policy) required by these groups are created. Default is true. The IAM policy is created at the root compartment.
+**create_lz_groups**: a boolean flag indicating whether or not to create all Landing Zone groups used for segregation of duties. Default is true. 
+
+**create_tenancy_level_policies**: Whether or not tenancy level policies for Landing Zone groups are created. The tenancy administrator has the option of not creating the tenancy level policies. **However, this affects Landing Zone groups to operate at their full capacity**.
 
 **existing_iam_admin_group_name**: An existing group name for IAM administrators. Ignored if create_lz_groups is true.
 
@@ -43,8 +45,6 @@ The following input variables control the *pre-config* module behavior:
 
 **existing_announcement_reader_group_name**: An existing group name for announcement readers. Ignored if create_lz_groups is true.
 
-**create_tenancy_level_policies**: Whether or not tenancy level policies for Landing Zone groups are created. The tenancy administrator has the option of not creating the tenancy level policies. **However, this affects Landing Zone groups to operate properly**. 
-	
 (*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
 	
 

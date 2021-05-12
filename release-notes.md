@@ -50,9 +50,9 @@ The following input variables control the *pre-config* module behavior:
 
 ## 2 - Ability to provision Landing Zone within an enclosing compartment at any level in the compartment hierarchy
 
-This can be done by a wide-permissioned user or a narrower-permissioned user. If done by the wide-permissioned user, the steps described in the previous section MUST be skipped. If done by a narrower-permissioned user, the steps in the previous section are required. **A narrower-permissioned user is only allowed to provision the Landing Zone in a enclosing compartment previously designated by a wide-permissioned user.**
+This can be done by a *wide-permissioned* user or a *narrower-permissioned* user. If done by the *wide-permissioned* user, the steps described in the previous section MUST be skipped. If done by a *narrower-permissioned* user, the steps in the previous section are required. **A *narrower-permissioned* user is only allowed to provision the Landing Zone in a enclosing compartment previously designated by a *wide-permissioned* user.**
 	
-The existing Landing Zone config module has been extended to support this use case. The module keeps backwards compatibility, i.e., the new variables default values keeps the module current behavior unchanged. In other words, if you execute the config module as-is, the four Landing Zone compartments are created directly under the root compartment.
+The existing Landing Zone config module has been extended to support this use case. The module keeps backwards compatibility, i.e., the new variables default values keeps the module current behavior unchanged. In other words, if you execute the config module as-is, the four Landing Zone compartments are created directly under the root compartment with all policies created at the root compartment.
 	
 The following input variables control the extended config module behavior:
 	
@@ -60,7 +60,7 @@ The following input variables control the extended config module behavior:
 	
 **existing_enclosing_compartment_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. Ignored if enclosing_compartment is false.
 	
-The module now detects whether or not the executing user is entitled to create policies at the tenancy level. If the user is not entitled and enclosing_compartment is false, the code aborts as an attempt is being made to provision the Landing Zone directly under the root compartment as a user with narrower permissions. 
+**use_existing_tenancy_policies**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create policies at the tenancy level. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, when provisioning the Landing Zone as a *narrower-permissioned* user, **make sure to set this variable value to true, in which case tenancy level permissions creation is skipped**. Default is false, meaning the Landing Zone will  provision the tenancy level policies. And that will only work if the provisioning user has the required permissions.
 
 ## 3 - Ability to reuse existing groups when provisioning the Landing Zone
 

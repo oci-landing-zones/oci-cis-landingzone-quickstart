@@ -4,17 +4,3 @@
 data "oci_identity_compartment" "existing_enclosing_compartment" {
     id = var.existing_enclosing_compartment_ocid
 }
-
-data "oci_identity_user_group_memberships" "runner" {
-    compartment_id = var.tenancy_ocid
-    user_id = var.user_ocid
-}
-
-data "oci_identity_group" "runner_group" {
-    for_each = toset(local.runner_group_ids)
-        group_id = each.key
-}
-
-data "oci_identity_policies" "tenancy_level" {
-    compartment_id = var.tenancy_ocid
-}

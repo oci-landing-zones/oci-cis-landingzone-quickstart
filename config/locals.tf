@@ -3,13 +3,6 @@
 
 locals {
 
-    runner_group_ids = data.oci_identity_user_group_memberships.runner.memberships != null ? [for m in data.oci_identity_user_group_memberships.runner.memberships : m.group_id] : []
-    is_runner_an_admin = contains([for g in data.oci_identity_group.runner_group : g.name], "Administrators")
-
-    runner_policies_statements = data.oci_identity_policies.tenancy_level.policies != null ? [for p in data.oci_identity_policies.tenancy_level.policies : lower(p.statements)] : []
-    manage_policies_statements = [for s in local.runner_policies_statements : s if length(regexall(".*manage policies in tenancy",s)) > 0]
-    is_runner_entitled = local.is_runner_an_admin ? true : length(local.manage_policies_statements) > 0
-    
     ### IAM
     # Default compartment names
     default_enclosing_compartment_name = "${var.service_label}-top-cmp"
@@ -19,19 +12,31 @@ locals {
     appdev_compartment_name            = "${var.service_label}-AppDev" 
 
     # Whether or not to create an enclosing compartment
-    parent_compartment_id = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : local.is_runner_entitled == true ? var.tenancy_ocid : try(tolist({}))
+    parent_compartment_id = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
     parent_compartment_name = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
-    # Default group names and whether or not to use existing IAM groups
+    # Group names
     security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-SecurityAdmins" : var.security_admin_group_name
     network_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-NetworkAdmins" : var.network_admin_group_name
     database_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-DatabaseAdmins" : var.database_admin_group_name
     appdev_admin_group_name         = var.use_existing_iam_groups == false ? "${var.service_label}-AppDevAdmins" : var.appdev_admin_group_name
     iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-IAMAdmins" : var.iam_admin_group_name
-    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredAdmins" : var.cred_admin_group_name
-    auditors_group_name             = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : var.auditors_group_name
-    #announcement_readers_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_readers_group_name
+    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredentialAdmins" : var.cred_admin_group_name
+    auditor_group_name              = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : var.auditor_group_name
+    announcement_reader_group_name  = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_reader_group_name
+
+    # Policy names
+    security_admin_policy_name       = "${var.service_label}-security-admin-policy"
+    network_admin_policy_name        = "${var.service_label}-network-admin-policy"
+    database_admin_policy_name       = "${var.service_label}-database-admin-policy"
+    appdev_admin_policy_name         = "${var.service_label}-appdev-admin-policy"
+    iam_admin_policy_name            = "${var.service_label}-iam-admin-policy"
+    cred_admin_policy_name           = "${var.service_label}-credential-admin-policy"
+    auditor_policy_name              = "${var.service_label}-auditor-policy"
+    announcement_reader_policy_name  = "${var.service_label}-announcement-reader-policy"
+    cloud_guard_policy_name          = "${var.service_label}-cloud-guard-policy"
+    os_mgmt_policy_name              = "${var.service_label}-os-management-policy"
 
     # Tags
     createdby_tag_name = "CreatedBy"

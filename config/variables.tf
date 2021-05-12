@@ -135,6 +135,10 @@ variable "existing_enclosing_compartment_ocid" {
     type    = string
     default = null
 }
+variable "use_existing_tenancy_policies" {
+    type    = bool
+    default = false
+}
 variable "use_existing_iam_groups" {
     type    = bool
     default = false
@@ -163,11 +167,11 @@ variable "database_admin_group_name" {
     type    = string
     default = null
 }
-variable "auditors_group_name" {
+variable "auditor_group_name" {
     type    = string
     default = null
 }
-/* variable "announcement_readers_group_name" {
+variable "announcement_reader_group_name" {
     type    = string
     default = null
-} */
+}

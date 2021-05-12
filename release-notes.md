@@ -11,7 +11,7 @@ The Landing Zone handles these requirements with a new Terraform root module tha
 1. An enclosing compartment for the Landing Zone compartments. 
 2. Optionally, a group with the required permissions to provision the Landing Zone in the enclosing compartment.
 3. Optionally, Landing Zone required groups for segregation of duties. These groups can then simply be reused when provisioning the Landing Zone.
-4. Optionally, required permissions at the tenancy level granted to Landing Zone groups, like permissions granted to IAM, Security and Network administrators.
+4. Optionally, required permissions at the tenancy level granted to Landing Zone groups, like permissions granted to Security and IAM administrators.
 	
 The following input variables control the *pre-config* module behavior:
 	
@@ -56,11 +56,11 @@ The existing Landing Zone config module has been extended to support this use ca
 	
 The following input variables control the extended config module behavior:
 	
-**enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. Default is false.
+**enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. Default is false. **When provisioning the Landing Zone as a *narrower-permissioned* user, **make sure to set this variable value to true**.
 	
-**existing_enclosing_compartment_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. Ignored if enclosing_compartment is false.
+**existing_enclosing_compartment_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permission.
 	
-**use_existing_tenancy_policies**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create policies at the tenancy level. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, when provisioning the Landing Zone as a *narrower-permissioned* user, **make sure to set this variable value to true, in which case tenancy level permissions creation is skipped**. Default is false, meaning the Landing Zone will  provision the tenancy level policies. And that will only work if the provisioning user has the required permissions.
+**use_existing_tenancy_policies**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create policies at the tenancy level. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, when provisioning the Landing Zone as a *narrower-permissioned* user, **make sure to set this variable value to true, in which case tenancy level permissions creation is skipped**. Default is false, meaning the Landing Zone will  provision the tenancy level policies as long as the executing user has the required permission.
 
 ## 3 - Ability to reuse existing groups when provisioning the Landing Zone
 

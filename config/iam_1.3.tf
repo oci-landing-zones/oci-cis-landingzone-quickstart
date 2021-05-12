@@ -23,7 +23,7 @@ locals {
                                "Allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_level}",
                                "Allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_level}"]
 
-  iam_admin_group_permissions = local.is_runner_entitled == true ? concat(local.tenancy_level_permissions, local.top_cmp_level_permissions) : local.top_cmp_level_permissions                                                    
+  iam_admin_group_permissions = var.use_existing_tenancy_policies == false ? concat(local.tenancy_level_permissions, local.top_cmp_level_permissions) : local.top_cmp_level_permissions                                                    
 }
 
 
@@ -42,7 +42,7 @@ module "cis_iam_admins_policy" {
   providers          = { oci = oci.home }
   depends_on         = [module.cis_iam_admins] ### Explicitly declaring dependency on the group module.
   policies = {
-    ("${var.service_label}-IAMAdmins-Policy") = {
+    (local.iam_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
       description    = "Policy allowing ${local.iam_admin_group_name} group to manage IAM resources."
       statements     = local.iam_admin_group_permissions

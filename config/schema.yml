@@ -1,0 +1,204 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "OCI CIS Landing Zone Stack"
+stackDescription: "A Resource Manager Stack to deploy a set of CIS compliant resources in an OCI tenancy."
+schemaVersion: 1.1.0
+version: "20210326"
+locale: "en"
+
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "service_label"
+
+  - title: "Location"
+    variables:
+      - "home_region"
+      - "region"
+      - "region_key"
+
+  - title: "Network"
+    variables:
+      - "vcn_cidr"
+      - "public_subnet_cidr"
+      - "private_subnet_app_cidr"
+      - "private_subnet_db_cidr"
+      - "public_src_bastion_cidr"
+      - "public_src_lbr_cidr"
+      - "is_vcn_onprem_connected"
+      - "onprem_cidr"
+
+  - title: "Notifications"
+    variables:
+      - "network_admin_email_endpoint"
+      - "security_admin_email_endpoint"
+
+  - title: "Cloud Guard"
+    variables:
+      - "cloud_guard_configuration_status"
+      - "cloud_guard_configuration_self_manage_resources"
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "user_ocid"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+
+variables:
+
+  tenancy_ocid:
+    type: string
+    visible: false
+
+  service_label:
+    type: string
+    title: "Service Label"
+    minLength: 1
+    maxLength: 127
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "A label for resources created by stack in pattern ^[A-Za-z][A-Za-z0-9]{1,7}$"
+    required: true
+
+  home_region:
+    type: oci:identity:region:name
+    title: "Home Region"
+    default: data.oci_identity_regions.home-region.regions[0]["name"]
+    description: "Home region for reporting"
+    required: true
+
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "Desired region for resource deployment"
+    required: true
+
+  region_key:
+    type: enum
+    title: "Region Key"
+    description: "<a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\">Three letter region code</a>"
+    required: true
+    enum:
+      - ams
+      - bom
+      - cwl
+      - dxb
+      - fra
+      - gru
+      - hyd
+      - iad
+      - icn
+      - jed
+      - kix
+      - lhr
+      - mel
+      - nrt
+      - phx
+      - scl
+      - sjc
+      - syd
+      - yny
+      - yul
+      - yyz
+      - zrh
+
+  vcn_cidr:
+    type: string
+    title: "VCN CIDR Block"
+    required: true
+    default: "10.0.0.0/16"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "Network IP range in CIDR notation"
+
+  public_subnet_cidr:
+    type: string
+    title: "Public Subnet IP Range"
+    required: true
+    default: "10.0.1.0/24"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "IP range of public subnet; Must be in VCN CIDR range"
+
+  private_subnet_app_cidr:
+    type: string
+    title: "Private Application Subnet IP Range"
+    required: true
+    default: "10.0.2.0/24"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "IP range of application subnet; Must be in VCN CIDR range"
+
+  private_subnet_db_cidr:
+    type: string
+    title: "Private Database Subnet IP Range"
+    required: true
+    default: "10.0.3.0/24"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "IP range of database subnet; Must be in VCN CIDR range"
+
+  public_src_bastion_cidr:
+    type: string
+    title: "Bastion Grant CIDR"
+    required: true
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP range allowed to connect to bastion host; Cannot be 0.0.0.0/0"
+
+  public_src_lbr_cidr:
+    type: string
+    title: "Load Balancer Grant CIDR"
+    required: true
+    default: "0.0.0.0/0"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP range allowed to connect to public load balancer"
+
+  is_vcn_onprem_connected:
+    type: boolean
+    title: "Connect to On-Premises Network?"
+    default: false
+
+  onprem_cidr:
+    type: string
+    title: "On-Premises Network CIDR"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    visible: is_vcn_onprem_connected
+    description: "IP range of your on-premises network in CIDR notation; Must not conflict with VCN CIDR Block range."
+
+  network_admin_email_endpoint:
+    type: string
+    title: "Network Admin Email Address"
+    pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    required: true
+    description: "Recipient for all network notifications"
+
+  security_admin_email_endpoint:
+    type: string
+    title: "Security Admin Email Address"
+    pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    required: true
+    description: "Recipient for all securtiy notifications"
+
+  cloud_guard_configuration_status:
+    type: enum
+    title: "Cloud Guard Configuration Status"
+    description: "Whether or not to activate Cloud Guard as part of Landing Zone deployment"
+    enum:
+      - ENABLED
+      - DISABLED
+
+  cloud_guard_enable_responder:
+    type: boolean
+    title: "Whether or not to enable a default Cloud Guard responder"
+    default: false
+
+  # Variables not required to display to user
+  user_ocid:
+    type: string
+
+  fingerprint:
+    type: string
+
+  private_key_path:
+    type: string
+
+  private_key_password:
+    type: password

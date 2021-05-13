@@ -35,7 +35,7 @@ resource "oci_cloud_guard_target" "this" {
     }  
   }
   dynamic "target_responder_recipes" {
-    for_each = var.enable_responder == true && length(data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection) > 0 ? data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection[0].items : []
+    for_each = length(data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection) > 0 ? data.oci_cloud_guard_responder_recipes.compartment_responder_recipes.responder_recipe_collection[0].items : []
     iterator = recipe
     content {
       responder_recipe_id = recipe.value["id"]

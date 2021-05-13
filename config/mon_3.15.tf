@@ -10,5 +10,4 @@ module "cis_cloud_guard" {
   status                = var.cloud_guard_configuration_status
   self_manage_resources = false
   default_target        = {name:local.cg_target_name, type:"COMPARTMENT", id:var.tenancy_ocid} 
-  enable_responder      = var.cloud_guard_enable_responder
 }

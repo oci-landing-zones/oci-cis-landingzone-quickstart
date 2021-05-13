@@ -24,8 +24,3 @@ variable "default_target" {
   type        = object({name=string, type=string, id=string})
   description = "The default Cloud Guard target."
 }
-
-variable "enable_responder" {
-  type = bool
-  description = "Whether or not to enable a default responder recipe."
-}

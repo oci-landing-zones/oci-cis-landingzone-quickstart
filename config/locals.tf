@@ -54,11 +54,6 @@ locals {
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
 
-    ### Scanning
-    scan_std_weekly_recipe_name = "${var.service_label}-Standard-Weekly-Scan-Recipe"
-    security_cmp_target_name    = "${local.security_compartment_name}-Scan-Target"
-    network_cmp_target_name     = "${local.network_compartment_name}-Scan-Target"
-    appdev_cmp_target_name      = "${local.appdev_compartment_name}-Scan-Target"
-    database_cmp_target_name    = "${local.database_compartment_name}-Scan-Target"
-
+    ### Cloud Guard
+    cg_target_name = "${var.service_label}-cloud-guard-root-target"
 }

@@ -1,13 +1,11 @@
 variable "compartment_id" {
   type        = string
-  description = "The default compartment OCID to use for resources (unless otherwise specified)."
-  default     = ""
+  description = "The default compartment OCID where Cloud Guard is enabled."
 }
 
 variable "reporting_region" {
   type        = string
   description = "Cloud Guard reporting region."
-  default     = ""
 }
 
 variable "status" {
@@ -22,8 +20,7 @@ variable "self_manage_resources" {
   default     = false
 }
 
-variable "service_label" {
-  type        = string
-  description = "The service label."
-  default     = ""
+variable "default_target" {
+  type        = object({name=string, type=string, id=string})
+  description = "The default Cloud Guard target."
 }

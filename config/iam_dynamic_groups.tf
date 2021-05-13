@@ -1,4 +1,4 @@
-module "dynamic_groups" {
+module "cis_dynamic_groups" {
     depends_on = [module.cis_compartments]
     source = "../modules/iam/iam-dynamic-group"
     providers = { oci = oci.home }

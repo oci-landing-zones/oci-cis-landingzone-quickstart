@@ -37,8 +37,7 @@ variableGroups:
   - title: "Cloud Guard"
     variables:
       - "cloud_guard_configuration_status"
-      - "cloud_guard_configuration_self_manage_resources"
-
+    
   - title: "Hidden Variables"
     visible: false
     variables:

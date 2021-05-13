@@ -184,12 +184,7 @@ variables:
     enum:
       - ENABLED
       - DISABLED
-
-  cloud_guard_enable_responder:
-    type: boolean
-    title: "Whether or not to enable a default Cloud Guard responder"
-    default: false
-
+      
   # Variables not required to display to user
   user_ocid:
     type: string

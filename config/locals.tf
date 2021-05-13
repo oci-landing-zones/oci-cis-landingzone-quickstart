@@ -8,11 +8,6 @@ locals {
     database_compartment_name = "${var.service_label}-Database"
     appdev_compartment_name   = "${var.service_label}-AppDev" 
 
-    /* security_compartment_name_output = module.cis_compartments.compartments[local.security_compartment_name].name
-    network_compartment_name_output  = module.cis_compartments.compartments[local.network_compartment_name].name
-    database_compartment_name_output = module.cis_compartments.compartments[local.database_compartment_name].name
-    appdev_compartment_name_output   = module.cis_compartments.compartments[local.appdev_compartment_name].name */
-
     security_admin_group_name = "${var.service_label}-SecurityAdmins"
     network_admin_group_name  = "${var.service_label}-NetworkAdmins"
     database_admin_group_name = "${var.service_label}-DatabaseAdmins"
@@ -58,4 +53,7 @@ locals {
     bucket_name  = "${var.service_label}-bucket"
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
+
+    ### Cloud Guard
+    cg_target_name = "${var.service_label}-cloud-guard-root-target"
 }

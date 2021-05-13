@@ -190,10 +190,10 @@ module "cis_nsgs" {
           icmp_type     = null
         },
         {
-          description     = "OSN egress rule for ${local.valid_service_gateway_cidrs[0]}."
+          description     = "OSN egress rule for ${local.valid_service_gateway_cidrs[1]}."
           stateless     = false
           protocol      = "6"
-          dst           = local.valid_service_gateway_cidrs[0]
+          dst           = local.valid_service_gateway_cidrs[1]
           dst_type      = "SERVICE_CIDR_BLOCK"
           src_port      = null
           dst_port      = {
@@ -242,10 +242,10 @@ module "cis_nsgs" {
       egress_rules        = [
         { # DB NSG to OSN
           is_create     = true
-          description   = "OSN egress rule for ${local.valid_service_gateway_cidrs[0]}."
+          description   = "OSN egress rule for ${local.valid_service_gateway_cidrs[1]}."
           stateless     = false
           protocol      = "6"
-          dst           = local.valid_service_gateway_cidrs[0]
+          dst           = local.valid_service_gateway_cidrs[1]
           dst_type      = "SERVICE_CIDR_BLOCK"
           src_port      = null
           dst_port      = {

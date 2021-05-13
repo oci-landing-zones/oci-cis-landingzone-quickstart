@@ -7,3 +7,4 @@
 **/.csv
 private_key.pem
 config/terraform.tfvars
+test/**

@@ -22,24 +22,12 @@ variable "private_key_path" {
 variable "private_key_password" {
     default = ""
 }
-variable "home_region" {
-    validation {
-        condition     = length(trim(var.home_region,"")) > 0
-        error_message = "The home_region variable is required for IAM resources."
-  }
-}
 variable "region" {
     validation {
         condition     = length(trim(var.region,"")) > 0
         error_message = "The region variable is required."
   }
 }  
-variable "region_key" {
-  validation {
-    condition     = length(regexall("^[a-z]{1,3}$", var.region_key)) > 0
-    error_message = "The region_key variable is required and must be a 3 letter string, lowercase."
-  }
-}
 
 # Networking
 variable "vcn_cidr" {

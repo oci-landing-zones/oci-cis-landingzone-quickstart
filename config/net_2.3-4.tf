@@ -10,10 +10,10 @@
 ###   Egress rule: port 80 on NSG #3 (App NSG)
 ### 3) NSG for application hosts
 ###   Ingress rules: a) port 22 from NSG #1 (Bastion NSG), b) port 80 from NSG #2 (LBR NSG)
-###   Egress rules: a) port 443 on region's Object Store service, b) port 1521 on NSG #4 (DB NSG)
+###   Egress rules: a) port 443 to all regional services in OSN, b) ports 1521,1522 on NSG #4 (DB NSG)
 ### 4) NSG for database hosts:
-###   Ingress rules: port 22 from the NSG #1 (Bastion NSG), b) port 1521 from NSG #2 (App NSG)
-###   Egress rule: port 443 on region's Object Store service.
+###   Ingress rules: port 22 from the NSG #1 (Bastion NSG), b) ports 1521,1522 from NSG #3 (App NSG)
+###   Egress rule: port 443 to all regional services in OSN.
 
 module "cis_nsgs" {
   source                  = "../modules/network/security"

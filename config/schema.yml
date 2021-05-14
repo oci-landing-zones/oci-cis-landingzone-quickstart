@@ -10,13 +10,8 @@ locale: "en"
 variableGroups:
   - title: "Environment"
     variables:
-      - "service_label"
-
-  - title: "Location"
-    variables:
-      - "home_region"
       - "region"
-      - "region_key"
+      - "service_label"
 
   - title: "Network"
     variables:
@@ -58,51 +53,15 @@ variables:
     minLength: 1
     maxLength: 127
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "A label for resources created by stack in pattern ^[A-Za-z][A-Za-z0-9]{1,7}$"
-    required: true
-
-  home_region:
-    type: oci:identity:region:name
-    title: "Home Region"
-    default: data.oci_identity_regions.home-region.regions[0]["name"]
-    description: "Home region for reporting"
+    description: "A unique label that gets prepended to all resources created by the Landing Zone"
     required: true
 
   region:
     type: oci:identity:region:name
     title: "Region"
-    description: "Desired region for resource deployment"
+    description: "The region for resources deployment"
     required: true
-
-  region_key:
-    type: enum
-    title: "Region Key"
-    description: "<a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\">Three letter region code</a>"
-    required: true
-    enum:
-      - ams
-      - bom
-      - cwl
-      - dxb
-      - fra
-      - gru
-      - hyd
-      - iad
-      - icn
-      - jed
-      - kix
-      - lhr
-      - mel
-      - nrt
-      - phx
-      - scl
-      - sjc
-      - syd
-      - yny
-      - yul
-      - yyz
-      - zrh
-
+  
   vcn_cidr:
     type: string
     title: "VCN CIDR Block"

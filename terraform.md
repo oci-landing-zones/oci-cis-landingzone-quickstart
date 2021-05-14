@@ -15,9 +15,7 @@ Variable Name | Description | Required | Default Value
 **fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | ""
 **private_key_path** | the local path to the user private key | Yes | ""
 **private_key_password** | the private key password, if any | No | ""
-**home_region** \* | the tenancy home region identifier where Terraform should provision IAM resources | Yes | None
 **region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None
-**region_key** \* | the 3-letter region key | Yes | None
 **service_label** | a label used as a prefix for naming resources | Yes | None
 **vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
 **public_subnet_cidr** | the public subnet CIDR block | Yes | "10.0.1.0/24"
@@ -30,7 +28,6 @@ Variable Name | Description | Required | Default Value
 **network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
 **security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
 **cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
-**cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
 
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
 
@@ -51,28 +48,30 @@ Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and e
 
 ## How to Execute the Code Using OCI Resource Manager
 There are a few different ways of running Terraform code in OCI Resource Manager (ORM). Here we describe two of them: 
-- creating an ORM stack by uploading a folder to ORM;
+- creating an ORM stack by uploading a zip file to ORM;
 - creating an ORM stack by integrating with GitLab. 
 
 A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not be contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
-### Stack from Folder
-Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this project. 
+### Stack from Zip File
+Download this repository as a .zip file, by expanding the Code button in the repository home page and choosing the "Download ZIP" option.
 
-Using OCI Console, navigate to Resource Manager service page and create a stack based on a folder. In the **Create Stack** page:
+![Zip Download](images/ZipDownload.png)
+
+Using OCI Console, navigate to Resource Manager service page and create a stack based on a .zip file. In the **Create Stack** page:
 1. Select **My Configuration** option as the origin of the Terraform configuration.
-2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
+2. In the **Stack Configuration** area, select the **.Zip file** option and upload the .zip file downloaded in the previous step.
 
-![Folder Stack](images/FolderStack_1.png)
+![Folder Stack](images/ZipStack_1.png)
 
-3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
+3. In **Working Directory**, make sure the config folder is selected.
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
-6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+6. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
-![Folder Stack](images/FolderStack_2.png)
+![Folder Stack](images/ZipStack_2.png)
 
 Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for the variables description. 
 
@@ -80,7 +79,7 @@ Notice that *TENANCY_OCID* and *REGION* have default values. They are automatica
 
 The other defaulted variables, like *VCN_CIDR*, for instance, have their values picked from the stack's variables.tf file and must be reviewed and assigned values as needed.
 
-![Folder Stack](images/FolderStack_3.png)
+![Folder Stack](images/ZipStack_3.png)
 
 Once variable values are provided, click Next, review stack values and create the stack. 
 
@@ -93,7 +92,7 @@ Next, navigate to the stack page and use the **Terraform Actions** button to pla
 
 Using OCI Console, navigate to Resource Manager service page and create a connection to your GitLab instance.
 
-In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
+In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**.
 
 ![GitLab Connection](images/GitLabConnection.png)
 

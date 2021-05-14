@@ -83,7 +83,7 @@ The other defaulted variables, like *VCN_CIDR*, for instance, have their values 
 
 Once variable values are provided, click Next, review stack values and create the stack. 
 
-Next, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
+In the stack page use the appropriate buttons to plan/apply/destroy your stack.
 
 ![Run Stack](images/RunStack.png)
 

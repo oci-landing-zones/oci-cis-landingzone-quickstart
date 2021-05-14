@@ -53,13 +53,13 @@ variables:
     minLength: 1
     maxLength: 127
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "A label for resources created by stack in pattern ^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "A unique label that gets prepended to all resources created by the Landing Zone"
     required: true
 
   region:
     type: oci:identity:region:name
     title: "Region"
-    description: "Desired region for resource deployment"
+    description: "The region for resources deployment"
     required: true
   
   vcn_cidr:

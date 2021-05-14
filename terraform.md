@@ -81,7 +81,7 @@ Some variables, like *VCN CIDR Block* for instance, have their values picked fro
 
 Once variable values are provided, click Next, review stack values and create the stack. 
 
-In the stack page use the appropriate buttons to plan/apply/destroy your stack.
+In the Stack page use the appropriate buttons to plan/apply/destroy your stack.
 
 ![Run Stack](images/RunStack.png)
 

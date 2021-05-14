@@ -10,12 +10,9 @@ locale: "en"
 variableGroups:
   - title: "Environment"
     variables:
+      - "region"
       - "service_label"
 
-  - title: "Location"
-    variables:
-      - "region"
-      
   - title: "Network"
     variables:
       - "vcn_cidr"

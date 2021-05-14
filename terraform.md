@@ -75,9 +75,7 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for the variables description. 
 
-Notice that *TENANCY_OCID* and *REGION* have default values. They are automatically picked by ORM based on the executing context. The other values used by the OCI provider, *USER_OCID*, *FINGERPRINT*, *PRIVATE_KEY_PATH* and *PRIVATE_KEY_PASSWORD*, marked as optional, must be left blank, as ORM executes with the privileges of the connected user.
-
-The other defaulted variables, like *VCN_CIDR*, for instance, have their values picked from the stack's variables.tf file and must be reviewed and assigned values as needed.
+Some variables, like *VCN CIDR Block* for instance, have their values picked from the configuration's variables.tf file and must be reviewed and assigned values as needed.
 
 ![Folder Stack](images/ZipStack_3.png)
 

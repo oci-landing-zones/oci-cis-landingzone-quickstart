@@ -171,10 +171,22 @@ variable "service_connector_audit_target_OCID" {
     description = "OCID of stream/function target for the audit logs service connector"
 }
 
+variable "service_connector_audit_target_cmpt_OCID" {
+    type = string
+    default = ""
+    description = "OCID of compartment containing the stream/function target for the audit logs service connector"
+}
+
 variable "service_connector_vcnFlowLogs_target_OCID" {
     type =string
     default = ""
     description = "OCID of stream/function target for the vcn flowLogs logs service connector"
+}
+
+variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
+    type =string
+    default = ""
+    description = "OCID of comartment containing the stream/function target for the vcn flowLogs logs service connector"
 }
 
 variable "sch_audit_target_rollover_MBs" {
@@ -212,3 +224,4 @@ variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
     default = "sch-vcnFlowLogs"
     description = "The prefix of the objects"
 }
+

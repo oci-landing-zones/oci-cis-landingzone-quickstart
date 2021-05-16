@@ -65,4 +65,7 @@ locals {
     
     sch_vcnFlowLogs_display_name = "${var.service_label}-SCH-VCNFlowLogs"
     sch_vcnFlowLogs_bucket_name = "${var.service_label}-SCH-VCNFlowLogs-Bucket"
+
+    sch_audit_policy_name = "${var.service_label}-SCH-Audit-Policy"
+    sch_vcnFlowLogs_policy_name = "${var.service_label}-SCH-VCNFlowLogs-Policy"
 }

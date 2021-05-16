@@ -16,18 +16,18 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_kms_key.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_key) | resource |
+| [oci_kms_vault.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_vault) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | The default compartment OCID to use for resources (unless otherwise specified). | `string` | `""` | no |
-| <a name="input_keys"></a> [keys](#input\_keys) | n/a | <pre>map(object({<br>    key_shape_algorithm = string,<br>    key_shape_length = string<br>  }))</pre> | n/a | yes |
-| <a name="input_vault_mgmt_endPoint"></a> [vault\_mgmt\_endPoint](#input\_vault\_mgmt\_endPoint) | KMS vault management end point | `string` | `""` | no |
+| <a name="input_vault_name"></a> [vault\_name](#input\_vault\_name) | Vault Name | `string` | `""` | no |
+| <a name="input_vault_type"></a> [vault\_type](#input\_vault\_type) | Vault Type - DEFAULT (Shared) | `string` | `"DEFAULT"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_keys"></a> [keys](#output\_keys) | Vault keys, indexed by the key display\_name |
+| <a name="output_vault"></a> [vault](#output\_vault) | vault information |

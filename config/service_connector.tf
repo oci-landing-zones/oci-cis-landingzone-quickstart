@@ -93,3 +93,139 @@ module "service_connector_hub_vcnFlowLogs" {
         }
     }
 }
+
+module "sch_audit_objStore_policy" {
+  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "objectStorage") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_audit]
+  policies = {
+    (local.sch_audit_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to manage objects in the target bucket."
+      statements = [
+                    <<EOF
+                        Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
+                        request.principal.type='serviceconnector',
+                        target.bucket.name= '${module.sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name}',
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                ]
+    }
+  }
+}
+
+module "sch_audit_streaming_policy" {
+  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "streaming") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_audit]
+  policies = {
+    (local.sch_audit_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to manage messages in stream"
+      statements = [
+                    <<EOF
+                        Allow any-user to use stream-push in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',
+                        target.stream.id='${var.service_connector_audit_target_OCID}',
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                ]
+    }
+  }
+}
+
+module "sch_audit_functions_policy" {
+  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "functions") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_audit]
+  policies = {
+    (local.sch_audit_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to use functions"
+      statements = [
+                    <<EOF
+                        Allow any-user to use fn-function in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',     
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                    ,
+                    <<EOF2
+                        Allow any-user to use fn-invocation in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',     
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF2
+                ]
+    }
+  }
+}
+
+module "sch_vcnFlowLogs_objStore_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "objectStorage") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  policies = {
+    (local.sch_vcnFlowLogs_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to manage objects in the target bucket."
+      statements = [
+                    <<EOF
+                        Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
+                        request.principal.type='serviceconnector',
+                        target.bucket.name= '${module.sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name}',
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                ]
+    }
+  }
+}
+
+module "sch_vcnFlowLogs_streaming_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "streaming") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  policies = {
+    (local.sch_vcnFlowLogs_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to manage messages in stream"
+      statements = [
+                    <<EOF
+                        Allow any-user to use stream-push in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',
+                        target.stream.id='${var.service_connector_vcnFlowLogs_target_OCID}',
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                ]
+    }
+  }
+}
+
+module "sch_vcnFlowLogs_functions_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "functions") ? 1 : 0
+  source                = "../modules/iam/iam-policy"
+  providers             = { oci = oci.home }
+  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  policies = {
+    (local.sch_vcnFlowLogs_policy_name) = {
+      compartment_id         = var.tenancy_ocid
+      description            = "Policy allowing service connector hub to use functions"
+      statements = [
+                    <<EOF
+                        Allow any-user to use fn-function in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',     
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF
+                    ,
+                    <<EOF2
+                        Allow any-user to use fn-invocation in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
+                        request.principal.type='serviceconnector',     
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                    EOF2
+                ]
+    }
+  }
+}

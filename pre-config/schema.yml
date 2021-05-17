@@ -20,8 +20,8 @@ variableGroups:
 
   - title: "Provisioning Group"
     variables:
-      - "use_existing_provisioning_group"
       - "existing_provisioning_group_name"
+      - "use_existing_provisioning_group"
       
   - title: "Landing Zone Policies & Groups"
     variables:
@@ -29,7 +29,6 @@ variableGroups:
       - "create_lz_groups"
 
   - title: "Existing Groups"
-    visible: ${create_lz_groups}
     variables:    
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -39,6 +38,10 @@ variableGroups:
       - "existing_database_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
+    visible: 
+      eq:
+        - ${create_lz_groups}
+        - false  
 
   - title: "Hidden Variables"
     visible: false
@@ -66,17 +69,17 @@ variables:
     description: "A unique prefix across the tenancy that is added to all resource names created by this module."
     required: true
 
-  existing_enclosing_compartment_parent_ocid:
-    type: oci:identity:compartment:id
-    title: "Enclosing compartment parent"
-    description: "The enclosing compartment parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
-    required: false
-
   enclosing_compartment_name:
     type: string
     title: "Enclosing compartment name"
     description: "The name of the enclosing compartment that will be created for Landing Zone compartments. If not provided, the compartment is created with default name <unique_prefix>-top-cmp."
     required: false
+
+  existing_enclosing_compartment_parent_ocid:
+    type: oci:identity:compartment:id
+    title: "Enclosing compartment parent"
+    description: "The enclosing compartment parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
+    required: false  
   
   use_existing_provisioning_group:
     type: boolean

@@ -29,10 +29,7 @@ variableGroups:
       - "create_lz_groups"
 
   - title: "Existing Groups"
-    visible: 
-      eq:
-        - ${create_lz_groups}
-        - false
+    visible: create_lz_groups
     variables:    
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -69,18 +66,18 @@ variables:
     description: "A unique prefix across the tenancy that is added to all resource names created by this module."
     required: true
 
-  enclosing_compartment_name:
-    type: string
-    title: "Enclosing compartment name"
-    description: "The name of the enclosing compartment that will be created for Landing Zone compartments. If not provided, the compartment is created with default name <unique_prefix>-top-cmp."
-    required: false
-  
   existing_enclosing_compartment_parent_ocid:
     type: oci:identity:compartment:id
     title: "Enclosing compartment parent"
     description: "The enclosing compartment parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
     required: false
 
+  enclosing_compartment_name:
+    type: string
+    title: "Enclosing compartment name"
+    description: "The name of the enclosing compartment that will be created for Landing Zone compartments. If not provided, the compartment is created with default name <unique_prefix>-top-cmp."
+    required: false
+  
   use_existing_provisioning_group:
     type: boolean
     title: "Use existing provisioning group?"

@@ -165,7 +165,7 @@ variables:
   
   existing_announcement_reader_group_name:
     type: string
-    title: "Existing annoucement readers group name"
+    title: "Existing announcement readers group name"
     description: "Existing group to which annoucement reading policies will be granted to."
     visible: 
       eq:

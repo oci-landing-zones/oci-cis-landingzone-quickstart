@@ -1,8 +1,8 @@
 locals {
   
-  top_compartment_name      = var.enclosing_compartment_name != null ? var.enclosing_compartment_name : "${var.unique_prefix}-top-cmp"
-  top_compartment_parent_id = var.existing_enclosing_compartment_parent_ocid != null ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
-  provisioning_group_name   = var.existing_provisioning_group_name != null ? var.existing_provisioning_group_name : "${var.unique_prefix}-provisioning-group"
+  top_compartment_name      = length(var.enclosing_compartment_name) > 0 ? var.enclosing_compartment_name : "${var.unique_prefix}-top-cmp"
+  top_compartment_parent_id = length(var.existing_enclosing_compartment_parent_ocid) > 0 ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
+  provisioning_group_name   = length(var.existing_provisioning_group_name) > 0 ? var.existing_provisioning_group_name : "${var.unique_prefix}-provisioning-group"
   provisioning_policy_name  = "${var.unique_prefix}-provisioning-policy"
   tenancy_level_policy_name = "${var.unique_prefix}-groups-tenancy-level-policy"
 

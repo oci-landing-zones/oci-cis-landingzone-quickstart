@@ -15,8 +15,8 @@ variableGroups:
       
   - title: "Enclosing Compartment"
     variables:
-      - "enclosing_compartment_name"
       - "existing_enclosing_compartment_parent_ocid"
+      - "enclosing_compartment_name"
 
   - title: "Provisioning Group"
     variables:
@@ -29,7 +29,7 @@ variableGroups:
       - "create_lz_groups"
 
   - title: "Existing Groups"
-    visible: create_lz_groups
+    visible: ${create_lz_groups}
     variables:    
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"

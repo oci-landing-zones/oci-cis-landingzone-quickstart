@@ -1,4 +1,5 @@
 locals {
+  
   top_compartment_name      = var.enclosing_compartment_name != null ? var.enclosing_compartment_name : "${var.unique_prefix}-top-cmp"
   top_compartment_parent_id = var.existing_enclosing_compartment_parent_ocid != null ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
   provisioning_group_name   = var.existing_provisioning_group_name != null ? var.existing_provisioning_group_name : "${var.unique_prefix}-provisioning-group"

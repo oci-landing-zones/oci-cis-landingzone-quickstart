@@ -65,7 +65,7 @@ variables:
   enclosing_compartment_name:
     type: string
     title: "Enclosing compartment name"
-    description: "The name of the enclosing compartment that will be created for the Landing Zone compartments. If not provided, the compartment is created with default name <unique_prefix>-top-cmp."
+    description: "The name of the enclosing compartment that will be created for Landing Zone compartments. If not provided, the compartment is created with default name <unique_prefix>-top-cmp."
     required: false
   
   existing_enclosing_compartment_parent_ocid:
@@ -104,65 +104,73 @@ variables:
     type: string
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_cred_admin_group_name:
     type: string
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_security_admin_group_name:
     type: string
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_network_admin_group_name:
     type: string
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_appdev_admin_group_name:
     type: string
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_database_admin_group_name:
     type: string
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_auditor_group_name:
     type: string
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   existing_announcement_reader_group_name:
     type: string
     title: "Existing annoucement readers group name"
     description: "Existing group to which annoucement reading policies will be granted to."
-    visible: eq
-      - create_lz_groups
-      - false
+    visible: 
+      eq:
+        - create_lz_groups
+        - false
   
   # Hidden variables
   tenancy_ocid:

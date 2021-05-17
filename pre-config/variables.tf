@@ -32,17 +32,17 @@ variable "use_existing_provisioning_group" {
 }
 variable "existing_provisioning_group_name" {
     type    = string
-    default = null
+    default = ""
     description = "The existing group name to be used for Landing Zone provisioning. Ignored if use_existing_provisioning_group is false."
 }
 variable "enclosing_compartment_name" {
     type    = string
-    default = null
+    default = ""
     description = "The name of the enclosing compartment for the Landing Zone compartments. If not provided, the compartment is created with a default name."
 }
 variable "existing_enclosing_compartment_parent_ocid" {
     type    = string
-    default = null
+    default = ""
     description = "The ocid of the enclosing compartment's parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
 }
 variable "create_lz_groups" {
@@ -57,33 +57,33 @@ variable "create_tenancy_level_policies" {
 }  
 variable "existing_iam_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_cred_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_security_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_network_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_appdev_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_database_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_auditor_group_name" {
     type    = string
-    default = null
+    default = ""
 }
 variable "existing_announcement_reader_group_name" {
     type    = string
-    default = null
+    default = ""
 }  

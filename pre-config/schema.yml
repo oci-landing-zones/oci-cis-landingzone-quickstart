@@ -31,7 +31,7 @@ variableGroups:
   - title: "Existing Groups"
     visible: 
       eq:
-        - create_lz_groups
+        - ${create_lz_groups}
         - false
     variables:    
       - "existing_iam_admin_group_name"
@@ -77,8 +77,8 @@ variables:
   
   existing_enclosing_compartment_parent_ocid:
     type: oci:identity:compartment:id
-    title: "OCID of the desired enclosing compartment parent"
-    description: "The OCID of the enclosing compartment parent. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
+    title: "Enclosing compartment parent"
+    description: "The enclosing compartment parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
     required: false
 
   use_existing_provisioning_group:

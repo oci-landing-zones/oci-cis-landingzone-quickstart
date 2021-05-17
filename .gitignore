@@ -1,4 +1,3 @@
-env-vars.*
 **/*.tfstate*
 **/*.out
 **/.terraform/*
@@ -7,15 +6,5 @@ env-vars.*
 **/crash.log
 **/.csv
 private_key.pem
-config/terraform.tfvars
-config/iam_1.2.tf
-
-cis-iam
-cis-monitoring
-cis-network
-cis-object-storage
-cis-tenancy.sh
-reports
-modules/queries
-scripts
-reporting
+**/terraform.tfvars
+test/**

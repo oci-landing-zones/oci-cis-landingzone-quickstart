@@ -132,96 +132,95 @@ variable "cloud_guard_configuration_self_manage_resources" {
 variable "create_service_connector_audit" {
     type = bool
     default = false
-    description = "create service connector for audit logs"
-}
-
-variable "create_service_connector_vcnFlowLogs" {
-    type = bool
-    default = false
-    description = "create service connector for vcn flow logs"
+    description = "Create Service Connector Hub for Audit logs"
 }
 
 variable "service_connector_audit_target" {
     type = string
     default = "objectStorage"
-    description = "destination for audit logs service connector. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID in the variable below"
+    description = "Destination for Service Connector Hub for Audit Logs. Valid values are 'objectStorage', 'streaming' and 'functions'. In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below"
 }
 
 variable "service_connector_audit_state" {
     type = string
     default = "INACTIVE"
-    description = "state in which to create the service connector for audit logs. valid values are 'ACTIVE' and 'INACTIVE'"
-}
-
-variable "service_connector_vcnFlowLogs_state" {
-    type = string
-    default = "INACTIVE"
-    description = "state in which to create the service connector for vcn flow logs. valid values are 'ACTIVE' and 'INACTIVE'"
-}
-
-variable "service_connector_vcnFlowLogs_target" {
-    type = string
-    default = "objectStorage"
-    description = "destination for vcn flow logs service connector. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID in the variable below"
+    description = "State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'"
 }
 
 variable "service_connector_audit_target_OCID" {
     type = string
     default = ""
-    description = "OCID of stream/function target for the audit logs service connector"
+    description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs"
 }
 
 variable "service_connector_audit_target_cmpt_OCID" {
     type = string
     default = ""
-    description = "OCID of compartment containing the stream/function target for the audit logs service connector"
-}
-
-variable "service_connector_vcnFlowLogs_target_OCID" {
-    type =string
-    default = ""
-    description = "OCID of stream/function target for the vcn flowLogs logs service connector"
-}
-
-variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
-    type =string
-    default = ""
-    description = "OCID of comartment containing the stream/function target for the vcn flowLogs logs service connector"
+    description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
 }
 
 variable "sch_audit_target_rollover_MBs" {
     type = number
     default = 100
-    description = "target rollover size in MBs for audit logs"
+    description = "Applicable only for objectStorage target type. Target rollover size in MBs for Audit logs"
 }
 
 variable "sch_audit_target_rollover_MSs" {
     type = number
     default = 7 * 60 * 1000 // 7 minutes
-    description = "target rollover time in MBs for audit logs"
-}
-
-variable "sch_vcnFlowLogs_target_rollover_MBs" {
-    type = number
-    default = 100
-    description = "target rollover size in MBs for audit logs"
-}
-
-variable "sch_vcnFlowLogs_target_rollover_MSs" {
-    type = number
-    default = 7 * 60 * 1000 // 7 minutes
-    description = "target rollover time in MBs for audit logs"
+    description = "Applicable only for objectStorage target type. Target rollover time in MSs for Audit logs"
 }
 
 variable "sch_audit_objStore_objNamePrefix" {
     type = string
     default = "sch-audit"
-    description = "The prefix of the objects"
+    description = "Applicable only for objectStorage target type. The prefix for the objects for Audit logs"
+}
+
+variable "create_service_connector_vcnFlowLogs" {
+    type = bool
+    default = false
+    description = "Create Service Connector Hub for VCN Flow logs"
+}
+
+variable "service_connector_vcnFlowLogs_target" {
+    type = string
+    default = "objectStorage"
+    description = "Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below"
+}
+
+variable "service_connector_vcnFlowLogs_state" {
+    type = string
+    default = "INACTIVE"
+    description = "State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'"
+}
+
+variable "service_connector_vcnFlowLogs_target_OCID" {
+    type =string
+    default = ""
+    description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
+}
+
+variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
+    type =string
+    default = ""
+    description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
+}
+
+variable "sch_vcnFlowLogs_target_rollover_MBs" {
+    type = number
+    default = 100
+    description = "Applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs"
+}
+
+variable "sch_vcnFlowLogs_target_rollover_MSs" {
+    type = number
+    default = 7 * 60 * 1000 // 7 minutes
+    description = "Applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs"
 }
 
 variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
     type = string
     default = "sch-vcnFlowLogs"
-    description = "The prefix of the objects"
+    description = "Applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs"
 }
-

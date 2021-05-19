@@ -74,7 +74,7 @@ variables:
     minItems: 0  
     uniqueItems: true  
     title: "Enclosing compartment names (type name and hit enter)"
-    description: "The names of the enclosing compartments that will be created for Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp."
+    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp."
     required: false
 
   existing_enclosing_compartment_parent_ocid:
@@ -83,16 +83,16 @@ variables:
     description: "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
     required: false  
   
-  use_existing_provisioning_groups:
+  use_existing_provisioning_group:
     type: boolean
     title: "Use existing provisioning group?"
-    description: "Whether or not existing groups are to be used for Landing Zone provisioning. If unchecked, a group is created with default name <unique_prefix>-provisioning-group."
+    description: "Whether or not existing groups are to be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by 'Enclosing compartment names'."
     default: false  
 
-  existing_provisioning_group_names:
+  existing_provisioning_group_name:
     type: string
     title: "Existing provisioning group names"
-    description: "The names of existing groups to be used for Landing Zone provisioning."
+    description: "The name of an existing group to be used for provisioning all resources in the compartments defined by 'Enclosing compartment names'."
     visible :  use_existing_provisioning_groups 
   
   # Hidden variable
@@ -106,7 +106,7 @@ variables:
   use_existing_lz_groups:
     type: boolean
     title: "Use existing groups?"
-    description: "Whether or not existing groups are to be reused for Landing Zone. If unchecked, groups are created with default names having <unique_prefix> string prepended. If checked, existing group names must be provided."
+    description: "Whether or not existing groups are to be reused for Landing Zone. If unchecked, one set of groups is created for each compartment defined by 'Enclosing compartment names'. If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
     default: false 
     required: true
   

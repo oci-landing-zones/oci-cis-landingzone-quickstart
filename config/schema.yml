@@ -168,16 +168,19 @@ variables:
 
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:
-    type: bool
+    type: boolean
     required: true
+    title: "Create Service Connector Hub for Audit Logs"
     description: "Create Service Connector Hub for Audit logs"
     default: false
 
   service_connector_audit_target:
     type: enum
     required: false
+    title: "Service Connector Hub Target"
     description: "Destination for Service Connector Hub for Audit Logs"
     default: objectStorage
+    visible: create_service_connector_audit
     enum:
       - objectStorage
       - streaming
@@ -186,8 +189,10 @@ variables:
   service_connector_audit_state:
     type: enum
     required: false
+    title: "Service Connector Hub State"
     description: "State in which to create the Service Connector Hub for Audit logs"
     default: INACTIVE
+    visible: create_service_connector_audit
     enum:
       - INACTIVE
       - ACTIVE
@@ -195,44 +200,57 @@ variables:
   service_connector_audit_target_OCID:
     type: string
     required: false
+    title: "Target Stream/Function OCID"
     description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs"
+    visible: create_service_connector_audit
 
   service_connector_audit_target_cmpt_OCID:
     type: string
     required: false
+    title: "Target Stream/Function Compartment OCID"
     description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
+    visible: create_service_connector_audit
 
   sch_audit_target_rollover_MBs:
     type: number
     required: false
+    title: "Batch Size (MB) for Object Storage Target"
     description: "Applicable only for objectStorage target type. Target rollover size in MBs for Audit logs"
     default: 100
+    visible: create_service_connector_audit
 
   sch_audit_target_rollover_MSs:
     type: number
     required: false
+    title: "Batch Time (ms) for Object Storage Target"
     description: "Applicable only for objectStorage target type. Target rollover time in MSs for Audit logs"
     default: 420000
+    visible: create_service_connector_audit
 
   sch_audit_objStore_objNamePrefix:
     type: string
     required: false
+    title: "Object Name Prefix for Object Storage Target"
     description: "Applicable only for objectStorage target type. The prefix for the objects for Audit logs"
     default: "sch-audit"
+    visible: create_service_connector_audit
 
 
   # Service Connector Hub For VCN Flow Logs - Variables
   create_service_connector_vcnFlowLogs:
-    type: bool
+    type: boolean
     required: true
+    title: "Create Service Connector Hub for VCN Flow Logs"
     description: "Create Service Connector Hub for VCN Flow logs"
     default: false
 
   service_connector_vcnFlowLogs_target:
     type: enum
     required: false
+    title: "Service Connector Hub Target"
     description: "Destination for Service Connector Hub for VCN Flow Logs"
     default: objectStorage
+    visible: create_service_connector_vcnFlowLogs
     enum:
       - objectStorage
       - streaming
@@ -241,8 +259,10 @@ variables:
   service_connector_vcnFlowLogs_state:
     type: enum
     required: false
+    title: "Service Connector Hub State"
     description: "State in which to create the Service Connector Hub for VCN Flow logs"
     default: INACTIVE
+    visible: create_service_connector_vcnFlowLogs
     enum:
       - INACTIVE
       - ACTIVE
@@ -250,30 +270,40 @@ variables:
   service_connector_vcnFlowLogs_target_OCID:
     type: string
     required: false
+    title: "Target Stream/Function OCID"
     description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
+    visible: create_service_connector_vcnFlowLogs
 
   service_connector_vcnFlowLogs_target_cmpt_OCID:
     type: string
     required: false
+    title: "Target Stream/Function Compartment OCID"
     description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
+    visible: create_service_connector_vcnFlowLogs
 
   sch_vcnFlowLogs_target_rollover_MBs:
     type: number
     required: false
+    title: "Batch Size (MB) for Object Storage Target"
     description: "Applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs"
     default: 100
+    visible: create_service_connector_vcnFlowLogs
 
   sch_vcnFlowLogs_target_rollover_MSs:
     type: number
     required: false
+    title: "Batch Time (ms) for Object Storage Target"
     description: "Applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs"
     default: 420000
+    visible: create_service_connector_vcnFlowLogs
 
   sch_vcnFlowLogs_objStore_objNamePrefix:
     type: string
     required: false
+    title: "Object Name Prefix for Object Storage Target"
     description: "Applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs"
     default: "sch-vcnFlowLogs"
+    visible: create_service_connector_vcnFlowLogs
 
 
   # Variables not required to display to user

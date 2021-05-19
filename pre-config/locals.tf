@@ -1,17 +1,17 @@
 locals {
   
-  top_compartment_name      = length(var.enclosing_compartment_name) > 0 ? var.enclosing_compartment_name : "${var.unique_prefix}-top-cmp"
-  top_compartment_parent_id = length(var.existing_enclosing_compartment_parent_ocid) > 0 ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
-  provisioning_group_name   = length(var.existing_provisioning_group_name) > 0 ? var.existing_provisioning_group_name : "${var.unique_prefix}-provisioning-group"
-  provisioning_policy_name  = "${var.unique_prefix}-provisioning-policy"
-  tenancy_level_policy_name = "${var.unique_prefix}-groups-tenancy-level-policy"
+  top_compartment_parent_id  = length(var.existing_enclosing_compartment_parent_ocid) > 0 ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
+  enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : "${var.unique_prefix}-${c}" => {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}} : {"${var.unique_prefix}-top-cmp": {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}}
+  provisioning_group_names   = {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-prov-group" : var.existing_provisioning_group_name}}
+  provisioning_group_names_t = var.use_existing_provisioning_group == false ? {for k in keys(local.enclosing_compartments) : k => {group_name:"${k}-prov-group"}} : {"root" : {group_name: var.existing_provisioning_group_name}}
+  lz_group_names             = var.use_existing_lz_groups == false ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {"root": {group_name_prefix: ""}}
 
-  iam_admin_group_name           = var.create_lz_groups == true ? "${var.unique_prefix}-iam-admin-group" : var.existing_iam_admin_group_name
-  cred_admin_group_name          = var.create_lz_groups == true ? "${var.unique_prefix}-cred-admin-group" : var.existing_cred_admin_group_name
-  network_admin_group_name       = var.create_lz_groups == true ? "${var.unique_prefix}-network-admin-group" : var.existing_network_admin_group_name
-  security_admin_group_name      = var.create_lz_groups == true ? "${var.unique_prefix}-security-admin-group" : var.existing_security_admin_group_name
-  appdev_admin_group_name        = var.create_lz_groups == true ? "${var.unique_prefix}-appdev-admin-group" :  var.existing_appdev_admin_group_name
-  database_admin_group_name      = var.create_lz_groups == true ? "${var.unique_prefix}-database-admin-group" : var.existing_database_admin_group_name
-  auditor_group_name             = var.create_lz_groups == true ? "${var.unique_prefix}-auditor-group" : var.existing_auditor_group_name
-  announcement_reader_group_name = var.create_lz_groups == true ? "${var.unique_prefix}-announcement-reader-group": var.existing_announcement_reader_group_name
+  iam_admin_group_name_suffix           = var.use_existing_lz_groups == false ? "iam-admin-group" : var.existing_iam_admin_group_name
+  cred_admin_group_name_suffix          = var.use_existing_lz_groups == false ? "cred-admin-group" : var.existing_iam_admin_group_name
+  network_admin_group_name_suffix       = var.use_existing_lz_groups == false ? "network-admin-group" : var.existing_iam_admin_group_name
+  security_admin_group_name_suffix      = var.use_existing_lz_groups == false ? "security-admin-group" : var.existing_iam_admin_group_name
+  appdev_admin_group_name_suffix        = var.use_existing_lz_groups == false ? "appdev-admin-group" : var.existing_iam_admin_group_name
+  database_admin_group_name_suffix      = var.use_existing_lz_groups == false ? "database-admin-group" : var.existing_iam_admin_group_name
+  auditor_group_name_suffix             = var.use_existing_lz_groups == false ? "auditor-group" : var.existing_iam_admin_group_name
+  announcement_reader_group_name_suffix = var.use_existing_lz_groups == false ? "announcement-reader-group" : var.existing_iam_admin_group_name
 }

@@ -12,10 +12,8 @@ variable "private_key_password" {
     default = ""
 }
 variable "home_region" {
-    validation {
-        condition     = length(trim(var.home_region,"")) > 0
-        error_message = "The home_region variable is required."
-  }
+  type = string
+  description = "The tenancy home region."
 }
 variable "unique_prefix" {
   type = string
@@ -28,27 +26,27 @@ variable "unique_prefix" {
 variable "use_existing_provisioning_group" {
     type = bool
     default = false
-    description = "Whether or not an existing group is to be used for Landing Zone provisioning. If false, a group is created. In either case, required permissions are granted to the group."
+    description = "Whether or not an existing group is to be used for Landing Zone provisioning. If false, a group is created for each compartment indicated by enclosing_compartment_names variable. In either case, required provsioning permissions are granted to the group(s)."
 }
 variable "existing_provisioning_group_name" {
     type    = string
     default = ""
     description = "The existing group name to be used for Landing Zone provisioning. Ignored if use_existing_provisioning_group is false."
 }
-variable "enclosing_compartment_name" {
-    type    = string
-    default = ""
-    description = "The name of the enclosing compartment for the Landing Zone compartments. If not provided, the compartment is created with a default name."
+variable "enclosing_compartment_names" {
+    type    = list(string)
+    default = []
+    description = "The names of the enclosing compartments that will be created for Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp."
 }
 variable "existing_enclosing_compartment_parent_ocid" {
     type    = string
     default = ""
     description = "The ocid of the enclosing compartment's parent compartment. It defines where the enclosing compartment is created. If not provided, the enclosing compartment is created in the root compartment."
 }
-variable "create_lz_groups" {
+variable "use_existing_lz_groups" {
     type = bool
-    default = true
-    description = "Whether or not Landing Zone groups are created. If false, existing group names should be provided."
+    default = false
+    description = "Whether or not existing Landing Zone groups are to be reused. If false, groups are created for each compartment indicated by enclosing_compartment_names variable. If true, existing group names must be provided."
 }
 variable "create_tenancy_level_policies" {
     type = bool

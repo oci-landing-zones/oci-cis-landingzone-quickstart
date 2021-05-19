@@ -3,13 +3,8 @@
 
 ### This Terraform configuration provisions a top compartment for holding all Landing Zone compartments.
 
-module "lz_top_compartment" {
+module "lz_top_compartments" {
   source = "../modules/iam/iam-compartment"
-  compartments = {
-    (local.top_compartment_name) = {
-      parent_id   = local.top_compartment_parent_id
-      description = "Landing Zone top compartment, enclosing all Landing Zone compartments."
-    }
-  }
+  compartments = local.enclosing_compartments
 }
 

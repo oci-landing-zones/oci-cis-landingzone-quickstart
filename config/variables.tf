@@ -22,24 +22,12 @@ variable "private_key_path" {
 variable "private_key_password" {
     default = ""
 }
-variable "home_region" {
-    validation {
-        condition     = length(trim(var.home_region,"")) > 0
-        error_message = "The home_region variable is required for IAM resources."
-  }
-}
 variable "region" {
     validation {
         condition     = length(trim(var.region,"")) > 0
         error_message = "The region variable is required."
   }
 }  
-variable "region_key" {
-  validation {
-    condition     = length(regexall("^[a-z]{1,3}$", var.region_key)) > 0
-    error_message = "The region_key variable is required and must be a 3 letter string, lowercase."
-  }
-}
 
 # Networking
 variable "vcn_cidr" {
@@ -127,51 +115,55 @@ variable "cloud_guard_configuration_self_manage_resources" {
       error_message = "Invalid value provided for cloud_guard_configuration_self_manage_resources. Valid values: true or false."
   }
 }
-variable "enclosing_compartment" {
+variable "use_enclosing_compartment" {
     type    = bool
     default = false
+    description = "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment."
 }
 variable "existing_enclosing_compartment_ocid" {
     type    = string
     default = null
+    description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
 variable "use_existing_tenancy_policies" {
     type    = bool
     default = false
+    description = "Whether or not required policies have already been created at the root compartment and must just be assigned to the Landing Zone groups. If unchecked, you must be sure the user executing this stack has permissions to create policies in the root compartment."
 }
 variable "use_existing_iam_groups" {
     type    = bool
     default = false
+    description = "Whether or not existing groups are to be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
 }
-variable "iam_admin_group_name" {
+variable "existing_iam_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "cred_admin_group_name" {
+variable "existing_cred_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "security_admin_group_name" {
+variable "existing_security_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "network_admin_group_name" {
+variable "existing_network_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "appdev_admin_group_name" {
+variable "existing_appdev_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "database_admin_group_name" {
+variable "existing_database_admin_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "auditor_group_name" {
+variable "existing_auditor_group_name" {
     type    = string
-    default = null
+    default = ""
 }
-variable "announcement_reader_group_name" {
+variable "existing_announcement_reader_group_name" {
     type    = string
-    default = null
+    default = ""
 }

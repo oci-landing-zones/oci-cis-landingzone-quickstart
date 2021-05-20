@@ -90,7 +90,8 @@ variables:
     type: oci:identity:compartment:id
     title: "Existing enclosing compartment"
     description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the root compartment."
-    required: false  
+    required: false 
+    visible: use_enclosing_compartment 
 
   use_existing_tenancy_policies:
     type: boolean

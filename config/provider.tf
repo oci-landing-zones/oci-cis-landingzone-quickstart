@@ -12,7 +12,7 @@ provider "oci" {
 
 provider "oci" {
   alias                = "home"
-  region               = var.home_region
+  region               = local.regions_map[local.home_region_key]
   tenancy_ocid         = var.tenancy_ocid
   user_ocid            = var.user_ocid
   fingerprint          = var.fingerprint

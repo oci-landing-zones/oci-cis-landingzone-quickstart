@@ -74,7 +74,8 @@ variables:
     minItems: 0
     title: "Enclosing compartment names (max 5)"
     description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. (Type name and hit enter to enter multiple values, up to a maximum of 5)."
-    required: falsee
+    required: false
+    default: []
 
   existing_enclosing_compartments_parent_ocid:
     type: oci:identity:compartment:id

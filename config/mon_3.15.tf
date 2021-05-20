@@ -7,6 +7,6 @@ module "cis_cloud_guard" {
   compartment_id        = var.tenancy_ocid
   reporting_region      = local.regions_map[local.home_region_key]
   status                = var.cloud_guard_configuration_status
-  self_manage_resources = var.cloud_guard_configuration_self_manage_resources
+  self_manage_resources = false
   service_label         = var.service_label 
 }

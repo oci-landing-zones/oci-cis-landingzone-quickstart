@@ -1,6 +1,6 @@
 locals {
   
-  top_compartment_parent_id  = length(var.existing_enclosing_compartment_parent_ocid) > 0 ? var.existing_enclosing_compartment_parent_ocid : var.tenancy_ocid
+  top_compartment_parent_id  = length(var.existing_enclosing_compartments_parent_ocid) > 0 ? var.existing_enclosing_compartments_parent_ocid : var.tenancy_ocid
   enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : "${var.unique_prefix}-${c}" => {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}} : {"${var.unique_prefix}-top-cmp": {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}}
   provisioning_group_names   = {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-prov-group" : var.existing_provisioning_group_name}}
   provisioning_group_names_t = var.use_existing_provisioning_group == false ? {for k in keys(local.enclosing_compartments) : k => {group_name:"${k}-prov-group"}} : {"root" : {group_name: var.existing_provisioning_group_name}}

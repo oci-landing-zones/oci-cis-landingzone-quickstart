@@ -3,6 +3,12 @@
 
 locals {
 
+    ### Discovering the home region name and region key.
+    regions_map = {for r in data.oci_identity_regions.these.regions : r.key => r.name} # All regions indexed by region key.
+    regions_map_reverse = {for r in data.oci_identity_regions.these.regions : r.name => r.key} # All regions indexed by region name.
+    home_region_key = data.oci_identity_tenancy.this.home_region_key # Home region key obtained from the tenancy data source
+    region_key = lower(local.regions_map_reverse[var.region]) # Region key obtained from the region name
+
     ### IAM
     # Default compartment names
     default_enclosing_compartment_name = "${var.service_label}-top-cmp"
@@ -12,19 +18,19 @@ locals {
     appdev_compartment_name            = "${var.service_label}-AppDev" 
 
     # Whether or not to create an enclosing compartment
-    parent_compartment_id = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
-    parent_compartment_name = var.enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
+    parent_compartment_id = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
+    parent_compartment_name = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
 
     # Group names
-    security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-SecurityAdmins" : var.security_admin_group_name
-    network_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-NetworkAdmins" : var.network_admin_group_name
-    database_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-DatabaseAdmins" : var.database_admin_group_name
-    appdev_admin_group_name         = var.use_existing_iam_groups == false ? "${var.service_label}-AppDevAdmins" : var.appdev_admin_group_name
-    iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-IAMAdmins" : var.iam_admin_group_name
-    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredentialAdmins" : var.cred_admin_group_name
-    auditor_group_name              = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : var.auditor_group_name
-    announcement_reader_group_name  = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : var.announcement_reader_group_name
+    security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-SecurityAdmins" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+    network_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-NetworkAdmins" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+    database_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-DatabaseAdmins" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+    appdev_admin_group_name         = var.use_existing_iam_groups == false ? "${var.service_label}-AppDevAdmins" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+    iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-IAMAdmins" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-CredentialAdmins" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+    auditor_group_name              = var.use_existing_iam_groups == false ? "${var.service_label}-Auditors" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+    announcement_reader_group_name  = var.use_existing_iam_groups == false ? "${var.service_label}-AnnouncementReaders" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
 
     # Policy names
     security_admin_policy_name       = "${var.service_label}-security-admin-policy"
@@ -44,7 +50,7 @@ locals {
 
     ### Network
     anywhere = "0.0.0.0/0"
-    valid_service_gateway_cidrs = ["oci-${var.region_key}-objectstorage", "all-${var.region_key}-services-in-oracle-services-network"]
+    valid_service_gateway_cidrs = ["oci-${local.region_key}-objectstorage", "all-${local.region_key}-services-in-oracle-services-network"]
 
     # VCN names
     vcn_display_name = "${var.service_label}-VCN"

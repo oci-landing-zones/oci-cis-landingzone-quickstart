@@ -91,7 +91,7 @@ locals {
                           "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
                           "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}"]  
 
-  security_permissions = var.use_existing_tenancy_policies == false ? concat(local.security_tenancy_level_permissions, local.security_topcmp_level_permissions, local.security_cmp_level_permissions) : concat(local.security_topcmp_level_permissions, local.security_cmp_level_permissions)
+  security_permissions = local.use_existing_tenancy_policies == false ? concat(local.security_tenancy_level_permissions, local.security_topcmp_level_permissions, local.security_cmp_level_permissions) : concat(local.security_topcmp_level_permissions, local.security_cmp_level_permissions)
 }
 
 ### Security admin policy
@@ -267,7 +267,7 @@ module "cis_tenancy_auditors" {
 
 ### Auditors policy
 module "cis_tenancy_auditors_policy" {
-  count                 = var.use_existing_tenancy_policies == false ? 1 : 0
+  count                 = local.use_existing_tenancy_policies == false ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
   depends_on            = [module.cis_tenancy_auditors] ### Explicitly declaring dependency on the group module.
@@ -310,7 +310,7 @@ module "cis_tenancy_announcement_readers" {
 
 ### Announcement Readers policy
 module "cis_tenancy_announcement_readers_policy" {
-  count                 = var.use_existing_tenancy_policies == false ? 1 : 0
+  count                 = local.use_existing_tenancy_policies == false ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
   depends_on            = [module.cis_tenancy_announcement_readers] ### Explicitly declaring dependency on the group module.
@@ -339,7 +339,7 @@ module "cis_cred_admins" {
 }
 
 module "cis_cred_admins_policy" {
-  count             = var.use_existing_tenancy_policies == false ? 1 : 0
+  count             = local.use_existing_tenancy_policies == false ? 1 : 0
   source            = "../modules/iam/iam-policy"
   providers         = { oci = oci.home }
   depends_on        = [module.cis_cred_admins] ### Explicitly declaring dependency on the group module.

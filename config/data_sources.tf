@@ -8,7 +8,7 @@ data "oci_identity_tenancy" "this" {
 }
 
 data "oci_identity_compartment" "existing_enclosing_compartment" {
-    id = var.existing_enclosing_compartment_ocid
+    id = var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : local.parent_compartment_id
 }
 
 data "oci_identity_groups" "existing_iam_admin_group" {

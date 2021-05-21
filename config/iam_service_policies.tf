@@ -11,7 +11,7 @@ module "lz_os_management_policies" {
 }
 
 module "lz_cloud_guard_policies" {
-    count = var.use_existing_tenancy_policies == false ? 1 : 0
+    count = local.use_existing_tenancy_policies == false ? 1 : 0
     source = "../modules/iam/iam-policy"
     providers = { oci = oci.home }
     policies = {

@@ -116,10 +116,21 @@ variable "existing_enclosing_compartment_ocid" {
     default = null
     description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
+/*
 variable "use_existing_tenancy_policies" {
     type    = bool
     default = false
     description = "Whether or not required policies have already been created at the root compartment and must just be assigned to the Landing Zone groups. If unchecked, you must be sure the user executing this stack has permissions to create policies in the root compartment."
+}
+*/
+variable "policies_in_root_compartment" {
+    type    = string
+    default = "CREATE"
+    description = "Whether or not required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
+    validation {
+      condition = var.policies_in_root_compartment == "CREATE" || var.policies_in_root_compartment == "USE"
+      error_message = "Invalid value provided for policies_in_root_compartment. Valid values: CREATE or USE."
+  }
 }
 variable "use_existing_iam_groups" {
     type    = bool

@@ -21,6 +21,7 @@ locals {
     parent_compartment_id = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.cis_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
     parent_compartment_name = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
     policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
+    use_existing_tenancy_policies = var.policies_at_root_compartment == "CREATE" ? false : true
 
     # Group names
     security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-SecurityAdmins" : data.oci_identity_groups.existing_security_admin_group.groups[0].name

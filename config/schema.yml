@@ -20,7 +20,7 @@ variableGroups:
 
   - title: "Landing Zone Policies & Groups"
     variables:
-      - "use_existing_tenancy_policies"
+      - "policies_in_root_compartment"
       - "use_existing_iam_groups"
 
   - title: "Existing Groups"
@@ -109,7 +109,7 @@ variables:
       - "USE"
     required: true
     default: "CREATE"
-      
+
   use_existing_iam_groups:
     type: boolean
     title: "Use existing groups?"

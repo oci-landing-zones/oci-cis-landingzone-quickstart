@@ -113,7 +113,7 @@ variable "use_enclosing_compartment" {
 }
 variable "existing_enclosing_compartment_ocid" {
     type    = string
-    default = ""
+    default = null
     description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
 /*

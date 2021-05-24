@@ -35,10 +35,12 @@ locals {
 
     # Policy names
     security_admin_policy_name       = "${var.service_label}-security-admin-policy"
+    security_admin_root_policy_name  = "${var.service_label}-security-admin-root-policy"
     network_admin_policy_name        = "${var.service_label}-network-admin-policy"
     database_admin_policy_name       = "${var.service_label}-database-admin-policy"
     appdev_admin_policy_name         = "${var.service_label}-appdev-admin-policy"
     iam_admin_policy_name            = "${var.service_label}-iam-admin-policy"
+    iam_admin_root_policy_name       = "${var.service_label}-iam-admin-root-policy"
     cred_admin_policy_name           = "${var.service_label}-credential-admin-policy"
     auditor_policy_name              = "${var.service_label}-auditor-policy"
     announcement_reader_policy_name  = "${var.service_label}-announcement-reader-policy"

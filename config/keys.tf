@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-/* ### Creates a vault and multiple keys in the vault.
+### Creates a vault and multiple keys in the vault.
 module "cis_keys" {
     source            = "../modules/vault/keys"
     compartment_id    = module.cis_compartments.compartments[local.security_compartment_name].id
@@ -30,4 +30,4 @@ module "cis_keys_policies" {
             ]
         }
     } 
-} */
+}

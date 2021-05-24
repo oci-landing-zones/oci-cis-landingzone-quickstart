@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "cis_cloud_guard" {
+  count                 = length(data.oci_cloud_guard_targets.root.target_collection) > 0 ? 0 : 1
   depends_on            = [ module.lz_cloud_guard_policies ]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }

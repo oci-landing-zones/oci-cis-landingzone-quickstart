@@ -17,17 +17,17 @@ The following input variables control the *pre-config* module behavior:
 	
 **unique_prefix**: a label that gets prefixed to all default resource names created by the module. It's required.
 	
-**use_existing_provisioning_group**: a boolean flag indicating whether or not to use an existing group for provisioning. If false, the module creates a group. Default value is false.
+**use_existing_provisioning_group**: a boolean flag indicating whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by enclosing_compartment_names variable. Default is false.
 	
-**existing_provisioning_group_name(*)**: the group name to which Landing Zone required provisioning permissions (IAM policy) are granted. If no group name is given, the module assigns a default name and creates the group if use_existing_provisioning_group is false. The IAM policy is created at the root compartment.
+**existing_provisioning_group_name(*)**: The name of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false.
 	
-**enclosing_compartment_name**: A compartment name that will hold the Landing Zone compartments. If no compartment name is given, the module creates the compartment with a default name.
+**enclosing_compartment_names**: The compartment names that will hold the Landing Zone compartments. If no compartment name is given, the module creates one compartment with a default name (<unique_prefix>-top-cmp).
 	
-**existing_enclosing_compartment_parent_ocid**: the parent compartment ocid of the top compartment, indicating where to insert the top compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the top level compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible.
+**existing_enclosing_compartments_parent_ocid**: the parent compartment ocid of the top compartment, indicating where to insert the enclosing compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the enclosing compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible.
 	
-**create_lz_groups**: a boolean flag indicating whether or not to create all Landing Zone groups used for segregation of duties. Default is true. 
+**use_existing_lz_groups**: a boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by enclosing_compartment_names variable. If true, existing group names must be provided and this single set will be able to manage resources in all those compartments. Default is false. 
 
-**create_tenancy_level_policies**: Whether or not tenancy level policies for Landing Zone groups are created. The tenancy administrator has the option of not creating the tenancy level policies. **However, this affects Landing Zone groups to operate at their full capacity**.
+**create_tenancy_level_policies**: Whether or not policies for Landing Zone groups are created at the root compartment. If false, Landing Zone groups will not be able to manage resources at the root compartment level. **Please notice this affects Landing Zone groups to operate at their full capacity**. Default is true.
 
 **existing_iam_admin_group_name**: An existing group name for IAM administrators. Ignored if create_lz_groups is true.
 
@@ -56,11 +56,11 @@ The existing Landing Zone config module has been extended to support this use ca
 	
 The following input variables control the extended config module behavior:
 	
-**enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. Default is false. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**.
+**use_enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. Default is false. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**.
 	
 **existing_enclosing_compartment_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permission.
 	
-**use_existing_tenancy_policies**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create policies at the tenancy level. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true, in which case tenancy level permissions creation is skipped**. Default is false, meaning the Landing Zone will  provision the tenancy level policies as long as the executing user has the required permission.
+**policies_in_root_compartment**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to USE, in which case permissions are not created at the root compartment**. Default is CREATE, meaning the module will provision the policies at the root compartment, as long as the executing user has the required permission.
 
 ## 3 - Ability to reuse existing groups when provisioning the Landing Zone
 

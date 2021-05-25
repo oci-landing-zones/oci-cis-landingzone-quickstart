@@ -2,12 +2,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Getting Object Storage Namespace
-data "oci_objectstorage_namespace" "bucket_namespace" {
+data "oci_objectstorage_namespace" "lz_bucket_namespace" {
     compartment_id = var.tenancy_ocid
 }
 
-module "sch_audit_bucket" {
-    count = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "objectStorage") ? 1 : 0
+module "lz_sch_audit_bucket" {
+    count = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "objectstorage") ? 1 : 0
     source       = "../modules/object-storage/bucket"
     region       = var.region
     tenancy_ocid = var.tenancy_ocid
@@ -20,8 +20,8 @@ module "sch_audit_bucket" {
 }
 
 
-module "sch_vcnFlowLogs_bucket" {
-    count = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "objectStorage") ? 1 : 0
+module "lz_sch_vcnFlowLogs_bucket" {
+    count = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "objectstorage") ? 1 : 0
     source       = "../modules/object-storage/bucket"
     region       = var.region
     tenancy_ocid = var.tenancy_ocid
@@ -34,7 +34,7 @@ module "sch_vcnFlowLogs_bucket" {
 }
 
 
-module "service_connector_hub_audit" {
+module "lz_service_connector_hub_audit" {
     count = (var.create_service_connector_audit  == true ) ? 1 : 0
     source = "../modules/monitoring/service-connector"
     service_connector = {
@@ -42,20 +42,20 @@ module "service_connector_hub_audit" {
         service_connector_display_name = local.sch_audit_display_name
         #service_connector_source_kind = var.service_connector_audit_target
         service_connector_source_kind = "logging"
-        service_connector_state = var.service_connector_audit_state
+        service_connector_state = upper(var.service_connector_audit_state)
         log_sources = [for k, v in module.cis_compartments.compartments : {
             compartment_id = v.id
             log_group_id = "_Audit"
             log_id = ""
         }]
         target = {
-            target_kind = var.service_connector_audit_target
+            target_kind = lower(var.service_connector_audit_target)
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
-            batch_rollover_size_in_mbs = var.service_connector_audit_target == "objectStorage"? var.sch_audit_target_rollover_MBs : null
-            batch_rollover_time_in_ms = var.service_connector_audit_target == "objectStorage"? var.sch_audit_target_rollover_MBs : null
-            object_store_details = var.service_connector_audit_target == "objectStorage" ? {
-                namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
-                bucket_name = module.sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name
+            batch_rollover_size_in_mbs = var.service_connector_audit_target == "objectstorage"? var.sch_audit_target_rollover_MBs : null
+            batch_rollover_time_in_ms = var.service_connector_audit_target == "objectstorage"? var.sch_audit_target_rollover_MBs : null
+            object_store_details = var.service_connector_audit_target == "objectstorage" ? {
+                namespace = data.oci_objectstorage_namespace.lz_bucket_namespace.namespace
+                bucket_name = module.lz_sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name
                 object_name_prefix = var.sch_audit_objStore_objNamePrefix 
             } : null
             stream_id = var.service_connector_audit_target == "streaming"? var.service_connector_audit_target_OCID : null
@@ -64,7 +64,7 @@ module "service_connector_hub_audit" {
     }
 }
 
-module "service_connector_hub_vcnFlowLogs" {
+module "lz_service_connector_hub_vcnFlowLogs" {
     count = (var.create_service_connector_vcnFlowLogs  == true ) ? 1 : 0
     source = "../modules/monitoring/service-connector"
     service_connector = {
@@ -72,20 +72,20 @@ module "service_connector_hub_vcnFlowLogs" {
         service_connector_display_name = local.sch_vcnFlowLogs_display_name
         #service_connector_source_kind = var.service_connector_vcnFlowLogs_target
         service_connector_source_kind = "logging"
-        service_connector_state = var.service_connector_vcnFlowLogs_state
+        service_connector_state = upper(var.service_connector_vcnFlowLogs_state)
         log_sources = [for k, v in module.cis_flow_logs.logs : {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
             log_group_id = module.cis_flow_logs.log_group.id
             log_id = v.id
         }]
         target = {
-            target_kind = var.service_connector_vcnFlowLogs_target
+            target_kind = lower(var.service_connector_vcnFlowLogs_target)
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
-            batch_rollover_size_in_mbs = var.service_connector_vcnFlowLogs_target == "objectStorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
-            batch_rollover_time_in_ms = var.service_connector_vcnFlowLogs_target == "objectStorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
-            object_store_details = var.service_connector_vcnFlowLogs_target == "objectStorage" ? {
-                namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
-                bucket_name = module.sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name
+            batch_rollover_size_in_mbs = var.service_connector_vcnFlowLogs_target == "objectstorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
+            batch_rollover_time_in_ms = var.service_connector_vcnFlowLogs_target == "objectstorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
+            object_store_details = var.service_connector_vcnFlowLogs_target == "objectstorage" ? {
+                namespace = data.oci_objectstorage_namespace.lz_bucket_namespace.namespace
+                bucket_name = module.lz_sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name
                 object_name_prefix = var.sch_vcnFlowLogs_objStore_objNamePrefix 
             } : null
             stream_id = var.service_connector_vcnFlowLogs_target == "streaming"? var.service_connector_vcnFlowLogs_target_OCID : null
@@ -94,11 +94,11 @@ module "service_connector_hub_vcnFlowLogs" {
     }
 }
 
-module "sch_audit_objStore_policy" {
-  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "objectStorage") ? 1 : 0
+module "lz_sch_audit_objStore_policy" {
+  count                 = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "objectstorage") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_audit]
+  depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
       compartment_id         = var.tenancy_ocid
@@ -107,7 +107,7 @@ module "sch_audit_objStore_policy" {
                     <<EOF
                         Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
                         request.principal.type='serviceconnector',
-                        target.bucket.name= '${module.sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name}',
+                        target.bucket.name= '${module.lz_sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name}',
                         request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
                     EOF
                 ]
@@ -115,11 +115,11 @@ module "sch_audit_objStore_policy" {
   }
 }
 
-module "sch_audit_streaming_policy" {
-  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "streaming") ? 1 : 0
+module "lz_sch_audit_streaming_policy" {
+  count                 = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "streaming") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_audit]
+  depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
       compartment_id         = var.tenancy_ocid
@@ -136,11 +136,11 @@ module "sch_audit_streaming_policy" {
   }
 }
 
-module "sch_audit_functions_policy" {
-  count                 = (var.create_service_connector_audit  == true && var.service_connector_audit_target == "functions") ? 1 : 0
+module "lz_sch_audit_functions_policy" {
+  count                 = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "functions") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_audit]
+  depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
       compartment_id         = var.tenancy_ocid
@@ -162,11 +162,11 @@ module "sch_audit_functions_policy" {
   }
 }
 
-module "sch_vcnFlowLogs_objStore_policy" {
-  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "objectStorage") ? 1 : 0
+module "lz_sch_vcnFlowLogs_objStore_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "objectstorage") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
       compartment_id         = var.tenancy_ocid
@@ -175,7 +175,7 @@ module "sch_vcnFlowLogs_objStore_policy" {
                     <<EOF
                         Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
                         request.principal.type='serviceconnector',
-                        target.bucket.name= '${module.sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name}',
+                        target.bucket.name= '${module.lz_sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name}',
                         request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
                     EOF
                 ]
@@ -183,11 +183,11 @@ module "sch_vcnFlowLogs_objStore_policy" {
   }
 }
 
-module "sch_vcnFlowLogs_streaming_policy" {
-  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "streaming") ? 1 : 0
+module "lz_sch_vcnFlowLogs_streaming_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "streaming") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
       compartment_id         = var.tenancy_ocid
@@ -204,11 +204,11 @@ module "sch_vcnFlowLogs_streaming_policy" {
   }
 }
 
-module "sch_vcnFlowLogs_functions_policy" {
-  count                 = (var.create_service_connector_vcnFlowLogs  == true && var.service_connector_vcnFlowLogs_target == "functions") ? 1 : 0
+module "lz_sch_vcnFlowLogs_functions_policy" {
+  count                 = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "functions") ? 1 : 0
   source                = "../modules/iam/iam-policy"
   providers             = { oci = oci.home }
-  depends_on            = [module.service_connector_hub_vcnFlowLogs]
+  depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
       compartment_id         = var.tenancy_ocid

@@ -17,13 +17,13 @@ resource "oci_sch_service_connector" "this" {
         }
     }
     target {
-        kind            = var.service_connector.target.target_kind
+        kind            = lower(var.service_connector.target.target_kind)
         compartment_id     = var.service_connector.target.compartment_id
-        bucket             = var.service_connector.target.target_kind == "objectStorage" ? var.service_connector.target.object_store_details.bucket_name : null
-        object_name_prefix = var.service_connector.target.target_kind == "objectStorage" ? var.service_connector.target.object_store_details.object_name_prefix : null
-        namespace =  var.service_connector.target.target_kind == "objectStorage" ? var.service_connector.target.object_store_details.namespace : null
+        bucket             = var.service_connector.target.target_kind == "objectstorage" ? var.service_connector.target.object_store_details.bucket_name : null
+        object_name_prefix = var.service_connector.target.target_kind == "objectstorage" ? var.service_connector.target.object_store_details.object_name_prefix : null
+        namespace =  var.service_connector.target.target_kind == "objectstorage" ? var.service_connector.target.object_store_details.namespace : null
         stream_id          = var.service_connector.target.target_kind == "streaming" ? var.service_connector.target.stream_id : null
         function_id        = var.service_connector.target.target_kind == "functions" ? var.service_connector.target.function_id : null
     }
-    state  = var.service_connector.service_connector_state
+    state  = upper(var.service_connector.service_connector_state)
 }

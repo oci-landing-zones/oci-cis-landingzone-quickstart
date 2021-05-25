@@ -60,12 +60,12 @@ locals {
     vault_type   = "DEFAULT"
 
     ### Service Connector Hub
-    sch_audit_display_name = "${var.service_label}-SCH-Audit"
-    sch_audit_bucket_name = "${var.service_label}-SCH-Audit-Bucket"
+    sch_audit_display_name = "${var.service_label}-audit-sch"
+    sch_audit_bucket_name = "${var.service_label}-audit-sch-bucket"
     
-    sch_vcnFlowLogs_display_name = "${var.service_label}-SCH-VCNFlowLogs"
-    sch_vcnFlowLogs_bucket_name = "${var.service_label}-SCH-VCNFlowLogs-Bucket"
+    sch_vcnFlowLogs_display_name = "${var.service_label}-vcn-flow-logs-sch"
+    sch_vcnFlowLogs_bucket_name = "${var.service_label}-vcn-flow-logs-sch-bucket"
 
-    sch_audit_policy_name = "${var.service_label}-SCH-Audit-Policy"
-    sch_vcnFlowLogs_policy_name = "${var.service_label}-SCH-VCNFlowLogs-Policy"
+    sch_audit_policy_name = "${var.service_label}-audit-sch-policy"
+    sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
 }

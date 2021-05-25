@@ -132,19 +132,27 @@ variable "cloud_guard_configuration_self_manage_resources" {
 variable "create_service_connector_audit" {
     type = bool
     default = false
-    description = "Create Service Connector Hub for Audit logs"
+    description = "Create Service Connector Hub for Audit logs. This may incur some charges."
 }
 
 variable "service_connector_audit_target" {
     type = string
-    default = "objectStorage"
+    default = "objectstorage"
     description = "Destination for Service Connector Hub for Audit Logs. Valid values are 'objectStorage', 'streaming' and 'functions'. In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below"
+    validation {
+      condition = var.service_connector_audit_target == "objectstorage" || var.service_connector_audit_target == "streaming" || var.service_connector_audit_target == "functions"
+      error_message = "Invalid value provided for service_connector_audit_target. Valid values: objectStorage, streaming, functions."
+    }
 }
 
 variable "service_connector_audit_state" {
     type = string
     default = "INACTIVE"
     description = "State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'"
+    validation {
+      condition = var.service_connector_audit_state == "ACTIVE" || var.service_connector_audit_state == "INACTIVE"
+      error_message = "Invalid value provided for service_connector_audit_target. Valid values: ACTIVE, INACTIVE."
+    }
 }
 
 variable "service_connector_audit_target_OCID" {
@@ -180,19 +188,27 @@ variable "sch_audit_objStore_objNamePrefix" {
 variable "create_service_connector_vcnFlowLogs" {
     type = bool
     default = false
-    description = "Create Service Connector Hub for VCN Flow logs"
+    description = "Create Service Connector Hub for VCN Flow logs. This may incur some charges."
 }
 
 variable "service_connector_vcnFlowLogs_target" {
     type = string
-    default = "objectStorage"
+    default = "objectstorage"
     description = "Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectStorage', 'streaming' and functions. In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below"
+    validation {
+      condition = var.service_connector_vcnFlowLogs_target == "objectstorage" || var.service_connector_vcnFlowLogs_target == "streaming" || var.service_connector_vcnFlowLogs_target == "functions"
+      error_message = "Invalid value provided for service_connector_vcnFlowLogs_target. Valid values: objectStorage, streaming, functions."
+    }
 }
 
 variable "service_connector_vcnFlowLogs_state" {
     type = string
     default = "INACTIVE"
     description = "State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'"
+    validation {
+      condition = var.service_connector_vcnFlowLogs_state == "ACTIVE" || var.service_connector_vcnFlowLogs_state == "INACTIVE"
+      error_message = "Invalid value provided for service_connector_vcnFlowLogs_state. Valid values: ACTIVE, INACTIVE."
+    }
 }
 
 variable "service_connector_vcnFlowLogs_target_OCID" {

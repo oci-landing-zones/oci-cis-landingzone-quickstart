@@ -243,7 +243,7 @@ module "cis_tenancy_auditors_policy" {
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read resource-availability in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to read audit-events in tenancy",
                           "Allow Group ${module.cis_tenancy_auditors.group_name} to use cloud-shell in tenancy",
-                          "Allow Group ${module.cis_tenancy_auditors.group_name} to read vss-family in compartment ${local.security_compartment_name}"]
+                          "Allow Group ${module.cis_tenancy_auditors.group_name} to read vss-family in tenancy"]
     }
   }
 }

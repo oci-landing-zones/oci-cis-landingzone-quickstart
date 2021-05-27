@@ -15,7 +15,8 @@ module "lz_provisioning_tenancy_group_policy" {
                     "Allow group ${each.value.group_name} to read tag-defaults in tenancy",             # ability to check for tag-defaults at the tenancy level
                     "Allow group ${each.value.group_name} to manage cloudevents-rules in tenancy",      # for events: create IAM event rules at the tenancy level 
                     "Allow group ${each.value.group_name} to inspect compartments in tenancy",          # for events: access to resources in compartments to select rules actions
-                    "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy"]     # ability to enable Cloud Guard, which can be done only at the tenancy level
+                    "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy",     # ability to enable Cloud Guard, which can be done only at the tenancy level
+                    "Allow group ${each.value.group_name} to read groups in tenancy"]                   # required for group lookup 
     }
   }
 }

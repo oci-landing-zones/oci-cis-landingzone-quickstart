@@ -55,7 +55,7 @@ variableGroups:
       - "sch_vcnFlowLogs_target_rollover_MBs"
       - "sch_vcnFlowLogs_target_rollover_MSs"
       - "sch_vcnFlowLogs_objStore_objNamePrefix"
-    
+   
   - title: "Hidden Variables"
     visible: false
     variables:
@@ -165,6 +165,7 @@ variables:
     enum:
       - ENABLED
       - DISABLED
+<<<<<<< config/schema.yml
 
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:

@@ -20,6 +20,7 @@ locals {
     }
 }
 module "cis_flow_logs" {
+  depends_on             = [ module.cis_vcn ]  
   source                 = "../modules/monitoring/logs"
   compartment_id         = module.cis_compartments.compartments[local.security_compartment_name].id
   log_group_display_name = "${var.service_label}-FlowLogsGroup"

@@ -1,3 +1,4 @@
+/*****************************************
 resource  "oci_identity_policy" "these" {
     for_each = var.policies
       name           = each.key
@@ -5,3 +6,4 @@ resource  "oci_identity_policy" "these" {
       description    = each.value.description
       statements     = each.value.statements 
 }
+*******************************************/

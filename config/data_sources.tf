@@ -15,7 +15,7 @@ data "oci_identity_groups" "existing_iam_admin_group" {
     compartment_id = var.tenancy_ocid
     filter {
         name = "name"
-        values = [var.existing_iam_admin_group_name,var.existing_cred_admin_group_name]
+        values = [var.existing_iam_admin_group_name]
     }
 }
 

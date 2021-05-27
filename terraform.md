@@ -28,7 +28,6 @@ Variable Name | Description | Required | Default Value
 **network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
 **security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
 **cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
-<<<<<<< terraform.md
 **cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
 **create_service_connector_audit** | whether to create Service Connector Hub for Audit logs | Yes | false
 **service_connector_audit_target** | destination for Service Connector Hub for Audit Logs. Valid values are 'objectStorage', 'streaming' and 'functions' | No | objectStorage

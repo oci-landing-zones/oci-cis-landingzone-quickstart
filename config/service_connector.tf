@@ -7,6 +7,7 @@ data "oci_objectstorage_namespace" "lz_bucket_namespace" {
 }
 
 module "lz_sch_audit_bucket" {
+    depends_on = [ null_resource.slow_down_buckets ]
     count = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "objectstorage") ? 1 : 0
     source       = "../modules/object-storage/bucket"
     region       = var.region
@@ -21,6 +22,7 @@ module "lz_sch_audit_bucket" {
 
 
 module "lz_sch_vcnFlowLogs_bucket" {
+    depends_on = [ null_resource.slow_down_buckets ]
     count = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "objectstorage") ? 1 : 0
     source       = "../modules/object-storage/bucket"
     region       = var.region
@@ -228,4 +230,11 @@ module "lz_sch_vcnFlowLogs_functions_policy" {
                 ]
     }
   }
+}
+
+resource "null_resource" "slow_down_buckets" {
+   depends_on = [ module.cis_keys_policies ]
+   provisioner "local-exec" {
+     command = "sleep 30" # Wait 30 seconds for policies to be available.
+   }
 }

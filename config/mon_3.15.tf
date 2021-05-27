@@ -12,7 +12,6 @@ module "cis_cloud_guard" {
   self_manage_resources = false
   default_target        = {name:local.cg_target_name, type:"COMPARTMENT", id:var.tenancy_ocid} 
 }
-
 ### We've observed that policies, even when created before the bucket, may take some time to be available for consumption. Hence the delay introduced here.
 resource "null_resource" "slow_down_cloud_guard" {
    depends_on = [ module.lz_cloud_guard_policies ]

@@ -17,6 +17,6 @@ module "cis_cloud_guard" {
 resource "null_resource" "slow_down_cloud_guard" {
    depends_on = [ module.lz_cloud_guard_policies ]
    provisioner "local-exec" {
-   command = "sleep 30" # Wait 30 seconds for policies to be available.
- }
+     command = "sleep 30" # Wait 30 seconds for policies to be available.
+   }
 }

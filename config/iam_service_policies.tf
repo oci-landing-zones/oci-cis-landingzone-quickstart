@@ -1,4 +1,5 @@
 module "lz_os_management_policies" {
+    count = local.use_existing_tenancy_policies == false ? 1 : 0
     source = "../modules/iam/iam-policy"
     providers = { oci = oci.home }
     policies = {

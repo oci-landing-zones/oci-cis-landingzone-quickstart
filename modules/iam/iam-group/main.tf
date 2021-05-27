@@ -17,7 +17,7 @@ data "oci_identity_users" "these" {
 }
 ### Add users to group
  resource "oci_identity_user_group_membership" "this" {
-  count = length(data.oci_identity_users.these.users)
+  count = data.oci_identity_users.these.users != null ? length(data.oci_identity_users.these.users) : 0
   user_id  = data.oci_identity_users.these.users[count.index].id
   group_id = oci_identity_group.this.id
 }

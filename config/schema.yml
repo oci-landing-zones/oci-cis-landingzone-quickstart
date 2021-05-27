@@ -165,7 +165,6 @@ variables:
     enum:
       - ENABLED
       - DISABLED
-<<<<<<< config/schema.yml
 
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:

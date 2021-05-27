@@ -61,6 +61,15 @@ locals {
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
 
-    ### Cloud Guard
+    ### Service Connector Hub
+    sch_audit_display_name = "${var.service_label}-audit-sch"
+    sch_audit_bucket_name = "${var.service_label}-audit-sch-bucket"
+    
+    sch_vcnFlowLogs_display_name = "${var.service_label}-vcn-flow-logs-sch"
+    sch_vcnFlowLogs_bucket_name = "${var.service_label}-vcn-flow-logs-sch-bucket"
+
+    sch_audit_policy_name = "${var.service_label}-audit-sch-policy"
+    sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
+
     cg_target_name = "${var.service_label}-cloud-guard-root-target"
 }

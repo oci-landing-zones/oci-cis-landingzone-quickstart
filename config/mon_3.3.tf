@@ -9,13 +9,13 @@ module "cis_security_topic" {
   subscriptions = {
     s1 = {protocol = "EMAIL", endpoint = var.security_admin_email_endpoint},
 
-    ### Examples of other subscription methods. ***ORACLE_FUNCTIONS not yet supported***
+    ### Examples of other subscription methods:
     /* 
     s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
     s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
     s4 = {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
     s5 = {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    s6 = {protocol = "ORACLE_FUNCTIONS", function_compartment_name = "", application_name = "", function_name = ""} 
+    s6 = {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
     */
   }
 }
@@ -29,13 +29,13 @@ module "cis_network_topic" {
   subscriptions = {
     s1 = {protocol = "EMAIL", endpoint = var.network_admin_email_endpoint},
 
-    ### Examples of other subscription methods. ***ORACLE_FUNCTIONS not yet supported***
+    ### Examples of other subscription methods:
     /* 
     s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
     s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
     s4 = {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
     s5 = {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    s6 = {protocol = "ORACLE_FUNCTIONS", function_compartment_name = "", application_name = "", function_name = ""} 
+    s6 = {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
     */
   }
 }

@@ -89,7 +89,7 @@ Variable Name | Description | Required | Default Value
 **sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
 
 ## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
-Input variables used in the config module are all defined in pre-config/variables.tf:
+Input variables used in the pre-config module are all defined in pre-config/variables.tf:
 
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------

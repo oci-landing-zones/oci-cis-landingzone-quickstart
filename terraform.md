@@ -5,7 +5,16 @@ Within the config folder, the Terraform files are named after the use cases they
 
 **Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
 
-## <a name="input_variables"></a>Input Variables
+## Landing Zone Modules
+The Landing Zone terraform is made of two root modules and some children modules. The root modules are under the *config* and *pre-config* folders, while the children modules are under the *modules* folder. Both *config* and *pre-config* use the children modules for resource creation.
+
+The *config* module is responsible for provisioning the Landing Zone resources. It can be executed by a tenancy administrator or a non tenancy administrator. If being executed by a non tenancy administrator, the *pre-config* module must be previously executed by a tenancy administrator to create Landing Zone required resources in the root compartment, like compartments, policies and groups. If the *config* module is being executed by a tenancy administrator, the *pre-config* module does not need to be executed, as the *config* module will be able to create all required resources in the root compartment.
+
+Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
+
+The variables in each root module are described below in [Config Module Input Variables](#config_input_variables) and [Pre-Config Module Input Variables](#pre_config_input_variables).
+
+## <a name="config_input_variables"></a>Config Module Input Variables
 Input variables used in the configuration are all defined in config/variables.tf:
 
 ### <a name="env_variables"></a>Environment Variables
@@ -83,6 +92,27 @@ Variable Name | Description | Required | Default Value
 **sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
 **sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
 **sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
+
+## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**unique_prefix** | a label that gets prefixed to all default resource names created by the module. | Yes | None
+**use_existing_provisioning_group** | a boolean flag indicating whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by *enclosing_compartment_names* variable. | Yes | false
+**existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false | No | None
+**enclosing_compartment_names** | A list of compartment names that will hold the Landing Zone compartments. If no compartment name is given, the module creates one compartment with a default name (*unique_prefix*-top-cmp) | No | "*unique_prefix*-top-cmp"
+**existing_enclosing_compartments_parent_ocid** | the parent compartment ocid of the top compartment, indicating where to insert the enclosing compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the enclosing compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible | No | *tenancy_ocid*	
+**use_existing_lz_groups** | a boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all those compartments | Yes | false 
+**create_tenancy_level_policies** | Whether or not policies for Landing Zone groups are created at the root compartment. If false, Landing Zone groups will not be able to manage resources at the root compartment level. **Please notice this affects Landing Zone groups to operate at their full capacity.** | Yes | true
+**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_lz_groups* is true. | None
+**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_lz_groups* is true. | None
+
+(*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
 
 ## How to Execute the Code Using Terraform CLI
 Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.

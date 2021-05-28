@@ -1,8 +1,13 @@
-# May 2021 Release Notes
+# June 2021 Release Notes
 
-It's May 2021. And we have just rolled out some exciting features in CIS OCI Landing Zone:
+It's June 2021. And we have just rolled out some exciting features in CIS OCI Landing Zone:
 
-## 1 - Ability to provision the Landing Zone with narrower permissions
+1. [Ability to provision the Landing Zone with narrower permissions](#narrower_permissions)
+1. [Ability to provision Landing Zone within an enclosing compartment at any level in the compartment hierarchy](#enclosing_compartment)
+1. [Ability to reuse existing groups when provisioning the Landing Zone](#existing_groups)
+1. [Logging Consolidation with Service Connector Hub](#logging_consolidation)
+
+## <a name="narrower_permissions"></a>1 - Ability to provision the Landing Zone with narrower permissions
 
 Before this release, the Landing Zone required a user with wide permissions in the tenancy in order to be provisioned. Typically, but not necessarily, this user was a member of the *Administrators* group. That has changed. Now the Landing Zone can be provisioned by a user with narrower permissions. However, some pre-requisites need to be satisfied. Specifically, the Landing Zone requires policies created at the tenancy level and broad permissions at the compartment where it is going to be provisioned. 
 
@@ -48,40 +53,16 @@ The following input variables control the *pre-config* module behavior:
 (*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.
 	
 
-## 2 - Ability to provision Landing Zone within an enclosing compartment at any level in the compartment hierarchy
+## <a name="enclosing_compartment"></a>2 - Ability to provision Landing Zone within an enclosing compartment at any level in the compartment hierarchy
 
 This can be done by a *wide-permissioned* user or a *narrower-permissioned* user. If done by the *wide-permissioned* user, the steps described in the previous section MUST be skipped. If done by a *narrower-permissioned* user, the steps in the previous section are required. **A _narrower-permissioned_ user is only allowed to provision the Landing Zone in a enclosing compartment previously designated by a _wide-permissioned_ user.**
 	
-The existing Landing Zone config module has been extended to support this use case. The module keeps backwards compatibility, i.e., the new variables default values keeps the module current behavior unchanged. In other words, if you execute the config module as-is, the four Landing Zone compartments are created directly under the root compartment with all policies created at the root compartment.
+The existing Landing Zone config module has been extended to support this use case. The module keeps backwards compatibility, i.e., the new variables default values keeps the module current behavior unchanged. In other words, if you execute the config module as-is, the four Landing Zone compartments are created directly under the root compartment with all policies created at the root compartment. The module behavior is controlled by variables described in the [Enclosing Compartment Variables section](terraform.md#enc_cmp_variables).
 	
-The following input variables control the extended config module behavior:
-	
-**use_enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. Default is false. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**.
-	
-**existing_enclosing_compartment_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permission.
-	
-**policies_in_root_compartment**: the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to USE, in which case permissions are not created at the root compartment**. Default is CREATE, meaning the module will provision the policies at the root compartment, as long as the executing user has the required permission.
+## <a name="existing_groups"></a>3 - Ability to reuse existing groups when provisioning the Landing Zone
 
-## 3 - Ability to reuse existing groups when provisioning the Landing Zone
+Previously, every Landing Zone execution would create groups. However, it's acknowledged that a customer may want to create multiple Landing Zones but only one set of groups, reusing them across the Landing Zones. The module behavior is controlled by variables described in the [Existing Groups Reuse Variables section](terraform.md#existing_groups_variables).
+	
+## <a name="logging_consolidations"></a>4 - Logging Consolidation with Service Connector Hub
 
-Previously, every Landing Zone execution would create groups. However, it's acknowledged that a customer may want to create multiple Landing Zones but only one set of groups, reusing them across the Landing Zones.
-	
-The following input variables control group reuse behavior in the extended config module:
-	
-**use_existing_iam_groups**: a boolean flag indicating whether or not to reuse pre-existing IAM groups. Default is false, in which case the module MUST be executed with a user with permissions to create IAM groups.
-	
-**iam_admin_group_name**: the pre-existing group to which IAM related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**cred_admin_group_name**: the pre-existing group to which credential related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**security_admin_group_name**: the pre-existing group to which security related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**network_admin_group_name**: the pre-existing group to which network related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**appdev_admin_group_name**: the pre-existing group to which application development related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**database_admin_group_name**: the pre-existing group to which database related admin permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**auditor_group_name**: the pre-existing group to which auditing related permissions are granted to. Ignored if use_existing_iam_groups is false.
-	
-**announcement_readers_group_name**: the pre-existing group to which announcement reading related permissions are granted to. Ignored if use_existing_iam_groups is false.
+The Landing Zone enables/collects logs for a few services, like VCN and Audit services. From a governance perspective, it's interesting that these logs get consolidated and made available to security management tools. This capability is now availabe in the Landing Zone with the Service Connector Hub, that reads logs from different sources and sends them to a target that the user chooses. By default, this target is a bucket in the Object Storage service, but functions and streams can also be configured as targets. As the usage of a bucket, function or stream may incur in costs to our customers, Landing Zone users must explicitly activate Service Connector Hub by setting variables in the Terraform configuration, as described in [Logging Variables section](terraform.md#logging_variables).

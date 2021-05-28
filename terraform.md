@@ -72,17 +72,17 @@ Variable Name | Description | Required | Default Value
 **service_connector_audit_state** | state in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | INACTIVE
 **service_connector_audit_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
 **service_connector_audit_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
-**sch_audit_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for Audit logs. | No | 100
-**sch_audit_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for Audit logs. | No | 420000
-**sch_audit_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for Audit logs. | No | sch-audit
+**sch_audit_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
+**sch_audit_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
+**sch_audit_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | sch-audit
 **create_service_connector_vcnFlowLogs** | whether to create Service Connector Hub for VCN Flow logs. | Yes | false
 **service_connector_vcnFlowLogs_target** | destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | objectStorage
 **service_connector_vcnFlowLogs_state** | state in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | INACTIVE
 **service_connector_vcnFlowLogs_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
 **service_connector_vcnFlowLogs_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs.| No | sch-vcnFlowLogs	
+**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
+**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
+**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | sch-vcnFlowLogs	
 
 ## How to Execute the Code Using Terraform CLI
 Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.

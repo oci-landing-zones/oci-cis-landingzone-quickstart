@@ -41,7 +41,8 @@ module "lz_provisioning_topcmp_group_policy" {
                     "Allow group ${each.value.group_name} to manage keys in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to use key-delegate in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to manage ons-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage vss-family in compartment ${each.key}"]
+                    "Allow group ${each.value.group_name} to manage vss-family in compartment ${each.key}",
+                    "Allow group ${each.value.group_name} to manage orm-family in compartment ${each.key}"]
     }
   }
 }

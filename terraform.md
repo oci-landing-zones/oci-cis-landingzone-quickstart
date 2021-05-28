@@ -10,15 +10,15 @@ The variables in each root module are described below in [Config Module Input Va
 **Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
 
 ## How to Execute the Code Using Terraform CLI
-Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.
+Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
 
-Next, within the *config* folder, execute:
+Next, execute:
 
 	terraform init
 	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
 	terraform apply plan.out
 
-Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and execute:	
+Alternatively, after providing the variable values in *quickstart-input.tfvars*, rename it to *terraform.tfvars* and execute:	
 
 	terraform init
 	terraform plan -out plan.out

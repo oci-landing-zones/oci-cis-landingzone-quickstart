@@ -5,13 +5,11 @@
 ##### They must be provided appropriate values.
 
 tenancy_ocid         = "<tenancy_ocid>"
-user_ocid            = "<tenancy_admin_ocid>"
-fingerprint          = "<tenancy_admin_api_key_fingerprint>"
-private_key_path     = "<path_to_tenancy_admin_private_key_file>"
+user_ocid            = "<user_ocid>"
+fingerprint          = "<user_api_key_fingerprint>"
+private_key_path     = "<path_to_user_private_key_file>"
 private_key_password = ""
-home_region          = "<tenancy_home_region>"
 region               = "<tenancy_region>"
-region_key           = "<3-letter-region-key>"
 service_label        = "<a_label_to_prefix_resource_names_with>"
 
 ### For Networking

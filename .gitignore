@@ -5,6 +5,6 @@
 **/.DS_Store
 **/crash.log
 **/.csv
-private_key.pem
+*.pem
 **/terraform.tfvars
 test/**

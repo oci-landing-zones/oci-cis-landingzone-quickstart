@@ -146,18 +146,6 @@ variable "service_connector_audit_target_cmpt_OCID" {
     description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
 }
 
-variable "sch_audit_target_rollover_MBs" {
-    type = number
-    default = 100
-    description = "Applicable only for objectStorage target type. Target rollover size in MBs for Audit logs"
-}
-
-variable "sch_audit_target_rollover_MSs" {
-    type = number
-    default = 7 * 60 * 1000 // 7 minutes
-    description = "Applicable only for objectStorage target type. Target rollover time in MSs for Audit logs"
-}
-
 variable "sch_audit_objStore_objNamePrefix" {
     type = string
     default = "sch-audit"
@@ -200,18 +188,6 @@ variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
     type =string
     default = ""
     description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
-}
-
-variable "sch_vcnFlowLogs_target_rollover_MBs" {
-    type = number
-    default = 100
-    description = "Applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs"
-}
-
-variable "sch_vcnFlowLogs_target_rollover_MSs" {
-    type = number
-    default = 7 * 60 * 1000 // 7 minutes
-    description = "Applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs"
 }
 
 variable "sch_vcnFlowLogs_objStore_objNamePrefix" {

@@ -179,13 +179,13 @@ variable "service_connector_vcnFlowLogs_state" {
 }
 
 variable "service_connector_vcnFlowLogs_target_OCID" {
-    type =string
+    type = string
     default = ""
     description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
 }
 
 variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
-    type =string
+    type = string
     default = ""
     description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
 }

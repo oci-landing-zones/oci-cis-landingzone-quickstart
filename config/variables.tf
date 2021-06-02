@@ -102,8 +102,8 @@ variable "security_admin_email_endpoint" {
 variable "cloud_guard_configuration_status" {
   default = "ENABLED"
   validation {
-      condition = var.cloud_guard_configuration_status == "ENABLED" || var.cloud_guard_configuration_status == "DISABLED"
-      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
+      condition = contains(["ENABLED","DISABLED"], upper(var.cloud_guard_configuration_status))
+      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values (case insensitive): ENABLED or DISABLED."
   }
 }
 
@@ -194,4 +194,29 @@ variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
     type = string
     default = "sch-vcnFlowLogs"
     description = "Applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs"
+}
+
+# Vulnerability Scanning Service
+variable "vss_create" {
+    description = "Whether or not Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone."
+    type = bool
+    default = true
+}
+variable "vss_scan_schedule" {
+    description = "The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY."
+    type = string
+    default = "WEEKLY"
+    validation {
+        condition = contains(["WEEKLY","DAILY"], upper(var.vss_scan_schedule))
+        error_message = "Invalid value for provided for vss_scan_schedule. Valid values (case insensitive): WEEKLY or DAILY."
+    }
+}
+variable "vss_scan_day" {
+    description = "The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY."
+    type = string
+    default = "SUNDAY"
+    validation {
+        condition = contains(["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"], upper(var.vss_scan_day))
+        error_message = "Invalid value for provided for vss_scan_day. Valid values (case insensitive): SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY."
+    }
 }

@@ -356,9 +356,11 @@ variables:
       - FRIDAY
       - SATURDAY 
     visible:
-      - eq:
-        - vss_scan_schedule
-        - "WEEKLY"
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_scan_schedule
+          - "WEEKLY"
     
   # Variables not required to display to user
   user_ocid:

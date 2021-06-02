@@ -8,45 +8,61 @@ Within the config folder, the Terraform files are named after the use cases they
 ## Input Variables
 Input variables used in the configuration are all defined in config/variables.tf:
 
+### <a name="env_variables"></a>Environment Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console | Yes | None
-**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources | Yes | ""
-**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | ""
-**private_key_path** | the local path to the user private key | Yes | ""
-**private_key_password** | the private key password, if any | No | ""
-**region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None
-**service_label** | a label used as a prefix for naming resources | Yes | None
-**vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
-**public_subnet_cidr** | the public subnet CIDR block | Yes | "10.0.1.0/24"
-**private_subnet_app_cidr** | the App private subnet CIDR block | Yes | "10.0.2.0/24"
-**private_subnet_db_cidr** | the DB private subnet CIDR block | Yes | "10.0.3.0/24"
-**public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet | Yes | None
-**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet | Yes | "0.0.0.0/0"
-**is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN | Yes | false
-**onprem_cidr** | the on-premises CIDR block. Only used if is_vcn_onprem_connected == true | No | "0.0.0.0/0"
-**network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
-**security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
-**cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
-**cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
-**create_service_connector_audit** | whether to create Service Connector Hub for Audit logs | Yes | false
-**service_connector_audit_target** | destination for Service Connector Hub for Audit Logs. Valid values are 'objectStorage', 'streaming' and 'functions' | No | objectStorage
-**service_connector_audit_state** | state in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE' | No | INACTIVE
-**service_connector_audit_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs | No | None
-**service_connector_audit_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs | No | None
-**sch_audit_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for Audit logs | No | 100
-**sch_audit_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for Audit logs | No | 420000
-**sch_audit_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for Audit logs | No | sch-audit
-**create_service_connector_vcnFlowLogs** | whether to create Service Connector Hub for VCN Flow logs | Yes | false
-**service_connector_vcnFlowLogs_target** | destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectStorage', 'streaming' and functions | No | objectStorage
-**service_connector_vcnFlowLogs_state** | state in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE' | No | INACTIVE
-**service_connector_vcnFlowLogs_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs | No | None
-**service_connector_vcnFlowLogs_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs| No | sch-vcnFlowLogs
+**tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console. | Yes | None
+**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources. | Yes | ""
+**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console. | Yes | ""
+**private_key_path** | the local path to the user private key. | Yes | ""
+**private_key_password** | the private key password, if any. | No | ""
+**region** \* | the tenancy region identifier where the Terraform should provision the resources. | Yes | None
+**service_label** | a label used as a prefix for naming resources. | Yes | None
 
-\* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
+\* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm
+
+### <a name="networking_variables"></a>Networking Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
+**public_subnet_cidr** | the public subnet CIDR block. | Yes | "10.0.1.0/24"
+**private_subnet_app_cidr** | the App private subnet CIDR block. | Yes | "10.0.2.0/24"
+**private_subnet_db_cidr** | the DB private subnet CIDR block. | Yes | "10.0.3.0/24"
+**public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet. | Yes | None
+**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet. | Yes | "0.0.0.0/0"
+**is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN. | Yes | false
+**onprem_cidr** | the on-premises CIDR block. Only used if *is_vcn_onprem_connected* is true. | No | "0.0.0.0/0"
+
+### <a name="notification_variables"></a>Notification Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**network_admin_email_endpoint** | an email to receive notifications for network related events. | Yes | None
+**security_admin_email_endpoint** | an email to receive notifications for security related events. | Yes | None
+
+### <a name="cloudguard_variables"></a>Cloud Guard Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**cloud_guard_configuration_status** | whether Cloud Guard is enabled or not. | Yes | ENABLED
+
+### <a name="logging_variables"></a>Logging Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_service_connector_audit** | whether to create Service Connector Hub for Audit logs. | Yes | false
+**service_connector_audit_target** | destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
+**service_connector_audit_state** | state in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
+**service_connector_audit_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
+**service_connector_audit_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
+**sch_audit_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
+**sch_audit_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
+**sch_audit_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
+**create_service_connector_vcnFlowLogs** | whether to create Service Connector Hub for VCN Flow logs. | Yes | false
+**service_connector_vcnFlowLogs_target** | destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
+**service_connector_vcnFlowLogs_state** | state in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
+**service_connector_vcnFlowLogs_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
+**service_connector_vcnFlowLogs_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
+**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
+**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
+**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
 
 ## How to Execute the Code Using Terraform CLI
 Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.

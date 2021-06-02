@@ -48,7 +48,9 @@ security_admin_email_endpoint = "<email_to_receive_security_related_notification
 # service_connector_vcnFlowLogs_target_cmpt_OCID  = ""
 # sch_vcnFlowLogs_objStore_objNamePrefix          = "sch-vcnFlowLogs"
 
-
-
+##### VSS - Vulnerability Scanning Service
+# vss_create                                      = true
+# vss_scan_schedule                               = "WEEKLY"
+# vss_scan_day                                    = "SUNDAY"
 
 

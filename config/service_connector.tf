@@ -53,12 +53,12 @@ module "lz_service_connector_hub_audit" {
         target = {
             target_kind = lower(var.service_connector_audit_target)
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
-            batch_rollover_size_in_mbs = var.service_connector_audit_target == "objectstorage"? var.sch_audit_target_rollover_MBs : null
-            batch_rollover_time_in_ms = var.service_connector_audit_target == "objectstorage"? var.sch_audit_target_rollover_MBs : null
             object_store_details = var.service_connector_audit_target == "objectstorage" ? {
                 namespace = data.oci_objectstorage_namespace.lz_bucket_namespace.namespace
                 bucket_name = module.lz_sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name
-                object_name_prefix = var.sch_audit_objStore_objNamePrefix 
+                object_name_prefix = var.sch_audit_objStore_objNamePrefix
+                batch_rollover_size_in_mbs = local.sch_audit_target_rollover_MBs
+                batch_rollover_time_in_ms = local.sch_audit_target_rollover_MSs
             } : null
             stream_id = var.service_connector_audit_target == "streaming"? var.service_connector_audit_target_OCID : null
             function_id = var.service_connector_audit_target == "functions"? var.service_connector_audit_target_OCID : null
@@ -83,12 +83,12 @@ module "lz_service_connector_hub_vcnFlowLogs" {
         target = {
             target_kind = lower(var.service_connector_vcnFlowLogs_target)
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
-            batch_rollover_size_in_mbs = var.service_connector_vcnFlowLogs_target == "objectstorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
-            batch_rollover_time_in_ms = var.service_connector_vcnFlowLogs_target == "objectstorage"? var.sch_vcnFlowLogs_target_rollover_MBs : null
             object_store_details = var.service_connector_vcnFlowLogs_target == "objectstorage" ? {
                 namespace = data.oci_objectstorage_namespace.lz_bucket_namespace.namespace
                 bucket_name = module.lz_sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name
-                object_name_prefix = var.sch_vcnFlowLogs_objStore_objNamePrefix 
+                object_name_prefix = var.sch_vcnFlowLogs_objStore_objNamePrefix
+                batch_rollover_size_in_mbs = local.sch_vcnFlowLogs_target_rollover_MBs
+                batch_rollover_time_in_ms = local.sch_vcnFlowLogs_target_rollover_MSs
             } : null
             stream_id = var.service_connector_vcnFlowLogs_target == "streaming"? var.service_connector_vcnFlowLogs_target_OCID : null
             function_id = var.service_connector_vcnFlowLogs_target == "functions"? var.service_connector_vcnFlowLogs_target_OCID : null
@@ -110,7 +110,7 @@ module "lz_sch_audit_objStore_policy" {
                         Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
                         request.principal.type='serviceconnector',
                         target.bucket.name= '${module.lz_sch_audit_bucket[0].oci_objectstorage_buckets[local.sch_audit_bucket_name].name}',
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF
                 ]
     }
@@ -131,7 +131,7 @@ module "lz_sch_audit_streaming_policy" {
                         Allow any-user to use stream-push in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
                         request.principal.type='serviceconnector',
                         target.stream.id='${var.service_connector_audit_target_OCID}',
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF
                 ]
     }
@@ -157,7 +157,7 @@ module "lz_sch_audit_functions_policy" {
                     <<EOF2
                         Allow any-user to use fn-invocation in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
                         request.principal.type='serviceconnector',     
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF2
                 ]
     }
@@ -178,7 +178,7 @@ module "lz_sch_vcnFlowLogs_objStore_policy" {
                         Allow any-user to manage objects in compartment id ${module.cis_compartments.compartments[local.security_compartment_name].id} where all {
                         request.principal.type='serviceconnector',
                         target.bucket.name= '${module.lz_sch_vcnFlowLogs_bucket[0].oci_objectstorage_buckets[local.sch_vcnFlowLogs_bucket_name].name}',
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF
                 ]
     }
@@ -199,7 +199,7 @@ module "lz_sch_vcnFlowLogs_streaming_policy" {
                         Allow any-user to use stream-push in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
                         request.principal.type='serviceconnector',
                         target.stream.id='${var.service_connector_vcnFlowLogs_target_OCID}',
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF
                 ]
     }
@@ -225,7 +225,7 @@ module "lz_sch_vcnFlowLogs_functions_policy" {
                     <<EOF2
                         Allow any-user to use fn-invocation in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
                         request.principal.type='serviceconnector',     
-                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}'}
+                        request.principal.compartment.id='${module.cis_compartments.compartments[local.security_compartment_name].id}' }
                     EOF2
                 ]
     }

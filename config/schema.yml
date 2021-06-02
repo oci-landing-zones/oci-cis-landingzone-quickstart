@@ -229,32 +229,6 @@ variables:
             - service_connector_audit_target
             - "functions"
 
-  sch_audit_target_rollover_MBs:
-    type: number
-    required: false
-    title: "Batch Size (MB) for Object Storage Target"
-    description: "Applicable only for objectstorage target type. Target rollover size in MBs for Audit logs"
-    default: 100
-    visible: 
-      and:
-        - ${create_service_connector_audit}
-        - eq:
-          - service_connector_audit_target
-          - "objectstorage"
-
-  sch_audit_target_rollover_MSs:
-    type: number
-    required: false
-    title: "Batch Time (ms) for Object Storage Target"
-    description: "Applicable only for objectstorage target type. Target rollover time in MSs for Audit logs"
-    default: 420000
-    visible: 
-      and:
-        - ${create_service_connector_audit}
-        - eq:
-          - service_connector_audit_target
-          - "objectstorage"
-
   sch_audit_objStore_objNamePrefix:
     type: string
     required: false
@@ -331,32 +305,6 @@ variables:
           - eq:
             - service_connector_vcnFlowLogs_target
             - "functions"
-
-  sch_vcnFlowLogs_target_rollover_MBs:
-    type: number
-    required: false
-    title: "Batch Size (MB) for Object Storage Target"
-    description: "Applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs"
-    default: 100
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
-        - eq:
-          - service_connector_vcnFlowLogs_target
-          - "objectstorage"
-
-  sch_vcnFlowLogs_target_rollover_MSs:
-    type: number
-    required: false
-    title: "Batch Time (ms) for Object Storage Target"
-    description: "Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs"
-    default: 420000
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
-        - eq:
-          - service_connector_vcnFlowLogs_target
-          - "objectstorage"
 
   sch_vcnFlowLogs_objStore_objNamePrefix:
     type: string

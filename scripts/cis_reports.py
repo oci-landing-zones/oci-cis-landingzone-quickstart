@@ -1412,7 +1412,8 @@ class CIS_Report:
 
             # get the file name of the CSV
             
-            file_name =  header + "_" + file_subject + ".csv"
+            file_name =  header + "_" + file_subject
+            file_name = (file_name.replace(" ","_")).replace(".","-")+ ".csv"
             file_path = os.path.join(report_directory, file_name)
 
             

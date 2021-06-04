@@ -5,12 +5,12 @@ output "vcn" {
 
 output "internet_gateway" {
   description = "Internet Gateway information."
-  value       = oci_core_internet_gateway.this
+  value       = length(oci_core_internet_gateway.this) > 0 ? oci_core_internet_gateway.this[0] : null
 }
 
 output "nat_gateway" {
   description = "NAT Gateway information."
-  value       = oci_core_nat_gateway.this
+  value       = length(oci_core_nat_gateway.this) > 0 ? oci_core_nat_gateway.this[0] : null
 }
 
 output "service_gateway" {
@@ -31,13 +31,29 @@ output "subnets" {
     } : null
 }
 
-output "route_tables" {
-  description = "The managed route tables, indexed by display_name."
+output "subnets_route_tables" {
+  description = "The managed subnets_route tables, indexed by display_name."
   value = (oci_core_route_table.these != null && length(oci_core_route_table.these) > 0) ? {
     for rt in oci_core_route_table.these : 
       rt.display_name => rt
     } : null
 }
+
+# output "lpg_route_table" {
+#   description = "The managed LPG route table, indexed by display_name."
+#   value = (oci_core_route_table.lpg != null && length(oci_core_route_table.lpg) > 0) ? {
+#     for rt in oci_core_route_table.lpg : 
+#       rt.display_name => rt
+#     } : null
+# }
+
+# output "drg_route_table" {
+#   description = "The managed DRG route table, indexed by display_name."
+#   value = (oci_core_route_table.drg != null && length(oci_core_route_table.drg) > 0) ? {
+#     for rt in oci_core_route_table.drg : 
+#       rt.display_name => rt
+#     } : null
+# }
 
 output "all_services" {
   description = "All services"

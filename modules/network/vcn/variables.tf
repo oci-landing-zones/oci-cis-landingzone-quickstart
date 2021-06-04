@@ -44,6 +44,31 @@ variable "is_create_drg" {
   type        = bool
 }
 
+variable "is_create_igw" {
+  description = "Whether an IGW and NATGW is created."
+  default     = false
+  type        = bool
+}
+
+
+variable "is_hub_spoke" {
+  description = "Whether a it is a hub and spoke architecture"
+  default     = false
+  type        = bool
+}
+
+variable "is_hub_vcn" {
+  description = "Whether a VCN a Hub or Spoke"
+  default     = false
+  type        = bool
+}
+
+variable "drg_id" {
+  description = "DRGv2 to peer to"
+  default     = null
+  type        = string
+}
+
 variable "subnets" {
   description         = "Parameters for each subnet to be managed."
   type                = map(object({
@@ -64,8 +89,8 @@ variable "subnets" {
   }))  
 }
 
-variable "route_tables" {
-  description = "Parameters for each route table to be managed."
+variable "subnets_route_tables" {
+  description = "Parameters for the subnets route tables."
   type = map(object({
     compartment_id = string
     route_rules    = list(object({

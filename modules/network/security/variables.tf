@@ -10,7 +10,7 @@ variable "default_compartment_id" {
 variable "vcn_id" {
   type        = string
   description = "The VCN id where the Security List(s) should be created."
-  default     = ""
+  default     = null
 }
 
 variable "vcn_cidr" {
@@ -89,95 +89,136 @@ variable "security_lists" {
 }
 
 variable "nsgs" {
+
   type = map(object({
-    compartment_id  = string,
-    defined_tags    = map(string),
-    freeform_tags   = map(string),
-    ingress_rules   = list(object({
-      description   = string,
-      stateless     = bool,
-      protocol      = string,
-      src           = string,
-      # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
-      src_type      = string,
-      src_port      = object({
-        min         = number,
-        max         = number
-      }),
-      dst_port      = object({
-        min         = number,
-        max         = number
-      }),
-      icmp_type     = number,
-      icmp_code     = number
+    ingress_rules = map(object({
+      is_create    = bool
+      description  = string
+      protocol     = string,
+      stateless    = bool,
+      src          = string,
+      src_type     = string,
+      dst_port_min = number,
+      dst_port_max = number,
+      src_port_min = number,
+      src_port_max = number,
+      icmp_type    = number,
+      icmp_code    = number
     })),
-    egress_rules    = list(object({
-      description   = string,
-      stateless     = bool,
-      protocol      = string,
-      dst           = string,
-      # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
-      dst_type      = string,
-      src_port      = object({
-        min         = number,
-        max         = number
-      }),
-      dst_port      = object({
-        min         = number,
-        max         = number
-      }),
-      icmp_type     = number,
-      icmp_code     = number
+    egress_rules = map(object({
+      is_create    = bool
+      description  = string
+      protocol     = string,
+      stateless    = bool,
+      dst          = string,
+      dst_type     = string,
+      dst_port_min = number,
+      dst_port_max = number,
+      src_port_min = number,
+      src_port_max = number,
+      icmp_type    = number,
+      icmp_code    = number
     }))
   }))
   description = "Parameters for customizing Network Security Group(s)."
   default = {}
 }
 
-variable "standalone_nsg_rules" {
-  type = object({
-    ingress_rules   = list(object({
-      nsg_id        = string,
-      description   = string,
-      stateless     = bool,
-      protocol      = string,
-      src           = string,
-      # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
-      src_type      = string,
-      src_port      = object({
-        min         = number,
-        max         = number
-      }),
-      dst_port      = object({
-        min         = number,
-        max         = number
-      }),
-      icmp_type     = number,
-      icmp_code     = number
-    })),
-    egress_rules    = list(object({
-      nsg_id        = string,
-      description   = string,
-      stateless     = bool,
-      protocol      = string,
-      dst           = string,
-      # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
-      dst_type      = string,
-      src_port      = object({
-        min         = number,
-        max         = number
-      }),
-      dst_port      = object({
-        min         = number,
-        max         = number
-      }),
-      icmp_type     = number,
-      icmp_code     = number
-    }))
-  })
-  description = "Any standalone NSG rules that should be added (whether or not the NSG is defined here)."
-  default = {
-    ingress_rules: [], 
-    egress_rules: []
-  }
-}
+
+############
+# Old Code
+############
+# variable "nsgs" {
+#   type = map(object({
+#     compartment_id  = string,
+#     # vcn_id          = string,
+#     defined_tags    = map(string),
+#     freeform_tags   = map(string),
+#     ingress_rules   = list(object({
+#       description   = string,
+#       stateless     = bool,
+#       protocol      = string,
+#       src           = string,
+#       # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
+#       src_type      = string,
+#       src_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       dst_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       icmp_type     = number,
+#       icmp_code     = number
+#     })),
+#     egress_rules    = list(object({
+#       description   = string,
+#       stateless     = bool,
+#       protocol      = string,
+#       dst           = string,
+#       # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
+#       dst_type      = string,
+#       src_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       dst_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       icmp_type     = number,
+#       icmp_code     = number
+#     }))
+#   }))
+#   description = "Parameters for customizing Network Security Group(s)."
+#   default = {}
+# }
+
+# variable "standalone_nsg_rules" {
+#   type = object({
+#     ingress_rules   = list(object({
+#       nsg_id        = string,
+#       description   = string,
+#       stateless     = bool,
+#       protocol      = string,
+#       src           = string,
+#       # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
+#       src_type      = string,
+#       src_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       dst_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       icmp_type     = number,
+#       icmp_code     = number
+#     })),
+#     egress_rules    = list(object({
+#       nsg_id        = string,
+#       description   = string,
+#       stateless     = bool,
+#       protocol      = string,
+#       dst           = string,
+#       # Allowed values: CIDR_BLOCK, SERVICE_CIDR_BLOCK, NETWORK_SECURITY_GROUP, NSG_NAME
+#       dst_type      = string,
+#       src_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       dst_port      = object({
+#         min         = number,
+#         max         = number
+#       }),
+#       icmp_type     = number,
+#       icmp_code     = number
+#     }))
+#   })
+#   description = "Any standalone NSG rules that should be added (whether or not the NSG is defined here)."
+#   default = {
+#     ingress_rules: [], 
+#     egress_rules: []
+#   }
+# }

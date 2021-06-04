@@ -208,7 +208,8 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Written by Josh Hammer & Andre Correa, updated April 22, 2021.")
+        print("Written by Josh Hammer & Andre Correa, updated June 4, 2021.")
+        print("oci-python-sdk version 2.39.0")
         print("Starts at " + self.start_time_str )
         self.__config = config
         self.__signer = signer
@@ -568,7 +569,7 @@ class CIS_Report:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     nsgs_data = oci.pagination.list_call_get_all_results(
                             self.__network.list_network_security_groups,
-                            compartment.id
+                            compartment_id=compartment.id
                         ).data
                     # Looping through NSGs to to get 
                     for nsg in nsgs_data:
@@ -1411,7 +1412,8 @@ class CIS_Report:
 
             # get the file name of the CSV
             
-            file_name =  header + "_" + file_subject + ".csv"
+            file_name =  header + "_" + file_subject
+            file_name = (file_name.replace(" ","_")).replace(".","-")+ ".csv"
             file_path = os.path.join(report_directory, file_name)
 
             

@@ -14,8 +14,10 @@ module "cis_vcn" {
   vcn_cidr             = var.vcn_cidr
   vcn_dns_label        = var.service_label
   service_label        = var.service_label
-  service_gateway_cidr = local.valid_service_gateway_cidrs[1]
-  is_create_drg        = tobool(var.is_vcn_onprem_connected)
+  service_gateway_cidr = local.valid_service_gateway_cidrs[0]
+  is_create_drg        = tobool(var.is_vcn_onprem_connected) == true || var.hub_spoke_architecture == true ? true : false
+  is_create_igw        = var.hub_spoke_architecture ? false : ( !var.no_internet_access == true ? true : false )
+  is_hub_spoke         = var.hub_spoke_architecture
 
   subnets = {
     (local.public_subnet_name) = {
@@ -27,11 +29,11 @@ module "cis_vcn" {
       cidr_len          = null
       cidr_num          = null
       enable_dns        = true
-      dns_label         = "public"
-      private           = false
+      dns_label         = "web"
+      private           = var.hub_spoke_architecture || var.no_internet_access ? true : false
       ad                = null
       dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.public_subnet_route_table_name].id
+      route_table_id    = module.cis_vcn.subnets_route_tables[local.public_subnet_route_table_name].id
       security_list_ids = [module.cis_security_lists.security_lists[local.public_subnet_security_list_name].id]
     }, 
     (local.private_subnet_app_name) = {
@@ -43,11 +45,11 @@ module "cis_vcn" {
       cidr_len          = null
       cidr_num          = null
       enable_dns        = true
-      dns_label         = "appsubnet"
+      dns_label         = "app"
       private           = true
       ad                = null
       dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_app_route_table_name].id
+      route_table_id    = module.cis_vcn.subnets_route_tables[local.private_subnet_app_route_table_name].id
       security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_app_security_list_name].id]
     },
     (local.private_subnet_db_name) = {
@@ -59,26 +61,44 @@ module "cis_vcn" {
       cidr_len          = null
       cidr_num          = null
       enable_dns        = true
-      dns_label         = "dbsubnet"
+      dns_label         = "db"
       private           = true
       ad                = null
       dhcp_options_id   = null
-      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_db_route_table_name].id
+      route_table_id    = module.cis_vcn.subnets_route_tables[local.private_subnet_db_route_table_name].id
       security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_db_security_list_name].id]
     }
   }
 
-  route_tables         = {
+  subnets_route_tables         = {
     (local.public_subnet_route_table_name) = {
       compartment_id = null
       route_rules = [{
-          is_create         = true
-          destination       = local.anywhere
-          destination_type  = "CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.internet_gateway.id
+          is_create         = var.hub_spoke_architecture || var.no_internet_access ? true : false
+          destination       = local.valid_service_gateway_cidrs[0]
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.service_gateway.id
         },
         {
-          is_create         = tobool(var.is_vcn_onprem_connected)
+          is_create         = !var.hub_spoke_architecture && !var.no_internet_access ? true : false
+          destination       = local.valid_service_gateway_cidrs[1]
+          destination_type  = "SERVICE_CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.service_gateway.id
+        },
+        {
+          is_create         = var.hub_spoke_architecture
+          destination       = local.anywhere
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.drg != null ? module.cis_vcn.drg.id : null
+        },
+        {
+          is_create         = !var.hub_spoke_architecture && !var.no_internet_access ? true : false
+          destination       = local.anywhere
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.internet_gateway != null ? module.cis_vcn.internet_gateway.id : null 
+        },
+        {
+          is_create         = tobool(var.is_vcn_onprem_connected) == true && !var.hub_spoke_architecture == true ? true : false 
           destination       = var.onprem_cidr
           destination_type  = "CIDR_BLOCK"
           network_entity_id = module.cis_vcn.drg != null ? module.cis_vcn.drg.id : null
@@ -89,15 +109,27 @@ module "cis_vcn" {
       compartment_id = null
       route_rules = [{
           is_create         = true
-          destination       = local.valid_service_gateway_cidrs[1]
+          destination       = local.valid_service_gateway_cidrs[0]
           destination_type  = "SERVICE_CIDR_BLOCK"
           network_entity_id = module.cis_vcn.service_gateway.id
         },
         {
-          is_create         = true
+          is_create         = !var.hub_spoke_architecture && !var.no_internet_access ? true : false
           destination       = local.anywhere
           destination_type  = "CIDR_BLOCK"
-          network_entity_id = module.cis_vcn.nat_gateway.id
+          network_entity_id = module.cis_vcn.nat_gateway != null ? module.cis_vcn.nat_gateway.id : null 
+        },
+        {
+          is_create         = var.hub_spoke_architecture
+          destination       = local.anywhere
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.drg != null ? module.cis_vcn.drg.id : null
+        },
+        {
+          is_create         = tobool(var.is_vcn_onprem_connected) == true && var.hub_spoke_architecture != true ? true : false 
+          destination       = var.onprem_cidr
+          destination_type  = "CIDR_BLOCK"
+          network_entity_id = module.cis_vcn.drg != null ? module.cis_vcn.drg.id : null
         }
       ]
     },
@@ -105,7 +137,7 @@ module "cis_vcn" {
       compartment_id = null
       route_rules = [{
           is_create         = true
-          destination       = local.valid_service_gateway_cidrs[1]
+          destination       = local.valid_service_gateway_cidrs[0]
           destination_type  = "SERVICE_CIDR_BLOCK"
           network_entity_id = module.cis_vcn.service_gateway.id
         }

@@ -64,7 +64,7 @@ Variable Name | Description | Required | Default Value
 **sch_vcnFlowLogs_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
 **sch_vcnFlowLogs_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
 
-### <a name="scanning_variables"></a>Scanning Variables
+### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true

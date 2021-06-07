@@ -20,9 +20,6 @@ resource "oci_core_internet_gateway" "this" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.this.id
   display_name   = "${var.service_label}-Internet-Gateway"
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ### NAT Gateway
@@ -33,9 +30,6 @@ resource "oci_core_nat_gateway" "this" {
   vcn_id         = oci_core_vcn.this.id
 
   block_traffic = var.block_nat_traffic
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ### Service Gateway
@@ -46,9 +40,6 @@ resource "oci_core_service_gateway" "this" {
   services {
     service_id = local.osn_cidrs[var.service_gateway_cidr]
   }
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ### DRG - Dynamic Routing Gateway
@@ -56,9 +47,7 @@ resource "oci_core_drg" "this" {
   count          = var.is_create_drg == true ? 1 : 0
   compartment_id = var.compartment_id
   display_name   = "${var.service_label}-DRG"
-  lifecycle {
-    create_before_destroy = true
-  }
+
 }
 
 ### DRG attachment to VCN
@@ -67,15 +56,11 @@ resource "oci_core_drg_attachment" "this" {
   drg_id       = var.is_create_drg == true ? oci_core_drg.this[0].id : var.drg_id
   display_name = "${var.service_label}-${var.vcn_display_name}-DRG-Attachment"
   vcn_id       = oci_core_vcn.this.id
-  
   # network_details {
   #   id             = oci_core_vcn.this.id
   #   route_table_id = null
   #   type           = "VCN"
   # }
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ### Subnets
@@ -115,7 +100,4 @@ resource "oci_core_route_table" "these" {
       network_entity_id = rule.value.ntwk_entity_id
     }
   }
-  lifecycle {
-      create_before_destroy = true
-    }
 }

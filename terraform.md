@@ -64,6 +64,13 @@ Variable Name | Description | Required | Default Value
 **sch_vcnFlowLogs_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
 **sch_vcnFlowLogs_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
 
+### <a name="vss_variables"></a>Scanning Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true
+**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | Yes | WEEKLY
+**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | Yes | SUNDAY
+
 ## How to Execute the Code Using Terraform CLI
 Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.
 
@@ -136,7 +143,7 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 	- For the **Working Directory**, select the 'config' folder.	 
 3. In **Name**, give the stack a name or accept the default.
 4. In **Create in Compartment** dropdown, select the compartment to store the stack.
-5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+5. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
 ![GitLab Stack](images/GitLabStack.png)
 

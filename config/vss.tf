@@ -4,6 +4,7 @@
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
 module "cis_scanning" {
     source       = "../modules/security/vss"
+    depends_on   = [ null_resource.slow_down_vss ]
     scan_recipes = var.vss_create == true ? {
         (local.scan_default_recipe_name) = {
             compartment_id = module.cis_compartments.compartments[local.security_compartment_name].id
@@ -59,4 +60,11 @@ module "cis_scanning" {
             defined_tags = null
         }
     } : {}
+}
+
+resource "null_resource" "slow_down_vss" {
+   depends_on = [ module.lz_vss_policies ]
+   provisioner "local-exec" {
+     command = "sleep 30" # Wait 30 seconds for policies to be available.
+   }
 }

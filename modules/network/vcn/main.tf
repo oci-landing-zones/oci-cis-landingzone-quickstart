@@ -20,6 +20,9 @@ resource "oci_core_internet_gateway" "this" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.this.id
   display_name   = "${var.service_label}-Internet-Gateway"
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ### NAT Gateway
@@ -30,6 +33,10 @@ resource "oci_core_nat_gateway" "this" {
   vcn_id         = oci_core_vcn.this.id
 
   block_traffic = var.block_nat_traffic
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ### Service Gateway

@@ -53,7 +53,7 @@ module "cis_dmz_vcn" {
       ad                = null
       dhcp_options_id   = null
       route_table_id    = module.cis_dmz_vcn[0].subnets_route_tables[local.dmz_services_subnet_route_table_name].id
-      security_list_ids = [module.cis_dmz_security_lists[0].security_lists[local.dmz_services_security_list_name].id]
+      security_list_ids = [module.cis_dmz_security_lists[0].security_lists[local.dmz_services_subnet_security_list_name].id]
     }
   }
 
@@ -140,56 +140,3 @@ module "cis_dmz_vcn" {
     }
   }
 }
-
-#   hub_drg_route_table = {
-#     (local.dmz_drg_route_table_name) = {
-#       compartment_id = null
-#       vcn_id = null 
-#       route_rules =[{
-#         is_create = tobool(var.is_vcn_onprem_connected)
-#         destination       = var.vcn_cidr
-#         destination_type  = "CIDR_BLOCK"
-#         network_entity_id = module.cis_dmz_vcn[0].lpgs[0]
-#         },        
-#         {
-#           is_create         = tobool(var.is_vcn_onprem_connected)
-#           destination       = var.spoke2_vcn_cidr
-#           destination_type  = "CIDR_BLOCK"
-#           network_entity_id = module.cis_dmz_vcn[0].lpgs[1]
-#         }
-#       ]
-#     }
-#   }
-
-#   hub_lpg_route_table = {
-#     (local.dmz_lpg_route_table_name) = {
-#       compartment_id = null
-#       vcn_id = null 
-#       route_rules =[{
-#           is_create         = tobool(var.is_vcn_onprem_connected)
-#           destination       = var.onprem_cidr
-#           destination_type  = "CIDR_BLOCK"
-#           network_entity_id = module.cis_dmz_vcn[0].drg != null ? module.cis_dmz_vcn[0].drg.id : null
-#         }
-#       ]
-#     }
-#   }
-
-# }
-
-# resource "oci_core_route_table" "lpg-route-tables" {
-#   count = tobool(var.is_vcn_onprem_connected) == true && var.hub_spoke_architecture ? 1 : 0
-#   for_each = toset( module.cis_dmz_vcn[0].lpgs)
-
-#     display_name = var.route_table_display_name
-#     compartment_id = module.cis_compartments.compartments[local.network_compartment_name].id
-#     vcn_id = module.cis_dmz_vcn[0].id
-
-#     route_rules {
-#         #LPG to On-Premises
-#         network_entity_id = module.cis_dmz_vcn[0].drg[0].id
-#         cidr_block = var.onprem_cidr
-#         destination_type  = "CIDR_BLOCK"
-#         description = "Traffic from Spoke to on-premises"
-#     }
-#}

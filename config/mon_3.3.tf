@@ -9,7 +9,7 @@ module "cis_security_topic" {
   subscriptions = {
     s1 = {protocol = "EMAIL", endpoint = var.security_admin_email_endpoint},
 
-    ### Examples of other subscription methods
+    ### Examples of other subscription methods:
     /* 
     s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
     s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
@@ -29,7 +29,7 @@ module "cis_network_topic" {
   subscriptions = {
     s1 = {protocol = "EMAIL", endpoint = var.network_admin_email_endpoint},
 
-    ### Examples of other subscription methods
+    ### Examples of other subscription methods:
     /* 
     s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
     s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}

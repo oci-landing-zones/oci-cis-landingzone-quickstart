@@ -60,22 +60,29 @@ Variable Name | Description | Required | Default Value
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**create_service_connector_audit** | whether to create Service Connector Hub for Audit logs. | Yes | false
-**service_connector_audit_target** | destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_audit_state** | state in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_audit_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
-**service_connector_audit_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
-**sch_audit_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
-**sch_audit_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
-**sch_audit_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
-**create_service_connector_vcnFlowLogs** | whether to create Service Connector Hub for VCN Flow logs. | Yes | false
-**service_connector_vcnFlowLogs_target** | destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_vcnFlowLogs_state** | state in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_vcnFlowLogs_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**service_connector_vcnFlowLogs_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
+**create_service_connector_audit** | Whether to create Service Connector Hub for Audit logs. | Yes | false
+**service_connector_audit_target** | Destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
+**service_connector_audit_state** | State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
+**service_connector_audit_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
+**service_connector_audit_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
+**sch_audit_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
+**sch_audit_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
+**sch_audit_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
+**create_service_connector_vcnFlowLogs** | Whether to create Service Connector Hub for VCN Flow logs. | Yes | false
+**service_connector_vcnFlowLogs_target** | Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
+**service_connector_vcnFlowLogs_state** | State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
+**service_connector_vcnFlowLogs_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
+**service_connector_vcnFlowLogs_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
+**sch_vcnFlowLogs_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
+**sch_vcnFlowLogs_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
+**sch_vcnFlowLogs_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
+
+### <a name="vss_variables"></a>Scanning Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true
+**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | Yes | "WEEKLY"
+**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | Yes | "SUNDAY"
 
 ## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
 Input variables used in the pre-config module are all defined in pre-config/variables.tf:

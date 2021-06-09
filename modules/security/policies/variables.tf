@@ -1,3 +1,4 @@
+/**************************************
 variable "policies" {
   type = map(object({
     compartment_id = string  
@@ -5,3 +6,4 @@ variable "policies" {
     statements     = list(string)
   }))
 }
+**************************************/

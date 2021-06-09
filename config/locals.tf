@@ -84,4 +84,28 @@ locals {
     bucket_name  = "${var.service_label}-bucket"
     vault_name   = "${var.service_label}-vault"
     vault_type   = "DEFAULT"
+
+    ### Service Connector Hub
+    sch_audit_display_name = "${var.service_label}-audit-sch"
+    sch_audit_bucket_name = "${var.service_label}-audit-sch-bucket"
+    sch_audit_target_rollover_MBs = 100
+    sch_audit_target_rollover_MSs = 420000
+    
+    sch_vcnFlowLogs_display_name = "${var.service_label}-vcn-flow-logs-sch"
+    sch_vcnFlowLogs_bucket_name = "${var.service_label}-vcn-flow-logs-sch-bucket"
+    sch_vcnFlowLogs_target_rollover_MBs = 100
+    sch_vcnFlowLogs_target_rollover_MSs = 420000
+
+    sch_audit_policy_name = "${var.service_label}-audit-sch-policy"
+    sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
+
+    cg_target_name = "${var.service_label}-cloud-guard-root-target"
+    
+    ### Scanning
+    scan_default_recipe_name    = "${var.service_label}-default-scan-recipe"
+    security_cmp_target_name    = "${local.security_compartment_name}-scan-target"
+    network_cmp_target_name     = "${local.network_compartment_name}-scan-target"
+    appdev_cmp_target_name      = "${local.appdev_compartment_name}-scan-target"
+    database_cmp_target_name    = "${local.database_compartment_name}-scan-target"
+
 }

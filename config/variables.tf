@@ -220,8 +220,8 @@ variable "security_admin_email_endpoint" {
 variable "cloud_guard_configuration_status" {
   default = "ENABLED"
   validation {
-      condition = var.cloud_guard_configuration_status == "ENABLED" || var.cloud_guard_configuration_status == "DISABLED"
-      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
+      condition = contains(["ENABLED","DISABLED"], upper(var.cloud_guard_configuration_status))
+      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values (case insensitive): ENABLED or DISABLED."
   }
 }
 

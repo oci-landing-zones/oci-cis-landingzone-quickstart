@@ -73,14 +73,7 @@ module "cis_dmz_security_lists" {
   default_security_list_id = module.cis_dmz_vcn[0].vcn.default_security_list_id
 
   security_lists = {
-    (local.dmz_bastion_subnet_security_list_name) = {
-      compartment_id = null
-      defined_tags   = null
-      freeform_tags  = null
-      ingress_rules  = null
-      egress_rules   = null
-    },
-    (local.dmz_services_subnet_security_list_name) = {
+    (local.dmz_vcn_security_list_name) = {
       compartment_id = null
       defined_tags   = null
       freeform_tags  = null

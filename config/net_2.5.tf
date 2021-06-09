@@ -12,7 +12,7 @@ resource "oci_core_default_security_list" "default_security_list" {
     icmp_options {
       type = 3
       code = 4
-      }
+    }
   }
   ingress_security_rules {
     protocol  = "1"
@@ -21,6 +21,53 @@ resource "oci_core_default_security_list" "default_security_list" {
     icmp_options {
       type = 3
       code = null
-      }
+    }
+  }
+}
+
+resource "oci_core_default_security_list" "hub_default_security_list" {
+  count                      = var.hub_spoke_architecture == true ? 1 : 0
+  manage_default_resource_id = module.cis_dmz_vcn[0].vcn.default_security_list_id
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = local.anywhere
+    icmp_options {
+      type = 3
+      code = 4
+    }
+  }
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = var.hub_vcn_cidr
+    icmp_options {
+      type = 3
+      code = null
+    }
+  }
+}
+
+
+resource "oci_core_default_security_list" "spoke2_default_security_list" {
+  count                      = var.hub_spoke_architecture == true ? 1 : 0
+  manage_default_resource_id = module.cis_spoke2_vcn[0].vcn.default_security_list_id
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = local.anywhere
+    icmp_options {
+      type = 3
+      code = 4
+    }
+  }
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = var.spoke2_vcn_cidr
+    icmp_options {
+      type = 3
+      code = null
+    }
   }
 }

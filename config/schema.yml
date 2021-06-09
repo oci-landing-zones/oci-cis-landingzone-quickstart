@@ -597,8 +597,8 @@ variables:
         - eq:
           - vss_scan_schedule
           - "WEEKLY"
-
-  # Variables not required to display to user
+  
+          # Variables not required to display to user
   user_ocid:
     type: string
 

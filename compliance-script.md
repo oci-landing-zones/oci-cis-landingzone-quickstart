@@ -2,7 +2,7 @@
 ### Overview
 The Compliance Checking script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. 
 
-The script is located under the *reports* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with current day's date ex. ```2020-12-08```. 
+The script is located under the *scripts* folder in this repository. It outputs a summmary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with current day's date ex. ```2020-12-08```. 
 
 Using --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder(default location) with current day's date ex. ```2020-12-08```.
 
@@ -14,19 +14,20 @@ Using --report-directory ```<directory-name>``` the reports will be copied to th
 
 1. [Setup and Prerequisites](https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs) 
 
-2. Download cis_reports.py: [https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py)
+2. Download cis_reports.py: [https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
 
 3. Run
 ```
+pip3 install oci
 python3 cis_reports.py --output-to-bucket 'my-example-bucket-1' -t <Profile_Name>
 ```
 where ```<Profile_Name>``` is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
 
 	[the_profile_name]
-	tenancy=ocid1.tenancy.oc1..aaaaaaaagfqbe4notarealocidreallygzinrxt6h6hfshjokfgfi5nzquxmfpzkyq
+	tenancy=<tenancy_ocid>
 	region=us-ashburn-1
-	user=ocid1.user.oc1..aaaaaaaaltwx45wllv52qqxk7inotarealocidreallyo76gboofpbzlgmihq
-	fingerprint=c8:91:41:8p:65:56:68:02:2e:54:80:kk:36:76:69:39
+	user=<user_ocid>
+	fingerprint=<api_key_finger_print>
 	key_file=/path_to_my_private_key_file.pem
 
 #### Executing using Cloud Shell:
@@ -38,7 +39,7 @@ pip3 install oci
 ```
 2. Run
 ```
-wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/reports/cis_reports.py
+wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 ```
 3. Run
 ```

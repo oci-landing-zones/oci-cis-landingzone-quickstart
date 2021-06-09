@@ -3,7 +3,7 @@
 
 ### Creates a bucket in the specified compartment 
 module "cis_buckets" {
-    depends_on   = [ module.cis_keys_policies ]
+    depends_on   = [ null_resource.slow_down_oss ]
     source       = "../modules/object-storage/bucket"
     region       = var.region
     tenancy_ocid = var.tenancy_ocid
@@ -14,3 +14,12 @@ module "cis_buckets" {
         }
     }
 }
+
+### We've observed that policies, even when created before the bucket, may take some time to be available for consumption. Hence the delay introduced here.
+resource "null_resource" "slow_down_oss" {
+   depends_on = [ module.cis_keys_policies ]
+   provisioner "local-exec" {
+     command = "sleep 30" # Wait 30 seconds for policies to be available.
+   }
+}
+

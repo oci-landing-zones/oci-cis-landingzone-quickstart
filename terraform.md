@@ -26,40 +26,40 @@ Alternatively, after providing the variable values in *quickstart-input.tfvars*,
 
 ## How to Execute the Code Using OCI Resource Manager
 There are a few different ways of running Terraform code in OCI Resource Manager (ORM). Here we describe two of them: 
-- creating an ORM stack by uploading a folder to ORM;
+- creating an ORM stack by uploading a zip file to ORM;
 - creating an ORM stack by integrating with GitLab. 
 
 A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not be contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
-### Stack from Folder
-Create a folder in your local computer (name it say 'cis-oci') and paste there the config and modules folders from this project. 
+### Stack from Zip File
+Download this repository as a .zip file, by expanding the Code button in the repository home page and choosing the "Download ZIP" option.
 
-Using OCI Console, navigate to Resource Manager service page and create a stack based on a folder. In the **Create Stack** page:
+![Zip Download](images/ZipDownload.png)
+
+Using OCI Console, navigate to Resource Manager service page and create a stack based on a .zip file. In the **Create Stack** page:
 1. Select **My Configuration** option as the origin of the Terraform configuration.
-2. In the **Stack Configuration** area, select the **Folder** option and upload the folder containing both config and modules folder ('cis-oci' in this example).
+2. In the **Stack Configuration** area, select the **.Zip file** option and upload the .zip file downloaded in the previous step.
 
-![Folder Stack](images/FolderStack_1.png)
+![Folder Stack](images/ZipStack_1.png)
 
-3. In **Working Directory**, select the config folder ('cis-oci/config' in this example) .
+3. In **Working Directory**, make sure the config folder is selected.
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
-6. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+6. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
-![Folder Stack](images/FolderStack_2.png)
+![Folder Stack](images/ZipStack_2.png)
 
 Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for the variables description. 
 
-Notice that *TENANCY_OCID* and *REGION* have default values. They are automatically picked by ORM based on the executing context. The other values used by the OCI provider, *USER_OCID*, *FINGERPRINT*, *PRIVATE_KEY_PATH* and *PRIVATE_KEY_PASSWORD*, marked as optional, must be left blank, as ORM executes with the privileges of the connected user.
+Some variables, like *VCN CIDR Block* for instance, are defaulted in the configuration's variables.tf file and must be reviewed and reassigned values as needed.
 
-The other defaulted variables, like *VCN_CIDR*, for instance, have their values picked from the stack's variables.tf file and must be reviewed and assigned values as needed.
-
-![Folder Stack](images/FolderStack_3.png)
+![Folder Stack](images/ZipStack_3.png)
 
 Once variable values are provided, click Next, review stack values and create the stack. 
 
-Next, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
+In the Stack page use the appropriate buttons to plan/apply/destroy your stack.
 
 ![Run Stack](images/RunStack.png)
 
@@ -68,7 +68,7 @@ Next, navigate to the stack page and use the **Terraform Actions** button to pla
 
 Using OCI Console, navigate to Resource Manager service page and create a connection to your GitLab instance.
 
-In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**. 
+In the **Configuration Source Providers** page, provide the required connection details to your GitLab, including the **GitLab URL** and your GitLab **Personal Access Token**.
 
 ![GitLab Connection](images/GitLabConnection.png)
 
@@ -81,7 +81,7 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 	- For the **Working Directory**, select the 'config' folder.	 
 3. In **Name**, give the stack a name or accept the default.
 4. In **Create in Compartment** dropdown, select the compartment to store the stack.
-5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+5. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
 ![GitLab Stack](images/GitLabStack.png)
 

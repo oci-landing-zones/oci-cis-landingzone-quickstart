@@ -64,3 +64,54 @@ module "cis_security_lists" {
     } 
   }
 }  
+
+module "cis_dmz_security_lists" {
+  count                  = var.hub_spoke_architecture == true ? 1 : 0
+  source                   = "../modules/network/security"
+  default_compartment_id   = module.cis_compartments.compartments[local.network_compartment_name].id
+  vcn_id                   = module.cis_dmz_vcn[0].vcn.id
+  default_security_list_id = module.cis_dmz_vcn[0].vcn.default_security_list_id
+
+  security_lists = {
+    (local.dmz_bastion_subnet_security_list_name) = {
+      compartment_id = null
+      defined_tags   = null
+      freeform_tags  = null
+      ingress_rules  = null
+      egress_rules   = null
+    },
+    (local.dmz_services_subnet_security_list_name) = {
+      compartment_id = null
+      defined_tags   = null
+      freeform_tags  = null
+      ingress_rules  = null
+      egress_rules   = null
+    }
+  }
+}
+
+module "cis_spoke2_security_lists" {
+  source                   = "../modules/network/security"
+  count                    = var.hub_spoke_architecture == true ? 1 : 0
+  default_compartment_id   = module.cis_compartments.compartments[local.network_compartment_name].id
+  vcn_id                   = module.cis_spoke2_vcn[0].vcn.id
+  default_security_list_id = module.cis_spoke2_vcn[0].vcn.default_security_list_id
+
+  security_lists = {
+    (local.spoke2_private_subnet_app_security_list_name) = {
+      compartment_id = null
+      defined_tags   = null
+      freeform_tags  = null
+      ingress_rules  = null
+      egress_rules   = null
+    },
+    (local.spoke2_private_subnet_db_security_list_name) = {
+      is_create      = true
+      compartment_id = null
+      defined_tags   = null
+      freeform_tags  = null
+      ingress_rules  = null
+      egress_rules   = null
+    }
+  }
+}  

@@ -38,13 +38,17 @@ locals {
     # DMZ Subnet names
     dmz_bastion_subnet_name = "${var.service_label}-bastion-subnet"
     dmz_services_subnet_name   = "${var.service_label}-services-subnet"
-
+    dmz_subnet_names = ["indoor","outdoor","mgmt","ha", "diag"]
 
     # DMZ Security lists names
+    dmz_vcn_security_list_name = "${local.dmz_vcn_display_name}-security-list"
+
     dmz_bastion_subnet_security_list_name = "${local.dmz_bastion_subnet_name}-security-list"
     dmz_services_subnet_security_list_name = "${local.dmz_services_subnet_name}-security-list"
 
     # DMZ Route tables names
+    dmz_vcn_route_table_name = "${local.dmz_vcn_display_name}-route-table"
+
     dmz_bastion_subnet_route_table_name = "${local.dmz_bastion_subnet_name}-route-table"
     dmz_services_subnet_route_table_name   = "${local.dmz_services_subnet_name}-route-table"
 

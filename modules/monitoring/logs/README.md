@@ -16,8 +16,8 @@ No Modules.
 
 | Name |
 |------|
-| [oci_logging_log](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/logging_log) |
 | [oci_logging_log_group](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/logging_log_group) |
+| [oci_logging_log](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/logging_log) |
 
 ## Inputs
 

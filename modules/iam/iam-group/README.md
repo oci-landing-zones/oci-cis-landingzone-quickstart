@@ -24,14 +24,12 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| group\_description | The description you assign to the Group. Does not have to be unique, and it's changeable. | `string` | `""` | no |
-| group\_name | The name you assign to the group during creation. The name must be unique across all compartments in the tenancy. | `any` | n/a | yes |
+| groups | Group parameters | <pre>map(object({<br>    description  = string,<br>    user_ids     = list(string),<br>    defined_tags = map(string),<br>  }))</pre> | n/a | yes |
 | tenancy\_ocid | The OCID of the tenancy. | `any` | n/a | yes |
-| user\_names | List of user names. | `list` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| group\_id | n/a |
-| group\_name | n/a |
+| groups | n/a |
+| memberships | n/a |

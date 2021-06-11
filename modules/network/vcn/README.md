@@ -16,8 +16,8 @@ No Modules.
 
 | Name |
 |------|
-| [oci_core_drg](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) |
 | [oci_core_drg_attachment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment) |
+| [oci_core_drg](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) |
 | [oci_core_internet_gateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway) |
 | [oci_core_nat_gateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway) |
 | [oci_core_route_table](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table) |

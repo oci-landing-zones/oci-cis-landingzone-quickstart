@@ -226,7 +226,7 @@ variables:
     required: true
     default: "10.0.0.0/16"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "The VCN IP range in CIDR notation. By default, the Landing Zone creates a single VCN. If Hub/Spoke network architecture is checked in the \"Advanced Options\" section below, this VCN is turned into a spoke VCN. This IP range must not conflict with the on-premises CIDR block if this network is to be on-premises connected, even indirectly through a Hub VCN."
+    description: "The VCN IP range in CIDR notation."
 
   public_subnet_cidr:
     type: string

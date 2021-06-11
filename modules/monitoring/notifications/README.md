@@ -22,18 +22,10 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| compartment\_id | The default compartment OCID to use for resources (unless otherwise specified). | `string` | `""` | no |
-| rule\_actions\_actions\_action\_type | The action to perform if the condition in the rule matches an event. | `string` | `""` | no |
-| rule\_actions\_actions\_description | A string that describes the details of the action. | `string` | `""` | no |
-| rule\_actions\_actions\_is\_enabled | Whether or not the action is enabled. | `bool` | `true` | no |
-| rule\_condition | The rule condition. | `string` | `""` | no |
-| rule\_description | The rule description. | `string` | `""` | no |
-| rule\_display\_name | The rule display name. | `string` | `""` | no |
-| rule\_is\_enabled | Whether or not the rule is enabled. | `bool` | `true` | no |
-| topic\_id | The topic id to send the notification to. | `string` | `""` | no |
+| rules | Rules parameters | <pre>map(object({<br>    compartment_id      = string,<br>    description         = string,<br>    condition           = string,<br>    is_enabled          = bool,<br>    actions_action_type = string,<br>    actions_is_enabled  = bool,<br>    actions_description = string,<br>    topic_id            = string,<br>    defined_tags        = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| rule | Rule information. |
+| rules | Events rules |

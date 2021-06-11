@@ -1,9 +1,9 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-module "cis_security_topic" {
+module "lz_security_topic" {
   source                        = "../modules/monitoring/topics"
-  compartment_id                 = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id                 = module.lz_compartments.compartments[local.security_compartment_name].id
   notification_topic_name        = "${var.service_label}-SecurityTopic"
   notification_topic_description = "Topic for security related notifications."
   subscriptions = {
@@ -20,9 +20,9 @@ module "cis_security_topic" {
   }
 }
 
-module "cis_network_topic" {
+module "lz_network_topic" {
   source                        = "../modules/monitoring/topics"
-  compartment_id                 = module.cis_compartments.compartments[local.security_compartment_name].id
+  compartment_id                 = module.lz_compartments.compartments[local.security_compartment_name].id
   notification_topic_name        = "${var.service_label}-NetworkTopic"
   notification_topic_description = "Topic for network related notifications."
 

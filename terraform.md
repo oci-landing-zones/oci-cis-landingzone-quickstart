@@ -3,11 +3,11 @@ The Landing Zone terraform is made of two root modules and some children modules
 
 The *config* module is responsible for provisioning the Landing Zone resources. It can be executed by a tenancy administrator or a non tenancy administrator. When executed by a non tenancy administrator, the *pre-config* module must be previously executed by a tenancy administrator to create Landing Zone required resources in the root compartment, like compartments, policies and groups. If the *config* module is being executed by a tenancy administrator, the *pre-config* module does not need to be executed, as the *config* module will be able to create all required resources in the root compartment.
 
-Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
+Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. Each file prefix implements/supports use cases in the corresponding section in that document.
 
 The variables in each root module are described below in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
-**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
+**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
 
 ## How to Execute the Code Using Terraform CLI
 Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.

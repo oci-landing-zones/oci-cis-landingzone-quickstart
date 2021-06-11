@@ -17,7 +17,7 @@
 
 module "cis_nsgs" {
   source                  = "../modules/network/security"
-  default_compartment_id  = module.cis_compartments.compartments[local.network_compartment_name].id
+  default_compartment_id  = module.lz_compartments.compartments[local.network_compartment_name].id
   vcn_id                  = module.cis_vcn.vcn.id
   
   nsgs                  = {

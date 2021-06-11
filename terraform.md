@@ -1,86 +1,24 @@
-## How the Terraform Code is Organized 
-The Terraform code consists of a single root module configuration defined within the *config* folder along with a few children modules within the *modules* folder.
+## Landing Zone Modules
+The Landing Zone terraform is made of two root modules and some children modules. The root modules are under the *config* and *pre-config* folders, while the children modules are under the *modules* folder. Both *config* and *pre-config* use the children modules for resource creation.
 
-Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
+The *config* module is responsible for provisioning the Landing Zone resources. It can be executed by a tenancy administrator or a non tenancy administrator. When executed by a non tenancy administrator, the *pre-config* module must be previously executed by a tenancy administrator to create Landing Zone required resources in the root compartment, like compartments, policies and groups. If the *config* module is being executed by a tenancy administrator, the *pre-config* module does not need to be executed, as the *config* module will be able to create all required resources in the root compartment.
 
-**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
+Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. Each file prefix implements/supports use cases in the corresponding section in that document.
 
-## Input Variables
-Input variables used in the configuration are all defined in config/variables.tf:
+The variables in each root module are described below in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
-### <a name="env_variables"></a>Environment Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**tenancy_ocid** | The OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console. | Yes | None
-**user_ocid** | The OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources. | Yes | ""
-**fingerprint** | The user's public key fingerprint. This information can be obtained in OCI Console. | Yes | ""
-**private_key_path** | The local path to the user private key. | Yes | ""
-**private_key_password** | The private key password, if any. | No | ""
-**region** \* | The tenancy region identifier where the Terraform should provision the resources. | Yes | None
-**service_label** | A label used as a prefix for naming resources. | Yes | None
-
-\* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm
-
-### <a name="networking_variables"></a>Networking Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**vcn_cidr** | The VCN CIDR block | Yes | "10.0.0.0/16"
-**public_subnet_cidr** | The public subnet CIDR block. | Yes | "10.0.1.0/24"
-**private_subnet_app_cidr** | The App private subnet CIDR block. | Yes | "10.0.2.0/24"
-**private_subnet_db_cidr** | The DB private subnet CIDR block. | Yes | "10.0.3.0/24"
-**public_src_bastion_cidr** | The external CIDR block that is allowed to ingress into the bastions servers in the public subnet. | Yes | None
-**public_src_lbr_cidr** | The external CIDR block that is allowed to ingress into the load balancer in the public subnet. | Yes | "0.0.0.0/0"
-**is_vcn_onprem_connected** | Whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN. | Yes | false
-**onprem_cidr** | The on-premises CIDR block. Only used if *is_vcn_onprem_connected* is true. | No | "0.0.0.0/0"
-
-### <a name="notification_variables"></a>Notification Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**network_admin_email_endpoint** | An email to receive notifications for network related events. | Yes | None
-**security_admin_email_endpoint** | An email to receive notifications for security related events. | Yes | None
-
-### <a name="cloudguard_variables"></a>Cloud Guard Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | Whether Cloud Guard is enabled or not. | Yes | ENABLED
-
-### <a name="logging_variables"></a>Logging Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**create_service_connector_audit** | Whether to create Service Connector Hub for Audit logs. | Yes | false
-**service_connector_audit_target** | Destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_audit_state** | State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_audit_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
-**service_connector_audit_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
-**sch_audit_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
-**sch_audit_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
-**sch_audit_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
-**create_service_connector_vcnFlowLogs** | Whether to create Service Connector Hub for VCN Flow logs. | Yes | false
-**service_connector_vcnFlowLogs_target** | Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_vcnFlowLogs_state** | State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_vcnFlowLogs_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**service_connector_vcnFlowLogs_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
-
-### <a name="vss_variables"></a>Scanning Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true
-**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | Yes | WEEKLY
-**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | Yes | SUNDAY
+**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
 
 ## How to Execute the Code Using Terraform CLI
-Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.
+Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
 
-Next, within the *config* folder, execute:
+Next, execute:
 
 	terraform init
 	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
 	terraform apply plan.out
 
-Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and execute:	
+Alternatively, after providing the variable values in *quickstart-input.tfvars*, rename it to *terraform.tfvars* and execute:	
 
 	terraform init
 	terraform plan -out plan.out

@@ -22,6 +22,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Keys
 - Cloud Guard
 - Logging
+- Vulnerability Scanning
 - Events
 - Notifications
 - Object Storage
@@ -45,6 +46,8 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
  - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 
  - A database compartment: for all database resources. 
 
+Optionally, those four compartments can be created within a designated compartment by the tenancy administrator. 
+
 The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
 
 The diagram below shows services and resources that are deployed:
@@ -52,8 +55,6 @@ The diagram below shows services and resources that are deployed:
 ![Architecture](images/Architecture.png)
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
-
-The resources are provisioned using a single user account with broad tenancy administration privileges.
 
 ## <a name="instructions"></a>Executing Instructions
 
@@ -66,7 +67,7 @@ The resources are provisioned using a single user account with broad tenancy adm
 
 ## <a name="team"></a>The Team
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: Pulkit Sharma, [Logan Kleier](https://github.com/herosjourney), [KC Flynn](https://github.com/flynnkc), Ryan Cronk 
+- **Contributors**: Pulkit Sharma, [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney)
 
 ## <a name="feedback">Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

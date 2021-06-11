@@ -5,7 +5,7 @@
 ### and tag defaults in the specified tag_defaults_compartment_id. 
 ### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
 
-module "cis_tags" {
+module "lz_tags" {
   source                       = "../modules/monitoring/tags"
   providers                    = { oci = oci.home }
   tenancy_ocid                 = var.tenancy_ocid

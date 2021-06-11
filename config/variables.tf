@@ -88,11 +88,6 @@ variable "existing_announcement_reader_group_name" {
 }
 
 # Networking
-variable "hub_spoke_architecture" {
-  type        = bool
-  default     = true
-  description = "Determines if a Hub and Spoke Architecture is deployed"
-}
 variable "is_vcn_onprem_connected" {
     default = false
     validation {
@@ -106,11 +101,6 @@ variable "onprem_cidr" {
         condition = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",var.onprem_cidr)) > 0
         error_message = "Invalid cidr block value provided for onprem_cidr variable."
     }
-}
-variable "no_internet_access" {
-  default = false
-  type = bool
-  description = "Determines if the network will have direct access to the internet. Default is false which creates an Internet Gateway and NAT Gateway, true will not create an Internet Gateway or NAT Gateway"
 }
 variable "vcn_cidr" {
     default = "10.0.0.0/16"
@@ -152,57 +142,6 @@ variable "public_src_lbr_cidr" {
         condition = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",var.public_src_lbr_cidr)) > 0
         error_message = "Invalid cidr block value provided for public_src_lbr_cidr variable."
     }
-}
-## DMZ VCN 
-variable "dmz_vcn_cidr" {
-  default = "10.2.0.0/20"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0
-    error_message = "Invalid cidr block value provided for hub_vcn_cidr variable."
-  }
-}
-variable "dmz_bastion_subnet_cidr" {
-  default = "10.2.1.0/24"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_bastion_subnet_cidr)) > 0
-    error_message = "Invalid cidr block value provided for hub_bastion_subnet_cidr variable."
-  }
-}
-variable "dmz_services_subnet_cidr" {
-  default = "10.2.2.0/24"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_services_subnet_cidr)) > 0
-    error_message = "Invalid cidr block value provided for hub_services_subnet_cidr variable."
-  }
-}
-## Spoke 2 VCN 
-variable "spoke2_vcn_cidr" {
-  default = "10.3.0.0/20"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.spoke2_vcn_cidr)) > 0
-    error_message = "Invalid cidr block value provided for spoke2_vcn_cidr variable."
-  }
-}
-variable "spoke2_private_subnet_web_cidr" {
-  default = "10.3.1.0/24"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.spoke2_private_subnet_web_cidr)) > 0
-    error_message = "Invalid cidr block value provided for spoke2_private_subnet_web_cidr variable."
-  }
-}
-variable "spoke2_private_subnet_app_cidr" {
-  default = "10.3.2.0/24"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.spoke2_private_subnet_app_cidr)) > 0
-    error_message = "Invalid cidr block value provided for spoke2_private_subnet_app_cidr variable."
-  }
-}
-variable "spoke2_private_subnet_db_cidr" {
-  default = "10.3.3.0/24"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.spoke2_private_subnet_db_cidr)) > 0
-    error_message = "Invalid cidr block value provided for spoke2_private_subnet_db_cidr variable."
-  }
 }
 # Monitoring
 variable "network_admin_email_endpoint" {

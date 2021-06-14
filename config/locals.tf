@@ -73,11 +73,16 @@ locals {
     private_subnet_db_name  = "${var.service_label}-Private-Subnet-DB"
     
     # Security lists names
+    dmz_vcn_security_list_name = "${var.service_label}-dmz-security-list"
+
     public_subnet_security_list_name      = "${local.public_subnet_name}-Security-List"
     private_subnet_app_security_list_name = "${local.private_subnet_app_name}-Security-List"
     private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
     
     # Network security groups names
+    dmz_bastions_nsg_name = "${var.service_label}-dmz-bastions-nsg"
+    dmz_services_nsg_name = "${var.service_label}-dmz-services-nsg"
+    
     bastion_nsg_name = "${var.service_label}-NSG-Bastion"
     lbr_nsg_name     = "${var.service_label}-NSG-LBR"
     app_nsg_name     = "${var.service_label}-NSG-App"

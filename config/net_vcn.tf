@@ -10,14 +10,14 @@ locals {
     }
   }
 
-  dmz_vcn_name = var.hub_spoke_architecture ?  {("dmz") ={
+  dmz_vcn_name = var.hub_spoke_architecture ? { ("dmz") = {
     name = "${var.service_label}-dmz-vcn"
     cidr = var.dmz_vcn_cidr
   } } : {}
 
   ### VCNs ###
   spoke_vcns = { for key, vcn in local.spoke_vcn_names : vcn.name => {
-    compartment_id    = module.cis_compartments.compartments[local.network_compartment_name].id
+    compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = vcn.cidr
     dns_label         = key
     is_create_igw     = var.hub_spoke_architecture ? false : (!var.no_internet_access == true ? true : false)
@@ -38,29 +38,8 @@ locals {
     }
   }
 
-  dmz_vcn = var.hub_spoke_architecture ? { for key, vcn in local.dmz_vcn_name : vcn.name => { 
-    compartment_id    = module.cis_compartments.compartments[local.network_compartment_name].id
-    cidr              = var.dmz_vcn_cidr
-    dns_label         = "dmz"
-    is_create_igw     = !var.no_internet_access
-    is_create_drg     = false
-    is_attach_drg     = true
-    block_nat_traffic = false
-    defined_tags      = null
-    subnets = { for s in range(var.dmz_number_of_subnets) : "${vcn.name}-${s}-subnet" => {
-      compartment_id  = null
-      defined_tags    = null
-      cidr            = cidrsubnet(var.dmz_vcn_cidr, var.dmz_subnet_size, index(local.dmz_subnet_names, s))
-      dns_label       = s
-      private         = var.no_internet_access ? true : (index(local.dmz_subnet_names, s) == 0  ? false : true)
-      dhcp_options_id = null
-      }
-    }
-  }
-  } : {}
-
   # All VCNs
-  all_lz_vcns = merge(local.dmz_vcn,local.spoke_vcns)
+  all_lz_vcns = merge(local.dmz_vcn, local.spoke_vcns)
 
   # Output from VCNs
   all_lz_vcn_ids = module.lz_vcns.vcns
@@ -261,16 +240,16 @@ locals {
     ]
   } if length(regexall(".*-${local.dmz_subnet_names[0]}-*", key)) > 0 }
 
-  lz_subnet_route_tables = merge(local.web_spoke_route_route_tables, 
-  local.app_spoke_route_route_tables, 
-  local.db_spoke_route_route_tables, 
+  lz_subnet_route_tables = merge(local.web_spoke_route_route_tables,
+    local.app_spoke_route_route_tables,
+    local.db_spoke_route_route_tables,
   local.outdoor_spoke_route_route_tables)
 
 }
 
 module "lz_vcns" {
   source               = "../modules/network/vcn-basic"
-  compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
   is_create_drg        = var.is_vcn_onprem_connected || var.hub_spoke_architecture
@@ -280,7 +259,7 @@ module "lz_vcns" {
 
 module "lz_route_tables" {
   source               = "../modules/network/vcn-routing"
-  compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   subnets_route_tables = local.lz_subnet_route_tables
 }
 

@@ -8,20 +8,45 @@ locals {
     regions_map_reverse = {for r in data.oci_identity_regions.these.regions : r.name => r.key} # All regions indexed by region name.
     home_region_key = data.oci_identity_tenancy.this.home_region_key # Home region key obtained from the tenancy data source
     region_key = lower(local.regions_map_reverse[var.region]) # Region key obtained from the region name
-    
-    ### IAM
-    security_compartment_name = "${var.service_label}-Security"
-    network_compartment_name  = "${var.service_label}-Network"
-    database_compartment_name = "${var.service_label}-Database"
-    appdev_compartment_name   = "${var.service_label}-AppDev" 
 
-    security_admin_group_name = "${var.service_label}-SecurityAdmins"
-    network_admin_group_name  = "${var.service_label}-NetworkAdmins"
-    database_admin_group_name = "${var.service_label}-DatabaseAdmins"
-    appdev_admin_group_name   = "${var.service_label}-AppDevAdmins"
-    iam_admin_group_name      = "${var.service_label}-IAMAdmins"
-    auditor_group_name        = "${var.service_label}-Auditors"
-    announcement_readers_group_name = "${var.service_label}-AnnouncementReaders"
+    ### IAM
+    # Default compartment names
+    default_enclosing_compartment_name = "${var.service_label}-top-cmp"
+    security_compartment_name          = "${var.service_label}-security-cmp"
+    network_compartment_name           = "${var.service_label}-network-cmp"
+    database_compartment_name          = "${var.service_label}-database-cmp"
+    appdev_compartment_name            = "${var.service_label}-appdev-cmp" 
+
+    # Whether or not to create an enclosing compartment
+    parent_compartment_id = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
+    parent_compartment_name = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
+    policy_level = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
+    use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
+
+    # Group names
+    security_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+    network_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+    database_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+    appdev_admin_group_name         = var.use_existing_iam_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+    iam_admin_group_name            = var.use_existing_iam_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+    cred_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+    auditor_group_name              = var.use_existing_iam_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+    announcement_reader_group_name  = var.use_existing_iam_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+
+    # Policy names
+    security_admin_policy_name       = "${var.service_label}-security-admin-policy"
+    security_admin_root_policy_name  = "${var.service_label}-security-admin-root-policy"
+    network_admin_policy_name        = "${var.service_label}-network-admin-policy"
+    database_admin_policy_name       = "${var.service_label}-database-admin-policy"
+    appdev_admin_policy_name         = "${var.service_label}-appdev-admin-policy"
+    iam_admin_policy_name            = "${var.service_label}-iam-admin-policy"
+    iam_admin_root_policy_name       = "${var.service_label}-iam-admin-root-policy"
+    cred_admin_policy_name           = "${var.service_label}-credential-admin-policy"
+    auditor_policy_name              = "${var.service_label}-auditor-policy"
+    announcement_reader_policy_name  = "${var.service_label}-announcement-reader-policy"
+    cloud_guard_policy_name          = "${var.service_label}-cloud-guard-policy"
+    os_mgmt_policy_name              = "${var.service_label}-os-management-policy"
+    vss_policy_name                  = "${var.service_label}-vss-policy"
 
     # Tags
     createdby_tag_name = "CreatedBy"
@@ -29,82 +54,37 @@ locals {
 
     ### Network
     anywhere = "0.0.0.0/0"
-    valid_service_gateway_cidrs = [ "all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
-
-    ## DMZ VCN
-    # DMZ VCN Name
-    dmz_vcn_display_name = "${var.service_label}-dmz-vcn"
-
-    # DMZ Subnet names
-    dmz_bastion_subnet_name = "${var.service_label}-bastion-subnet"
-    dmz_services_subnet_name   = "${var.service_label}-services-subnet"
-    dmz_subnet_names = ["indoor","outdoor","mgmt","ha", "diag"]
-
-    # DMZ Security lists names
-    dmz_vcn_security_list_name = "${local.dmz_vcn_display_name}-security-list"
-
-    dmz_bastion_subnet_security_list_name = "${local.dmz_bastion_subnet_name}-security-list"
-    dmz_services_subnet_security_list_name = "${local.dmz_services_subnet_name}-security-list"
-
-    # DMZ Route tables names
-    dmz_vcn_route_table_name = "${local.dmz_vcn_display_name}-route-table"
-
-    dmz_bastion_subnet_route_table_name = "${local.dmz_bastion_subnet_name}-route-table"
-    dmz_services_subnet_route_table_name   = "${local.dmz_services_subnet_name}-route-table"
-
-    # DMZ Network security groups names
-    dmz_bastion_nsg_name   = "${var.service_label}-dmz-nsg-Bastion"
-    dmz_services_nsg_name   = "${var.service_label}-Hub-NSG-Services"
-
-    # Spoke 1 or Single VCN names
+    valid_service_gateway_cidrs = ["oci-${local.region_key}-objectstorage", "all-${local.region_key}-services-in-oracle-services-network"]
+    
+    # VCN names
     vcn_display_name = "${var.service_label}-VCN"
   
-    # Spoke 1 or Single VCN Subnet names
+    # Subnet names
+    # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
+    spoke_subnet_names = ["web", "app", "db"]
+    # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
+    dmz_subnet_names = ["outdoor","indoor","mgmt","ha", "diag"]
+    
     public_subnet_name      = "${var.service_label}-Public-Subnet"
     private_subnet_app_name = "${var.service_label}-Private-Subnet-App"
     private_subnet_db_name  = "${var.service_label}-Private-Subnet-DB"
     
-    # Spoke 1 or Single VCN Security lists names
+    # Security lists names
     public_subnet_security_list_name      = "${local.public_subnet_name}-Security-List"
     private_subnet_app_security_list_name = "${local.private_subnet_app_name}-Security-List"
     private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
     
-    # Spoke 1 or Single VCN Network security groups names
+    # Network security groups names
     bastion_nsg_name = "${var.service_label}-NSG-Bastion"
     lbr_nsg_name     = "${var.service_label}-NSG-LBR"
     app_nsg_name     = "${var.service_label}-NSG-App"
     db_nsg_name      = "${var.service_label}-NSG-DB"
     
-    # Spoke 1 or Single VCN Route tables names
+    # Route tables names
     public_subnet_route_table_name      = "${local.public_subnet_name}-Route"
     private_subnet_app_route_table_name = "${local.private_subnet_app_name}-Route"
     private_subnet_db_route_table_name  = "${local.private_subnet_db_name}-Route"
     
-    ## Spoke 2 VCN
-
-    # Spoke 2 VCN Name
-
-    spoke2_vcn_display_name = "${var.service_label}-spoke2-vcn"
-
-    # Subnet Spoke 2 names
-    spoke2_private_subnet_web_name = "${var.service_label}-spoke2-web-subnet"
-    spoke2_private_subnet_app_name = "${var.service_label}-spoke2-app-subnet"
-    spoke2_private_subnet_db_name  = "${var.service_label}-spoke2-db-subnet"
-
-    # Spoke 2 Security lists names
-    spoke2_private_subnet_web_security_list_name = "${local.spoke2_private_subnet_web_name}-security-list"
-    spoke2_private_subnet_app_security_list_name = "${local.spoke2_private_subnet_app_name}-security-list"
-    spoke2_private_subnet_db_security_list_name  = "${local.spoke2_private_subnet_db_name}-security-list"
-
-    # Spoke 2 Network security groups names
-    spoke2_bastion_nsg_name     = "${var.service_label}-bastion-nsg"
-    spoke2_lbr_nsg_name     = "${var.service_label}-lbr-nsg"
-    spoke2_app_nsg_name     = "${var.service_label}-app-nsg"
-    spoke2_db_nsg_name      = "${var.service_label}-db-nsg"
-
-    # Spoke 1 Route tables names
-    spoke2_route_table_name = "${var.service_label}-app2-route-table"
-
     ### Object Storage
     oss_key_name = "${var.service_label}-oss-key"
     bucket_name  = "${var.service_label}-bucket"
@@ -114,12 +94,24 @@ locals {
     ### Service Connector Hub
     sch_audit_display_name = "${var.service_label}-audit-sch"
     sch_audit_bucket_name = "${var.service_label}-audit-sch-bucket"
+    sch_audit_target_rollover_MBs = 100
+    sch_audit_target_rollover_MSs = 420000
     
     sch_vcnFlowLogs_display_name = "${var.service_label}-vcn-flow-logs-sch"
     sch_vcnFlowLogs_bucket_name = "${var.service_label}-vcn-flow-logs-sch-bucket"
+    sch_vcnFlowLogs_target_rollover_MBs = 100
+    sch_vcnFlowLogs_target_rollover_MSs = 420000
 
     sch_audit_policy_name = "${var.service_label}-audit-sch-policy"
     sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
 
     cg_target_name = "${var.service_label}-cloud-guard-root-target"
+    
+    ### Scanning
+    scan_default_recipe_name    = "${var.service_label}-default-scan-recipe"
+    security_cmp_target_name    = "${local.security_compartment_name}-scan-target"
+    network_cmp_target_name     = "${local.network_compartment_name}-scan-target"
+    appdev_cmp_target_name      = "${local.appdev_compartment_name}-scan-target"
+    database_cmp_target_name    = "${local.database_compartment_name}-scan-target"
+
 }

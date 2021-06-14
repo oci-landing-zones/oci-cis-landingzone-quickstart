@@ -57,13 +57,16 @@ locals {
     valid_service_gateway_cidrs = ["oci-${local.region_key}-objectstorage", "all-${local.region_key}-services-in-oracle-services-network"]
     
     # VCN names
-    vcn_display_name = "${var.service_label}-VCN"
+    dmz_vcn = var.hub_spoke_architecture ?  {("dmz") = {
+      name = "${var.service_label}-dmz-vcn"
+      cidr = var.dmz_vcn_cidr
+    }} : {}
   
     # Subnet names
-    # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
-    spoke_subnet_names = ["web", "app", "db"]
-    # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
-    dmz_subnet_names = ["outdoor","indoor","mgmt","ha", "diag"]
+    # Subnet names used can be changed first subnet will be Public if var.no_internet_access is false
+    spoke_subnet_names = ["web","app","db"]
+    # Subnet names used can be changed first subnet will be Public if var.no_internet_access is false
+    dmz_subnet_names = ["outdoor","indoor","mgmt","ha","diag"]
     
     public_subnet_name      = "${var.service_label}-Public-Subnet"
     private_subnet_app_name = "${var.service_label}-Private-Subnet-App"
@@ -74,11 +77,11 @@ locals {
     private_subnet_app_security_list_name = "${local.private_subnet_app_name}-Security-List"
     private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
     
-    # Spoke 1 or Single VCN Network security groups names
-    bastion_nsg_name = "${var.service_label}-bastion-nsg"
-    lbr_nsg_name     = "${var.service_label}-lbr-nsg"
-    app_nsg_name     = "${var.service_label}-app-nsg"
-    db_nsg_name      = "${var.service_label}-db-nsg"
+    # Network security groups names
+    bastion_nsg_name = "${var.service_label}-NSG-Bastion"
+    lbr_nsg_name     = "${var.service_label}-NSG-LBR"
+    app_nsg_name     = "${var.service_label}-NSG-App"
+    db_nsg_name      = "${var.service_label}-NSG-DB"
     
     # Route tables names
     public_subnet_route_table_name      = "${local.public_subnet_name}-Route"

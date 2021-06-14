@@ -192,8 +192,8 @@ variable "dmz_subnet_size" {
 
 variable "spoke_vcn_cidrs" {
     type    = list(string)
-    # default = ["10.0.0.0/20"]
-    default = ["10.0.0.0/20","10.0.16.0/20","10.0.32.0/20"]
+    default = ["10.0.0.0/20"]
+    # default = ["10.0.0.0/20","10.0.16.0/20","10.0.32.0/20"]
     description = "List of spoke VCN CIDR ranges. Examples: 10.0.0.0/20,172.16.0.0. Max number of compartments is 5."
     validation {
         condition     = length(var.spoke_vcn_cidrs) <= 5

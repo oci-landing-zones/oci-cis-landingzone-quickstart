@@ -70,10 +70,10 @@ locals {
     private_subnet_db_security_list_name  = "${local.private_subnet_db_name}-Security-List"
     
     # Spoke 1 or Single VCN Network security groups names
-    bastion_nsg_name = "${var.service_label}-NSG-Bastion"
-    lbr_nsg_name     = "${var.service_label}-NSG-LBR"
-    app_nsg_name     = "${var.service_label}-NSG-App"
-    db_nsg_name      = "${var.service_label}-NSG-DB"
+    bastion_nsg_name = "${var.service_label}-bastion-nsg"
+    lbr_nsg_name     = "${var.service_label}-lbr-nsg"
+    app_nsg_name     = "${var.service_label}-app-nsg"
+    db_nsg_name      = "${var.service_label}-db-nsg"
     
     # Spoke 1 or Single VCN Route tables names
     public_subnet_route_table_name      = "${local.public_subnet_name}-Route"

@@ -10,11 +10,6 @@ locals {
     }
   }
 
-  dmz_vcn_name = var.hub_spoke_architecture ?  {("dmz") ={
-    name = "${var.service_label}-dmz-vcn"
-    cidr = var.dmz_vcn_cidr
-  } } : {}
-
   ### VCNs ###
   spoke_vcns = { for key, vcn in local.spoke_vcn_names : vcn.name => {
     compartment_id    = module.cis_compartments.compartments[local.network_compartment_name].id
@@ -38,9 +33,9 @@ locals {
     }
   }
 
-  dmz_vcn = var.hub_spoke_architecture ? { for key, vcn in local.dmz_vcn_name : vcn.name => { 
+  the_dmz_vcn = var.hub_spoke_architecture ? { for key, vcn in local.dmz_vcn.name : vcn.name => { 
     compartment_id    = module.cis_compartments.compartments[local.network_compartment_name].id
-    cidr              = var.dmz_vcn_cidr
+    cidr              = vcn.cidr
     dns_label         = "dmz"
     is_create_igw     = !var.no_internet_access
     is_create_drg     = false
@@ -50,7 +45,7 @@ locals {
     subnets = { for s in range(var.dmz_number_of_subnets) : "${vcn.name}-${s}-subnet" => {
       compartment_id  = null
       defined_tags    = null
-      cidr            = cidrsubnet(var.dmz_vcn_cidr, var.dmz_subnet_size, index(local.dmz_subnet_names, s))
+      cidr            = cidrsubnet(local.dmz_vcn.cidr, var.dmz_subnet_size, index(local.dmz_subnet_names, s))
       dns_label       = s
       private         = var.no_internet_access ? true : (index(local.dmz_subnet_names, s) == 0  ? false : true)
       dhcp_options_id = null
@@ -60,11 +55,8 @@ locals {
   } : {}
 
   # All VCNs
-  all_lz_vcns = merge(local.dmz_vcn,local.spoke_vcns)
-
-  # Output from VCNs
+  all_lz_vcns = merge(local.the_dmz_vcn,local.spoke_vcns)
   all_lz_vcn_ids = module.lz_vcns.vcns
-  all_lz_subnets = module.lz_vcns.subnets
   # dmz_subnets    = module.lz_dmz_vcn.subnets
 
   ### Route Tables ###

@@ -18,9 +18,9 @@ variable "ports_not_allowed_from_anywhere_cidr" {
 
 variable "security_lists" {
   type = map(object({
+    vcn_id          = string,
     compartment_id  = string,
     defined_tags    = map(string),
-    freeform_tags   = map(string),
     ingress_rules   = list(object({
       stateless     = bool,
       protocol      = string,

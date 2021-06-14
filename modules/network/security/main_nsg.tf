@@ -49,13 +49,13 @@ locals {
 
 resource "oci_core_network_security_group" "these" {
   for_each       = var.nsgs
-  compartment_id = var.default_compartment_id
-  vcn_id         = var.vcn_id
-  display_name   = each.key
+    compartment_id = var.compartment_id
+    vcn_id         = each.value.vcn_id
+    display_name   = each.key
 }
 
 data "oci_core_network_security_groups" "this" {
-  compartment_id = var.default_compartment_id
+  compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
 }
 

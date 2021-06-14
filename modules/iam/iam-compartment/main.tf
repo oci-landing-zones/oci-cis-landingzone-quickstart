@@ -3,7 +3,7 @@
 
 resource "oci_identity_compartment" "these" {
   for_each = var.compartments
-    compartment_id = var.tenancy_ocid
+    compartment_id = each.value.parent_id
     name           = each.key
     description    = each.value.description
 }

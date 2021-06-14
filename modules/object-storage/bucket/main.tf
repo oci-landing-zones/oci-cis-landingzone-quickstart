@@ -3,8 +3,6 @@
 
 # Getting Object Storage Namespace
 data "oci_objectstorage_namespace" "bucket_namespace" {
-
-    #Optional
     compartment_id = var.tenancy_ocid
 }
 

@@ -1,63 +1,24 @@
-## How the Terraform Code is Organized 
-The Terraform code consists of a single root module configuration defined within the *config* folder along with a few children modules within the *modules* folder.
+## Landing Zone Modules
+The Landing Zone terraform is made of two root modules and some children modules. The root modules are under the *config* and *pre-config* folders, while the children modules are under the *modules* folder. Both *config* and *pre-config* use the children modules for resource creation.
 
-Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. For instance, iam_1.1.tf implements use case 1.1 in the IAM sectiom, while mon_3.5.tf implements use case 3.5 in the Monitoring section. .tf files with no numbering scheme are either Terraform suggested names for Terraform constructs (provider.tf, variables.tf, locals.tf, outputs.tf) or use cases supporting files (iam_compartments.tf, net_vcn.tf).
+The *config* module is responsible for provisioning the Landing Zone resources. It can be executed by a tenancy administrator or a non tenancy administrator. When executed by a non tenancy administrator, the *pre-config* module must be previously executed by a tenancy administrator to create Landing Zone required resources in the root compartment, like compartments, policies and groups. If the *config* module is being executed by a tenancy administrator, the *pre-config* module does not need to be executed, as the *config* module will be able to create all required resources in the root compartment.
 
-**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.2.0.
+Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. Each file prefix implements/supports use cases in the corresponding section in that document.
 
-## Input Variables
-Input variables used in the configuration are all defined in config/variables.tf:
+The variables in each root module are described below in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**tenancy_ocid** | the OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console | Yes | None
-**user_ocid** | the OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources | Yes | ""
-**fingerprint** | the user's public key fingerprint. This information can be obtained in OCI Console | Yes | ""
-**private_key_path** | the local path to the user private key | Yes | ""
-**private_key_password** | the private key password, if any | No | ""
-**region** \* | the tenancy region identifier where the Terraform should provision the resources | Yes | None
-**service_label** | a label used as a prefix for naming resources | Yes | None
-**vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
-**public_subnet_cidr** | the public subnet CIDR block | Yes | "10.0.1.0/24"
-**private_subnet_app_cidr** | the App private subnet CIDR block | Yes | "10.0.2.0/24"
-**private_subnet_db_cidr** | the DB private subnet CIDR block | Yes | "10.0.3.0/24"
-**public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet | Yes | None
-**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet | Yes | "0.0.0.0/0"
-**is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN | Yes | false
-**onprem_cidr** | the on-premises CIDR block. Only used if is_vcn_onprem_connected == true | No | "0.0.0.0/0"
-**network_admin_email_endpoint** | an email to receive notifications for network related events | Yes | None
-**security_admin_email_endpoint** | an email to receive notifications for security related events | Yes | None
-**cloud_guard_configuration_status** | whether Cloud Guard is enabled or not | Yes | ENABLED
-**cloud_guard_configuration_self_manage_resources** | whether Cloud Guard should seed Oracle-managed entities. Setting this variable to true lets the user seed the Oracle-managed entities with minimal changes to the original entities | Yes | false
-**create_service_connector_audit** | whether to create Service Connector Hub for Audit logs | Yes | false
-**service_connector_audit_target** | destination for Service Connector Hub for Audit Logs. Valid values are 'objectStorage', 'streaming' and 'functions' | No | objectStorage
-**service_connector_audit_state** | state in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE' | No | INACTIVE
-**service_connector_audit_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs | No | None
-**service_connector_audit_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs | No | None
-**sch_audit_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for Audit logs | No | 100
-**sch_audit_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for Audit logs | No | 420000
-**sch_audit_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for Audit logs | No | sch-audit
-**create_service_connector_vcnFlowLogs** | whether to create Service Connector Hub for VCN Flow logs | Yes | false
-**service_connector_vcnFlowLogs_target** | destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectStorage', 'streaming' and functions | No | objectStorage
-**service_connector_vcnFlowLogs_state** | state in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE' | No | INACTIVE
-**service_connector_vcnFlowLogs_target_OCID** | applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs | No | None
-**service_connector_vcnFlowLogs_target_cmpt_OCID** | applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | applicable only for objectStorage target type. Target rollover size in MBs for VCN Flow logs | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | applicable only for objectStorage target type. Target rollover time in MSs for VCN Flow logs | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs| No | sch-vcnFlowLogs
-
-\* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm	
+**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
 
 ## How to Execute the Code Using Terraform CLI
-Within the *config* folder, provide variable values in the existing *quickstart-input.tfvars* file.
+Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
 
-Next, within the *config* folder, execute:
+Next, execute:
 
 	terraform init
 	terraform plan -var-file="quickstart-input.tfvars" -out plan.out
 	terraform apply plan.out
 
-Alternatively, rename *quickstart-input.tfvars* file to *terraform.tfvars* and execute:	
+Alternatively, after providing the variable values in *quickstart-input.tfvars*, rename it to *terraform.tfvars* and execute:	
 
 	terraform init
 	terraform plan -out plan.out
@@ -120,7 +81,7 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 	- For the **Working Directory**, select the 'config' folder.	 
 3. In **Name**, give the stack a name or accept the default.
 4. In **Create in Compartment** dropdown, select the compartment to store the stack.
-5. In **Terraform Version** dropdown, **make sure to select 0.13.x**.
+5. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
 ![GitLab Stack](images/GitLabStack.png)
 

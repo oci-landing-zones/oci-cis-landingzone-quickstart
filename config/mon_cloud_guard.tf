@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-module "cis_cloud_guard" {
+module "lz_cloud_guard" {
   count                 = length(data.oci_cloud_guard_targets.root.target_collection[0].items) > 0 ? (data.oci_cloud_guard_targets.root.target_collection[0].items[0].display_name == local.cg_target_name ? 1 : 0): 1
   depends_on            = [ null_resource.slow_down_cloud_guard ]
   source                = "../modules/monitoring/cloud-guard"
@@ -15,7 +15,7 @@ module "cis_cloud_guard" {
 
 ### We've observed that policies, even when created before the bucket, may take some time to be available for consumption. Hence the delay introduced here.
 resource "null_resource" "slow_down_cloud_guard" {
-   depends_on = [ module.lz_cloud_guard_policies ]
+   depends_on = [ module.lz_service_policies ]
    provisioner "local-exec" {
      command = "sleep 30" # Wait 30 seconds for policies to be available.
    }

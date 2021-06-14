@@ -17,6 +17,12 @@ variable "is_create_drg" {
   type        = bool
 }
 
+variable "drg_id" {
+  description = "DRG to be attached"
+  default     = null
+  type        = string
+}
+
 variable "vcns" {
   description = "The VCNs."
   type        = map(object({

@@ -35,12 +35,12 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
-      ssh-hub-ingress-rule : {
+      ssh-dmz-ingress-rule : {
         is_create : var.hub_spoke_architecture,
-        description : "SSH ingress rule for ${local.dmz_bastion_subnet_name}.",
+        description : "SSH ingress rule for bastions in DMZ network",
         stateless : false,
         protocol : "6",
-        src : var.dmz_bastion_subnet_cidr,
+        src : module.lz_vcns.vcns[local.dmz_vcn.name].cidr_block,
         src_type : "CIDR_BLOCK",
         dst_port_min : 22,
         dst_port_max : 22,
@@ -127,12 +127,12 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
-      hub-services-ingress-rule : {
+      dmz-services-ingress-rule : {
         is_create : var.hub_spoke_architecture,
-        description : "HTTPS ingress rule for ${local.dmz_services_subnet_name}.",
+        description : "HTTPS ingress rule for DMZ services.",
         stateless : false,
         protocol : "6",
-        src : var.dmz_services_subnet_cidr,
+        src : module.lz_vcns.vcns[local.dmz_vcn.name].cidr_block,
         src_type : "CIDR_BLOCK",
         dst_port_min : 443,
         dst_port_max : 443,
@@ -292,18 +292,18 @@ locals {
 module "lz_nsgs" {
   depends_on = [module.lz_vcns]
   source = "../modules/network/security"
-  compartment_id = module.cis_compartments.compartments[local.network_compartment_name].id
-  nsgs = merge(local.bastion_nsgs, local.lbr_nsgs, local.app_nsgs, local.db_nsgs)  
+  compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
+  nsgs = merge(local.bastions_nsgs, local.lbr_nsgs, local.app_nsgs, local.db_nsgs)  
 }
 
 locals {
-  dmz_bastion_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcns.vcns : "${service-label}-ssh-dmz-to-${k}-egress-rule" => { ## SSH egress rules to spoke VCNs
+  ssh_dmz_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcns.vcns : "${k}-dmz-ssh-egress-rule" => { 
     is_create : true,
     description : "SSH egress rule to ${k}.",
     protocol : "6",
     stateless : false,
-    dst      = v.cidr_block,
-    dst_type = "CIDR_BLOCK",
+    dst      : v.cidr_block,
+    dst_type : "CIDR_BLOCK",
     dst_port_min : 22,
     dst_port_max : 22,
     src_port_min : null,
@@ -312,13 +312,13 @@ locals {
     icmp_code : null
     } if length(regexall(".*spoke*", k)) > 0 }
 
-  dmz_http_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcns.vcns : "${service-label}-http-dmz-to-${k}-egress-rule" => { ## Http egress rules to spoke VCNs
+  http_dmz_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcns.vcns : "${k}-dmz-http-egress-rule" => {
         is_create : true,
         description : "HTTP egress rule to ${k}.",
         protocol : "6",
         stateless : false,
-        dst      = v.cidr_block,
-        dst_type = "CIDR_BLOCK",
+        dst      : v.cidr_block,
+        dst_type : "CIDR_BLOCK",
         dst_port_min : 80,
         dst_port_max : 80,
         src_port_min : null,
@@ -332,10 +332,10 @@ module "lz_nsgs_dmz" {
   depends_on = [module.lz_vcns]
   count          = var.hub_spoke_architecture == true ? 1 : 0
   source         = "../modules/network/security"
-  compartment_id = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
   nsgs = {
-    (local.dmz_bastion_nsg_name) : {
-      vcn_id = module.lz_vcns.vcns[local.dmz_vcn_name].id
+    (local.dmz_bastions_nsg_name) : {
+      vcn_id = module.lz_vcns.vcns[local.dmz_vcn.name].id
       ingress_rules : {
         ssh-public-ingress-rule : {
           is_create : (!var.no_internet_access && !var.is_vcn_onprem_connected),
@@ -366,7 +366,7 @@ module "lz_nsgs_dmz" {
           icmp_code : null
         }
       },
-      egress_rules : merge(local.dmz_bastion_to_spokes_nsg_egress_rules,
+      egress_rules : merge(local.ssh_dmz_to_spokes_nsg_egress_rules,
         {dmz-services-egress-rule : {
           is_create : true,
           description : "SSH egress rule to ${local.dmz_services_nsg_name}.",
@@ -397,7 +397,7 @@ module "lz_nsgs_dmz" {
         }})
     },
     (local.dmz_services_nsg_name) : {
-      vcn_id = module.lz_vcns.vcns[local.dmz_vcn_name].id
+      vcn_id = module.lz_vcns.vcns[local.dmz_vcn.name].id
       ingress_rules : {
         http-public-ingress-rule : {
           is_create : !var.no_internet_access,
@@ -429,10 +429,10 @@ module "lz_nsgs_dmz" {
         },
         ssh-ingress-rule : {
           is_create : true,
-          description : " SSH ingress rule from ${local.dmz_bastion_nsg_name}.",
+          description : " SSH ingress rule from ${local.dmz_bastions_nsg_name}.",
           protocol : "6",
           stateless : false,
-          src : local.dmz_bastion_nsg_name,
+          src : local.dmz_bastions_nsg_name,
           src_type : "NSG_NAME",
           dst_port_min : 22,
           dst_port_max : 22,
@@ -442,7 +442,7 @@ module "lz_nsgs_dmz" {
           icmp_code : null
         }
       },
-      egress_rules : merge(local.dmz_http_to_spokes_nsg_egress_rules,
+      egress_rules : merge(local.http_dmz_to_spokes_nsg_egress_rules,
         {osn-services-egress-rule : {
           is_create : true,
           description : "OSN egress rule to ${local.valid_service_gateway_cidrs[0]}.",

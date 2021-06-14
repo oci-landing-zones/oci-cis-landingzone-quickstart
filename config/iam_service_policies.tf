@@ -1,25 +1,15 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-
-module "lz_os_management_policies" {
+module "lz_service_policies" {
     source = "../modules/iam/iam-policy"
     providers = { oci = oci.home }
-    policies = {
-        ("${var.service_label}-os-management-policy") = {
+    policies = local.use_existing_tenancy_policies == false ? {
+        (local.os_mgmt_policy_name) = {
             compartment_id = var.tenancy_ocid
-            description    = "Policy to allow the OS Management service permission to read instance information in the tenancy."
+            description    = "OS Management service policy."
             statements     = ["Allow service osms to read instances in tenancy"]
-        }
-    }
-}
-
-module "lz_cloud_guard_policies" {
-    source = "../modules/iam/iam-policy"
-    providers = { oci = oci.home }
-    policies = {
-        ("${var.service_label}-cloud-guard-policy") = {
+        },
+        (local.cloud_guard_policy_name) = {
             compartment_id = var.tenancy_ocid
-            description    = "Policy for Cloud Guard to be able to review a tenancy"
+            description    = "Cloud Guard service policy."
             statements     = ["Allow service cloudguard to read keys in tenancy",
                             "Allow service cloudguard to read compartments in tenancy",
                             "Allow service cloudguard to read tenancies in tenancy",
@@ -37,6 +27,14 @@ module "lz_cloud_guard_policies" {
                             "Allow service cloudguard to read dynamic-groups in tenancy",
                             "Allow service cloudguard to read authentication-policies in tenancy",
                             "Allow service cloudguard to use network-security-groups in tenancy"]
+        },
+        (local.vss_policy_name) = {
+            compartment_id = var.tenancy_ocid
+            description    = "Vulnerability Scanning service policy."
+            statements     = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
+                              "Allow service vulnerability-scanning-service to read compartments in tenancy",
+                              "Allow service vulnerability-scanning-service to read vnics in tenancy",
+                              "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
         }
-    }
+    } : {}
 }

@@ -9,7 +9,7 @@
 
 module "cis_vcn" {
   source               = "../modules/network/vcn"
-  compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   vcn_display_name     = local.vcn_display_name
   vcn_cidr             = var.vcn_cidr
   vcn_dns_label        = var.service_label

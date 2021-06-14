@@ -1,0 +1,166 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "CIS OCI Landing Zone Pre-Config Stack"
+stackDescription: "A Resource Manager Stack to pre configure a tenancy for Landing Zone deployment."
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "home_region"
+      - "unique_prefix"
+
+  - title: "Enclosing Compartments"
+    variables:
+      - "enclosing_compartment_names"
+      - "existing_enclosing_compartments_parent_ocid"
+      
+  - title: "Provisioning Groups"
+    variables:
+      - "use_existing_provisioning_group"
+      - "existing_provisioning_group_name"
+      
+  - title: "Landing Zone Groups"
+    variables:
+      - "use_existing_lz_groups"
+
+  - title: "Existing Groups"
+    variables:
+      - "existing_iam_admin_group_name"
+      - "existing_cred_admin_group_name"
+      - "existing_security_admin_group_name"
+      - "existing_network_admin_group_name"
+      - "existing_appdev_admin_group_name"
+      - "existing_database_admin_group_name"
+      - "existing_auditor_group_name"
+      - "existing_announcement_reader_group_name"
+    visible: use_existing_lz_groups
+      
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+      - "create_tenancy_level_policies"
+
+variables:
+  home_region:
+    type: oci:identity:region:name
+    title: "Home region"
+    description: "The tenancy home region."
+    required: true
+  
+  unique_prefix:
+    type: string
+    title: "Unique prefix"
+    minLength: 1
+    maxLength: 8
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "A unique prefix across the tenancy that is added to all resource names created by this stack."
+    required: true
+    
+  enclosing_compartment_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 5
+    minItems: 0
+    title: "Enclosing compartment names (max 5)"
+    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. (Type name and hit enter to enter multiple values, up to a maximum of 5)."
+    required: false
+    default: []
+
+  existing_enclosing_compartments_parent_ocid:
+    type: oci:identity:compartment:id
+    title: "Enclosing compartments parent"
+    description: "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
+    required: false
+  
+  use_existing_provisioning_group:
+    type: boolean
+    title: "Use existing group for provisioning?"
+    description: "Whether or not an existing group will be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by \"Enclosing compartment names\"."
+    default: false
+
+  existing_provisioning_group_name:
+    type: string
+    title: "Existing group name for provisioning"
+    description: "The name of an existing group to be used for provisioning all resources in the compartments defined by \"Enclosing compartment names\"."
+    visible :  use_existing_provisioning_group
+  
+  create_tenancy_level_policies:
+    type: boolean
+    title: "Create policies at root compartment (tenancy level policies)?"
+    description: "Whether or not policies for Landing Zone groups are created at the root compartment. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
+    default: true
+    required: true
+
+  use_existing_lz_groups:
+    type: boolean
+    title: "Use existing groups?"
+    description: "Whether or not existing groups are to be reused for Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
+    default: false
+    required: true
+  
+  existing_iam_admin_group_name:
+    type: string
+    title: "Existing IAM admin group name"
+    description: "Existing group to which IAM management policies will be granted to."
+    
+  existing_cred_admin_group_name:
+    type: string
+    title: "Existing credentials admin group name"
+    description: "Existing group to which credentials management policies will be granted to."
+      
+  existing_security_admin_group_name:
+    type: string
+    title: "Existing security admin group name"
+    description: "Existing group to which security management policies will be granted to."
+      
+  existing_network_admin_group_name:
+    type: string
+    title: "Existing network admin group name"
+    description: "Existing group to which network management policies will be granted to."
+      
+  existing_appdev_admin_group_name:
+    type: string
+    title: "Existing application development admin group name"
+    description: "Existing group to which application development management policies will be granted to."
+      
+  existing_database_admin_group_name:
+    type: string
+    title: "Existing database admin group name"
+    description: "Existing group to which database management policies will be granted to."
+      
+  existing_auditor_group_name:
+    type: string
+    title: "Existing auditors group name"
+    description: "Existing group to which auditing policies will be granted to."
+      
+  existing_announcement_reader_group_name:
+    type: string
+    title: "Existing announcement readers group name"
+    description: "Existing group to which annoucement reading policies will be granted to."
+      
+  # Hidden variables
+  tenancy_ocid:
+    type: string
+
+  user_ocid:
+    type: string
+
+  fingerprint:
+    type: string
+
+  private_key_path:
+    type: string
+
+  private_key_password:
+    type: password

@@ -22,8 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| compartments | n/a | <pre>map(object({<br>    description  = string<br>  }))</pre> | n/a | yes |
-| tenancy\_ocid | The OCID of the tenancy. | `any` | n/a | yes |
+| compartments | n/a | <pre>map(object({<br>    parent_id    = string<br>    description  = string<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

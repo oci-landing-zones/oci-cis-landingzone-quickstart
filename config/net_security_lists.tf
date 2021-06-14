@@ -19,16 +19,16 @@ locals {
 
 module "lz_security_lists" {
   source           = "../modules/network/security"
-  compartment_id   = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id   = module.lz_compartments.compartments[local.network_compartment_name].id
   security_lists = merge(local.web_security_lists, local.app_security_lists, local.db_security_lists)
 }   
 
 module "lz_dmz_security_lists" {
   count          = var.hub_spoke_architecture == true ? 1 : 0
   source         = "../modules/network/security"
-  compartment_id = module.cis_compartments.compartments[local.network_compartment_name].id
+  compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
   security_lists = {
-    (local.dmz_vcn_security_list_name) : {vcn_id : module.lz_vcns.vcns[local.dmz_vcn_name].id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null}
+    (local.dmz_vcn_security_list_name) : {vcn_id : module.lz_vcns.vcns[local.dmz_vcn["dmz"].name].id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null}
   }
 }
 

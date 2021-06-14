@@ -1,4 +1,7 @@
 resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
+  lifecycle {
+      create_before_destroy = true
+  }  
   for_each = var.scan_recipes
     compartment_id = each.value.compartment_id
     display_name = each.key 
@@ -22,9 +25,6 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
             vendor = each.value.agent_configuration_vendor
             cis_benchmark_settings {
                 scan_level = each.value.agent_cis_benchmark_settings_scan_level
-            }
-            endpoint_protection_settings {
-                scan_level = each.value.agent_endpoint_protection_settings_scan_level
             }
         }
     }

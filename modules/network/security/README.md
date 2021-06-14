@@ -16,8 +16,8 @@ No Modules.
 
 | Name |
 |------|
-| [oci_core_network_security_group](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_network_security_group) |
 | [oci_core_network_security_group_security_rule](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_network_security_group_security_rule) |
+| [oci_core_network_security_group](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_network_security_group) |
 | [oci_core_network_security_groups](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_network_security_groups) |
 | [oci_core_security_list](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_security_list) |
 

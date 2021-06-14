@@ -87,6 +87,64 @@ variable "existing_announcement_reader_group_name" {
   default = ""
 }
 
+#Enclosing Compartment
+variable "use_enclosing_compartment" {
+    type    = bool
+    default = false
+    description = "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment."
+}
+variable "existing_enclosing_compartment_ocid" {
+    type    = string
+    default = null
+    description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
+}
+variable "policies_in_root_compartment" {
+    type    = string
+    default = "CREATE"
+    description = "Whether or not required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
+    validation {
+      condition = var.policies_in_root_compartment == "CREATE" || var.policies_in_root_compartment == "USE"
+      error_message = "Invalid value provided for policies_in_root_compartment. Valid values: CREATE or USE."
+  }
+}
+variable "use_existing_iam_groups" {
+    type    = bool
+    default = false
+    description = "Whether or not existing groups are to be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
+}
+variable "existing_iam_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_cred_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_security_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_network_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_appdev_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_database_admin_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_auditor_group_name" {
+    type    = string
+    default = ""
+}
+variable "existing_announcement_reader_group_name" {
+    type    = string
+    default = ""
+}
+
 # Networking
 variable "hub_spoke_architecture" {
   type        = bool
@@ -245,8 +303,8 @@ variable "security_admin_email_endpoint" {
 variable "cloud_guard_configuration_status" {
   default = "ENABLED"
   validation {
-    condition     = var.cloud_guard_configuration_status == "ENABLED" || var.cloud_guard_configuration_status == "DISABLED"
-    error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values: ENABLED or DISABLED."
+      condition = contains(["ENABLED","DISABLED"], upper(var.cloud_guard_configuration_status))
+      error_message = "Invalid value provided for cloud_guard_configuration_status. Valid values (case insensitive): ENABLED or DISABLED."
   }
 }
 
@@ -256,7 +314,6 @@ variable "create_service_connector_audit" {
   default     = false
   description = "Create Service Connector Hub for Audit logs. This may incur some charges."
 }
-
 variable "service_connector_audit_target" {
   type        = string
   default     = "objectstorage"
@@ -266,7 +323,6 @@ variable "service_connector_audit_target" {
     error_message = "Invalid value provided for service_connector_audit_target. Valid values: objectStorage, streaming, functions."
   }
 }
-
 variable "service_connector_audit_state" {
   type        = string
   default     = "INACTIVE"
@@ -276,31 +332,26 @@ variable "service_connector_audit_state" {
     error_message = "Invalid value provided for service_connector_audit_target. Valid values: ACTIVE, INACTIVE."
   }
 }
-
 variable "service_connector_audit_target_OCID" {
   type        = string
   default     = ""
   description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs"
 }
-
 variable "service_connector_audit_target_cmpt_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
+    type = string
+    default = ""
+    description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
 }
-
 variable "sch_audit_objStore_objNamePrefix" {
   type        = string
   default     = "sch-audit"
   description = "Applicable only for objectStorage target type. The prefix for the objects for Audit logs"
 }
-
 variable "create_service_connector_vcnFlowLogs" {
   type        = bool
   default     = false
   description = "Create Service Connector Hub for VCN Flow logs. This may incur some charges."
 }
-
 variable "service_connector_vcnFlowLogs_target" {
   type        = string
   default     = "objectstorage"
@@ -310,7 +361,6 @@ variable "service_connector_vcnFlowLogs_target" {
     error_message = "Invalid value provided for service_connector_vcnFlowLogs_target. Valid values: objectStorage, streaming, functions."
   }
 }
-
 variable "service_connector_vcnFlowLogs_state" {
   type        = string
   default     = "INACTIVE"
@@ -320,21 +370,43 @@ variable "service_connector_vcnFlowLogs_state" {
     error_message = "Invalid value provided for service_connector_vcnFlowLogs_state. Valid values: ACTIVE, INACTIVE."
   }
 }
-
 variable "service_connector_vcnFlowLogs_target_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
+    type = string
+    default = ""
+    description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
 }
-
 variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
+    type = string
+    default = ""
+    description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
 }
-
 variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
   type        = string
   default     = "sch-vcnFlowLogs"
   description = "Applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs"
+}
+
+# Vulnerability Scanning Service
+variable "vss_create" {
+    description = "Whether or not Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone."
+    type = bool
+    default = true
+}
+variable "vss_scan_schedule" {
+    description = "The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY."
+    type = string
+    default = "WEEKLY"
+    validation {
+        condition = contains(["WEEKLY","DAILY"], upper(var.vss_scan_schedule))
+        error_message = "Invalid value for provided for vss_scan_schedule. Valid values (case insensitive): WEEKLY or DAILY."
+    }
+}
+variable "vss_scan_day" {
+    description = "The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY."
+    type = string
+    default = "SUNDAY"
+    validation {
+        condition = contains(["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"], upper(var.vss_scan_day))
+        error_message = "Invalid value for provided for vss_scan_day. Valid values (case insensitive): SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY."
+    }
 }

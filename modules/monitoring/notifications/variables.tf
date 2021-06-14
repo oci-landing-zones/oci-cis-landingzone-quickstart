@@ -1,6 +1,21 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+variable "rules" {
+  description = "Rules parameters"
+  type = map(object({
+    compartment_id      = string,
+    description         = string,
+    condition           = string,
+    is_enabled          = bool,
+    actions_action_type = string,
+    actions_is_enabled  = bool,
+    actions_description = string,
+    topic_id            = string,
+    defined_tags        = map(string)
+  }))
+}
+/*
 variable "compartment_id" {
   type        = string
   description = "The default compartment OCID to use for resources (unless otherwise specified)."
@@ -54,4 +69,4 @@ variable "topic_id" {
   description = "The topic id to send the notification to."
   default     = ""
 }
-
+*/

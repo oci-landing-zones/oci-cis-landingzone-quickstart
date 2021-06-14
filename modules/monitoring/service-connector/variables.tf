@@ -16,12 +16,12 @@ variable "service_connector" {
         target = object({
             target_kind             = string,
             compartment_id             = string,
-            batch_rollover_size_in_mbs = string,
-            batch_rollover_time_in_ms  = string,
             object_store_details = object({
                 namespace = string,
                 bucket_name = string,
-                object_name_prefix = string
+                object_name_prefix = string,
+                batch_rollover_size_in_mbs = number,
+                batch_rollover_time_in_ms  = number
             }),
             stream_id = string,
             function_id = string

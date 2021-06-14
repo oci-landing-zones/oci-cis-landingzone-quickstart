@@ -67,7 +67,7 @@ resource "oci_core_drg" "this" {
 ### DRG attachment to VCN
 resource "oci_core_drg_attachment" "these" {
   for_each = {for k, v in var.vcns: k => v if v.is_attach_drg == true}
-    drg_id       = oci_core_drg.this[0].id
+    drg_id       = var.drg_id == null ? oci_core_drg.this[0].id : var.drg_id
     vcn_id       = oci_core_vcn.these[each.key].id
     display_name = "${each.key}-drg-attachment"
 }

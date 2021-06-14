@@ -87,64 +87,6 @@ variable "existing_announcement_reader_group_name" {
   default = ""
 }
 
-#Enclosing Compartment
-variable "use_enclosing_compartment" {
-    type    = bool
-    default = false
-    description = "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment."
-}
-variable "existing_enclosing_compartment_ocid" {
-    type    = string
-    default = null
-    description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
-}
-variable "policies_in_root_compartment" {
-    type    = string
-    default = "CREATE"
-    description = "Whether or not required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
-    validation {
-      condition = var.policies_in_root_compartment == "CREATE" || var.policies_in_root_compartment == "USE"
-      error_message = "Invalid value provided for policies_in_root_compartment. Valid values: CREATE or USE."
-  }
-}
-variable "use_existing_iam_groups" {
-    type    = bool
-    default = false
-    description = "Whether or not existing groups are to be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
-}
-variable "existing_iam_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_cred_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_security_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_network_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_appdev_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_database_admin_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_auditor_group_name" {
-    type    = string
-    default = ""
-}
-variable "existing_announcement_reader_group_name" {
-    type    = string
-    default = ""
-}
-
 # Networking
 variable "hub_spoke_architecture" {
   type        = bool

@@ -8,7 +8,7 @@ resource "oci_core_default_security_list" "default_security_list" {
   ingress_security_rules {
     protocol  = "1"
     stateless = false
-    source    = local.anywhere
+    source    = var.public_src_lbr_cidr
     icmp_options {
       type = 3
       code = 4

@@ -134,9 +134,8 @@ variables:
     type: string
     title: "Load Balancer Grant IP Range"
     required: true
-    default: "0.0.0.0/0"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range allowed to connect to a public load balancer that is eventually deployed."
+    description: "External IP range allowed to connect to the VCN public subnet over the http protocol."
 
   is_vcn_onprem_connected:
     type: boolean

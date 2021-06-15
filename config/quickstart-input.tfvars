@@ -15,7 +15,8 @@ service_label        = "<a_label_to_prefix_resource_names_with>"
 ### For Networking
 is_vcn_onprem_connected       = <false_or_true>
 onprem_cidr                   = "<onprem_cidr_block_range>"
-public_src_bastion_cidr       = "<external_cidr_block_range_allowed_to_connect_to_bastion_servers>"
+public_src_bastion_cidr       = "<external_cidr_block_range_allowed_to_connect_to_bastion_servers_over_ssh>"
+public_src_lbr_cidr           = "<external_cidr_block_range_allowed_to_connect_to_vcn_public_subnet_over_http>"
 
 ### For Security
 network_admin_email_endpoint  = "<email_to_receive_network_related_notifications>"
@@ -29,7 +30,6 @@ security_admin_email_endpoint = "<email_to_receive_security_related_notification
 # public_subnet_cidr                              = "10.0.1.0/24" 
 # private_subnet_app_cidr                         = "10.0.2.0/24" 
 # private_subnet_db_cidr                          = "10.0.3.0/24" 
-# public_src_lbr_cidr                             = "0.0.0.0/0" 
 
 ##### Cloud Guard
 # cloud_guard_configuration_status                = "ENABLED"

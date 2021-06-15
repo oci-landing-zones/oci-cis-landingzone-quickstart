@@ -48,20 +48,21 @@ locals {
 }
 
 resource "oci_core_network_security_group" "these" {
-  for_each       = var.nsgs
-  compartment_id = var.default_compartment_id
-  vcn_id         = var.vcn_id
-  display_name   = each.key
+  for_each = var.nsgs
+    compartment_id = var.compartment_id
+    vcn_id         = each.value.vcn_id
+    display_name   = each.key
 }
 
-data "oci_core_network_security_groups" "this" {
-  compartment_id = var.default_compartment_id
-  vcn_id         = var.vcn_id
+data "oci_core_network_security_groups" "these" {
+  for_each = var.nsgs
+    compartment_id = var.compartment_id
+    vcn_id         = each.value.vcn_id
 }
 
 locals {
   local_nsg_ids  = { for i in oci_core_network_security_group.these : i.display_name => i.id }
-  remote_nsg_ids = { for i in data.oci_core_network_security_groups.this.network_security_groups : i.display_name => i.id }
+  remote_nsg_ids = { for k,v in var.nsgs : k => [for i in data.oci_core_network_security_groups.these[k].network_security_groups : i.id]}
   nsg_ids        = merge(local.remote_nsg_ids, local.local_nsg_ids)
 }
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+/* # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### This Terraform changes the VCN's default security list, so that only ICMP traffic is allowed.
@@ -70,4 +70,4 @@ resource "oci_core_default_security_list" "spoke2_default_security_list" {
       code = null
     }
   }
-}
+} */

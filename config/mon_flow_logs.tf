@@ -3,7 +3,7 @@
 
 ### This Terraform configuration provisions flow logs for all subnets provisioned in the cis-network configuration.
 locals {
-    flow_logs = {for k,v in module.cis_vcn.subnets : k => 
+    flow_logs = {for k,v in module.lz_vcns.subnets : k => 
         {
             log_display_name              = "${k}-flow-log",
             log_type                      = "SERVICE",
@@ -20,7 +20,7 @@ locals {
     }
 }
 module "lz_flow_logs" {
-  depends_on             = [ module.cis_vcn ]  
+  depends_on             = [ module.lz_vcns ]  
   source                 = "../modules/monitoring/logs"
   compartment_id         = module.lz_compartments.compartments[local.security_compartment_name].id
   log_group_display_name = "${var.service_label}-flow-logs-group"

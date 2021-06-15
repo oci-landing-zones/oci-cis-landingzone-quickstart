@@ -54,7 +54,7 @@ locals {
 
   ### Network
   anywhere                    = "0.0.0.0/0"
-  valid_service_gateway_cidrs = ["oci-${local.region_key}-objectstorage", "all-${local.region_key}-services-in-oracle-services-network"]
+  valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
 
   # VCN names
   vcn_display_name = "${var.service_label}-VCN"

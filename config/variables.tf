@@ -79,7 +79,6 @@ variable "is_vcn_onprem_connected" {
     }
 }
 variable "onprem_cidr" {
-    default = "0.0.0.0/0"
     validation { 
         condition = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",var.onprem_cidr)) > 0
         error_message = "Invalid cidr block value provided for onprem_cidr variable."

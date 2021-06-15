@@ -73,7 +73,7 @@ module "cis_vcn" {
       compartment_id = null
       route_rules = [{
           is_create         = true
-          destination       = local.anywhere
+          destination       = var.public_src_lbr_cidr
           destination_type  = "CIDR_BLOCK"
           network_entity_id = module.cis_vcn.internet_gateway.id
         },

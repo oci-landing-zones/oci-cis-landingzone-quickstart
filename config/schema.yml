@@ -82,13 +82,13 @@ variables:
     minLength: 1
     maxLength: 127
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "A unique label that gets prepended to all resources created by the Landing Zone"
+    description: "A unique label that gets prepended to all resources created by the Landing Zone."
     required: true
 
   region:
     type: oci:identity:region:name
     title: "Region"
-    description: "The region for resources deployment"
+    description: "The region for resources deployment."
     required: true
   
   vcn_cidr:
@@ -97,7 +97,7 @@ variables:
     required: true
     default: "10.0.0.0/16"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "Network IP range in CIDR notation"
+    description: "Network IP range in CIDR notation."
 
   public_subnet_cidr:
     type: string
@@ -105,7 +105,7 @@ variables:
     required: true
     default: "10.0.1.0/24"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of public subnet. It must be in VCN CIDR range"
+    description: "IP range of public subnet in CIDR notation. It must be in VCN CIDR range."
 
   private_subnet_app_cidr:
     type: string
@@ -113,7 +113,7 @@ variables:
     required: true
     default: "10.0.2.0/24"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of application subnet. It must be in VCN CIDR range"
+    description: "IP range of application subnet in CIDR notation. It must be in VCN CIDR range."
 
   private_subnet_db_cidr:
     type: string
@@ -121,14 +121,14 @@ variables:
     required: true
     default: "10.0.3.0/24"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of database subnet. It must be in VCN CIDR range"
+    description: "IP range of database subnet in CIDR notation. It must be in VCN CIDR range."
 
   public_src_bastion_cidr:
     type: string
     title: "Bastion Grant IP Range"
     required: true
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range allowed to connect to bastion host. It must not be 0.0.0.0/0"
+    description: "External IP range allowed to connect to bastion host. It must not be 0.0.0.0/0."
 
   public_src_lbr_cidr:
     type: string
@@ -136,7 +136,7 @@ variables:
     required: true
     default: "0.0.0.0/0"
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range allowed to connect to public load balancer"
+    description: "External IP range allowed to connect to a public load balancer that is eventually deployed."
 
   is_vcn_onprem_connected:
     type: boolean
@@ -156,19 +156,19 @@ variables:
     title: "Network Admin Email Address"
     pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     required: true
-    description: "Recipient for all network notifications"
+    description: "Recipient for all network notifications."
 
   security_admin_email_endpoint:
     type: string
     title: "Security Admin Email Address"
     pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     required: true
-    description: "Recipient for all securtiy notifications"
+    description: "Recipient for all securtiy notifications."
 
   cloud_guard_configuration_status:
     type: enum
     title: "Cloud Guard Configuration Status"
-    description: "Whether or not to activate Cloud Guard as part of Landing Zone deployment"
+    description: "Whether or not to activate Cloud Guard as part of Landing Zone deployment."
     enum:
       - ENABLED
       - DISABLED
@@ -178,14 +178,14 @@ variables:
     type: boolean
     required: true
     title: "Create Service Connector Hub for Audit Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for Audit logs. Costs associated are due to storing objects in object storage / streaming or function invocations"
+    description: "Create Service Connector Hub for Audit logs. Costs associated are due to storing objects in object storage / streaming or function invocations."
     default: false
 
   service_connector_audit_target:
     type: enum
     required: false
     title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for Audit Logs. Select one of - objectstorage, streaming or functions"
+    description: "Destination for Service Connector Hub for Audit Logs. Select one of - objectstorage, streaming or functions."
     default: objectstorage
     visible: create_service_connector_audit
     enum:
@@ -197,7 +197,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for Audit logs"
+    description: "State in which to create the Service Connector Hub for Audit logs."
     default: INACTIVE
     visible: create_service_connector_audit
     enum:
@@ -208,7 +208,7 @@ variables:
     type: string
     required: false
     title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs"
+    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs."
     visible: 
       and:
         - ${create_service_connector_audit}
@@ -224,7 +224,7 @@ variables:
     type: string
     required: false
     title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs"
+    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs."
     visible: 
       and:
         - ${create_service_connector_audit}
@@ -240,7 +240,7 @@ variables:
     type: string
     required: false
     title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for Audit logs"
+    description: "Applicable only for objectstorage target type. The prefix for the objects for Audit logs."
     default: "sch-audit"
     visible: 
       and:
@@ -255,14 +255,14 @@ variables:
     type: boolean
     required: true
     title: "Create Service Connector Hub for VCN Flow Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for VCN Flow logs. Costs associated are due to storing objects in object storage / streaming or function invocations"
+    description: "Create Service Connector Hub for VCN Flow logs. Costs associated are due to storing objects in object storage / streaming or function invocations."
     default: false
 
   service_connector_vcnFlowLogs_target:
     type: enum
     required: false
     title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for VCN Flow Logs. Select one of - objectstorage, streaming or functions"
+    description: "Destination for Service Connector Hub for VCN Flow Logs. Select one of - objectstorage, streaming or functions."
     default: objectstorage
     visible: create_service_connector_vcnFlowLogs
     enum:
@@ -274,7 +274,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for VCN Flow logs"
+    description: "State in which to create the Service Connector Hub for VCN Flow logs."
     default: INACTIVE
     visible: create_service_connector_vcnFlowLogs
     enum:
@@ -285,7 +285,7 @@ variables:
     type: string
     required: false
     title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
+    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs."
     visible: 
       and:
         - ${create_service_connector_vcnFlowLogs}
@@ -301,7 +301,7 @@ variables:
     type: string
     required: false
     title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
+    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs."
     visible: 
       and:
         - ${create_service_connector_vcnFlowLogs}
@@ -317,7 +317,7 @@ variables:
     type: string
     required: false
     title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs"
+    description: "Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs."
     default: "sch-vcnFlowLogs"
     visible: 
       and:

@@ -34,14 +34,14 @@ resource "oci_core_internet_gateway" "these" {
   for_each = {for k, v in var.vcns: k => v if v.is_create_igw == true}
     compartment_id = each.value.compartment_id
     vcn_id         = oci_core_vcn.these[each.key].id
-    display_name   = "${each.key}-int-gw"
+    display_name   = "${each.key}-igw"
 }
 
 ### NAT Gateway
 resource "oci_core_nat_gateway" "these" {
   for_each = {for k, v in var.vcns: k => v if v.is_create_igw == true}
     compartment_id = each.value.compartment_id
-    display_name  = "${each.key}-nat-gw"
+    display_name  = "${each.key}-natgw"
     vcn_id        = oci_core_vcn.these[each.key].id
     block_traffic = each.value.block_nat_traffic
 }
@@ -50,7 +50,7 @@ resource "oci_core_nat_gateway" "these" {
 resource "oci_core_service_gateway" "these" {
   for_each = var.vcns
     compartment_id = each.value.compartment_id
-    display_name   = "${each.key}-svc-gw"
+    display_name   = "${each.key}-sgw"
     vcn_id         = oci_core_vcn.these[each.key].id
     services {
       service_id = local.osn_cidrs[var.service_gateway_cidr]

@@ -56,34 +56,17 @@ locals {
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
 
-  # VCN names
-  vcn_display_name = "${var.service_label}-VCN"
-
   # Subnet names
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   spoke_subnet_names = ["web", "app", "db"]
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   dmz_subnet_names = ["outdoor", "indoor", "mgmt", "ha", "diag"]
-  dmz_vcn = var.hub_spoke_architecture && var.dmz_vcn_cidr != null ? { for key, vcn in local.dmz_vcn_name : vcn.name => {
-    compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
-    cidr              = var.dmz_vcn_cidr
-    dns_label         = "dmz"
-    is_create_igw     = !var.no_internet_access
-    is_create_drg     = false
-    is_attach_drg     = true
-    block_nat_traffic = false
-    defined_tags      = null
-    subnets = { for s in range(var.dmz_number_of_subnets) : "${vcn.name}-${local.dmz_subnet_names[s]}-subnet" => {
-      compartment_id  = null
-      defined_tags    = null
-      cidr            = cidrsubnet(var.dmz_vcn_cidr, var.dmz_subnet_size, s)
-      dns_label       = local.dmz_subnet_names[s]
-      private         = var.no_internet_access ? true : s == 0 ? false : true
-      dhcp_options_id = null
-      }
-    }
-    }
+
+  dmz_vcn_name = var.hub_spoke_architecture ? {
+    name = "${var.service_label}-dmz-vcn"
+    cidr = var.dmz_vcn_cidr
   } : {}
+
 
   ### Object Storage
   oss_key_name = "${var.service_label}-oss-key"

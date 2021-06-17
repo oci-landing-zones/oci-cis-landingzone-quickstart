@@ -14,4 +14,8 @@ locals {
   database_admin_group_name_suffix      = var.use_existing_lz_groups == false ? "database-admin-group" : var.existing_iam_admin_group_name
   auditor_group_name_suffix             = var.use_existing_lz_groups == false ? "auditor-group" : var.existing_iam_admin_group_name
   announcement_reader_group_name_suffix = var.use_existing_lz_groups == false ? "announcement-reader-group" : var.existing_iam_admin_group_name
+
+  cloud_guard_policy_name = "${var.unique_prefix}-cloud-guard-policy"
+  os_mgmt_policy_name     = "${var.unique_prefix}-os-management-policy"
+  vss_policy_name         = "${var.unique_prefix}-vss-policy"
 }

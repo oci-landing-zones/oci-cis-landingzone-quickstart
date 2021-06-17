@@ -178,7 +178,7 @@ locals {
     vcn_id : v.id,
     ingress_rules : {
       ssh-ingress-rule : {
-        is_create : !var.dmz_vcn_cidr != null,
+        is_create : var.dmz_vcn_cidr != null,
         description : "SSH ingress rule for ${k}-bastion-nsg.",
         stateless : false,
         protocol : "6",

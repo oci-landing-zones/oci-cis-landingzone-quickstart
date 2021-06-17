@@ -10,12 +10,14 @@ resource "oci_core_route_table" "these" {
       dst : r.destination
       dst_type : r.destination_type
       ntwk_entity_id : r.network_entity_id
+      description : r.description
     } if r.is_create == true]
 
     content {
       destination       = rule.value.dst
       destination_type  = rule.value.dst_type
       network_entity_id = rule.value.ntwk_entity_id
+      description       = rule.value.description
     }
   }
 }

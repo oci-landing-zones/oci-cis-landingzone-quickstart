@@ -16,27 +16,20 @@ locals {
     vcn_id : v.id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null
   } if length(regexall(".*spoke*", k)) > 0}
 
-  # all_vcns = merge(module.lz_vcn_spokes.vcns,)
+  dmz_security_lists = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_dmz.subnets : replace("${k}-security-list","subnet-","") => {
+    vcn_id: v.vcn_id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null }} : {}
 
 }
 
 module "lz_security_lists" {
   source           = "../modules/network/security"
   compartment_id   = module.lz_compartments.compartments[local.network_compartment_name].id
-  security_lists = merge(local.web_security_lists, local.app_security_lists, local.db_security_lists)
+  security_lists = merge(local.web_security_lists, local.app_security_lists, local.db_security_lists, local.dmz_security_lists)
 }   
 
-# module "lz_dmz_security_lists" {
-#   count          = var.dmz_vcn_cidr == null ? 1 : 0
-#   source         = "../modules/network/security"
-#   compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
-#   security_lists = {
-#     (local.dmz_vcn_security_list_name) : {vcn_id : module.lz_vcns.vcns[local.dmz_vcn["dmz"].name].id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null}
-#   }
-# }
 
 resource "oci_core_default_security_list" "default_security_list" {
-  for_each = module.lz_vcn_spokes.vcns
+  for_each = var.dmz_vcn_cidr == null ? module.lz_vcn_spokes.vcns : merge(module.lz_vcn_spokes.vcns, module.lz_vcn_dmz.vcns)
     manage_default_resource_id = each.value.default_security_list_id
     ingress_security_rules {
       protocol  = "1"

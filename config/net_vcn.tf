@@ -45,7 +45,7 @@ locals {
 
   ### Route Tables ###
   ## Web Subnet Route Tables
-  web_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace(key, "subnet", "route-table") => {
+  web_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -72,7 +72,7 @@ locals {
         description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = var.hub_spoke_architecture && var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
@@ -85,29 +85,29 @@ locals {
         network_entity_id = var.dmz_vcn_cidr == null && !var.no_internet_access ? module.lz_vcn_spokes.internet_gateways[subnet.vcn_id].id : null
         description       = "${local.anywhere} to Internet Gateway"
 
-      },
-      {
-        is_create         = var.dmz_vcn_cidr != null && var.hub_spoke_architecture
-        destination       = local.anywhere
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${local.anywhere} to DRG"
-
       }
+      # {
+      #   is_create         = var.dmz_vcn_cidr != null && var.hub_spoke_architecture
+      #   destination       = local.anywhere
+      #   destination_type  = "CIDR_BLOCK"
+      #   network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
+      #   description       = "${local.anywhere} to DRG"
+
+      # }
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
       is_create = var.hub_spoke_architecture && var.dmz_vcn_cidr == null
       destination = vcn.cidr_block
       destination_type = "CIDR_BLOCK"
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-      description = "${vcn_name} traffic to DRG"
+      description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
   ]
   )
   } if length(regexall(".*-${local.spoke_subnet_names[0]}-*", key)) > 0 }
 
   ## App Subnet Route Tables
-  app_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace(key, "subnet", "route-table") => {
+  app_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -127,7 +127,7 @@ locals {
         description       = "${local.anywhere} to DRG to access spokes and ${var.onprem_cidr}"
       },
       {
-        is_create         = var.hub_spoke_architecture && var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
@@ -141,14 +141,14 @@ locals {
         description       = "${local.anywhere} to NAT Gateway for private subnets"
 
       },
-      {
-        is_create         = var.is_vcn_onprem_connected == true && !var.hub_spoke_architecture == true ? true : false
-        destination       = var.onprem_cidr
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${local.anywhere} to DRG to access ${var.onprem_cidr}"
+      # {
+      #   is_create         = var.is_vcn_onprem_connected && !var.hub_spoke_architecture
+      #   destination       = var.onprem_cidr
+      #   destination_type  = "CIDR_BLOCK"
+      #   network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
+      #   description       = "${local.anywhere} to DRG to access ${var.onprem_cidr}"
 
-      }
+      # }
 
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
@@ -156,14 +156,14 @@ locals {
       destination = vcn.cidr_block
       destination_type = "CIDR_BLOCK"
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-      description = "${vcn_name} traffic to DRG"
+      description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
   ]
   )
   } if length(regexall(".*-${local.spoke_subnet_names[1]}-*", key)) > 0 }
 
   ## Database Subnet Route Tables
-  db_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace(key, "subnet", "route-table") => {
+  db_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -176,7 +176,7 @@ locals {
       description       = "All OSN Services to SGW"
       },
       {
-        is_create         = var.hub_spoke_architecture && var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
@@ -195,7 +195,7 @@ locals {
       destination = vcn.cidr_block
       destination_type = "CIDR_BLOCK"
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-      description = "${vcn_name} traffic to DRG"
+      description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
   ]
   )
@@ -205,8 +205,7 @@ locals {
 
   lz_spoke_subnet_route_tables = merge(local.web_spoke_route_route_tables,
     local.app_spoke_route_route_tables,
-    local.db_spoke_route_route_tables,
-  local.outdoor_dmz_route_route_tables)
+    local.db_spoke_route_route_tables)
 
 }
 

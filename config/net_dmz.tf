@@ -3,11 +3,6 @@
 
 locals {
 
-#   dmz_vcn_name = var.hub_spoke_architecture ? { ("dmz") = {
-#     name = "${var.service_label}-dmz-vcn"
-#     cidr = var.dmz_vcn_cidr
-#   } } : {}
-
   dmz_vcn = var.hub_spoke_architecture && var.dmz_vcn_cidr != null ? {(local.dmz_vcn_name.name) = {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = var.dmz_vcn_cidr

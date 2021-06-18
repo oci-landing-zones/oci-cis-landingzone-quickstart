@@ -30,11 +30,10 @@ locals {
     
   } : {}
 
-all_lz_vcn_dmzs = local.dmz_vcn
 all_lz_vcn_dmz_ids = module.lz_vcn_dmz.vcns
 all_lz_dmz_subnets = module.lz_vcn_dmz.subnets
 
-  outdoor_dmz_route_route_tables = { for key, subnet in local.all_lz_dmz_subnets : replace(key, "subnet", "route-table") => {
+  outdoor_dmz_route_tables = { for key, subnet in local.all_lz_dmz_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -81,7 +80,7 @@ all_lz_dmz_subnets = module.lz_vcn_dmz.subnets
     )
   } if length(regexall(".*-${local.dmz_subnet_names[0]}-*", key)) > 0 }
 
-  other_dmz_route_route_tables = { for key, subnet in local.all_lz_dmz_subnets : replace(key, "subnet", "route-table") => {
+  other_dmz_route_tables = { for key, subnet in local.all_lz_dmz_subnets :  replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -128,7 +127,7 @@ all_lz_dmz_subnets = module.lz_vcn_dmz.subnets
   }}
 
 
-  lz_dmz_subnet_route_tables = merge(local.outdoor_dmz_route_route_tables, local.other_dmz_route_route_tables)
+  all_lz_dmz_subnet_route_tables = merge(local.outdoor_dmz_route_tables, local.other_dmz_route_tables)
 
 }
 
@@ -148,5 +147,5 @@ module "lz_route_tables_dmz" {
   depends_on           = [ module.lz_vcn_dmz ]
   source               = "../modules/network/vcn-routing"
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
-  subnets_route_tables = local.lz_dmz_subnet_route_tables
+  subnets_route_tables = local.all_lz_dmz_subnet_route_tables
 }

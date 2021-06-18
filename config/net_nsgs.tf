@@ -22,7 +22,7 @@ locals {
         icmp_code : null
       },
       ssh-onprem-ingress-rule : {
-        is_create : (var.is_vcn_onprem_connected || var.no_internet_access),
+        is_create : (var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null),
         description : "SSH ingress rule for on-premises CIDR ${var.onprem_cidr}.",
         stateless : false,
         protocol : "6",
@@ -40,7 +40,7 @@ locals {
         description : "SSH ingress rule for bastions in DMZ network",
         stateless : false,
         protocol : "6",
-        src : module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block,
+        src :  var.dmz_vcn_cidr != null ? module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block : null,
         src_type : "CIDR_BLOCK",
         dst_port_min : 22,
         dst_port_max : 22,
@@ -52,7 +52,7 @@ locals {
     },
     egress_rules : {
       app-egress_rule : {
-        is_create : !var.hub_spoke_architecture,
+        is_create : var.dmz_vcn_cidr == null,
         description : "SSH egress rule to ${k}-app-nsg.",
         stateless : false,
         protocol : "6",
@@ -66,7 +66,7 @@ locals {
         icmp_code : null
       },
       db-egress_rule : {
-        is_create : !var.hub_spoke_architecture,
+        is_create : var.dmz_vcn_cidr == null,
         description : "SSH egress rule to ${k}-db-nsg.",
         stateless : false,
         protocol : "6",
@@ -80,7 +80,7 @@ locals {
         icmp_code : null
       },
       osn-services-egress-rule : {
-        is_create : !var.hub_spoke_architecture,
+        is_create : var.dmz_vcn_cidr == null,
         description : "OSN egress rule to ${local.valid_service_gateway_cidrs[0]}.",
         stateless : false,
         protocol : "6",
@@ -100,7 +100,7 @@ locals {
     vcn_id : v.id,
     ingress_rules : {
       http-public-ingress-rule : {
-        is_create : !var.no_internet_access && !var.hub_spoke_architecture,
+        is_create : !var.no_internet_access && var.dmz_vcn_cidr != null,
         description : "HTTPS ingress rule for ${var.public_src_lbr_cidr}.",
         stateless : false,
         protocol : "6",
@@ -132,7 +132,7 @@ locals {
         description : "HTTPS ingress rule for DMZ services.",
         stateless : false,
         protocol : "6",
-        src : module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block,
+        src : var.dmz_vcn_cidr != null ? module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block : null,
         src_type : "CIDR_BLOCK",
         dst_port_min : 443,
         dst_port_max : 443,
@@ -178,7 +178,7 @@ locals {
     vcn_id : v.id,
     ingress_rules : {
       ssh-ingress-rule : {
-        is_create : var.dmz_vcn_cidr != null,
+        is_create : var.dmz_vcn_cidr == null,
         description : "SSH ingress rule for ${k}-bastion-nsg.",
         stateless : false,
         protocol : "6",
@@ -299,7 +299,7 @@ module "lz_nsgs_spokes" {
 locals {
   dmz_bastions_nsg_name = "${local.dmz_vcn_name.name}-bastion-nsg"
   dmz_services_nsg_name = "${local.dmz_vcn_name.name}-services-nsg"
-  ssh_dmz_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcn_dmz.vcns : "${k}-dmz-ssh-egress-rule" => { 
+  ssh_dmz_to_spokes_nsg_egress_rules = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_dmz.vcns : "${k}-dmz-ssh-egress-rule" => { 
     is_create : true,
     description : "SSH egress rule to ${k}.",
     protocol : "6",
@@ -312,9 +312,9 @@ locals {
     src_port_max : null,
     icmp_type : null,
     icmp_code : null
-    } if length(regexall(".*spoke*", k)) > 0 }
+    } if length(regexall(".*spoke*", k)) > 0 } : {}
 
-  http_dmz_to_spokes_nsg_egress_rules = { for k, v in module.lz_vcn_dmz.vcns : "${k}-dmz-http-egress-rule" => {
+  http_dmz_to_spokes_nsg_egress_rules = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_dmz.vcns : "${k}-dmz-http-egress-rule" => {
         is_create : true,
         description : "HTTP egress rule to ${k}.",
         protocol : "6",
@@ -327,12 +327,12 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
-        } if length(regexall(".*spoke*", k)) > 0 }  
+        } if length(regexall(".*spoke*", k)) > 0 } : {}  
 }
 
 module "lz_nsgs_dmz" {
   depends_on = [module.lz_vcn_dmz]
-  count          = var.hub_spoke_architecture == true ? 1 : 0
+  count          = var.dmz_vcn_cidr != null ? 1 : 0
   source         = "../modules/network/security"
   compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
   nsgs = {

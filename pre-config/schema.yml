@@ -61,8 +61,8 @@ variables:
     type: string
     title: "Unique prefix"
     minLength: 1
-    maxLength: 8
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    maxLength: 16
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,16}$"
     description: "A unique prefix across the tenancy that is added to all resource names created by this stack."
     required: true
 

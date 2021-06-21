@@ -29,7 +29,7 @@ locals {
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))
       dns_label       = s
-      private         = var.hub_spoke_architecture || var.no_internet_access ? true : (index(local.spoke_subnet_names, s) == 0 ? false : true)
+      private         = var.dmz_vcn_cidr != null || var.no_internet_access ? true : (index(local.spoke_subnet_names, s) == 0 ? false : true)
       dhcp_options_id = null
       }
     }
@@ -72,7 +72,7 @@ locals {
         description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
@@ -86,14 +86,6 @@ locals {
         description       = "${local.anywhere} to Internet Gateway"
 
       }
-      # {
-      #   is_create         = var.dmz_vcn_cidr != null && var.hub_spoke_architecture
-      #   destination       = local.anywhere
-      #   destination_type  = "CIDR_BLOCK"
-      #   network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-      #   description       = "${local.anywhere} to DRG"
-
-      # }
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
       is_create = var.hub_spoke_architecture && var.dmz_vcn_cidr == null
@@ -117,38 +109,30 @@ locals {
       destination       = local.valid_service_gateway_cidrs[0]
       destination_type  = "SERVICE_CIDR_BLOCK"
       network_entity_id = module.lz_vcn_spokes.service_gateways[subnet.vcn_id].id
-      description       = "All OSN Services to SGW"
+      description       = "All OSN Sercices to SGW"
       },
       {
-        is_create         = var.hub_spoke_architecture
+        is_create         = var.dmz_vcn_cidr != null
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${local.anywhere} to DRG to access spokes and ${var.onprem_cidr}"
+        description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
         description       = "${var.onprem_cidr} to DRG"
       },
       {
-        is_create         = !var.hub_spoke_architecture && !var.no_internet_access ? true : false
+        is_create         = var.dmz_vcn_cidr == null && !var.no_internet_access ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = !var.hub_spoke_architecture && !var.no_internet_access ? module.lz_vcn_spokes.nat_gateways[subnet.vcn_id].id : null
+        network_entity_id = var.dmz_vcn_cidr == null && !var.no_internet_access ? module.lz_vcn_spokes.nat_gateways[subnet.vcn_id].id : null
         description       = "${local.anywhere} to NAT Gateway for private subnets"
 
-      },
-      # {
-      #   is_create         = var.is_vcn_onprem_connected && !var.hub_spoke_architecture
-      #   destination       = var.onprem_cidr
-      #   destination_type  = "CIDR_BLOCK"
-      #   network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-      #   description       = "${local.anywhere} to DRG to access ${var.onprem_cidr}"
-
-      # }
+      }
 
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
@@ -176,14 +160,14 @@ locals {
       description       = "All OSN Services to SGW"
       },
       {
-        is_create         = (var.hub_spoke_architecture || var.is_vcn_onprem_connected) && var.dmz_vcn_cidr == null
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
         destination       = var.onprem_cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
         description       = "${var.onprem_cidr} to DRG"
       },
       {
-        is_create         = var.hub_spoke_architecture && var.dmz_vcn_cidr != null
+        is_create         = var.dmz_vcn_cidr != null
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null

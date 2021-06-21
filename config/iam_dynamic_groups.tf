@@ -5,7 +5,7 @@ module "lz_dynamic_groups" {
     depends_on = [module.lz_compartments]
     source = "../modules/iam/iam-dynamic-group"
     providers = { oci = oci.home }
-    dynamic_groups = {
+    dynamic_groups = var.use_existing_iam_groups == false ? {
         ("${var.service_label}-sec-fun-dynamic-group") = {
             compartment_id = var.tenancy_ocid
             description    = "Dynamic Group for Functions in ${local.security_compartment_name} compartment"
@@ -16,7 +16,6 @@ module "lz_dynamic_groups" {
             description    = "Dynamic Group for Functions in ${local.appdev_compartment_name} compartment"
             matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment_name].id}'}"
         }
-
-    }
+    } : {}
 }
 

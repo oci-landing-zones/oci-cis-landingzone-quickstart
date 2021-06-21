@@ -109,7 +109,7 @@ variables:
   use_enclosing_compartment:
     type: boolean
     title: "Use an enclosing compartment?"
-    description: "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment."
+    description: "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment, in which case you must have the required permissions."
     default: false
     visible: env_advanced_options
   

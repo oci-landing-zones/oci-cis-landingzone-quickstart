@@ -130,10 +130,10 @@ variable "dmz_vcn_cidr" {
   type        = string
   default     = null
   description = "CIDR Block for the DMZ VCN.  DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ."
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0
-    error_message = "Invalid cidr block value provided for dmz_vcn_cidr variable."
-  }
+#   validation {
+#     condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0 || var.dmz_vcn_cidr == null
+#     error_message = "Invalid cidr block value provided for dmz_vcn_cidr variable."
+#   }
 
 }
 variable "dmz_number_of_subnets" {

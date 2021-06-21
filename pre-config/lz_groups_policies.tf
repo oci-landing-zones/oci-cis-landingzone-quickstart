@@ -7,16 +7,18 @@ module "lz_provisioning_tenancy_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.value.group_name}-root-policy" = {
+    "${each.key}-prov-policy" = {
       compartment_id = var.tenancy_ocid
-      description    = "Tenancy level policy allowing ${each.value.group_name} group to provision the CIS Landing Zone."
+      description    = "CIS Landing Zone provisioning policy."
       statements = ["Allow group ${each.value.group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
                     "Allow group ${each.value.group_name} to use tag-namespaces in tenancy",            # ability to check the tag-namespaces at the tenancy level and to apply tag defaults
                     "Allow group ${each.value.group_name} to read tag-defaults in tenancy",             # ability to check for tag-defaults at the tenancy level
                     "Allow group ${each.value.group_name} to manage cloudevents-rules in tenancy",      # for events: create IAM event rules at the tenancy level 
                     "Allow group ${each.value.group_name} to inspect compartments in tenancy",          # for events: access to resources in compartments to select rules actions
                     "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy",     # ability to enable Cloud Guard, which can be done only at the tenancy level
-                    "Allow group ${each.value.group_name} to read groups in tenancy"]                   # required for group lookup 
+                    "Allow group ${each.value.group_name} to read groups in tenancy",                   # for groups lookup 
+                    "Allow group ${each.value.group_name} to inspect tenancies in tenancy",             # for home region lookup
+                    "Allow group ${each.value.group_name} to inspect users in tenancy"]                 # for users lookup
     }
   }
 }
@@ -27,9 +29,11 @@ module "lz_provisioning_topcmp_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.value.group_name}-policy" = {
+    "${each.key}-prov-policy" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
-      description    = "Compartment level policy allowing ${each.value.group_name} group to provision the CIS Landing Zone in ${each.key} compartment."
+      description    = "CIS Landing Zone provisioning policy for ${each.key} compartment."
+      statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]
+      /*
       statements = ["Allow group ${each.value.group_name} to manage compartments in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to manage policies in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to manage virtual-network-family in compartment ${each.key}",
@@ -43,19 +47,20 @@ module "lz_provisioning_topcmp_group_policy" {
                     "Allow group ${each.value.group_name} to manage ons-family in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to manage vss-family in compartment ${each.key}",
                     "Allow group ${each.value.group_name} to manage orm-family in compartment ${each.key}"]
+    */                
     }
   }
 }
 
 ### Landing Zone security admin policy
 module "lz_groups_policy" {
-  depends_on = [module.lz_iam_admin_groups, module.lz_cred_admin_groups, module.lz_security_admin_groups, module.lz_appdev_admin_groups, module.lz_network_admin_groups, module.lz_database_admin_groups, module.lz_auditor_groups, module.lz_announcement_reader_groups]
+  depends_on = [module.lz_groups]
   for_each   = var.create_tenancy_level_policies == true ? local.lz_group_names : tomap([])
   source     = "../modules/iam/iam-policy"
   policies   = {
-    "${each.key}-root-policy" = {
+    "${each.key}-groups-policy" = {
       compartment_id    = var.tenancy_ocid
-      description       = "Tenancy level policies for Landing Zone groups."
+      description       = "CIS Landing Zone groups policy."
       statements        = [
                           # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloudevents-rules in tenancy",

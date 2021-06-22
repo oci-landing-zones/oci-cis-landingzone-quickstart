@@ -253,7 +253,10 @@ variables:
     title: "List of VCN names."
     description: "The VCN names. The order must match the CIDRs order above. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
     required: false
-    visible: specify_vcn_names
+    visible: 
+      and:
+        - net_advanced_options
+        - specify_vcn_names
     default: []  
 
   public_src_bastion_cidr:

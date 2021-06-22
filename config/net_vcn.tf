@@ -73,10 +73,10 @@ locals {
       },
       {
         is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr
+        destination       = var.onprem_cidr[0]
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr} to DRG"
+        description       = "${var.onprem_cidr[0]} to DRG"
       },
       {
         is_create         = var.dmz_vcn_cidr == null && !var.no_internet_access ? true : false
@@ -120,10 +120,10 @@ locals {
       },
       {
         is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr
+        destination       = var.onprem_cidr[0]
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr} to DRG"
+        description       = "${var.onprem_cidr[0]} to DRG"
       },
       {
         is_create         = var.dmz_vcn_cidr == null && !var.no_internet_access ? true : false
@@ -161,17 +161,17 @@ locals {
       },
       {
         is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr
+        destination       = var.onprem_cidr[0]
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr} to DRG"
+        description       = "${var.onprem_cidr[0]} to DRG"
       },
       {
         is_create         = var.dmz_vcn_cidr != null
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${local.anywhere} to DRG to access spokes and ${var.onprem_cidr}"
+        description       = "${local.anywhere} to DRG to access spokes and ${var.onprem_cidr[0]}"
       }
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {

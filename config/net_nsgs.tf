@@ -6,7 +6,7 @@
 locals {
   bastions_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-bastion-nsg" => {
     vcn_id : v.id,
-    ingress_rules : {
+    ingress_rules : merge({
       ssh-public-ingress-rule : {
         is_create : !var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null && !var.no_internet_access,
         description : "SSH ingress rule for ${var.public_src_bastion_cidr}.",
@@ -21,20 +21,20 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
-      ssh-onprem-ingress-rule : {
-        is_create : (var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null),
-        description : "SSH ingress rule for on-premises CIDR ${var.onprem_cidr}.",
-        stateless : false,
-        protocol : "6",
-        src : var.onprem_cidr,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : 22,
-        dst_port_max : 22,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-      },
+      # ssh-onprem-ingress-rule : {
+      #   is_create : (var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null),
+      #   description : "SSH ingress rule for on-premises CIDR ${var.onprem_cidr}.",
+      #   stateless : false,
+      #   protocol : "6",
+      #   src : var.onprem_cidr,
+      #   src_type : "CIDR_BLOCK",
+      #   dst_port_min : 22,
+      #   dst_port_max : 22,
+      #   src_port_min : null,
+      #   src_port_max : null,
+      #   icmp_type : null,
+      #   icmp_code : null
+      # },
       ssh-dmz-ingress-rule : {
         is_create : var.dmz_vcn_cidr != null,
         description : "SSH ingress rule for bastions in DMZ network",
@@ -49,7 +49,22 @@ locals {
         icmp_type : null,
         icmp_code : null
       }
-    },
+    }, {for cidr in var.onprem_cidr : "ssh-onprem-ingress-rule-${index(var.onprem_cidr, cidr)}" => {
+        is_create : (var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null),
+        description : "SSH ingress rule for on-premises CIDR ${cidr}.",
+        stateless : false,
+        protocol : "6",
+        src : cidr,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 22,
+        dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+    }
+
+    }),
     egress_rules : {
       app-egress_rule : {
         is_create : var.dmz_vcn_cidr == null,
@@ -141,20 +156,20 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
-      http-onprem-ingress-rule : {
-        is_create : var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null,
-        description : "HTTPS ingress rule for on-premises CIDR ${var.onprem_cidr}.",
-        stateless : false,
-        protocol : "6",
-        src : var.onprem_cidr,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : 443,
-        dst_port_max : 443,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-      },
+      # http-onprem-ingress-rule : {
+      #   is_create : var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null,
+      #   description : "HTTPS ingress rule for on-premises CIDR ${var.onprem_cidr}.",
+      #   stateless : false,
+      #   protocol : "6",
+      #   src : var.onprem_cidr,
+      #   src_type : "CIDR_BLOCK",
+      #   dst_port_min : 443,
+      #   dst_port_max : 443,
+      #   src_port_min : null,
+      #   src_port_max : null,
+      #   icmp_type : null,
+      #   icmp_code : null
+      # },
       dmz-services-ingress-rule : {
         is_create : var.dmz_vcn_cidr != null,
         description : "HTTPS ingress rule for DMZ services.",

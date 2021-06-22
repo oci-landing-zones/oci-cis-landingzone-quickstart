@@ -28,7 +28,9 @@ variableGroups:
 
   - title: "Network"
     variables:
-      - "spoke_vcn_cidrs"
+      - "vcn_cidrs"
+      - "specify_vcn_names"
+      - "vcn_names"
       - "public_src_lbr_cidr"
       - "public_src_bastion_cidr"
       - "net_advanced_options"
@@ -222,18 +224,37 @@ variables:
     description: "Network advanced options"
     default: false
 
-
-  spoke_vcn_cidrs:
+  vcn_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true
     maxItems: 9
     minItems: 1
-    title: "List of CIDR Blocks for the Spoke VCNs to be created."
-    description: "CIDR Blocks for the Spoke VCNs in CIDR notation. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    title: "List of CIDR Blocks for the VCNs to be created."
+    description: "CIDR Blocks for the VCNs in CIDR notation. When Hub & Spoke Architecture is selected, these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
     required: false
     default: []
+
+  specify_vcn_names:
+    type: boolean
+    title: "Specify VCN names?"
+    description: "VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
+    visible: net_advanced_options
+    default: false
+
+  vcn_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 9
+    minItems: 1
+    title: "List of VCN names."
+    description: "The VCN names. The order must match the CIDRs order above. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    required: false
+    visible: specify_vcn_names
+    default: []  
 
   public_src_bastion_cidr:
     type: string
@@ -267,9 +288,10 @@ variables:
       and:
         - net_advanced_options
         - is_vcn_onprem_connected
+  
   hub_spoke_architecture:
     type: boolean
-    title: "Create a hub and spoke architecture using the DRG."
+    title: "Create a Hub and Spoke architecture using a DRG."
     description: "Determines if a DRG Hub and Spoke Architecture is deployed.  Allows for inter-spoke routing."
     required: false
     visible:

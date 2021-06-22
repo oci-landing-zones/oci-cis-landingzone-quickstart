@@ -7,7 +7,7 @@ locals {
   // Permissions to be created always at the root compartment
   iam_root_permissions = ["Allow group ${local.iam_admin_group_name} to inspect users in tenancy",
                                "Allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
-                               "Allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name ! = 'Administrators', target.group.name ! = '${local.cred_admin_group_name}'}",
+                               "Allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${local.cred_admin_group_name}'}",
                                "Allow group ${local.iam_admin_group_name} to inspect identity-providers in tenancy",
                                "Allow group ${local.iam_admin_group_name} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
                                "Allow group ${local.iam_admin_group_name} to manage dynamic-groups in tenancy",

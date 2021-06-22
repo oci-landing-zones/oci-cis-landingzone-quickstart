@@ -7,15 +7,15 @@ locals {
   # # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   # dmz_subnet_names = ["outdoor","indoor","mgmt","ha", "diag"]
 
-  spoke_vcn_names = { for v in var.spoke_vcn_cidrs : "spoke${index(var.spoke_vcn_cidrs, v)}" => {
-    name = "${var.service_label}-spoke${index(var.spoke_vcn_cidrs, v)}-vcn"
+  vcn_names = { for v in var.vcn_cidrs : "vcn${index(var.vcn_cidrs, v)}" => {
+    name = length(var.vcn_names) > 0 ? var.vcn_names[index(var.vcn_cidrs, v)] : "${var.service_label}-${index(var.vcn_cidrs, v)}-vcn"
     cidr = v
     }
   }
 
 
   ### VCNs ###
-  spoke_vcns = { for key, vcn in local.spoke_vcn_names : vcn.name => {
+  vcns = { for key, vcn in local.vcn_names : vcn.name => {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = vcn.cidr
     dns_label         = key
@@ -24,7 +24,7 @@ locals {
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false
     block_nat_traffic = false
     defined_tags      = null
-    subnets = { for s in local.spoke_subnet_names : "${vcn.name}-${s}-subnet" => {
+    subnets = { for s in local.spoke_subnet_names : "${vcn.name}-${s}-snt" => {
       compartment_id  = null
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))
@@ -37,7 +37,7 @@ locals {
   }
 
   # All VCNs
-  all_lz_spoke_vcns = local.spoke_vcns
+  all_lz_spoke_vcns = local.vcns
 
   # Output from VCNs
   all_lz_spoke_vcn_ids = module.lz_vcn_spokes.vcns
@@ -45,7 +45,7 @@ locals {
 
   ### Route Tables ###
   ## Web Subnet Route Tables
-  web_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
+  web_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -62,7 +62,7 @@ locals {
         destination       = local.valid_service_gateway_cidrs[1]
         destination_type  = "SERVICE_CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.service_gateways[subnet.vcn_id].id
-        description       = "Object Storage Services to SGW"
+        description       = "Object Storage Service to SGW"
       },
       {
         is_create         = var.dmz_vcn_cidr != null
@@ -99,7 +99,7 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[0]}-*", key)) > 0 }
 
   ## App Subnet Route Tables
-  app_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
+  app_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -147,7 +147,7 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[1]}-*", key)) > 0 }
 
   ## Database Subnet Route Tables
-  db_spoke_route_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-route-table","vcn-","") => {
+  db_route_tables = { for key, subnet in local.all_lz_subnets : replace("${key}-route-table","vcn-","") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -185,11 +185,7 @@ locals {
   )
   } if length(regexall(".*-${local.spoke_subnet_names[2]}-*", key)) > 0 }
   
-
-
-  lz_spoke_subnet_route_tables = merge(local.web_spoke_route_route_tables,
-    local.app_spoke_route_route_tables,
-    local.db_spoke_route_route_tables)
+  lz_subnets_route_tables = merge(local.web_route_tables, local.app_route_tables, local.db_route_tables)
 
 }
 
@@ -207,6 +203,6 @@ module "lz_route_tables_spokes" {
   depends_on           = [ module.lz_vcn_spokes ]
   source               = "../modules/network/vcn-routing"
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
-  subnets_route_tables = local.lz_spoke_subnet_route_tables
+  subnets_route_tables = local.lz_subnets_route_tables
 }
 

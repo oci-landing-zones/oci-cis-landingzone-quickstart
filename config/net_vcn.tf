@@ -24,7 +24,7 @@ locals {
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false
     block_nat_traffic = false
     defined_tags      = null
-    subnets = { for s in local.spoke_subnet_names : "${vcn.name}-${s}-subnet" => {
+    subnets = { for s in local.spoke_subnet_names : "${vcn.name}-${s}-snt" => {
       compartment_id  = null
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))

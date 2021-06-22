@@ -24,7 +24,7 @@ locals {
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false
     block_nat_traffic = false
     defined_tags      = null
-    subnets = { for s in local.spoke_subnet_names : "${vcn.name}-${s}-snt" => {
+    subnets = { for s in local.spoke_subnet_names : replace("${vcn.name}-${s}-snt","-vcn","") => {
       compartment_id  = null
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))
@@ -72,13 +72,6 @@ locals {
         description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr[0]
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr[0]} to DRG"
-      },
-      {
         is_create         = var.dmz_vcn_cidr == null && !var.no_internet_access ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
@@ -94,6 +87,14 @@ locals {
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
       description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
+  ],
+  [ for cidr in var.onprem_cidrs : {
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        destination       = cidr
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
+        description       = "On-premises ${cidr} to DRG"
+      }
   ]
   )
   } if length(regexall(".*-${local.spoke_subnet_names[0]}-*", key)) > 0 }
@@ -119,13 +120,6 @@ locals {
         description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr[0]
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr[0]} to DRG"
-      },
-      {
         is_create         = var.dmz_vcn_cidr == null && !var.no_internet_access ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
@@ -142,6 +136,14 @@ locals {
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
       description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
+  ],
+  [ for cidr in var.onprem_cidrs : {
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        destination       = cidr
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
+        description       = "On-premises ${cidr} to DRG"
+      }
   ]
   )
   } if length(regexall(".*-${local.spoke_subnet_names[1]}-*", key)) > 0 }
@@ -160,18 +162,11 @@ locals {
       description       = "All OSN Services to SGW"
       },
       {
-        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
-        destination       = var.onprem_cidr[0]
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${var.onprem_cidr[0]} to DRG"
-      },
-      {
         is_create         = var.dmz_vcn_cidr != null
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
-        description       = "${local.anywhere} to DRG to access spokes and ${var.onprem_cidr[0]}"
+        description       = "${local.anywhere} to DRG to access spokes and on-premises"
       }
     ],
     [ for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
@@ -181,8 +176,15 @@ locals {
       network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
       description = "${vcn_name} to DRG"
     } if subnet.vcn_id != vcn.id
-  ]
-  )
+  ],
+  [ for cidr in var.onprem_cidrs : {
+        is_create         = var.is_vcn_onprem_connected && var.dmz_vcn_cidr == null
+        destination       = cidr
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = module.lz_vcn_spokes.drg != null ? module.lz_vcn_spokes.drg.id : null
+        description       = "On-premises ${cidr} to DRG"
+      }
+  ])
   } if length(regexall(".*-${local.spoke_subnet_names[2]}-*", key)) > 0 }
   
   lz_subnets_route_tables = merge(local.web_route_tables, local.app_route_tables, local.db_route_tables)

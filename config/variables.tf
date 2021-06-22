@@ -101,7 +101,7 @@ variable "is_vcn_onprem_connected" {
     error_message = "Invalid value provided for is_vcn_onprem_connected. Valid values: true or false."
   }
 }
-variable "onprem_cidr" {
+variable "onprem_cidrs" {
   type = list(string)
   description = "CIDR Block for the of the on-premises network connecting to DRG. This is required if is_vcn_onprem_connected is selected."
 default = []
@@ -110,7 +110,6 @@ default = []
 #     error_message = "Invalid cidr block value provided for onprem_cidr variable."
 #   }
 }
-
 
 variable "vcn_cidrs" {
   type        = list(string)
@@ -163,18 +162,25 @@ variable "dmz_subnet_size" {
 
 }
 
-variable "public_src_bastion_cidr" {
+variable "public_src_bastion_cidrs" {
+  type        = list(string)
+  default      = []
+
   validation {
-    condition     = var.public_src_bastion_cidr != "0.0.0.0/0" && length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", var.public_src_bastion_cidr)) > 0
+   condition       = length(var.public_src_bastion_cidrs) > 0
+   # condition     = var.public_src_bastion_cidrs != "0.0.0.0/0" && length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", var.public_src_bastion_cidr)) > 0
     error_message = "The public_src_bastion_cidr variable value must be different than 0.0.0.0/0."
   }
 }
-variable "public_src_lbr_cidr" {
-  default = "0.0.0.0/0"
-  validation {
-    condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.public_src_lbr_cidr)) > 0
-    error_message = "Invalid cidr block value provided for public_src_lbr_cidr variable."
-  }
+variable "public_src_lbr_cidrs" {
+  # default = "0.0.0.0/0"
+  type        = list(string)
+  default      = ["0.0.0.0/0"]
+#   validation {
+#     # condition     = length(var.public_src_lbr_cidrs) > 0
+#     # condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.public_src_lbr_cidr)) > 0
+#     error_message = "Invalid cidr block value provided for public_src_lbr_cidr variable."
+#   }
 }
 # Monitoring
 variable "network_admin_email_endpoint" {

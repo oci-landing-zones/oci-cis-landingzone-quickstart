@@ -112,15 +112,26 @@ default = []
 }
 
 
-variable "spoke_vcn_cidrs" {
+variable "vcn_cidrs" {
   type        = list(string)
   default     = ["10.0.0.0/20"]
-  description = "List of CIDR Blocks for the Spoke VCNs to be created. You can create."
+  description = "List of CIDR Blocks for the VCNs to be created. You can create up to nine VCNs."
   validation {
-    condition   = length(var.spoke_vcn_cidrs) < 10 && length(var.spoke_vcn_cidrs) > 0
-    error_message = "You must enter at least one VCN CIDR block."
+    condition   = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0
+    error_message = "You must enter at least one VCN CIDR block, up to a maximum of nine."
   }
 }
+
+variable "vcn_names" {
+  type        = list(string)
+  default     = []
+  description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-<vcn>). The length and order must match vcn_cidrs'."
+  validation {
+    condition   = length(var.vcn_names) < 10
+    error_message = "Maximum length of vcn_names variable exceeded. Max number of elements is nine."
+  }
+}
+
 variable "hub_spoke_architecture" {
   type        = bool
   default     = true

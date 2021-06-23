@@ -125,7 +125,7 @@ variable "vcn_cidrs" {
 variable "vcn_names" {
   type        = list(string)
   default     = []
-  description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-<vcn>). The length and order must match vcn_cidrs'."
+  description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-<vcn>). The list length and elements order must match vcn_cidrs'."
   validation {
     condition   = length(var.vcn_names) < 10
     error_message = "Maximum length of vcn_names variable exceeded. Max number of elements is nine."

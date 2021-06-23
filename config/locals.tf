@@ -62,7 +62,7 @@ locals {
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   dmz_subnet_names = ["outdoor", "indoor", "mgmt", "ha", "diag"]
 
-  dmz_vcn_name = var.hub_spoke_architecture ? {
+  dmz_vcn_name = var.dmz_vcn_cidr != null ? {
     name = "${var.service_label}-dmz-vcn"
     cidr = var.dmz_vcn_cidr
   } : {}

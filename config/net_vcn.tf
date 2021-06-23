@@ -7,18 +7,17 @@ locals {
   # # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   # dmz_subnet_names = ["outdoor","indoor","mgmt","ha", "diag"]
 
-  vcn_names = { for v in var.vcn_cidrs : "vcn${index(var.vcn_cidrs, v)}" => {
-    name = length(var.vcn_names) > 0 ? var.vcn_names[index(var.vcn_cidrs, v)] : "${var.service_label}-${index(var.vcn_cidrs, v)}-vcn"
+  vcns_map = { for v in var.vcn_cidrs : "vcn${index(var.vcn_cidrs, v)}" => {
+    name = length(var.vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.vcn_names[index(var.vcn_cidrs, v)])) > 0 ? join("",regexall("[a-zA-Z0-9-]+", var.vcn_names[index(var.vcn_cidrs, v)])) : var.vcn_names[index(var.vcn_cidrs, v)]) : "${var.service_label}-${index(var.vcn_cidrs, v)}-vcn"
     cidr = v
     }
   }
 
-
   ### VCNs ###
-  vcns = { for key, vcn in local.vcn_names : vcn.name => {
+  vcns = { for key, vcn in local.vcns_map : vcn.name => {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = vcn.cidr
-    dns_label         = key
+    dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("",regexall("[a-zA-Z0-9]+", vcn.name)),0,11)}${local.region_key}" : "${substr(vcn.name,0,11)}${local.region_key}"
     is_create_igw     = var.dmz_vcn_cidr != null ? false : (!var.no_internet_access == true ? true : false)
     is_create_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false

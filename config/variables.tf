@@ -167,7 +167,7 @@ variable "public_src_bastion_cidrs" {
   default      = []
 
   validation {
-   condition       = length(var.public_src_bastion_cidrs) > 0
+  condition       = length(var.public_src_bastion_cidrs) > 0 || length(var.public_src_bastion_cidrs) == 0
    # condition     = var.public_src_bastion_cidrs != "0.0.0.0/0" && length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", var.public_src_bastion_cidr)) > 0
     error_message = "The public_src_bastion_cidr variable value must be different than 0.0.0.0/0."
   }
@@ -175,7 +175,7 @@ variable "public_src_bastion_cidrs" {
 variable "public_src_lbr_cidrs" {
   # default = "0.0.0.0/0"
   type        = list(string)
-  default      = ["0.0.0.0/0"]
+  default      = []
 #   validation {
 #     # condition     = length(var.public_src_lbr_cidrs) > 0
 #     # condition     = length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.public_src_lbr_cidr)) > 0

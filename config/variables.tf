@@ -91,7 +91,7 @@ variable "existing_announcement_reader_group_name" {
 variable "no_internet_access" {
   default     = false
   type        = bool
-  description = "Determines if the network will have direct access to the internet. Default is false which creates an Internet Gateway and NAT Gateway, true will not create an Internet Gateway or NAT Gateway. If true, requires is_vcn_onprem_connected & onprem_cidr"
+  description = "Determines if the network will have direct access to the internet. Default is false which creates an Internet Gateway and NAT Gateway, true will not create an Internet Gateway or NAT Gateway. If true, it requires is_vcn_onprem_connected & onprem_cidr"
 }
 variable "is_vcn_onprem_connected" {
   type    = bool
@@ -111,7 +111,7 @@ variable "onprem_cidrs" {
 variable "vcn_cidrs" {
   type        = list(string)
   default     = ["10.0.0.0/20"]
-  description = "List of CIDR blocks for the VCNs to be created. You can create up to nine VCNs."
+  description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
     condition   = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs)
     error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
@@ -121,7 +121,7 @@ variable "vcn_cidrs" {
 variable "vcn_names" {
   type        = list(string)
   default     = []
-  description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-<vcn>). The list length and elements order must match vcn_cidrs'."
+  description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-vcn). The list length and elements order must match vcn_cidrs'."
   validation {
     condition   = length(var.vcn_names) < 10
     error_message = "Validation failed for vcn_names: maximum of nine allowed."
@@ -130,8 +130,8 @@ variable "vcn_names" {
 
 variable "hub_spoke_architecture" {
   type        = bool
-  default     = true
-  description = "Determines if a DRG Hub and Spoke Architecture is deployed.  Allows for inter-spoke routing."
+  default     = false
+  description = "Determines if a DRG Hub and Spoke architecture is deployed.  Allows for inter-spoke routing."
 }
 
 variable "dmz_vcn_cidr" {
@@ -161,7 +161,8 @@ variable "dmz_subnet_size" {
 
 variable "public_src_bastion_cidrs" {
   type        = list(string)
-  default      = []
+  default     = []
+  description = "External IP ranges in CIDR notation allowed to make SSH inbound connections to bastion hosts eventually deployed. 0.0.0.0/0 is not allowed in the list."
   validation {
     condition     = !contains(var.public_src_bastion_cidrs,"0.0.0.0/0") && length([for c in var.public_src_bastion_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_bastion_cidrs)
     error_message = "Validation failed for public_src_bastion_cidrs: values must be in CIDR notation, all different than 0.0.0.0/0."

@@ -31,16 +31,16 @@ variableGroups:
       - "vcn_cidrs"
       - "specify_vcn_names"
       - "vcn_names"
-      - "public_src_lbr_cidr"
-      - "public_src_bastion_cidr"
+      - "public_src_lbr_cidrs"
+      - "public_src_bastion_cidrs"
       - "net_advanced_options"
       - "no_internet_access"
       - "hub_spoke_architecture"
-      - "is_vcn_onprem_connected"
-      - "onprem_cidr"
       - "dmz_vcn_cidr"
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
+      - "is_vcn_onprem_connected"
+      - "onprem_cidrs"
 
   - title: "Notifications"
     variables:
@@ -231,16 +231,15 @@ variables:
     uniqueItems: true
     maxItems: 9
     minItems: 1
-    title: "List of CIDR Blocks for the VCNs to be created."
-    description: "CIDR Blocks for the VCNs in CIDR notation. When Hub & Spoke Architecture is selected, these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    title: "List of CIDR blocks for the VCNs to be created"
+    description: "CIDR blocks for the VCNs in CIDR notation. When Hub & Spoke Architecture is selected, these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
     required: false
     default: []
 
   specify_vcn_names:
     type: boolean
-    title: "Specify VCN names?"
+    title: "Override VCN default names?"
     description: "All VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
-    visible: net_advanced_options
     default: false
 
   vcn_names:
@@ -250,29 +249,31 @@ variables:
     uniqueItems: true
     maxItems: 9
     minItems: 1
-    title: "List of VCN names."
-    description: "The VCN names. There must be one name corresponding to each CIDR block provided above, in the same order, i.e, the first name will be the VCN name for the first CIDR block, the second name will be the VCN name for the second CIDR block, and so on. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    title: "List of custom names to be given to the VCNs"
+    description: "The VCN custom names, overriding the default VCN names. There must be one name corresponding to each CIDR block provided above, in the same order, i.e, the first name will be the VCN name for the first CIDR block, the second name will be the VCN name for the second CIDR block, and so on. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
     required: false
-    visible: 
-      and:
-        - net_advanced_options
-        - specify_vcn_names
+    visible: specify_vcn_names
     default: []  
 
-  public_src_bastion_cidr:
-    type: string
-    title: "Bastion Grant IP Range"
-    required: true
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range in CIDR notation allowed to connect to Bastion host. It must NOT be 0.0.0.0/0."
+  public_src_bastion_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Bastion Grant IP Range List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections to bastion hosts eventually deployed in the Web subnet. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)."
+    default: []
 
-  public_src_lbr_cidr:
-    type: string
-    title: "Load Balancer Grant IP Range"
-    required: true
-    default: "0.0.0.0/0"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range in CIDR notation allowed to connect to a public load balancer eventually deployed in the Web subnet."
+  public_src_lbr_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Load Balancer Grant IP Range List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections to a public load balancer eventually deployed in the Web subnet. (Type the name and hit enter to enter multiple values)."
+    default: ["0.0.0.0/0"]
 
   is_vcn_onprem_connected:
     type: boolean
@@ -281,36 +282,43 @@ variables:
     default: false
     visible: net_advanced_options
 
-  onprem_cidr:
-    type: string
-    title: "On-premises network CIDR block"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of your on-premises network in CIDR notation. It must not conflict with any Landing Zone's VCN IP ranges."
-    required: true
+  onprem_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "On-premises network CIDR blocks"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "List of CIDR blocks for the on-premises networks connecting to DRG. This is required if the network is connected to the on-premises network."
     visible: 
       and:
         - net_advanced_options
         - is_vcn_onprem_connected
   
+  no_internet_access:
+    type: boolean
+    title: "No Internet Access?"
+    description: "Determines if the network will have direct access to the internet. Default is false which creates an Internet Gateway and NAT Gateway, true will not create an Internet Gateway or NAT Gateway. If true, it requires is_vcn_onprem_connected & onprem_cidrs."
+    default: false
+    visible: net_advanced_options
+
   hub_spoke_architecture:
     type: boolean
     title: "Create a Hub and Spoke architecture using a DRG."
-    description: "Determines if a DRG Hub and Spoke Architecture is deployed.  Allows for inter-spoke routing."
+    description: "Determines if a DRG Hub and Spoke architecture is deployed.  Allows for inter-spoke routing."
     required: false
-    visible:
-      and:
-      - net_advanced_options
-      - is_vcn_onprem_connected
+    visible: net_advanced_options
   
   dmz_vcn_cidr:
     type: string
     title: "CIDR Block for the DMZ VCN."
     pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "CIDR Block for the DMZ VCN.  DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ."
-    required: true
+    required: false
     visible:
       and:
-      - net_advanced_options
+        - net_advanced_options
+        - hub_spoke_architecture
 
   dmz_number_of_subnets:
     type: integer
@@ -319,7 +327,8 @@ variables:
     required: false
     visible:
       and:
-      - net_advanced_options
+        - net_advanced_options
+        - hub_spoke_architecture
 
   dmz_subnet_size: 
     type: integer
@@ -327,7 +336,9 @@ variables:
     description: "Is the number of additional bits with which to extend the DMZ VCN CIDR prefix."
     required: false
     visible: 
-      "If you don't change any of the advanced options, the following is created: 1) one compartment named <unique-prefix>-top-cmp in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
+      and:
+        - net_advanced_options
+        - hub_spoke_architecture
 
   network_admin_email_endpoint:
     type: string
@@ -364,7 +375,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for Audit Logs. Select one of - objectstorage, streaming or functions."
+    description: "Destination for Service Connector Hub for Audit Logs. Select one of objectstorage, streaming or functions."
     default: objectstorage
     visible: create_service_connector_audit
     enum:

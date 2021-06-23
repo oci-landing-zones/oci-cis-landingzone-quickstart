@@ -31,8 +31,9 @@ variableGroups:
       - "vcn_cidrs"
       - "specify_vcn_names"
       - "vcn_names"
-      - "public_src_lbr_cidrs"
       - "public_src_bastion_cidrs"
+      - "public_src_lbr_cidrs"
+      - "public_dst_cidrs"
       - "net_advanced_options"
       - "no_internet_access"
       - "hub_spoke_architecture"
@@ -260,9 +261,9 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Bastion Grant IP Range List"
+    title: "Inbound SSH CIDR List"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections to bastion hosts eventually deployed in the Web subnet. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)."
+    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections to the Web subnet. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)."
     default: []
 
   public_src_lbr_cidrs:
@@ -270,10 +271,20 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Load Balancer Grant IP Range List"
+    title: "Inbound HTTPS CIDR List"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections to a public load balancer eventually deployed in the Web subnet. (Type the name and hit enter to enter multiple values)."
+    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections to the Web subnet. (Type the name and hit enter to enter multiple values)."
     default: ["0.0.0.0/0"]
+
+  public_dst_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Outbound HTTPS CIDR List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)."
+    default: []  
 
   is_vcn_onprem_connected:
     type: boolean
@@ -333,7 +344,7 @@ variables:
   dmz_subnet_size: 
     type: integer
     title: "Size of the DMZ Subnet CIDRs."
-    description: "Is the number of additional bits with which to extend the DMZ VCN CIDR prefix."
+    description: "The number of additional bits with which to extend the DMZ VCN CIDR prefix."
     required: false
     visible: 
       and:

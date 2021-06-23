@@ -183,6 +183,11 @@ variable "public_src_lbr_cidrs" {
 #   }
 }
 # Monitoring
+
+variable "public_dst_cidrs" {
+    type = list(string)
+    default = []
+}
 variable "network_admin_email_endpoint" {
   validation {
     condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.network_admin_email_endpoint)) > 0

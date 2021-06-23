@@ -5,27 +5,18 @@
 ### The security rules are driven by NSGs (Network Security Groups). See net_nsgs.tf
 ### Add security rules as needed.
 
-locals {
-  web_security_lists = { for k, v in module.lz_vcn_spokes.vcns : "${k}-web-security-list" => {
-    vcn_id : v.id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null
-  } if length(regexall(".*spoke*", k)) > 0 }
-  app_security_lists = { for k, v in module.lz_vcn_spokes.vcns : "${k}-app-security-list" => {
-    vcn_id : v.id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null
-  } if length(regexall(".*spoke*", k)) > 0 } 
-  db_security_lists = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-security-list" => {
-    vcn_id : v.id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null
-  } if length(regexall(".*spoke*", k)) > 0}
+# locals {
+#   dmz_security_lists = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_dmz.subnets : replace("${k}-security-list","snt-","") => {
+#     vcn_id: v.vcn_id, compartment_id : module.lz_compartments.compartments[local.network_compartment_name].id, defined_tags : null, ingress_rules : null, egress_rules : null }} : {}
+#   spoke_security_lists = { for k, v in module.lz_vcn_spokes.subnets : replace("${k}-security-list","snt-","") => {
+#     vcn_id: v.vcn_id, compartment_id : module.lz_compartments.compartments[local.network_compartment_name].id, defined_tags : null, ingress_rules : null, egress_rules : null }} 
+# }
 
-  dmz_security_lists = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_dmz.subnets : replace("${k}-security-list","subnet-","") => {
-    vcn_id: v.vcn_id, compartment_id : null, defined_tags : null, ingress_rules : null, egress_rules : null }} : {}
-
-}
-
-module "lz_security_lists" {
-  source           = "../modules/network/security"
-  compartment_id   = module.lz_compartments.compartments[local.network_compartment_name].id
-  security_lists = merge(local.web_security_lists, local.app_security_lists, local.db_security_lists, local.dmz_security_lists)
-}   
+# module "lz_security_lists" {
+#   source           = "../modules/network/security"
+#   compartment_id   = module.lz_compartments.compartments[local.network_compartment_name].id
+#   security_lists = merge(local.spoke_security_lists, local.dmz_security_lists)
+# }   
 
 
 resource "oci_core_default_security_list" "default_security_list" {

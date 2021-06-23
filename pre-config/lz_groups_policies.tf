@@ -74,25 +74,31 @@ module "lz_groups_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read instance-images in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to inspect buckets in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # AppDev admin
                           "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read repos in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read instance-images in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # Network admin
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read repos in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read instance-images in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to use cloud-shell in tenancy",
+                          
                           # Database admin
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read repos in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read instance-images in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # Cred admin
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect users in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect groups in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
+                          "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # IAM admin
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect users in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect groups in tenancy",
@@ -104,14 +110,17 @@ module "lz_groups_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage network-sources in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage quota in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to read audit-events in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # Auditor
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read repos in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read objectstorage-namespaces in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read instance-images in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect buckets in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to use cloud-shell in tenancy",
                           # Announcement reader
-                          "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy"]
+                          "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy",]
     }
   }
 }

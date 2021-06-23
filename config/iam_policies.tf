@@ -14,7 +14,8 @@ locals {
                                "Allow group ${local.iam_admin_group_name} to manage authentication-policies in tenancy",
                                "Allow group ${local.iam_admin_group_name} to manage network-sources in tenancy",
                                "Allow group ${local.iam_admin_group_name} to manage quota in tenancy",
-                               "Allow group ${local.iam_admin_group_name} to read audit-events in tenancy"]
+                               "Allow group ${local.iam_admin_group_name} to read audit-events in tenancy",
+                               "Allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
 
   // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   iam_enccmp_permissions = ["Allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_level}",
@@ -29,7 +30,8 @@ locals {
   security_root_permissions = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
                           "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
                           "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
-                          "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy"]
+                          "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
+                          "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
 
   // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_level}",
@@ -69,17 +71,32 @@ module "lz_root_policies" {
   policies              = local.use_existing_tenancy_policies == false ? {
     (local.security_admin_root_policy_name) = {
       compartment_id    = var.tenancy_ocid
-      description       = "Policy allowing ${local.security_admin_group_name} group to manage security related services at the root compartment."
+      description       = "${local.security_admin_group_name}'s root compartment policy."
       statements        = local.security_root_permissions
     },
     (local.iam_admin_root_policy_name) = {
       compartment_id    = var.tenancy_ocid
-      description       = "Policy allowing ${local.iam_admin_group_name} group to manage security related services at the root compartment."
+      description       = "${local.iam_admin_group_name}'s root compartment policy."
       statements        = local.iam_root_permissions
+    },
+    (local.network_admin_root_policy_name) = {
+      compartment_id    = var.tenancy_ocid
+      description       = "${local.network_admin_group_name}'s root compartment policy."
+      statements        = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy"]
+    },
+    (local.appdev_admin_root_policy_name) = {
+      compartment_id    = var.tenancy_ocid
+      description       = "${local.appdev_admin_group_name}'s root compartment policy."
+      statements        = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy"]
+    },
+    (local.database_admin_root_policy_name) = {
+      compartment_id    = var.tenancy_ocid
+      description       = "${local.database_admin_group_name}'s root compartment policy."
+      statements        = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.auditor_policy_name) = {
       compartment_id    = var.tenancy_ocid
-      description       = "Policy allowing ${local.auditor_group_name} group to audit tenancy."
+      description       = "${local.auditor_group_name}'s root compartment policy."
       statements        = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
                           "Allow group ${local.auditor_group_name} to read instances in tenancy",
                           "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
@@ -96,16 +113,17 @@ module "lz_root_policies" {
     },
     (local.announcement_reader_policy_name) = {
       compartment_id    = var.tenancy_ocid
-      description       = "Policy allowing ${local.announcement_reader_group_name} group to read announcements in tenancy."
-      statements        = ["Allow group ${local.announcement_reader_group_name} to read announcements in tenancy"]
+      description       = "${local.announcement_reader_group_name}'s root compartment policy."
+      statements        = ["Allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
+                           "Allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
     },
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "Policy allowing ${local.cred_admin_group_name} group to manage credentials in tenancy."
+      description    = "${local.cred_admin_group_name}'s root compartment policy."
       statements     = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
                         "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
-                        "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}"
-                       ]
+                        "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
+                        "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
     }
   } : {}
 }  

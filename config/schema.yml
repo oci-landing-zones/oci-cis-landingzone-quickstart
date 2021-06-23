@@ -239,7 +239,7 @@ variables:
   specify_vcn_names:
     type: boolean
     title: "Specify VCN names?"
-    description: "VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
+    description: "All VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
     visible: net_advanced_options
     default: false
 
@@ -251,7 +251,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "List of VCN names."
-    description: "The VCN names. The order must match the CIDRs order above. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    description: "The VCN names. There must be one name corresponding to each CIDR block provided above, in the same order, i.e, the first name will be the VCN name for the first CIDR block, the second name will be the VCN name for the second CIDR block, and so on. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
     required: false
     visible: 
       and:

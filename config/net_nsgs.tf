@@ -407,7 +407,7 @@ locals {
 
 module "lz_nsgs_dmz" {
   depends_on     = [module.lz_vcn_dmz]
-  count          = var.dmz_vcn_cidr != null ? 1 : 0
+  count          = var.dmz_vcn_cidr != null && var.hub_spoke_architecture  ? 1 : 0
   source         = "../modules/network/security"
   compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
   nsgs = merge(local.public_dst_cidrs_nsg,{

@@ -41,7 +41,7 @@ Variable Name | Description | Required | Default Value
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
 **public_src_bastion_cidrs** | External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
 **public_src_lbr_cidrs** | External IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
-**public_dst_cidrs** | External IP ranges in CIDR notation for HTTPS outbound connections. | No | None
+**public_dst_cidrs** | External IP ranges in CIDR notation for HTTPS outbound connections. | No | []
 **no_internet_access** | Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required. | Yes | false
 **hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | Yes | false
 **dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. | Yes, if *hub_spoke_architecture* is true | ""

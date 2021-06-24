@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Environment
@@ -45,7 +45,7 @@ variable "policies_in_root_compartment" {
   default     = "CREATE"
   description = "Whether or not required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
   validation {
-    condition     = contains(["CREATE","USE"],var.policies_in_root_compartment)
+    condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
@@ -94,14 +94,14 @@ variable "no_internet_access" {
   description = "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required."
 }
 variable "is_vcn_onprem_connected" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Creation of DRG for connection to an on-premises network. This must be true if no_internet_acess is true."
 }
 variable "onprem_cidrs" {
-  type = list(string)
+  type        = list(string)
   description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. Required if is_vcn_onprem_connected is true."
-  default = []
+  default     = []
   validation {
     condition     = length([for c in var.onprem_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_cidrs)
     error_message = "Validation failed for onprem_cidrs: values must be in CIDR notation."
@@ -113,7 +113,7 @@ variable "vcn_cidrs" {
   default     = ["10.0.0.0/20"]
   description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
-    condition   = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs)
+    condition     = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs)
     error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
   }
 }
@@ -123,7 +123,7 @@ variable "vcn_names" {
   default     = []
   description = "List of custom names to be given to the VCNs, overriding the default VCN names (<service-label>-<index>-vcn). The list length and elements order must match vcn_cidrs'."
   validation {
-    condition   = length(var.vcn_names) < 10
+    condition     = length(var.vcn_names) < 10
     error_message = "Validation failed for vcn_names: maximum of nine allowed."
   }
 }
@@ -164,7 +164,7 @@ variable "public_src_bastion_cidrs" {
   default     = []
   description = "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list."
   validation {
-    condition     = !contains(var.public_src_bastion_cidrs,"0.0.0.0/0") && length([for c in var.public_src_bastion_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_bastion_cidrs)
+    condition     = !contains(var.public_src_bastion_cidrs, "0.0.0.0/0") && length([for c in var.public_src_bastion_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_bastion_cidrs)
     error_message = "Validation failed for public_src_bastion_cidrs: values must be in CIDR notation, all different than 0.0.0.0/0."
   }
 }
@@ -191,7 +191,7 @@ variable "public_dst_cidrs" {
 }
 
 variable "network_admin_email_endpoint" {
-  type = string
+  type        = string
   description = "Recipient for all network related notifications."
   validation {
     condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.network_admin_email_endpoint)) > 0
@@ -199,7 +199,7 @@ variable "network_admin_email_endpoint" {
   }
 }
 variable "security_admin_email_endpoint" {
-  type = string
+  type        = string
   description = "Recipient for all security related notifications."
   validation {
     condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.security_admin_email_endpoint)) > 0
@@ -225,7 +225,7 @@ variable "service_connector_audit_target" {
   default     = "objectstorage"
   description = "Destination for Service Connector Hub for Audit Logs. Valid values are objectstorage, streaming or functions (case insensitive). In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below."
   validation {
-    condition     = contains(["objectstorage","streaming","functions"],var.service_connector_audit_target)
+    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_audit_target)
     error_message = "Validation failed for service_connector_audit_target: valid values are objectstorage, streaming or functions (case insensitive)."
   }
 }
@@ -234,7 +234,7 @@ variable "service_connector_audit_state" {
   default     = "INACTIVE"
   description = "State in which to create the Service Connector Hub for Audit logs. Valid values are ACTIVE and INACTIVE (case insensitive)."
   validation {
-    condition     = contains(["ACTIVE","INACTIVE"],var.service_connector_audit_state)
+    condition     = contains(["ACTIVE", "INACTIVE"], var.service_connector_audit_state)
     error_message = "Validation failed for for service_connector_audit_target: valid values are ACTIVE or INACTIVE (case insensitive)."
   }
 }
@@ -263,7 +263,7 @@ variable "service_connector_vcnFlowLogs_target" {
   default     = "objectstorage"
   description = "Destination for Service Connector Hub for VCN Flow Logs. Valid values are objectstorage, streaming or functions (case insensitive). In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below."
   validation {
-    condition     = contains(["objectstorage","streaming","functions"],var.service_connector_vcnFlowLogs_target)
+    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_vcnFlowLogs_target)
     error_message = "Validation failed for service_connector_vcnFlowLogs_target: valid values are objectstorage, streaming or functions (case insensitive)."
   }
 }
@@ -272,7 +272,7 @@ variable "service_connector_vcnFlowLogs_state" {
   default     = "INACTIVE"
   description = "State in which to create the Service Connector Hub for VCN Flow logs. Valid values are ACTIVE or INACTIVE (case insensitive)."
   validation {
-    condition     = contains(["ACTIVE","INACTIVE"],var.service_connector_vcnFlowLogs_state)
+    condition     = contains(["ACTIVE", "INACTIVE"], var.service_connector_vcnFlowLogs_state)
     error_message = "Validation failed for service_connector_vcnFlowLogs_state: valid values are ACTIVE or INACTIVE (case insensitive)."
   }
 }

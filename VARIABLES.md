@@ -17,22 +17,22 @@ Variable Name | Description | Required | Default Value
 ### <a name="enc_cmp_variables"></a>Enclosing Compartment Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**use_enclosing_compartment** | a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true** | Yes | false
-**existing_enclosing_compartment_ocid** | the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permission | No | None
-**policies_in_root_compartment** | the Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permission. | Yes | "CREATE"
+**use_enclosing_compartment** | A boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**. | Yes | false
+**existing_enclosing_compartment_ocid** | The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. | No | None
+**policies_in_root_compartment** | The Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permissions. | Yes | "CREATE"
 
 ### <a name="existing_groups_variables"></a>Existing Groups Reuse Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **use_existing_iam_groups** | Whether or not existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone. | Yes | false
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators | Yes, if *use_existing_iam_groups* is true | None
-**existing_auditor_group_name** | The name of an existing group for auditors | Yes, if *use_existing_iam_groups* is true | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers | Yes, if *use_existing_iam_groups* is true | None
+**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_iam_groups* is true | None
+**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_iam_groups* is true | None
+**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_iam_groups* is true | None
 
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
@@ -53,13 +53,13 @@ Variable Name | Description | Required | Default Value
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**network_admin_email_endpoint** | an email to receive notifications for network related events. | Yes | None
-**security_admin_email_endpoint** | an email to receive notifications for security related events. | Yes | None
+**network_admin_email_endpoint** | An email to receive notifications for network related events. | Yes | None
+**security_admin_email_endpoint** | An email to receive notifications for security related events. | Yes | None
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | whether Cloud Guard is enabled or not. | Yes | ENABLED
+**cloud_guard_configuration_status** | Whether Cloud Guard is enabled or not. | Yes | ENABLED
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
@@ -94,12 +94,12 @@ Input variables used in the pre-config module are all defined in pre-config/vari
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **unique_prefix** | a label that gets prefixed to all default resource names created by the module. | Yes | None
-**enclosing_compartment_names** | A list of compartment names that will hold the Landing Zone compartments. If no compartment name is given, the module creates one compartment with a default name (*unique_prefix*-top-cmp) | No | "*unique_prefix*-top-cmp"
-**existing_enclosing_compartments_parent_ocid** | the parent compartment ocid of the top compartment, indicating where to insert the enclosing compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the enclosing compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible | No | *tenancy_ocid*	
+**enclosing_compartment_names** | A list of compartment names that will hold the Landing Zone compartments. If no compartment name is given, the module creates one compartment with a default name (*unique_prefix*-top-cmp). | No | "*unique_prefix*-top-cmp"
+**existing_enclosing_compartments_parent_ocid** | the parent compartment ocid of the top compartment, indicating where to insert the enclosing compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the enclosing compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible. | No | *tenancy_ocid*	
 **use_existing_provisioning_group** | a boolean flag indicating whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by *enclosing_compartment_names* variable. | Yes | false
-**existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false | No | None
+**existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false. | No | None
 **create_tenancy_level_policies** | Whether or not policies for Landing Zone groups are created at the root compartment. If false, Landing Zone groups will not be able to manage resources at the root compartment level. **Please notice this affects Landing Zone groups to operate at their full capacity.** | Yes | true
-**use_existing_lz_groups** | a boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all those compartments | Yes | false 
+**use_existing_lz_groups** | a boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all those compartments. | Yes | false 
 **existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_lz_groups* is true. | None
 **existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_lz_groups* is true. | None
 **existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_lz_groups* is true. | None

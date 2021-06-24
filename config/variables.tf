@@ -131,7 +131,7 @@ variable "vcn_names" {
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false
-  description = "Determines if a DRG Hub and Spoke architecture is deployed.  Allows for inter-spoke routing."
+  description = "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
 }
 
 variable "dmz_vcn_cidr" {

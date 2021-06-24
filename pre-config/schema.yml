@@ -1,8 +1,8 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zone Pre-Config Stack"
-stackDescription: "A Resource Manager Stack to pre configure a tenancy for Landing Zone deployment."
+title: "CIS OCI Landing Zones Pre-Config Stack"
+stackDescription: "A Stack to pre configure a tenancy for CIS Landing Zones deployment. By default, it creates the following resources: 1) one compartment in the root compartment; 2) one set of policies for Landing Zones required services in the root compartment; 3) one group to provision the Landing Zones; 4) one set of groups to manage the Landing Zones. This can be changed using the stack advanced options."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -12,23 +12,24 @@ variableGroups:
     variables:
       - "home_region"
       - "unique_prefix"
+      - "advanced_options"
 
-  - title: "Enclosing Compartments"
+  - title: "Compartments"
     variables:
       - "enclosing_compartment_names"
       - "existing_enclosing_compartments_parent_ocid"
-      
-  - title: "Provisioning Groups"
+    visible: advanced_options  
+
+  - title: "Policies"
+    variables:
+      - "create_services_policies"
+    visible: advanced_options
+
+  - title: "Groups"
     variables:
       - "use_existing_provisioning_group"
       - "existing_provisioning_group_name"
-      
-  - title: "Landing Zone Groups"
-    variables:
       - "use_existing_lz_groups"
-
-  - title: "Existing Groups"
-    variables:
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -37,7 +38,7 @@ variableGroups:
       - "existing_database_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
-    visible: use_existing_lz_groups
+    visible: advanced_options  
       
   - title: "Hidden Variables"
     visible: false
@@ -60,11 +61,17 @@ variables:
     type: string
     title: "Unique prefix"
     minLength: 1
-    maxLength: 8
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    maxLength: 16
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,16}$"
     description: "A unique prefix across the tenancy that is added to all resource names created by this stack."
     required: true
-    
+
+  advanced_options:
+    type: boolean
+    title: "Show Advanced Options"
+    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named <unique-prefix>-top-cmp in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
+    default: false
+
   enclosing_compartment_names:
     type: array
     items:
@@ -73,7 +80,7 @@ variables:
     maxItems: 5
     minItems: 0
     title: "Enclosing compartment names (max 5)"
-    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. (Type name and hit enter to enter multiple values, up to a maximum of 5)."
+    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. (Type the name and hit enter to enter multiple values, up to a maximum of 5)."
     required: false
     default: []
 
@@ -83,29 +90,35 @@ variables:
     description: "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
     required: false
   
+  create_services_policies:
+    type: boolean
+    title: "Create services policies?"
+    description: "Whether services policies should be created. If these policies already exist in the root compartment, uncheck for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management."
+    default: true
+  
   use_existing_provisioning_group:
     type: boolean
-    title: "Use existing group for provisioning?"
+    title: "Use existing group for provisioning the Landing Zone?"
     description: "Whether or not an existing group will be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by \"Enclosing compartment names\"."
     default: false
 
   existing_provisioning_group_name:
     type: string
-    title: "Existing group name for provisioning"
+    title: "Existing group name for provisioning the Landing Zone"
     description: "The name of an existing group to be used for provisioning all resources in the compartments defined by \"Enclosing compartment names\"."
     visible :  use_existing_provisioning_group
   
   create_tenancy_level_policies:
     type: boolean
     title: "Create policies at root compartment (tenancy level policies)?"
-    description: "Whether or not policies for Landing Zone groups are created at the root compartment. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
+    description: "Whether or not management policies for Landing Zone groups are created in the root compartment. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
     default: true
     required: true
 
   use_existing_lz_groups:
     type: boolean
-    title: "Use existing groups?"
-    description: "Whether or not existing groups are to be reused for Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
+    title: "Use existing groups for managing the Landing Zone?"
+    description: "Whether or not existing groups are to be reused for managing the Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
     default: false
     required: true
   
@@ -113,41 +126,49 @@ variables:
     type: string
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
+    visible: use_existing_lz_groups
     
   existing_cred_admin_group_name:
     type: string
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_security_admin_group_name:
     type: string
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_network_admin_group_name:
     type: string
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_appdev_admin_group_name:
     type: string
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_database_admin_group_name:
     type: string
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_auditor_group_name:
     type: string
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
+    visible: use_existing_lz_groups
       
   existing_announcement_reader_group_name:
     type: string
     title: "Existing announcement readers group name"
     description: "Existing group to which annoucement reading policies will be granted to."
+    visible: use_existing_lz_groups
       
   # Hidden variables
   tenancy_ocid:

@@ -23,6 +23,7 @@ resource "oci_cloud_guard_cloud_guard_configuration" "this" {
 
 resource "oci_cloud_guard_target" "this" {
   depends_on = [ oci_cloud_guard_cloud_guard_configuration.this ]
+  count = oci_cloud_guard_cloud_guard_configuration.this.status == "ENABLED" ? 1 : 0
   compartment_id       = var.compartment_id
   display_name         = var.default_target.name
   target_resource_id   = var.default_target.id

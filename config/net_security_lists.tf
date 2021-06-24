@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### This Terraform configuration creates three empty security lists.
@@ -18,9 +18,8 @@
 #   security_lists = merge(local.spoke_security_lists, local.dmz_security_lists)
 # }   
 
-
 resource "oci_core_default_security_list" "default_security_list" {
-  for_each = var.dmz_vcn_cidr == null ? module.lz_vcn_spokes.vcns : merge(module.lz_vcn_spokes.vcns, module.lz_vcn_dmz.vcns)
+  for_each = length(var.dmz_vcn_cidr) == 0 ? module.lz_vcn_spokes.vcns : merge(module.lz_vcn_spokes.vcns, module.lz_vcn_dmz.vcns)
     manage_default_resource_id = each.value.default_security_list_id
     ingress_security_rules {
       protocol  = "1"

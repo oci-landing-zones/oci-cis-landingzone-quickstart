@@ -6,51 +6,44 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| oci | n/a |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
 
 ## Modules
 
-No Modules.
+No modules.
 
 ## Resources
 
-| Name |
-|------|
-| [oci_core_drg](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) |
-| [oci_core_drg_attachment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment) |
-| [oci_core_internet_gateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway) |
-| [oci_core_nat_gateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway) |
-| [oci_core_route_table](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table) |
-| [oci_core_service_gateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_service_gateway) |
-| [oci_core_services](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) |
-| [oci_core_subnet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) |
-| [oci_core_vcn](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) |
+| Name | Type |
+|------|------|
+| [oci_core_drg.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) | resource |
+| [oci_core_drg_attachment.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment) | resource |
+| [oci_core_internet_gateway.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway) | resource |
+| [oci_core_nat_gateway.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway) | resource |
+| [oci_core_service_gateway.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_service_gateway) | resource |
+| [oci_core_subnet.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
+| [oci_core_vcn.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) | resource |
+| [oci_core_services.all_services](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| block\_nat\_traffic | Whether or not to block traffic through NAT gateway. | `bool` | `false` | no |
-| compartment\_id | Compartment's OCID where VCN will be created. | `any` | n/a | yes |
-| is\_create\_drg | Whether a DRG is to be created. | `bool` | `false` | no |
-| route\_tables | Parameters for each route table to be managed. | <pre>map(object({<br>    compartment_id = string<br>    route_rules    = list(object({<br>      is_create         = bool<br>      destination       = string,<br>      destination_type  = string,<br>      network_entity_id = string<br>    }))<br>  }))</pre> | n/a | yes |
-| service\_gateway\_cidr | The OSN service cidr accessible through Service Gateway | `string` | `""` | no |
-| service\_label | A service label to be used as part of resource names. | `string` | `"cis"` | no |
-| subnet\_dns\_label | A DNS label prefix for the subnet, used in conjunction with the VNIC's hostname and VCN's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet. | `string` | `"subnet"` | no |
-| subnets | Parameters for each subnet to be managed. | <pre>map(object({<br>    compartment_id    = string,<br>    defined_tags      = map(string),<br>    freeform_tags     = map(string),<br>    dynamic_cidr      = bool,<br>    cidr              = string,<br>    cidr_len          = number,<br>    cidr_num          = number,<br>    enable_dns        = bool,<br>    dns_label         = string,<br>    private           = bool,<br>    ad                = number,<br>    dhcp_options_id   = string,<br>    route_table_id    = string,<br>    security_list_ids = list(string)<br>  }))</pre> | n/a | yes |
-| vcn\_cidr | A VCN covers a single, contiguous IPv4 CIDR block of your choice. | `string` | `"10.0.0.0/16"` | no |
-| vcn\_display\_name | Name of Virtual Cloud Network. | `any` | n/a | yes |
-| vcn\_dns\_label | A DNS label for the VCN, used in conjunction with the VNIC's hostname and subnet's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet. | `string` | `"vcn"` | no |
+| <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | Compartment's OCID where VCN will be created. | `any` | n/a | yes |
+| <a name="input_drg_id"></a> [drg\_id](#input\_drg\_id) | DRG to be attached | `string` | `null` | no |
+| <a name="input_is_create_drg"></a> [is\_create\_drg](#input\_is\_create\_drg) | Whether a DRG is to be created. | `bool` | `false` | no |
+| <a name="input_service_gateway_cidr"></a> [service\_gateway\_cidr](#input\_service\_gateway\_cidr) | The OSN service cidr accessible through Service Gateway | `string` | n/a | yes |
+| <a name="input_service_label"></a> [service\_label](#input\_service\_label) | A service label to be used as part of resource names. | `any` | n/a | yes |
+| <a name="input_vcns"></a> [vcns](#input\_vcns) | The VCNs. | <pre>map(object({<br>    compartment_id    = string,<br>    cidr              = string,<br>    dns_label         = string,<br>    is_create_igw     = bool,<br>    is_attach_drg     = bool,<br>    block_nat_traffic = bool,<br>    subnets           = map(object({<br>      compartment_id    = string,<br>      cidr              = string,<br>      dns_label         = string,<br>      private           = bool,<br>      dhcp_options_id   = string,<br>      defined_tags      = map(string)<br>    })),<br>    defined_tags      = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| all\_services | All services |
-| drg | DRG information. |
-| internet\_gateway | Internet Gateway information. |
-| nat\_gateway | NAT Gateway information. |
-| route\_tables | The managed route tables, indexed by display\_name. |
-| service\_gateway | Service Gateway information. |
-| subnets | The managed subnets, indexed by display\_name. |
-| vcn | VCN information. |
+| <a name="output_all_services"></a> [all\_services](#output\_all\_services) | All services |
+| <a name="output_drg"></a> [drg](#output\_drg) | DRG information. |
+| <a name="output_internet_gateways"></a> [internet\_gateways](#output\_internet\_gateways) | The Internet gateways, indexed by display\_name. |
+| <a name="output_nat_gateways"></a> [nat\_gateways](#output\_nat\_gateways) | The NAT gateways, indexed by display\_name. |
+| <a name="output_service_gateways"></a> [service\_gateways](#output\_service\_gateways) | The Service gateways, indexed by display\_name. |
+| <a name="output_subnets"></a> [subnets](#output\_subnets) | The subnets, indexed by display\_name. |
+| <a name="output_vcns"></a> [vcns](#output\_vcns) | The VCNs, indexed by display\_name. |

@@ -91,7 +91,7 @@ variable "existing_announcement_reader_group_name" {
 variable "no_internet_access" {
   default     = false
   type        = bool
-  description = "Determines if the network will have direct access to the internet. Default is false which creates an Internet Gateway and NAT Gateway, true will not create an Internet Gateway or NAT Gateway. If true, it requires is_vcn_onprem_connected & onprem_cidr"
+  description = "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required."
 }
 variable "is_vcn_onprem_connected" {
   type    = bool
@@ -100,7 +100,7 @@ variable "is_vcn_onprem_connected" {
 }
 variable "onprem_cidrs" {
   type = list(string)
-  description = "List of CIDR blocks for the on-premises networks connecting to DRG. This is required if is_vcn_onprem_connected is true."
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. Required if is_vcn_onprem_connected is true."
   default = []
   validation {
     condition     = length([for c in var.onprem_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_cidrs)
@@ -136,11 +136,11 @@ variable "hub_spoke_architecture" {
 
 variable "dmz_vcn_cidr" {
   type        = string
-  default     = null
-  description = "CIDR block for the DMZ VCN.  DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ."
+  default     = ""
+  description = "CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ."
   validation {
-    condition = var.dmz_vcn_cidr == null ? true : (length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0 ? true : false)
-    #condition     = length(var.dmz_vcn_cidr) == 0 || length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0
+    #condition = var.dmz_vcn_cidr == null ? true : (length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0 ? true : false)
+    condition     = length(var.dmz_vcn_cidr) == 0 || length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0
     error_message = "Validation failed for dmz_vcn_cidr: value must be in CIDR notation."
   }
 }
@@ -148,7 +148,7 @@ variable "dmz_vcn_cidr" {
 variable "dmz_number_of_subnets" {
   type        = number
   default     = 2
-  description = "If a DMZ VCN CIDR is entered this will determine how many subnets will created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment please see the vendor's documentation or OCI reference archtiecture to determine the number of subnets required."
+  description = "The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required."
   validation {
     condition     = var.dmz_number_of_subnets > 0 && var.dmz_number_of_subnets < 6
     error_message = "Validation failed for dmz_number_of_subnets: Minimum of one required and maximum of five allowed."
@@ -157,13 +157,13 @@ variable "dmz_number_of_subnets" {
 variable "dmz_subnet_size" {
   type        = number
   default     = 4
-  description = "The number of additional bits with which to extend the DMZ VCN CIDR prefix."
+  description = "The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if the dmz_vcn_cidr's prefix is 20 (/20) and dmz_subnet_size is 4, subnets are going to be /24."
 }
 
 variable "public_src_bastion_cidrs" {
   type        = list(string)
   default     = []
-  description = "External IP ranges in CIDR notation allowed to make SSH inbound connections to bastion hosts eventually deployed. 0.0.0.0/0 is not allowed in the list."
+  description = "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list."
   validation {
     condition     = !contains(var.public_src_bastion_cidrs,"0.0.0.0/0") && length([for c in var.public_src_bastion_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_bastion_cidrs)
     error_message = "Validation failed for public_src_bastion_cidrs: values must be in CIDR notation, all different than 0.0.0.0/0."
@@ -173,7 +173,8 @@ variable "public_src_bastion_cidrs" {
 variable "public_src_lbr_cidrs" {
   # default = "0.0.0.0/0"
   type        = list(string)
-  default      = ["0.0.0.0/0"]
+  default     = []
+  description = "External IP ranges in CIDR notation allowed to make HTTPS inbound connections."
   validation {
     condition     = length([for c in var.public_src_lbr_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_lbr_cidrs)
     error_message = "Validation failed for public_src_lbr_cidrs: values must be in CIDR notation."
@@ -181,8 +182,9 @@ variable "public_src_lbr_cidrs" {
 }
 
 variable "public_dst_cidrs" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
+  description = "External IP ranges in CIDR notation for HTTPS outbound connections."
   validation {
     condition     = length([for c in var.public_dst_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_dst_cidrs)
     error_message = "Validation failed for public_dst_cidrs: values must be in CIDR notation."
@@ -190,12 +192,16 @@ variable "public_dst_cidrs" {
 }
 
 variable "network_admin_email_endpoint" {
+  type = string
+  description = "Recipient for all network related notifications."
   validation {
     condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.network_admin_email_endpoint)) > 0
     error_message = "Validation failed network_admin_email_endpoint: invalid email address."
   }
 }
 variable "security_admin_email_endpoint" {
+  type = string
+  description = "Recipient for all security related notifications."
   validation {
     condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.security_admin_email_endpoint)) > 0
     error_message = "Validation failed security_admin_email_endpoint: invalid email address."

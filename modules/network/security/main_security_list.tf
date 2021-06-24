@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### Security List(s)
@@ -15,11 +15,10 @@ locals {
 # Security lists
 resource "oci_core_security_list" "these" {
   for_each = var.security_lists
-    compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.default_compartment_id
-    vcn_id         = var.vcn_id
+    compartment_id = each.value.compartment_id != null ? each.value.compartment_id : var.compartment_id
     display_name   = each.key
+    vcn_id         = each.value.vcn_id
     defined_tags   = each.value.defined_tags
-    freeform_tags  = each.value.freeform_tags
 
   #  egress, proto: TCP  - no src port, no dst port
   dynamic "egress_security_rules" {

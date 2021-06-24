@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "CIS OCI Landing Zone Config Stack"
@@ -28,15 +28,20 @@ variableGroups:
 
   - title: "Network"
     variables:
-      - "vcn_cidr"
-      - "public_subnet_cidr"
-      - "private_subnet_app_cidr"
-      - "private_subnet_db_cidr"
-      - "public_src_lbr_cidr"
-      - "public_src_bastion_cidr"
+      - "vcn_cidrs"
+      - "override_vcn_names"
+      - "vcn_names"
+      - "public_src_bastion_cidrs"
+      - "public_src_lbr_cidrs"
+      - "public_dst_cidrs"
       - "net_advanced_options"
+      - "no_internet_access"
+      - "hub_spoke_architecture"
+      - "dmz_vcn_cidr"
+      - "dmz_number_of_subnets"
+      - "dmz_subnet_size"
       - "is_vcn_onprem_connected"
-      - "onprem_cidr"
+      - "onprem_cidrs"
 
   - title: "Notifications"
     variables:
@@ -109,7 +114,7 @@ variables:
   use_enclosing_compartment:
     type: boolean
     title: "Use an enclosing compartment?"
-    description: "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment."
+    description: "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment, in which case you must have the required permissions."
     default: false
     visible: env_advanced_options
   
@@ -208,7 +213,7 @@ variables:
   existing_announcement_reader_group_name:
     type: string
     title: "Existing announcement readers group name"
-    description: "Existing group to which annoucement reading policies will be granted to."
+    description: "Existing group to which announcement reading policies will be granted to."
     visible:  
       and:
         - env_advanced_options
@@ -220,84 +225,145 @@ variables:
     description: "Network advanced options"
     default: false
 
-  vcn_cidr:
-    type: string
-    title: "VCN IP Range"
+  vcn_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     required: true
-    default: "10.0.0.0/16"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "The VCN IP range in CIDR notation."
+    maxItems: 9
+    minItems: 1
+    title: "List of CIDR blocks for the VCNs to be created"
+    description: "CIDR blocks for the VCNs in CIDR notation. When 'Deploy Hub & Spoke Architecture?' is selected under 'Show Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    default: ["10.0.0.0/20"]
 
-  public_subnet_cidr:
-    type: string
-    title: "Web Subnet IP Range"
-    required: true
-    default: "10.0.1.0/24"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of the web subnet in CIDR notation. It must be in VCN CIDR range."
+  override_vcn_names:
+    type: boolean
+    title: "Override VCN default names?"
+    description: "All VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
+    default: false
 
-  private_subnet_app_cidr:
-    type: string
-    title: "Application Private Subnet IP Range"
-    required: true
-    default: "10.0.2.0/24"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of application subnet. It must be in VCN CIDR range."
+  vcn_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 9
+    minItems: 1
+    title: "List of custom names to be given to the VCNs"
+    description: "The VCN custom names, overriding the default VCN names. There must be one name corresponding to each CIDR block provided in 'List of CIDR blocks for the VCNs to be created', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    required: false
+    visible: override_vcn_names
+    default: []  
 
-  private_subnet_db_cidr:
-    type: string
-    title: "Database Private Subnet IP Range"
-    required: true
-    default: "10.0.3.0/24"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of database subnet in CIDR notation. It must be in VCN CIDR range."
+  public_src_bastion_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Inbound SSH CIDR List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)."
+    default: []
 
-  public_src_bastion_cidr:
-    type: string
-    title: "Bastion Grant IP Range"
-    required: true
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range in CIDR notation allowed to connect to Bastion host. It must NOT be 0.0.0.0/0."
+  public_src_lbr_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Inbound HTTPS CIDR List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)."
+    default: []
 
-  public_src_lbr_cidr:
-    type: string
-    title: "Load Balancer Grant IP Range"
-    required: true
-    default: "0.0.0.0/0"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP range in CIDR notation allowed to connect to a public load balancer eventually deployed in the Web subnet."
+  public_dst_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "Outbound HTTPS CIDR List"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)."
+    default: []  
 
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone to on-premises network?"
-    description: "Whether or not the Landing Zone is connected to an on-premises network."
+    description: "If selected, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
     default: false
     visible: net_advanced_options
 
-  onprem_cidr:
+  onprem_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "On-premises network CIDR blocks"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. Required if 'Connect Landing Zone to on-premises network?' is checked."
+    visible: 
+      and:
+        - net_advanced_options
+        - is_vcn_onprem_connected
+  
+  no_internet_access:
+    type: boolean
+    title: "No Internet Access?"
+    description: "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to 'Connect Landing Zone to on-premises network?'."
+    default: false
+    visible: net_advanced_options
+
+  hub_spoke_architecture:
+    type: boolean
+    title: "Deploy Hub & Spoke Architecture?"
+    description: "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
+    required: false
+    visible: net_advanced_options
+  
+  dmz_vcn_cidr:
     type: string
-    title: "On-premises network CIDR block"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range of your on-premises network in CIDR notation. It must not conflict with any Landing Zone's VCN IP ranges."
+    title: "CIDR Block for the DMZ VCN"
+    #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "DMZ VCN IP range in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. Required if 'Deploy Hub & Spoke Architecture?' is checked."
+    required: ${hub_spoke_architecture}
+    visible:
+      and:
+        - net_advanced_options
+        - hub_spoke_architecture
+
+  dmz_number_of_subnets:
+    type: integer
+    title: "Number of subnets in the DMZ VCN"
+    description: "The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required."
+    required: false
+    visible:
+      and:
+        - net_advanced_options
+        - hub_spoke_architecture
+
+  dmz_subnet_size: 
+    type: integer
+    title: "Size of the DMZ Subnet CIDRs"
+    description:  "The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if the prefix of 'CIDR Block for the DMZ VCN' is 20 (/20) and 'Size of the DMZ Subnets CIDRs' is 4, subnets are going to be /24."
     required: false
     visible: 
       and:
-        - is_vcn_onprem_connected
         - net_advanced_options
+        - hub_spoke_architecture
 
   network_admin_email_endpoint:
     type: string
     title: "Network Admin Email Address"
     pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     required: true
-    description: "Recipient for all network notifications."
+    description: "Recipient for all network related notifications."
 
   security_admin_email_endpoint:
     type: string
     title: "Security Admin Email Address"
     pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     required: true
-    description: "Recipient for all securtiy notifications."
+    description: "Recipient for all security related notifications."
 
   cloud_guard_configuration_status:
     type: enum
@@ -320,7 +386,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for Audit Logs. Select one of - objectstorage, streaming or functions."
+    description: "Destination for Service Connector Hub for Audit Logs. Select one of objectstorage, streaming or functions."
     default: objectstorage
     visible: create_service_connector_audit
     enum:

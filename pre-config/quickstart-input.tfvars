@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ##### The uncommented variable assignments below are for REQUIRED variables that do NOT have a default value in variables.tf.
@@ -6,7 +6,7 @@
 tenancy_ocid         = "<tenancy_ocid>"
 user_ocid            = "<tenancy_admin_ocid>"
 fingerprint          = "<tenancy_admin_api_key_fingerprint>"
-private_key_path     = "<path_to_tenancy_admin_private_key_file>"
+private_key_path     = "<path_to_tenancy_admin_private_key_pem_file>"
 private_key_password = ""
 home_region          = "<tenancy_home_region>"
 unique_prefix        = "<a_label_to_prefix_resource_names_with>"
@@ -14,8 +14,13 @@ unique_prefix        = "<a_label_to_prefix_resource_names_with>"
 ##### The commented variable assignments below are for variables with a default value in variables.tf.
 ##### For overriding the default values, uncomment the variable and provide an appropriate value.
 
-#enclosing_compartment_names                 = ["<compartment1_name>","<compartment2_name>"] # max is 5.
-#existing_enclosing_compartments_parent_ocid = "<existing_enclosing_compartments_parent_ocid>" # the code defaults to tenancy_ocid if nothing is informed.
+#enclosing_compartment_names                 = ["<compartment1_name>","<compartment2_name>"]   # the names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. Max number of compartments is 5.
+#existing_enclosing_compartments_parent_ocid = "<existing_enclosing_compartments_parent_ocid>" # the enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment.
+
+#use_existing_provisioning_group  = false                   # whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by enclosing_compartment_names variable.
+#existing_provisioning_group_name = "<existing_group_name>" # the name of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false.
+
+#create_services_policies = true # whether or not services policies should be created. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management.
 
 #use_existing_lz_groups                 = false
 /*

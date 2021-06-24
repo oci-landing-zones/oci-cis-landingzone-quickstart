@@ -37,14 +37,18 @@ Variable Name | Description | Required | Default Value
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vcn_cidr** | the VCN CIDR block | Yes | "10.0.0.0/16"
-**public_subnet_cidr** | the public subnet CIDR block. | Yes | "10.0.1.0/24"
-**private_subnet_app_cidr** | the App private subnet CIDR block. | Yes | "10.0.2.0/24"
-**private_subnet_db_cidr** | the DB private subnet CIDR block. | Yes | "10.0.3.0/24"
-**public_src_bastion_cidr** | the external CIDR block that is allowed to ingress into the bastions servers in the public subnet. | Yes | None
-**public_src_lbr_cidr** | the external CIDR block that is allowed to ingress into the load balancer in the public subnet. | Yes | "0.0.0.0/0"
+**vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | Yes | ["10.0.0.0/20"]
+**vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service-label*-*index*-vcn). The list length and elements order must match vcn_cidrs'. | No | None
+**public_src_bastion_cidrs** | External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. | No | None
+**public_src_lbr_cidrs** | External IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | None
+**public_dst_cidrs** | External IP ranges in CIDR notation for HTTPS outbound connections. | No | None
+**no_internet_access** | Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required. | Yes | false
+**hub_spoke_architecture** | Determines if a DRG Hub and Spoke architecture is deployed.  Allows for inter-spoke routing. | Yes | false
+**dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. Required if hub_spoke_architecture is true. | Yes, if hub_spoke_architecture is true | ""
+**dmz_number_of_subnets** | The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required. | Yes, if dmz_vcn_cidr is provided  | 2
+**dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if the dmz_vcn_cidr's prefix is 20 (/20) and dmz_subnet_size is 4, subnets are going to be /24. | Yes, if dmz_vcn_cidr is provided  | 4
 **is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN. | Yes | false
-**onprem_cidr** | the on-premises CIDR block. Only used if *is_vcn_onprem_connected* is true. | No | "0.0.0.0/0"
+**onprem_cidr** | the on-premises CIDR block. Only used if *is_vcn_onprem_connected* is true. | No | None
 
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value

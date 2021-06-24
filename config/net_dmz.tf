@@ -3,7 +3,7 @@
 
 locals {
 
-  dmz_vcn = var.hub_spoke_architecture && var.dmz_vcn_cidr != null ? { (local.dmz_vcn_name.name) = {
+  dmz_vcn = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) > 0 ? { (local.dmz_vcn_name.name) = {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = var.dmz_vcn_cidr
     dns_label         = "dmz"

@@ -4,11 +4,11 @@
 ### This Terraform configuration creates Landing Zone NSGs (Network Security Groups) for the DMZ VCN
 
 locals {
-  dmz_bastions_nsg_name = var.dmz_vcn_cidr != null ? "${local.dmz_vcn_name.name}-bastion-nsg" : null
-  dmz_services_nsg_name = var.dmz_vcn_cidr != null ? "${local.dmz_vcn_name.name}-services-nsg" : null
-  dmz_public_dst_nsg_name = var.dmz_vcn_cidr != null ? "${local.dmz_vcn_name.name}-public-dst-nsg" : null
+  dmz_bastions_nsg_name = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-bastion-nsg" : null
+  dmz_services_nsg_name = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-services-nsg" : null
+  dmz_public_dst_nsg_name = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-public-dst-nsg" : null
 
-  ssh_dmz_to_spokes_nsg_egress_rules = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-ssh-egress-rule" => {
+  ssh_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-ssh-egress-rule" => {
     is_create : true,
     description : "SSH egress rule to ${k}.",
     protocol : "6",
@@ -23,7 +23,7 @@ locals {
     icmp_code : null
   }} : {}
 
-  http_dmz_to_spokes_nsg_egress_rules = var.dmz_vcn_cidr != null ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-http-egress-rule" => {
+  http_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-http-egress-rule" => {
     is_create : true,
     description : "HTTP egress rule to ${k}.",
     protocol : "6",
@@ -38,11 +38,11 @@ locals {
     icmp_code : null
   }} : {}
   
-  public_dst_cidrs_nsg = length(var.public_dst_cidrs) > 0 &&  var.dmz_vcn_cidr != null ? {(local.dmz_public_dst_nsg_name) : {
+  public_dst_cidrs_nsg = length(var.public_dst_cidrs) > 0 &&  length(var.dmz_vcn_cidr) > 0 ? {(local.dmz_public_dst_nsg_name) : {
       vcn_id = module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].id
       ingress_rules : {},
       egress_rules : { for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
-      is_create : length(var.public_dst_cidrs) > 0 && !var.no_internet_access && var.dmz_vcn_cidr != null,
+      is_create : length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) > 0,
       description : "Egress HTTPS rule to ${cidr}.",
       stateless : false,
       protocol : "6",
@@ -61,7 +61,7 @@ locals {
 
 module "lz_nsgs_dmz" {
   depends_on     = [module.lz_vcn_dmz]
-  count          = var.dmz_vcn_cidr != null && var.hub_spoke_architecture  ? 1 : 0
+  count          = length(var.dmz_vcn_cidr) > 0 && var.hub_spoke_architecture  ? 1 : 0
   source         = "../modules/network/security"
   compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
   nsgs = merge(local.public_dst_cidrs_nsg,{

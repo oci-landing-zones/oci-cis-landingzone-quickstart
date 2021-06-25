@@ -26,6 +26,6 @@ module "lz_flow_logs" {
   source                 = "../modules/monitoring/logs"
   compartment_id         = module.lz_compartments.compartments[local.security_compartment_name].id
   log_group_display_name = "${var.service_label}-flow-logs-grp"
-  log_group_description  = "CIS Landing Zone ${var.service_label} flow logs group."
+  log_group_description  = "Landing Zone ${var.service_label} flow logs group."
   target_resources       = local.flow_logs
 }  

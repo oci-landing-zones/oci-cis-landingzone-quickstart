@@ -10,7 +10,7 @@ module "lz_top_compartment" {
   compartments = {
     (local.default_enclosing_compartment_name) = {
       parent_id   = var.tenancy_ocid
-      description = "CIS Landing Zone enclosing compartment, enclosing all Landing Zone compartments."
+      description = "Landing Zone enclosing compartment, enclosing all Landing Zone compartments."
     }
   }
 }
@@ -21,19 +21,19 @@ module "lz_compartments" {
   compartments = {
     (local.security_compartment_name) = {
       parent_id   = local.parent_compartment_id
-      description = "CIS Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
+      description = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
     },
     (local.network_compartment_name) = {
       parent_id   = local.parent_compartment_id
-      description = "CIS Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
+      description = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
     },
     (local.appdev_compartment_name) = {
       parent_id   = local.parent_compartment_id
-      description = "CIS Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
+      description = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
     },
     (local.database_compartment_name) = {
       parent_id   = local.parent_compartment_id
-      description = "CIS Landing Zone compartment for all database related resources."
+      description = "Landing Zone compartment for all database related resources."
     }
   }
 }

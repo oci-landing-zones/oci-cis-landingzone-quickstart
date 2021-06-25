@@ -4,7 +4,7 @@
 module "lz_notifications" {
   source = "../modules/monitoring/notifications"
   rules = {
-    ("${var.service_label}-notify-on-idp-changes") = {
+    ("${var.service_label}-notify-on-idp-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when Identity Providers are created, updated or deleted."
       is_enabled          = true
@@ -21,7 +21,7 @@ module "lz_notifications" {
       topic_id            = module.lz_security_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-idp-group-mapping-changes") = {
+    ("${var.service_label}-notify-on-idp-group-mapping-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when Identity Provider Group Mappings are created, updated or deleted."
       is_enabled          = true
@@ -38,7 +38,7 @@ module "lz_notifications" {
       topic_id            = module.lz_security_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-iam-group-changes") = {
+    ("${var.service_label}-notify-on-iam-group-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM groups are created, updated or deleted."
       is_enabled          = true
@@ -57,7 +57,7 @@ module "lz_notifications" {
       topic_id            = module.lz_security_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-iam-policy-changes") = {
+    ("${var.service_label}-notify-on-iam-policy-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM policies are created, updated or deleted."
       is_enabled          = true
@@ -74,7 +74,7 @@ module "lz_notifications" {
       topic_id            = module.lz_security_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-iam-user-changes") = {
+    ("${var.service_label}-notify-on-iam-user-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM users are created, updated or deleted."
       is_enabled          = true
@@ -93,7 +93,7 @@ module "lz_notifications" {
       topic_id            = module.lz_security_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-vcn-changes") = {
+    ("${var.service_label}-notify-on-vcn-changes-rule") = {
       compartment_id      = local.parent_compartment_id
       description         = "Landing Zone events rule to detect when VCNs are created, updated or deleted."
       is_enabled          = true
@@ -110,7 +110,7 @@ module "lz_notifications" {
       topic_id            = module.lz_network_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-route-table-changes") = {
+    ("${var.service_label}-notify-on-route-table-changes-rule") = {
       compartment_id      = local.parent_compartment_id
       description         = "Landing Zone events rule to detect when route tables are created, updated, deleted or moved."
       is_enabled          = true
@@ -128,7 +128,7 @@ module "lz_notifications" {
       topic_id            = module.lz_network_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-security-list-changes") = {
+    ("${var.service_label}-notify-on-security-list-changes-rule") = {
       compartment_id      = local.parent_compartment_id
       display_name        = "${var.service_label}-notify-on-security-list-changes"
       description         = "Landing Zone events rule to detect when security lists are created, updated, deleted, or moved."
@@ -147,7 +147,7 @@ module "lz_notifications" {
       topic_id            = module.lz_network_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-nsg-changes") = {
+    ("${var.service_label}-notify-on-nsg-changes-rule") = {
       compartment_id      = local.parent_compartment_id
       description         = "Landing Zone events rule to detect when network security groups are created, updated, deleted, or moved."
       is_enabled          = true
@@ -166,7 +166,7 @@ module "lz_notifications" {
       topic_id            = module.lz_network_topic.topic.id
       defined_tags        = null
     },
-    ("${var.service_label}-notify-on-network-gateways-changes") = {
+    ("${var.service_label}-notify-on-network-gateways-changes-rule") = {
       compartment_id      = local.parent_compartment_id
       description         = "Landing Zone events rule to detect when network gateways are created, updated, deleted, attached, detached, or moved."
       is_enabled          = true

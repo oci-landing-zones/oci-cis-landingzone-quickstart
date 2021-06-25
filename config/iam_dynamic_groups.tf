@@ -8,12 +8,12 @@ module "lz_dynamic_groups" {
   dynamic_groups = var.use_existing_iam_groups == false ? {
     ("${var.service_label}-sec-fun-dynamic-grp") = {
       compartment_id = var.tenancy_ocid
-      description    = "CIS Landing Zone dynamic group for functions in ${local.security_compartment_name} compartment."
+      description    = "Landing Zone dynamic group for functions in ${local.security_compartment_name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_compartments.compartments[local.security_compartment_name].id}'}"
     },
     ("${var.service_label}-appdev-fun-dynamic-grp") = {
       compartment_id = var.tenancy_ocid
-      description    = "CIS Landing Zone dynamic group for functions in ${local.appdev_compartment_name} compartment."
+      description    = "Landing Zone dynamic group for functions in ${local.appdev_compartment_name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment_name].id}'}"
     }
   } : {}

@@ -9,7 +9,7 @@ module "lz_provisioning_tenancy_group_policy" {
   policies = {
     "${each.key}-prov-plc" = {
       compartment_id = var.tenancy_ocid
-      description    = "CIS Landing Zone provisioning policy."
+      description    = "Landing Zone provisioning policy."
       statements = ["Allow group ${each.value.group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
                     "Allow group ${each.value.group_name} to use tag-namespaces in tenancy",            # ability to check the tag-namespaces at the tenancy level and to apply tag defaults
                     "Allow group ${each.value.group_name} to read tag-defaults in tenancy",             # ability to check for tag-defaults at the tenancy level
@@ -31,7 +31,7 @@ module "lz_provisioning_topcmp_group_policy" {
   policies = {
     "${each.key}-prov-plc" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
-      description    = "CIS Landing Zone provisioning policy for ${each.key} compartment."
+      description    = "Landing Zone provisioning policy for ${each.key} compartment."
       statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]
       /*
       statements = ["Allow group ${each.value.group_name} to manage compartments in compartment ${each.key}",
@@ -60,7 +60,7 @@ module "lz_groups_policy" {
   policies   = {
     "${each.key}-groups-plc" = {
       compartment_id    = var.tenancy_ocid
-      description       = "CIS Landing Zone groups policy."
+      description       = "Landing Zone groups policy."
       statements        = [
                           # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloudevents-rules in tenancy",

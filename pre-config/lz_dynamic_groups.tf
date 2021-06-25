@@ -8,7 +8,7 @@ module "lz_dynamic_groups" {
     dynamic_groups = {
         ("${each.key}-fun-dynamic-grp") = {
             compartment_id = var.tenancy_ocid
-            description    = "CIS Landing Zone dynamic group for functions in compartment ${each.key}"
+            description    = "Landing Zone dynamic group for functions in compartment ${each.key}"
             matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_top_compartments.compartments[each.key].id}'}"
         }
     }

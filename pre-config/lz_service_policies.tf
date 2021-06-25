@@ -6,12 +6,12 @@ module "lz_service_policies" {
     policies = var.create_services_policies == true ? {
         (local.os_mgmt_policy_name) = {
             compartment_id = var.tenancy_ocid
-            description    = "CIS Landing Zone OS Management service policy."
+            description    = "Landing Zone OS Management service policy."
             statements     = ["Allow service osms to read instances in tenancy"]
         },
         (local.cloud_guard_policy_name) = {
             compartment_id = var.tenancy_ocid
-            description    = "CIS Landing Zone Cloud Guard service policy."
+            description    = "Landing Zone Cloud Guard service policy."
             statements     = ["Allow service cloudguard to read keys in tenancy",
                             "Allow service cloudguard to read compartments in tenancy",
                             "Allow service cloudguard to read tenancies in tenancy",
@@ -32,7 +32,7 @@ module "lz_service_policies" {
         },
         (local.vss_policy_name) = {
             compartment_id = var.tenancy_ocid
-            description    = "CIS Landing Zone Vulnerability Scanning service policy."
+            description    = "Landing Zone Vulnerability Scanning service policy."
             statements     = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
                               "Allow service vulnerability-scanning-service to read compartments in tenancy",
                               "Allow service vulnerability-scanning-service to read vnics in tenancy",

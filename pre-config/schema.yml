@@ -53,23 +53,23 @@ variableGroups:
 variables:
   home_region:
     type: oci:identity:region:name
-    title: "Home region"
+    title: "Home Region"
     description: "The tenancy home region."
     required: true
   
   unique_prefix:
     type: string
-    title: "Unique prefix"
+    title: "Unique Prefix"
     minLength: 1
     maxLength: 16
     pattern: "^[A-Za-z][A-Za-z0-9]{1,16}$"
-    description: "A unique prefix across the tenancy that is added to all resource names created by this stack."
-    required: true
+    description: "If provided, a unique prefix across the tenancy that is added to all resource names created by this stack."
+    default: ""
 
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named <unique-prefix>-top-cmp in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
+    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
     default: false
 
   enclosing_compartment_names:
@@ -79,45 +79,45 @@ variables:
     uniqueItems: true
     maxItems: 5
     minItems: 0
-    title: "Enclosing compartment names (max 5)"
+    title: "Enclosing Compartment Names (max 5)"
     description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. (Type the name and hit enter to enter multiple values, up to a maximum of 5)."
     required: false
     default: []
 
   existing_enclosing_compartments_parent_ocid:
     type: oci:identity:compartment:id
-    title: "Enclosing compartments parent"
+    title: "Enclosing Compartments Parent"
     description: "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
     required: false
   
   create_services_policies:
     type: boolean
-    title: "Create services policies?"
+    title: "Create Services Policies?"
     description: "Whether services policies should be created. If these policies already exist in the root compartment, uncheck for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management."
     default: true
   
   use_existing_provisioning_group:
     type: boolean
-    title: "Use existing group for provisioning the Landing Zone?"
+    title: "Use Existing Group for Provisioning the Landing Zone?"
     description: "Whether or not an existing group will be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by \"Enclosing compartment names\"."
     default: false
 
   existing_provisioning_group_name:
     type: string
-    title: "Existing group name for provisioning the Landing Zone"
+    title: "Existing Group Name for Provisioning the Landing Zone"
     description: "The name of an existing group to be used for provisioning all resources in the compartments defined by \"Enclosing compartment names\"."
     visible :  use_existing_provisioning_group
   
   create_tenancy_level_policies:
     type: boolean
-    title: "Create policies at root compartment (tenancy level policies)?"
+    title: "Create Policies at Root Compartment (tenancy level policies)?"
     description: "Whether or not management policies for Landing Zone groups are created in the root compartment. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
     default: true
     required: true
 
   use_existing_lz_groups:
     type: boolean
-    title: "Use existing groups for managing the Landing Zone?"
+    title: "Use Existing Groups for Managing the Landing Zone?"
     description: "Whether or not existing groups are to be reused for managing the Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
     default: false
     required: true

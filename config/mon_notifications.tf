@@ -6,7 +6,7 @@ module "lz_notifications" {
   rules = {
     ("${var.service_label}-notify-on-idp-changes") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Sends notification when Identity Providers are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when Identity Providers are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
             {"eventType": 
@@ -23,7 +23,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-idp-group-mapping-changes") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Sends notification when Identity Provider Group Mappings are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when Identity Provider Group Mappings are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
         {"eventType": 
@@ -40,7 +40,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-iam-group-changes") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Sends notification when IAM groups are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when IAM groups are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
         {"eventType": 
@@ -59,7 +59,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-iam-policy-changes") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Sends notification when IAM policies are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when IAM policies are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -76,7 +76,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-iam-user-changes") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Sends notification when IAM users are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when IAM users are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -95,7 +95,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-vcn-changes") = {
       compartment_id      = local.parent_compartment_id
-      description         = "Sends notification when VCNs are created, updated or deleted."
+      description         = "CIS Landing Zone events rule to detect when VCNs are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -112,7 +112,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-route-table-changes") = {
       compartment_id      = local.parent_compartment_id
-      description         = "Sends notification when route tables are created, updated, deleted or moved."
+      description         = "CIS Landing Zone events rule to detect when route tables are created, updated, deleted or moved."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -131,7 +131,7 @@ module "lz_notifications" {
     ("${var.service_label}-notify-on-security-list-changes") = {
       compartment_id      = local.parent_compartment_id
       display_name        = "${var.service_label}-notify-on-security-list-changes"
-      description         = "Sends notification when security lists are created, updated, deleted, or moved."
+      description         = "CIS Landing Zone events rule to detect when security lists are created, updated, deleted, or moved."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -149,7 +149,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-nsg-changes") = {
       compartment_id      = local.parent_compartment_id
-      description         = "Sends notification when network security groups are created, updated, deleted, or moved."
+      description         = "CIS Landing Zone events rule to detect when network security groups are created, updated, deleted, or moved."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":
@@ -168,7 +168,7 @@ module "lz_notifications" {
     },
     ("${var.service_label}-notify-on-network-gateways-changes") = {
       compartment_id      = local.parent_compartment_id
-      description         = "Sends notification when network gateways are created, updated, deleted, attached, detached, or moved."
+      description         = "CIS Landing Zone events rule to detect when network gateways are created, updated, deleted, attached, detached, or moved."
       is_enabled          = true
       condition           = <<EOT
         {"eventType":

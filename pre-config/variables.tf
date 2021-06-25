@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 variable "tenancy_ocid" {}
@@ -20,10 +20,11 @@ variable "home_region" {
 }
 variable "unique_prefix" {
   type = string
-  description = "A unique prefix across the tenancy that is added to all resource names created by this module."  
+  description = "A unique prefix across the tenancy that is added to all resource names created by this module."
+  default = ""  
   validation {
-    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,15}$", var.unique_prefix)) > 0
-    error_message = "The unique_prefix variable is required and must contain alphanumeric characters only, start with a letter and 16 character max."
+    condition     = length(var.unique_prefix) == 0 || length(regexall("^[A-Za-z][A-Za-z0-9]{1,15}$", var.unique_prefix)) > 0
+    error_message = "Validation failed for unique_prefix: if provided, value must contain alphanumeric characters only, start with a letter and 16 character max."
   }
 }
 variable "use_existing_provisioning_group" {
@@ -42,7 +43,7 @@ variable "enclosing_compartment_names" {
     description = "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. Max number of compartments is 5."
     validation {
         condition     = length(var.enclosing_compartment_names) <= 5
-        error_message = "Max number of values exceeded for enclosing_compartment_names. Max number is 5."
+        error_message = "Validation failed for enclosing_compartment_names: Maximum number of values allowed is 5."
     }
 }
 variable "existing_enclosing_compartments_parent_ocid" {
@@ -53,7 +54,7 @@ variable "existing_enclosing_compartments_parent_ocid" {
 variable "use_existing_lz_groups" {
     type = bool
     default = false
-    description = "Whether or not existing groups are to be reused for Landing Zone. If unchecked, one set of groups is created for each compartment defined by enclosing_compartment_names variable. If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
+    description = "Whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by enclosing_compartment_names variable. If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
 }
 variable "create_services_policies" {
     type = bool
@@ -63,7 +64,7 @@ variable "create_services_policies" {
 variable "create_tenancy_level_policies" {
     type = bool
     default = true
-    description = "Whether or not policies for Landing Zone groups are created at the root compartment. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
+    description = "Whether or not policies for Landing Zone groups are created at the root compartment. If false, Landing Zone groups will not be able to manage resources at the root compartment level."
 }  
 variable "existing_iam_admin_group_name" {
     type    = string

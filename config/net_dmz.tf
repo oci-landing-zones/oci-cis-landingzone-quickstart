@@ -25,7 +25,7 @@ locals {
 
   } : {}
 
-  dmz_route_tables = { for key, subnet in module.lz_vcn_dmz.subnets : replace("${key}-route-table", "vcn-", "") => {
+  dmz_route_tables = { for key, subnet in module.lz_vcn_dmz.subnets : replace("${key}-rtb", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id

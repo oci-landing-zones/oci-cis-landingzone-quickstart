@@ -10,13 +10,13 @@ module "lz_tags" {
   providers                    = { oci = oci.home }
   tenancy_ocid                 = var.tenancy_ocid
   tag_namespace_compartment_id = local.parent_compartment_id
-  tag_namespace_name           = var.service_label
-  tag_namespace_description    = "${var.service_label} tag namespace"
+  tag_namespace_name           = local.tag_namespace_name
+  tag_namespace_description    = "CIS Landing Zone ${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.parent_compartment_id
 
   tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {
-      tag_description         = "Identifies who created the resource."
+      tag_description         = "CIS Landing Zone tag that identifies who created the resource."
       tag_is_cost_tracking    = false #true
       tag_is_retired          = false
       make_tag_default        = true
@@ -24,7 +24,7 @@ module "lz_tags" {
       tag_default_is_required = false
     },
     (local.createdon_tag_name) = {
-      tag_description         = "Identifies when the resource was created."
+      tag_description         = "CIS Landing Zone tag that identifies when the resource was created."
       tag_is_cost_tracking    = false
       tag_is_retired          = false
       make_tag_default        = true

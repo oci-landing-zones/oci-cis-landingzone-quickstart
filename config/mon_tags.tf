@@ -10,7 +10,7 @@ module "lz_tags" {
   providers                    = { oci = oci.home }
   tenancy_ocid                 = var.tenancy_ocid
   tag_namespace_compartment_id = local.parent_compartment_id
-  tag_namespace_name           = var.service_label
+  tag_namespace_name           = local.tag_namespace_name
   tag_namespace_description    = "${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.parent_compartment_id
 

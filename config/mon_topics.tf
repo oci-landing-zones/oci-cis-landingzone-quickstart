@@ -5,7 +5,7 @@ module "lz_security_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ module.slow_down_topics ]
   compartment_id                 = module.lz_compartments.compartments[local.security_compartment_name].id
-  notification_topic_name        = "${var.service_label}-SecurityTopic"
+  notification_topic_name        = "${var.service_label}-security-tpc"
   notification_topic_description = "Topic for security related notifications."
   subscriptions = {
     s1 = { protocol = "EMAIL", endpoint = var.security_admin_email_endpoint },
@@ -25,7 +25,7 @@ module "lz_network_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ module.slow_down_topics ]
   compartment_id                 = module.lz_compartments.compartments[local.security_compartment_name].id
-  notification_topic_name        = "${var.service_label}-NetworkTopic"
+  notification_topic_name        = "${var.service_label}-network-tpc"
   notification_topic_description = "Topic for network related notifications."
 
   subscriptions = {

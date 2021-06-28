@@ -19,7 +19,27 @@ locals {
   auditor_group_name_suffix             = var.use_existing_lz_groups == false ? "auditor-group" : var.existing_iam_admin_group_name
   announcement_reader_group_name_suffix = var.use_existing_lz_groups == false ? "announcement-reader-group" : var.existing_iam_admin_group_name
 
-  cloud_guard_policy_name = "${local.unique_prefix}-cloud-guard-policy"
-  os_mgmt_policy_name     = "${local.unique_prefix}-os-management-policy"
-  vss_policy_name         = "${local.unique_prefix}-vss-policy"
+  services_policy_name   = "${var.unique_prefix}-services-policy"
+  cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
+                            "Allow service cloudguard to read compartments in tenancy",
+                            "Allow service cloudguard to read tenancies in tenancy",
+                            "Allow service cloudguard to read audit-events in tenancy",
+                            "Allow service cloudguard to read compute-management-family in tenancy",
+                            "Allow service cloudguard to read instance-family in tenancy",
+                            "Allow service cloudguard to read virtual-network-family in tenancy",
+                            "Allow service cloudguard to read volume-family in tenancy",
+                            "Allow service cloudguard to read database-family in tenancy",
+                            "Allow service cloudguard to read object-family in tenancy",
+                            "Allow service cloudguard to read load-balancers in tenancy",
+                            "Allow service cloudguard to read users in tenancy",
+                            "Allow service cloudguard to read groups in tenancy",
+                            "Allow service cloudguard to read policies in tenancy",
+                            "Allow service cloudguard to read dynamic-groups in tenancy",
+                            "Allow service cloudguard to read authentication-policies in tenancy",
+                            "Allow service cloudguard to use network-security-groups in tenancy"]
+  vss_statements       = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
+                          "Allow service vulnerability-scanning-service to read compartments in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnics in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
+  os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]                        
 }

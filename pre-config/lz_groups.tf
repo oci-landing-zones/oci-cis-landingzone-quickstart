@@ -17,7 +17,7 @@ module "lz_provisioning_groups" {
 }
 
 module "lz_groups" {
-  for_each       = var.use_existing_lz_groups == false ? local.lz_group_names : tomap({})
+  for_each       = var.use_existing_groups == false ? local.lz_group_names : tomap({})
     source       = "../modules/iam/iam-group"
     tenancy_ocid = var.tenancy_ocid
     groups       = {

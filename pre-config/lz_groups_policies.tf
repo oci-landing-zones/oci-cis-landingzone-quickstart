@@ -7,7 +7,7 @@ module "lz_provisioning_tenancy_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.key}-prov-policy" = {
+    "${each.key}-provisioning-policy" = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone provisioning policy."
       statements = ["Allow group ${each.value.group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
@@ -29,7 +29,7 @@ module "lz_provisioning_topcmp_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.key}-prov-policy" = {
+    "${each.key}-provisioning-policy" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
       description    = "Landing Zone provisioning policy for ${each.key} compartment."
       statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]

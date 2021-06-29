@@ -37,7 +37,6 @@ variableGroups:
   
   - title: "Policies"
     variables:
-      - "grant_tenancy_level_mgmt_policies"
       - "grant_services_policies"
     visible: advanced_options
 
@@ -49,6 +48,7 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
+      - "grant_tenancy_level_mgmt_policies"
 
 variables:
   home_region:

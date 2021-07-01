@@ -23,7 +23,7 @@ locals {
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? true : false
     block_nat_traffic = false
     defined_tags      = null
-    subnets = { for s in local.spoke_subnet_names : replace("${vcn.name}-${s}-snt", "-vcn", "") => {
+    subnets = { for s in local.spoke_subnet_names : replace("${vcn.name}-${s}-subnet", "-vcn", "") => {
       compartment_id  = null
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))
@@ -44,7 +44,7 @@ locals {
 
   ### Route Tables ###
   ## Web Subnet Route Tables
-  web_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtb", "vcn-", "") => {
+  web_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtable", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -99,7 +99,7 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[0]}-*", key)) > 0 }
 
   ## App Subnet Route Tables
-  app_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtb", "vcn-", "") => {
+  app_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtable", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -148,7 +148,7 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[1]}-*", key)) > 0 }
 
   ## Database Subnet Route Tables
-  db_route_tables = { for key, subnet in local.all_lz_subnets : replace("${key}-rtb", "vcn-", "") => {
+  db_route_tables = { for key, subnet in local.all_lz_subnets : replace("${key}-rtable", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id

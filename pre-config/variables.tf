@@ -51,21 +51,16 @@ variable "existing_enclosing_compartments_parent_ocid" {
     default = ""
     description = "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
 }
-variable "use_existing_lz_groups" {
+variable "use_existing_groups" {
     type = bool
     default = false
     description = "Whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by enclosing_compartment_names variable. If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
 }
-variable "create_services_policies" {
+variable "grant_services_policies" {
     type = bool
     default = true
-    description = "Whether services policies should be created. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management."
+    description = "Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management."
 }
-variable "create_tenancy_level_policies" {
-    type = bool
-    default = true
-    description = "Whether or not policies for Landing Zone groups are created at the root compartment. If false, Landing Zone groups will not be able to manage resources at the root compartment level."
-}  
 variable "existing_iam_admin_group_name" {
     type    = string
     default = ""

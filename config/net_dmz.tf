@@ -12,7 +12,7 @@ locals {
     is_attach_drg     = true
     block_nat_traffic = false
     defined_tags      = null
-    subnets = { for s in range(var.dmz_number_of_subnets) : "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-snt" => {
+    subnets = { for s in range(var.dmz_number_of_subnets) : "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet" => {
       compartment_id  = null
       defined_tags    = null
       cidr            = cidrsubnet(var.dmz_vcn_cidr, var.dmz_subnet_size, s)
@@ -25,7 +25,7 @@ locals {
 
   } : {}
 
-  dmz_route_tables = { for key, subnet in module.lz_vcn_dmz.subnets : replace("${key}-rtb", "vcn-", "") => {
+  dmz_route_tables = { for key, subnet in module.lz_vcn_dmz.subnets : replace("${key}-rtable", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id

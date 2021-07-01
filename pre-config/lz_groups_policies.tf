@@ -7,9 +7,9 @@ module "lz_provisioning_tenancy_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.key}-prov-plc" = {
+    "${each.key}-provisioning-policy" = {
       compartment_id = var.tenancy_ocid
-      description    = "CIS Landing Zone provisioning policy."
+      description    = "Landing Zone provisioning policy."
       statements = ["Allow group ${each.value.group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
                     "Allow group ${each.value.group_name} to use tag-namespaces in tenancy",            # ability to check the tag-namespaces at the tenancy level and to apply tag defaults
                     "Allow group ${each.value.group_name} to read tag-defaults in tenancy",             # ability to check for tag-defaults at the tenancy level
@@ -29,9 +29,9 @@ module "lz_provisioning_topcmp_group_policy" {
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
-    "${each.key}-prov-plc" = {
+    "${each.key}-provisioning-policy" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
-      description    = "CIS Landing Zone provisioning policy for ${each.key} compartment."
+      description    = "Landing Zone provisioning policy for ${each.key} compartment."
       statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]
       /*
       statements = ["Allow group ${each.value.group_name} to manage compartments in compartment ${each.key}",
@@ -52,15 +52,15 @@ module "lz_provisioning_topcmp_group_policy" {
   }
 }
 
-### Landing Zone security admin policy
-module "lz_groups_policy" {
+### Landing Zone mgmt policy
+module "lz_groups_mgmt_policy" {
   depends_on = [module.lz_groups]
-  for_each   = var.create_tenancy_level_policies == true ? local.lz_group_names : tomap([])
+  for_each   = local.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : tomap([])
   source     = "../modules/iam/iam-policy"
   policies   = {
-    "${each.key}-groups-plc" = {
+    "${each.key}-groups-mgmt-policy" = {
       compartment_id    = var.tenancy_ocid
-      description       = "CIS Landing Zone groups policy."
+      description       = "Landing Zone groups management policy."
       statements        = [
                           # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloudevents-rules in tenancy",
@@ -68,6 +68,25 @@ module "lz_groups_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-defaults in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloud-guard-family in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage repos in tenancy",
+                          # Cred admin
+                          "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
+                          # IAM admin
+                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${each.value.group_name_prefix}${local.cred_admin_group_name_suffix}'}"]
+    }
+  }
+}
+
+### Landing Zone read-only policy
+module "lz_groups_read_only_policy" {
+  depends_on = [module.lz_groups]
+  for_each   = local.lz_group_names
+  source     = "../modules/iam/iam-policy"
+  policies   = {
+    "${each.key}-groups-read-only-policy" = {
+      compartment_id    = var.tenancy_ocid
+      description       = "Landing Zone groups read-only policy."
+      statements        = [
+                          # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read audit-events in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read tenancies in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
@@ -87,7 +106,6 @@ module "lz_groups_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read instance-images in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to use cloud-shell in tenancy",
-                          
                           # Database admin
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read repos in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
@@ -97,18 +115,11 @@ module "lz_groups_policy" {
                           # Cred admin
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect users in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect groups in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
                           "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # IAM admin
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect users in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect groups in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${each.value.group_name_prefix}${local.cred_admin_group_name_suffix}'}",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect identity-providers in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage dynamic-groups in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage authentication-policies in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage network-sources in tenancy",
-                          "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage quota in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to read audit-events in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to use cloud-shell in tenancy",
                           # Auditor

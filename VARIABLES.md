@@ -24,15 +24,15 @@ Variable Name | Description | Required | Default Value
 ### <a name="existing_groups_variables"></a>Existing Groups Reuse Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**use_existing_iam_groups** | Whether or not existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone. | Yes | false
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_iam_groups* is true | None
-**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_iam_groups* is true | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_iam_groups* is true | None
+**use_existing_groups** | Whether or not existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone. | Yes | false
+**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true | None
+**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_groups* is true | None
+**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_groups* is true | None
+**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_groups* is true | None
+**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_groups* is true | None
+**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true | None
+**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true | None
+**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true | None
 
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value

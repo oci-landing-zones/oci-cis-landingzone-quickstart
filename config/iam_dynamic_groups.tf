@@ -5,7 +5,7 @@ module "lz_dynamic_groups" {
   depends_on = [module.lz_compartments]
   source     = "../modules/iam/iam-dynamic-group"
   providers  = { oci = oci.home }
-  dynamic_groups = var.use_existing_iam_groups == false ? {
+  dynamic_groups = var.use_existing_groups == false ? {
     ("${var.service_label}-sec-fun-dynamic-grp") = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for functions in ${local.security_compartment_name} compartment."

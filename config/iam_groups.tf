@@ -7,7 +7,7 @@ module "lz_groups" {
   source       = "../modules/iam/iam-group"
   providers    = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  groups = var.use_existing_iam_groups == false ? {
+  groups = var.use_existing_groups == false ? {
     (local.network_admin_group_name) = {
       description  = "Landing Zone group for managing networking in compartment ${local.network_compartment_name}."
       user_ids     = []

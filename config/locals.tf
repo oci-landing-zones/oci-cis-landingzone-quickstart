@@ -24,14 +24,14 @@ locals {
   use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
 
   # Group names
-  security_admin_group_name      = var.use_existing_iam_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  network_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  database_admin_group_name      = var.use_existing_iam_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  appdev_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  iam_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name          = var.use_existing_iam_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  auditor_group_name             = var.use_existing_iam_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+  security_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+  network_admin_group_name       = var.use_existing_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+  database_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+  appdev_admin_group_name        = var.use_existing_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+  iam_admin_group_name           = var.use_existing_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+  cred_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+  auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+  announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
 
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"

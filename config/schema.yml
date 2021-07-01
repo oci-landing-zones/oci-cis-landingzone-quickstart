@@ -16,7 +16,7 @@ variableGroups:
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
       - "policies_in_root_compartment"
-      - "use_existing_iam_groups"
+      - "use_existing_groups"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -139,7 +139,7 @@ variables:
     default: "CREATE"
     visible: env_advanced_options
 
-  use_existing_iam_groups:
+  use_existing_groups:
     type: boolean
     title: "Use existing groups?"
     description: "Whether or not existing groups are to be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
@@ -154,7 +154,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
     
   existing_cred_admin_group_name:
     type: string
@@ -163,7 +163,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_security_admin_group_name:
     type: string
@@ -172,7 +172,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_network_admin_group_name:
     type: string
@@ -181,7 +181,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_appdev_admin_group_name:
     type: string
@@ -190,7 +190,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_database_admin_group_name:
     type: string
@@ -199,7 +199,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_auditor_group_name:
     type: string
@@ -208,7 +208,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups
+        - use_existing_groups
       
   existing_announcement_reader_group_name:
     type: string
@@ -217,7 +217,7 @@ variables:
     visible:  
       and:
         - env_advanced_options
-        - use_existing_iam_groups  
+        - use_existing_groups  
   
   net_advanced_options:
     type: boolean

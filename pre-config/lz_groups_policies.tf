@@ -52,10 +52,10 @@ module "lz_provisioning_topcmp_group_policy" {
   }
 }
 
-### Landing Zone read-only policy
+### Landing Zone mgmt policy
 module "lz_groups_mgmt_policy" {
   depends_on = [module.lz_groups]
-  for_each   = var.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : tomap([])
+  for_each   = local.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : tomap([])
   source     = "../modules/iam/iam-policy"
   policies   = {
     "${each.key}-groups-mgmt-policy" = {

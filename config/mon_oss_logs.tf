@@ -22,7 +22,7 @@ module "lz_oss_logs" {
   depends_on             = [ module.lz_buckets ]
   source                 = "../modules/monitoring/logs"
   compartment_id         = module.lz_compartments.compartments[local.security_compartment_name].id
-  log_group_display_name = "${var.service_label}-object-storage-log-grp"
-  log_group_description  = "CIS Landing Zone ${var.service_label} Object Storage log group."
+  log_group_display_name = "${var.service_label}-object-storage-log-group"
+  log_group_description  = "Landing Zone ${var.service_label} Object Storage log group."
   target_resources       = local.oss_bucket_logs 
 }

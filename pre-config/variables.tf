@@ -61,11 +61,6 @@ variable "grant_services_policies" {
     default = true
     description = "Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management."
 }
-variable "grant_tenancy_level_mgmt_policies" {
-    type = bool
-    default = true
-    description = "Whether or not management policies on resources at the root compartment are granted to Landing Zone groups. If false, Landing Zone groups will not be able to manage resources at the root compartment level."
-}  
 variable "existing_iam_admin_group_name" {
     type    = string
     default = ""

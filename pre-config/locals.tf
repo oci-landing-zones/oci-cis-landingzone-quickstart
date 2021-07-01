@@ -19,7 +19,9 @@ locals {
   auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group" : var.existing_iam_admin_group_name
   announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : var.existing_iam_admin_group_name
 
+  grant_tenancy_level_mgmt_policies = true
   services_policy_name   = "${local.unique_prefix}-services-policy"
+  
   cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
                             "Allow service cloudguard to read compartments in tenancy",
                             "Allow service cloudguard to read tenancies in tenancy",

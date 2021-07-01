@@ -48,7 +48,6 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
-      - "grant_tenancy_level_mgmt_policies"
 
 variables:
   home_region:
@@ -90,12 +89,6 @@ variables:
     description: "The enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment."
     required: false
   
-  grant_tenancy_level_mgmt_policies:
-    type: boolean
-    title: "Grant Management Policies to Landing Zone Groups?"
-    description: "Whether or not management policies on resources at the root compartment are granted to Landing Zone groups. If unchecked, Landing Zone groups will not be able to manage resources at the root compartment level."
-    default: true
-
   grant_services_policies:
     type: boolean
     title: "Grant Services Policies?"

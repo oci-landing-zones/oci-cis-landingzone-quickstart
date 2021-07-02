@@ -47,9 +47,30 @@ locals {
   cred_admin_policy_name          = "${var.service_label}-credential-admin-policy"
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
-  cloud_guard_policy_name         = "${var.service_label}-cloud-guard-policy"
-  os_mgmt_policy_name             = "${var.service_label}-os-management-policy"
-  vss_policy_name                 = "${var.service_label}-vss-policy"
+
+  services_policy_name   = "${var.service_label}-services-policy"
+  cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
+                            "Allow service cloudguard to read compartments in tenancy",
+                            "Allow service cloudguard to read tenancies in tenancy",
+                            "Allow service cloudguard to read audit-events in tenancy",
+                            "Allow service cloudguard to read compute-management-family in tenancy",
+                            "Allow service cloudguard to read instance-family in tenancy",
+                            "Allow service cloudguard to read virtual-network-family in tenancy",
+                            "Allow service cloudguard to read volume-family in tenancy",
+                            "Allow service cloudguard to read database-family in tenancy",
+                            "Allow service cloudguard to read object-family in tenancy",
+                            "Allow service cloudguard to read load-balancers in tenancy",
+                            "Allow service cloudguard to read users in tenancy",
+                            "Allow service cloudguard to read groups in tenancy",
+                            "Allow service cloudguard to read policies in tenancy",
+                            "Allow service cloudguard to read dynamic-groups in tenancy",
+                            "Allow service cloudguard to read authentication-policies in tenancy",
+                            "Allow service cloudguard to use network-security-groups in tenancy"]
+  vss_statements       = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
+                          "Allow service vulnerability-scanning-service to read compartments in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnics in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
+  os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
   # Tags
   tag_namespace_name = "${var.service_label}-namesp"

@@ -9,7 +9,7 @@ module "lz_provisioning_groups" {
     tenancy_ocid = var.tenancy_ocid
     groups       = { 
       (each.value.group_name) = {
-        description = "Landing Zone group for provisioning resources in compartment ${each.key}."
+        description = "Landing Zone group for resource provisioning."
         user_ids = []
         defined_tags = null
       }

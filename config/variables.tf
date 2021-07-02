@@ -190,20 +190,22 @@ variable "public_dst_cidrs" {
   }
 }
 
-variable "network_admin_email_endpoint" {
-  type        = string
-  description = "Recipient for all network related notifications."
+variable "network_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all network related notifications."
   validation {
-    condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.network_admin_email_endpoint)) > 0
-    error_message = "Validation failed network_admin_email_endpoint: invalid email address."
+    condition     = length([for e in var.network_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.network_admin_email_endpoints)
+    error_message = "Validation failed network_admin_email_endpoints: invalid email address."
   }
 }
-variable "security_admin_email_endpoint" {
-  type        = string
-  description = "Recipient for all security related notifications."
+variable "security_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all security related notifications."
   validation {
-    condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.security_admin_email_endpoint)) > 0
-    error_message = "Validation failed security_admin_email_endpoint: invalid email address."
+    condition     = length([for e in var.security_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.security_admin_email_endpoints)
+    error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
 variable "cloud_guard_configuration_status" {

@@ -7,16 +7,15 @@ module "lz_security_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.security_compartment_name].id
   notification_topic_name        = "${var.service_label}-security-topic"
   notification_topic_description = "Landing Zone topic for security related notifications."
-  subscriptions = {
-    s1 = { protocol = "EMAIL", endpoint = var.security_admin_email_endpoint },
-
+  subscriptions = { for e in var.security_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+    
     ### Examples of other subscription methods:
     /* 
-    s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    s4 = {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    s5 = {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    s6 = {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
     */
   }
 }
@@ -28,16 +27,15 @@ module "lz_network_topic" {
   notification_topic_name        = "${var.service_label}-network-topic"
   notification_topic_description = "Landing Zone topic for network related notifications."
 
-  subscriptions = {
-    s1 = { protocol = "EMAIL", endpoint = var.network_admin_email_endpoint },
+  subscriptions = { for e in var.network_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
 
     ### Examples of other subscription methods:
     /* 
-    s2 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    s3 = {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    s4 = {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    s5 = {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    s6 = {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
     */
   }
 }

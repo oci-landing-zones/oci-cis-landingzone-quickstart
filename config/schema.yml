@@ -234,7 +234,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "List of CIDR blocks for the VCNs to be created"
-    description: "CIDR blocks for the VCNs in CIDR notation. When 'Deploy Hub & Spoke Architecture?' is selected under 'Show Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    description: "CIDR blocks for the VCNs in CIDR notation. When 'Deploy Hub & Spoke Architecture?' is selected under 'Show Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: ["10.0.0.0/20"]
 
   override_vcn_names:
@@ -251,7 +251,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "List of custom names to be given to the VCNs"
-    description: "The VCN custom names, overriding the default VCN names. There must be one name corresponding to each CIDR block provided in 'List of CIDR blocks for the VCNs to be created', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)."
+    description: "The VCN custom names, overriding the default VCN names. There must be one name corresponding to each CIDR block provided in 'List of CIDR blocks for the VCNs to be created', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     required: false
     visible: override_vcn_names
     default: []  
@@ -263,7 +263,7 @@ variables:
     uniqueItems: true  
     title: "Inbound SSH CIDR List"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)."
+    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_src_lbr_cidrs:
@@ -273,7 +273,7 @@ variables:
     uniqueItems: true  
     title: "Inbound HTTPS CIDR List"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)."
+    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_dst_cidrs:
@@ -283,7 +283,7 @@ variables:
     uniqueItems: true  
     title: "Outbound HTTPS CIDR List"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)."
+    description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
     default: []  
 
   is_vcn_onprem_connected:
@@ -352,18 +352,22 @@ variables:
         - hub_spoke_architecture
 
   network_admin_email_endpoint:
-    type: string
-    title: "Network Admin Email Address"
-    pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Network Admin Email Endpoints"
     required: true
-    description: "Recipient for all network related notifications."
+    description: "List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values)"
 
   security_admin_email_endpoint:
-    type: string
-    title: "Security Admin Email Address"
-    pattern: "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Security Admin Email Endpoints"
     required: true
-    description: "Recipient for all security related notifications."
+    description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
   cloud_guard_configuration_status:
     type: enum

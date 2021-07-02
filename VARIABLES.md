@@ -53,8 +53,8 @@ Variable Name | Description | Required | Default Value
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**network_admin_email_endpoint** | An email to receive notifications for network related events. | Yes | None
-**security_admin_email_endpoint** | An email to receive notifications for security related events. | Yes | None
+**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
+**security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value

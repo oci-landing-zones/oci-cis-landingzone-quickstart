@@ -63,7 +63,7 @@ module "lz_scanning" {
 }
 
 resource "null_resource" "slow_down_vss" {
-  depends_on = [module.lz_service_policies]
+  depends_on = [module.lz_services_policy]
   provisioner "local-exec" {
     command = "sleep 30" # Wait 30 seconds for policies to be available.
   }

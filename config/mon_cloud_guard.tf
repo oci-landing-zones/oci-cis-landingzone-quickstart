@@ -15,7 +15,7 @@ module "lz_cloud_guard" {
 
 ### We've observed that policies, even when created before the bucket, may take some time to be available for consumption. Hence the delay introduced here.
 resource "null_resource" "slow_down_cloud_guard" {
-  depends_on = [module.lz_service_policies]
+  depends_on = [module.lz_services_policy]
   provisioner "local-exec" {
     command = "sleep 30" # Wait 30 seconds for policies to be available.
   }

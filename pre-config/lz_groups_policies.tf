@@ -3,7 +3,7 @@
 
 ### Landing Zone tenancy level provisioning policy
 module "lz_provisioning_tenancy_group_policy" {
-  for_each   = local.provisioning_group_names_t
+  for_each   = local.provisioning_group_names
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
@@ -25,7 +25,7 @@ module "lz_provisioning_tenancy_group_policy" {
 
 ### Landing Zone compartment level provisioning policy
 module "lz_provisioning_topcmp_group_policy" {
-  for_each   = local.provisioning_group_names
+  for_each   = length(local.enclosing_compartments) > 0 ? local.provisioning_group_names : {}
   depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
@@ -55,7 +55,7 @@ module "lz_provisioning_topcmp_group_policy" {
 ### Landing Zone mgmt policy
 module "lz_groups_mgmt_policy" {
   depends_on = [module.lz_groups]
-  for_each   = local.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : tomap([])
+  for_each   = local.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : {}
   source     = "../modules/iam/iam-policy"
   policies   = {
     "${each.key}-groups-mgmt-policy" = {

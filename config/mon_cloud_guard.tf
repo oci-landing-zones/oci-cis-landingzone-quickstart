@@ -2,13 +2,13 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "lz_cloud_guard" {
-  count                 = length(data.oci_cloud_guard_targets.root.target_collection[0].items) > 0 ? (data.oci_cloud_guard_targets.root.target_collection[0].items[0].display_name == local.cg_target_name ? 1 : 0) : 1
+  count                 = length(data.oci_cloud_guard_targets.root.target_collection[0].items) > 0 ? (data.oci_cloud_guard_targets.root.target_collection[0].items[0].display_name == local.cg_target_name ? 1 : 0) : (var.cloud_guard_configuration_status == "ENABLE" ? 1 : 0)
   depends_on            = [null_resource.slow_down_cloud_guard]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }
   compartment_id        = var.tenancy_ocid
   reporting_region      = local.regions_map[local.home_region_key]
-  status                = var.cloud_guard_configuration_status
+  status                = var.cloud_guard_configuration_status == "ENABLE" ? "ENABLED" : "DISABLED"
   self_manage_resources = false
   default_target        = { name : local.cg_target_name, type : "COMPARTMENT", id : var.tenancy_ocid }
 }

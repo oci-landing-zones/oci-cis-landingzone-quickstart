@@ -59,7 +59,7 @@ Variable Name | Description | Required | Default Value
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | Whether Cloud Guard is enabled or not. | Yes | ENABLED
+**cloud_guard_configuration_status** | Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment. | Yes | ENABLE
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value

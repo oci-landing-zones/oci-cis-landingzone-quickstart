@@ -372,11 +372,11 @@ variables:
   cloud_guard_configuration_status:
     type: enum
     title: "Cloud Guard Configuration Status"
-    description: "Whether or not to activate Cloud Guard as part of Landing Zone deployment."
+    description: "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
     required: true
     enum:
-      - ENABLED
-      - DISABLED
+      - ENABLE
+      - DISABLE
   
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:

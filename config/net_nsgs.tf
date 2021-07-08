@@ -83,7 +83,7 @@ locals {
       },
       lbr-egress_rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
-        description : "SSH egress rule to ${k}-db-nsg.",
+        description : "SSH egress rule to ${k}-lbr-nsg.",
         stateless : false,
         protocol : "6",
         dst      = "${k}-lbr-nsg",

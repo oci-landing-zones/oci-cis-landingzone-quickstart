@@ -4,7 +4,7 @@
 ### Landing Zone tenancy level provisioning policy
 module "lz_provisioning_tenancy_group_policy" {
   for_each   = local.provisioning_group_names
-  depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
+  depends_on = [null_resource.slow_down_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
     "${each.key}-provisioning-root-policy" = {
@@ -26,41 +26,26 @@ module "lz_provisioning_tenancy_group_policy" {
 ### Landing Zone compartment level provisioning policy
 module "lz_provisioning_topcmp_group_policy" {
   for_each   = length(local.enclosing_compartments) > 0 ? local.provisioning_group_names : {}
-  depends_on = [module.lz_top_compartments, module.lz_provisioning_groups]
+  depends_on = [null_resource.slow_down_compartments, null_resource.slow_down_groups]
   source   = "../modules/iam/iam-policy"
   policies = {
     "${each.key}-provisioning-policy" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
       description    = "Landing Zone provisioning policy for ${each.key} compartment."
-      statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]
-      /*
-      statements = ["Allow group ${each.value.group_name} to manage compartments in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage policies in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage virtual-network-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage logging-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage tag-namespaces in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage tag-defaults in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage object-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage vaults in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage keys in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to use key-delegate in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage ons-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage vss-family in compartment ${each.key}",
-                    "Allow group ${each.value.group_name} to manage orm-family in compartment ${each.key}"]
-    */                
+      statements = ["Allow group ${each.value.group_name} to manage all-resources in compartment ${each.key}"]               
     }
   }
 }
 
 ### Landing Zone mgmt policy
 module "lz_groups_mgmt_policy" {
-  depends_on = [module.lz_groups]
+  depends_on = [null_resource.slow_down_groups]
   for_each   = local.grant_tenancy_level_mgmt_policies == true ? local.lz_group_names : {}
   source     = "../modules/iam/iam-policy"
   policies   = {
-    "${each.key}-groups-mgmt-policy" = {
+    "${each.key}-mgmt-root-policy" = {
       compartment_id    = var.tenancy_ocid
-      description       = "Landing Zone groups management policy."
+      description       = "Landing Zone groups management root policy."
       statements        = [
                           # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloudevents-rules in tenancy",
@@ -78,13 +63,13 @@ module "lz_groups_mgmt_policy" {
 
 ### Landing Zone read-only policy
 module "lz_groups_read_only_policy" {
-  depends_on = [module.lz_groups]
+  depends_on = [null_resource.slow_down_groups]
   for_each   = local.lz_group_names
   source     = "../modules/iam/iam-policy"
   policies   = {
-    "${each.key}-groups-read-only-policy" = {
+    "${each.key}-read-only-root-policy" = {
       compartment_id    = var.tenancy_ocid
-      description       = "Landing Zone groups read-only policy."
+      description       = "Landing Zone groups read-only root policy."
       statements        = [
                           # Security admin
                           "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read audit-events in tenancy",
@@ -134,4 +119,18 @@ module "lz_groups_read_only_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy",]
     }
   }
+}
+
+resource "null_resource" "slow_down_compartments" {
+   depends_on = [ module.lz_top_compartments ]
+   provisioner "local-exec" {
+     command = "sleep 30" # Wait 30 seconds for compartments to be available.
+   }
+}
+
+resource "null_resource" "slow_down_groups" {
+   depends_on = [ module.lz_groups, module.lz_provisioning_groups ]
+   provisioner "local-exec" {
+     command = "sleep 30" # Wait 30 seconds for compartments to be available.
+   }
 }

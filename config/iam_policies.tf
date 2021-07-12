@@ -18,13 +18,13 @@ locals {
   "Allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
 
   // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
-  iam_enccmp_permissions = ["Allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_level}",
-    "Allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_level}",
-    "Allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_level}",
-    "Allow group ${local.iam_admin_group_name} to manage tag-namespaces in ${local.policy_level}",
-    "Allow group ${local.iam_admin_group_name} to manage orm-stacks in ${local.policy_level}",
-    "Allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_level}",
-  "Allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_level}"]
+  iam_enccmp_permissions = ["Allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
+    "Allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}",
+    "Allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
+    "Allow group ${local.iam_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
+    "Allow group ${local.iam_admin_group_name} to manage orm-stacks in ${local.policy_scope}",
+    "Allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_scope}",
+  "Allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_scope}"]
 
   // Permissions to be created always at the root compartment
   security_root_permissions = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
@@ -34,13 +34,13 @@ locals {
   "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
 
   // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
-  security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_level}",
-    "Allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_level}",
-    "Allow group ${local.security_admin_group_name} to manage repos in ${local.policy_level}",
-    "Allow group ${local.security_admin_group_name} to read audit-events in ${local.policy_level}",
-    "Allow group ${local.security_admin_group_name} to read app-catalog-listing in ${local.policy_level}",
-    "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_level}",
-  "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_level}"]
+  security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
+    "Allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
+    "Allow group ${local.security_admin_group_name} to manage repos in ${local.policy_scope}",
+    "Allow group ${local.security_admin_group_name} to read audit-events in ${local.policy_scope}",
+    "Allow group ${local.security_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
+    "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_scope}",
+  "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"]
 
   security_cmp_permissions = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment_name}",
@@ -71,32 +71,32 @@ module "lz_root_policies" {
   policies = local.use_existing_tenancy_policies == false ? {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.security_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
       statements     = local.security_root_permissions
     },
     (local.iam_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.iam_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
       statements     = local.iam_root_permissions
     },
     (local.network_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.network_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
       statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.appdev_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
       statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.database_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.database_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
       statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.auditor_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
       statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
         "Allow group ${local.auditor_group_name} to read instances in tenancy",
         "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
@@ -114,13 +114,13 @@ module "lz_root_policies" {
     },
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.announcement_reader_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
       statements = ["Allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
       "Allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
     },
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
-      description    = "${local.cred_admin_group_name}'s root compartment policy."
+      description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
       statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
         "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
         "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
@@ -136,7 +136,7 @@ module "lz_policies" {
   policies = {
     (local.network_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
-      description    = "Policy allowing ${local.network_admin_group_name} group to manage network related services."
+      description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
       statements = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment_name}",
         "Allow group ${local.network_admin_group_name} to manage virtual-network-family in compartment ${local.network_compartment_name}",
         "Allow group ${local.network_admin_group_name} to manage dns in compartment ${local.network_compartment_name}",
@@ -151,12 +151,12 @@ module "lz_policies" {
     },
     (local.security_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
-      description    = "Policy allowing ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_level})."
+      description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
       statements     = concat(local.security_enccmp_permissions, local.security_cmp_permissions)
     },
     (local.database_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
-      description    = "Policy allowing ${local.database_admin_group_name} group to manage database related resources."
+      description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
       statements = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
@@ -178,7 +178,7 @@ module "lz_policies" {
     },
     (local.appdev_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
-      description    = "Policy allowing ${local.appdev_admin_group_name} group to manage app development related services."
+      description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
       statements = ["Allow group ${local.appdev_admin_group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to manage functions-family in compartment ${local.appdev_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name}",
@@ -200,11 +200,11 @@ module "lz_policies" {
         "Allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_level}",
+        "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
         "Allow group ${local.appdev_admin_group_name} to manage instance-images in compartment ${local.security_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_level}",
+        "Allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_scope}",
         "Allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_level}",
+        "Allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}",
         "Allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
         "Allow group ${local.appdev_admin_group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}",
@@ -213,7 +213,7 @@ module "lz_policies" {
     },
     (local.iam_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
-      description    = "Policy allowing ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_level})."
+      description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
       statements     = local.iam_enccmp_permissions
     }
   }

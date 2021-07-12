@@ -3,11 +3,12 @@
 
 module "lz_dynamic_groups" {
   source = "../modules/iam/iam-dynamic-group"
-  for_each = module.lz_top_compartments.compartments
+  depends_on = [ module.lz_top_compartments ]
+  for_each = local.enclosing_compartments
     dynamic_groups = {
         ("${each.key}-fun-dynamic-group") = {
             compartment_id = var.tenancy_ocid
-            description    = "Dynamic Group for functions in compartment ${each.key}"
+            description    = "Landing Zone dynamic group for functions in compartment ${each.key}"
             matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_top_compartments.compartments[each.key].id}'}"
         }
     }

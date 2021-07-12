@@ -20,18 +20,18 @@ locals {
   # Whether or not to create an enclosing compartment
   parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
   parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
-  policy_level                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
+  policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
   use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
 
   # Group names
-  security_admin_group_name      = var.use_existing_iam_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  network_admin_group_name       = var.use_existing_iam_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  database_admin_group_name      = var.use_existing_iam_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  appdev_admin_group_name        = var.use_existing_iam_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  iam_admin_group_name           = var.use_existing_iam_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name          = var.use_existing_iam_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  auditor_group_name             = var.use_existing_iam_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name = var.use_existing_iam_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+  security_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+  network_admin_group_name       = var.use_existing_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+  database_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+  appdev_admin_group_name        = var.use_existing_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+  iam_admin_group_name           = var.use_existing_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+  cred_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+  auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+  announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
 
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
@@ -47,11 +47,33 @@ locals {
   cred_admin_policy_name          = "${var.service_label}-credential-admin-policy"
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
-  cloud_guard_policy_name         = "${var.service_label}-cloud-guard-policy"
-  os_mgmt_policy_name             = "${var.service_label}-os-management-policy"
-  vss_policy_name                 = "${var.service_label}-vss-policy"
+
+  services_policy_name   = "${var.service_label}-services-policy"
+  cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
+                            "Allow service cloudguard to read compartments in tenancy",
+                            "Allow service cloudguard to read tenancies in tenancy",
+                            "Allow service cloudguard to read audit-events in tenancy",
+                            "Allow service cloudguard to read compute-management-family in tenancy",
+                            "Allow service cloudguard to read instance-family in tenancy",
+                            "Allow service cloudguard to read virtual-network-family in tenancy",
+                            "Allow service cloudguard to read volume-family in tenancy",
+                            "Allow service cloudguard to read database-family in tenancy",
+                            "Allow service cloudguard to read object-family in tenancy",
+                            "Allow service cloudguard to read load-balancers in tenancy",
+                            "Allow service cloudguard to read users in tenancy",
+                            "Allow service cloudguard to read groups in tenancy",
+                            "Allow service cloudguard to read policies in tenancy",
+                            "Allow service cloudguard to read dynamic-groups in tenancy",
+                            "Allow service cloudguard to read authentication-policies in tenancy",
+                            "Allow service cloudguard to use network-security-groups in tenancy"]
+  vss_statements       = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
+                          "Allow service vulnerability-scanning-service to read compartments in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnics in tenancy",
+                          "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
+  os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
   # Tags
+  tag_namespace_name = "${var.service_label}-namesp"
   createdby_tag_name = "CreatedBy"
   createdon_tag_name = "CreatedOn"
 

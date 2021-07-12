@@ -33,28 +33,28 @@ module "lz_scanning" {
   scan_targets = var.vss_create == true ? {
     (local.security_cmp_target_name) = {
       compartment_id        = module.lz_compartments.compartments[local.security_compartment_name].id
-      description           = "${local.security_compartment_name} compartment scanning target."
+      description           = "Landing Zone ${local.security_compartment_name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = module.lz_compartments.compartments[local.security_compartment_name].id
       defined_tags          = null
     },
     (local.network_cmp_target_name) = {
       compartment_id        = module.lz_compartments.compartments[local.security_compartment_name].id
-      description           = "${local.network_compartment_name} compartment scanning target."
+      description           = "Landing Zone ${local.network_compartment_name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
       defined_tags          = null
     },
     (local.appdev_cmp_target_name) = {
       compartment_id        = module.lz_compartments.compartments[local.security_compartment_name].id
-      description           = "${local.appdev_compartment_name} compartment scanning target."
+      description           = "Landing Zone ${local.appdev_compartment_name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = module.lz_compartments.compartments[local.appdev_compartment_name].id
       defined_tags          = null
     },
     (local.database_cmp_target_name) = {
       compartment_id        = module.lz_compartments.compartments[local.security_compartment_name].id
-      description           = "${local.database_compartment_name} compartment scanning target."
+      description           = "Landing Zone ${local.database_compartment_name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = module.lz_compartments.compartments[local.database_compartment_name].id
       defined_tags          = null
@@ -63,7 +63,7 @@ module "lz_scanning" {
 }
 
 resource "null_resource" "slow_down_vss" {
-  depends_on = [module.lz_service_policies]
+  depends_on = [module.lz_services_policy]
   provisioner "local-exec" {
     command = "sleep 30" # Wait 30 seconds for policies to be available.
   }

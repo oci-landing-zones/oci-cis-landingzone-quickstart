@@ -9,7 +9,7 @@ module "lz_provisioning_groups" {
     tenancy_ocid = var.tenancy_ocid
     groups       = { 
       (each.value.group_name) = {
-        description = "Group entitled for provisioning Landing Zone resources in compartment ${each.key}."
+        description = "Landing Zone group for resource provisioning."
         user_ids = []
         defined_tags = null
       }
@@ -17,47 +17,47 @@ module "lz_provisioning_groups" {
 }
 
 module "lz_groups" {
-  for_each       = var.use_existing_lz_groups == false ? local.lz_group_names : tomap({})
+  for_each       = var.use_existing_groups == false ? local.lz_group_names : tomap({})
     source       = "../modules/iam/iam-group"
     tenancy_ocid = var.tenancy_ocid
     groups       = {
       "${each.value.group_name_prefix}${local.iam_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing IAM resources."
+        description = "Landing Zone group for managing IAM resources."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.cred_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing credentials."
+        description = "Landing Zone group for managing credentials."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.network_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing networking."
+        description = "Landing Zone group for managing networking."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.security_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing security."
+        description = "Landing Zone group for managing security."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing application development related resources."
+        description = "Landing Zone group for managing application development related resources."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.database_admin_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for managing database related resources."
+        description = "Landing Zone group for managing database related resources."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.auditor_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for auditing the tenancy."
+        description = "Landing Zone group for auditing the tenancy."
         user_ids = []
         defined_tags = null
       },
       "${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix}" = {
-        description = "${each.key}'s Landing Zone group for reading tenancy announcements."
+        description = "Landing Zone group for reading tenancy announcements."
         user_ids = []
         defined_tags = null
       }

@@ -33,26 +33,26 @@ variable "region" {
 variable "use_enclosing_compartment" {
   type        = bool
   default     = false
-  description = "Whether or not the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment."
+  description = "Whether the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment."
 }
 variable "existing_enclosing_compartment_ocid" {
   type        = string
   default     = null
-  description = "The enclosing compartment where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
+  description = "The enclosing compartment OCID where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
 variable "policies_in_root_compartment" {
   type        = string
   default     = "CREATE"
-  description = "Whether or not required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
+  description = "Whether required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
   validation {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
-variable "use_existing_iam_groups" {
+variable "use_existing_groups" {
   type        = bool
   default     = false
-  description = "Whether or not existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
+  description = "Whether existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
 }
 variable "existing_iam_admin_group_name" {
   type    = string
@@ -96,7 +96,7 @@ variable "no_internet_access" {
 variable "is_vcn_onprem_connected" {
   type        = bool
   default     = false
-  description = "Creation of DRG for connection to an on-premises network. This must be true if no_internet_acess is true."
+  description = "Determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true."
 }
 variable "onprem_cidrs" {
   type        = list(string)
@@ -190,27 +190,55 @@ variable "public_dst_cidrs" {
   }
 }
 
-variable "network_admin_email_endpoint" {
-  type        = string
-  description = "Recipient for all network related notifications."
+variable "exacs_vcn_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks for the Exadata Cloud Service VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
-    condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.network_admin_email_endpoint)) > 0
-    error_message = "Validation failed network_admin_email_endpoint: invalid email address."
+    condition     = length(var.exacs_vcn_cidrs) == 0 || (length(var.exacs_vcn_cidrs) < 10 && length(var.exacs_vcn_cidrs) > 0 && length([for c in var.exacs_vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_vcn_cidrs))
+    error_message = "Validation failed for exacs_vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
   }
 }
-variable "security_admin_email_endpoint" {
-  type        = string
-  description = "Recipient for all security related notifications."
+
+variable "exacs_vcn_names" {
+  type        = list(string)
+  default     = []
+  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-vcn). The list length and elements order must match exacs_vcn_cidrs'."
   validation {
-    condition     = length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", var.security_admin_email_endpoint)) > 0
-    error_message = "Validation failed security_admin_email_endpoint: invalid email address."
+    condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
+    error_message = "Validation failed for vcn_names: maximum of nine allowed."
+  }
+}
+
+variable "add_public_subnet_to_exacs_vcns" {
+  type    = bool
+  default = false  
+}
+
+variable "network_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all network related notifications."
+  validation {
+    condition     = length([for e in var.network_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.network_admin_email_endpoints)
+    error_message = "Validation failed network_admin_email_endpoints: invalid email address."
+  }
+}
+variable "security_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all security related notifications."
+  validation {
+    condition     = length([for e in var.security_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.security_admin_email_endpoints)
+    error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
 variable "cloud_guard_configuration_status" {
-  default = "ENABLED"
+  default = "ENABLE"
+  description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
   validation {
-    condition     = contains(["ENABLED", "DISABLED"], upper(var.cloud_guard_configuration_status))
-    error_message = "Validation failed for cloud_guard_configuration_status: valid values (case insensitive) are ENABLED or DISABLED."
+    condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))
+    error_message = "Validation failed for cloud_guard_configuration_status: valid values (case insensitive) are ENABLE or DISABLE."
   }
 }
 

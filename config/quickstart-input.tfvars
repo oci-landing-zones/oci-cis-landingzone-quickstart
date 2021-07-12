@@ -1,56 +1,73 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-##### The uncommented variable assignments below are for REQUIRED variables that do NOT have a default value in variables.tf.
-##### They must be provided appropriate values.
+##### The uncommented variable assignments below are for REQUIRED variables that do NOT have a default value in variables.tf. They must be provided appropriate values.
+##### The commented variable assignments are for variables with a default value in variables.tf. For overriding them, uncomment the variable and provide an appropriate value.
 
+### Basic variables
 tenancy_ocid         = "<tenancy_ocid>"
 user_ocid            = "<user_ocid>"
 fingerprint          = "<user_api_key_fingerprint>"
 private_key_path     = "<path_to_user_private_key_file>"
 private_key_password = ""
-region               = "<tenancy_region>"
-service_label        = "<a_label_to_prefix_resource_names_with>"
 
-### For Networking
-is_vcn_onprem_connected       = <false_or_true>
-onprem_cidr                   = "<onprem_cidr_block_range>"
-public_src_bastion_cidr       = "<external_cidr_block_range_allowed_to_connect_to_bastion_servers>"
+### Environment variables
+region        = "<tenancy_region>"
+service_label = "<a_label_to_prefix_resource_names_with>"
+# use_enclosing_compartment               = false
+# existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
+# policies_in_root_compartment            = "CREATE"
+# use_existing_groups                     = false
+# existing_iam_admin_group_name           = "<existing_group_name>"
+# existing_cred_admin_group_name          = "<existing_group_name>"
+# existing_security_admin_group_name      = "<existing_group_name>"
+# existing_network_admin_group_name       = "<existing_group_name>"
+# existing_appdev_admin_group_name        = "<existing_group_name>"
+# existing_database_admin_group_name      = "<existing_group_name>"
+# existing_auditor_group_name             = "<existing_group_name>"
+# existing_announcement_reader_group_name = "<existing_group_name>"
 
-### For Security
-network_admin_email_endpoint  = "<email_to_receive_network_related_notifications>"
-security_admin_email_endpoint = "<email_to_receive_security_related_notifications>"
+### Networking variables (all variables are defaulted. See variables.tf)
+# vcn_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
+# vcn_names = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one CIDR, nth element to vcn_cidrs' nth element. 
 
-##### The commented variable assignments below are for variables with a default value in variables.tf.
-##### For overriding the default values, uncomment the variable and provide an appropriate value.
+# public_src_lbr_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make HTTPS inbound connections.
+# public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
+# public_dst_cidrs         = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation for HTTPS outbound connections.
 
-##### Networking
-# vcn_cidr                                        = "10.0.0.0/16" 
-# public_subnet_cidr                              = "10.0.1.0/24" 
-# private_subnet_app_cidr                         = "10.0.2.0/24" 
-# private_subnet_db_cidr                          = "10.0.3.0/24" 
-# public_src_lbr_cidr                             = "0.0.0.0/0" 
+# no_internet_access     = false # whether the Landing Zone VCN(s) are Internet connected.
+# hub_spoke_architecture = false # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
+# dmz_vcn_cidr           = "<dmz_vcn_cidr>" # IP range in CIDR notation for the DMZ (a.k.a Hub) VCN.
+# dmz_number_of_subnets  = 2 # number of subnets in DMZ VCN.
+# dmz_subnet_size        = 4 # number of additional bits with which to extend the DMZ VCN CIDR prefix.   
 
-##### Cloud Guard
-# cloud_guard_configuration_status                = "ENABLED"
+# is_vcn_onprem_connected  = false # determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true.
+# onprem_cidrs             = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of customer owned CIDRs allowed to connect to Landing Zone over a private channel.
 
-##### Service Connector Hub
-# create_service_connector_audit                  = false
-# service_connector_audit_target                  = "objectstorage"
-# service_connector_audit_state                   = "INACTIVE"
-# service_connector_audit_target_OCID             = ""
-# service_connector_audit_target_cmpt_OCID        = ""
-# sch_audit_objStore_objNamePrefix                = "sch-audit"
-# create_service_connector_vcnFlowLogs            = false
-# service_connector_vcnFlowLogs_target            = "objectstorage"
-# service_connector_vcnFlowLogs_state             = "INACTIVE"
-# service_connector_vcnFlowLogs_target_OCID       = ""
-# service_connector_vcnFlowLogs_target_cmpt_OCID  = ""
-# sch_vcnFlowLogs_objStore_objNamePrefix          = "sch-vcnFlowLogs"
+### Notifications variables
+network_admin_email_endpoints  = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all security related notifications.
 
-##### VSS - Vulnerability Scanning Service
-# vss_create                                      = true
-# vss_scan_schedule                               = "WEEKLY"
-# vss_scan_day                                    = "SUNDAY"
+##### Cloud Guard variables
+# cloud_guard_configuration_status = "ENABLED"
+
+##### Service Connector Hub variables
+# create_service_connector_audit                 = false
+# service_connector_audit_target                 = "objectstorage"
+# service_connector_audit_state                  = "INACTIVE"
+# service_connector_audit_target_OCID            = ""
+# service_connector_audit_target_cmpt_OCID       = ""
+# sch_audit_objStore_objNamePrefix               = "sch-audit"
+# create_service_connector_vcnFlowLogs           = false
+# service_connector_vcnFlowLogs_target           = "objectstorage"
+# service_connector_vcnFlowLogs_state            = "INACTIVE"
+# service_connector_vcnFlowLogs_target_OCID      = ""
+# service_connector_vcnFlowLogs_target_cmpt_OCID = ""
+# sch_vcnFlowLogs_objStore_objNamePrefix         = "sch-vcnFlowLogs"
+
+##### Vulnerability Scanning Service variables
+# vss_create        = true
+# vss_scan_schedule = "WEEKLY"
+# vss_scan_day      = "SUNDAY"
 
 

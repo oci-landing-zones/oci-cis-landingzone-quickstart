@@ -116,6 +116,8 @@ module "lz_groups_policy" {
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read objectstorage-namespaces in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read app-catalog-listing in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read instance-images in tenancy",
+                          "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read users in tenancy",
+
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect buckets in tenancy",
                           "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to use cloud-shell in tenancy",
                           # Announcement reader

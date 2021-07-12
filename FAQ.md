@@ -51,6 +51,9 @@ You can choose if want to allow the creation of Internet Gateways and NAT Gatewa
 
 The Landing Zone can deploy the following services:
 - IAM (Identity & Access Management)
+    - Compartments
+    - Groups
+    - Policies
 - Networking
     - VCN (Virtual Cloud Networks)
         - Route Tables

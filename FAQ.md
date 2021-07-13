@@ -44,7 +44,7 @@ No. The [cis_reports.py](https://github.com/oracle-quickstart/oci-cis-landingzon
 
 The user running the script should be in the Auditors group.
 
-To allow the Auditor group to write the reports to an output bucket the below policy must be added to the *<prefix>-auditor-policy* policy:
+To allow the Auditor group to write the reports to an output bucket the below policy must be added to the `<prefix>-auditor-policy` policy:
 
 `Allow group <prefix>-auditor-group to manage objects in compartment <compartment-name> where target.bucket.name='<bucket-name>'`
 

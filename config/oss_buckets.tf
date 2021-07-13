@@ -19,7 +19,7 @@ module "lz_buckets" {
 resource "null_resource" "slow_down_oss" {
    depends_on = [ module.lz_keys_policies ]
    provisioner "local-exec" {
-     command = "sleep 30" # Wait 30 seconds for policies to be available.
+     command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
    }
 }
 

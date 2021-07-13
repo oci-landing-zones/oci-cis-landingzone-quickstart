@@ -43,6 +43,6 @@ module "lz_network_topic" {
 resource "null_resource" "slow_down_topics" {
    depends_on = [ module.lz_compartments ]
    provisioner "local-exec" {
-     command = "sleep 30" # Wait 30 seconds for compartments to be available.
+     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
    }
 }

@@ -10,7 +10,7 @@
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)
     1. [Compliance Checking](compliance-script.md)
-1. [Documentation](#documentation)
+1. [Blog Posts](#documentation)
 1. [Acknowledgements](#acknowledgements)
 1. [The Team](#team)
 1. [Feedback](#feedback)
@@ -74,7 +74,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Terraform Configuration](terraform.md)
 - [Compliance Checking](compliance-script.md)
 
-## <a name="documentation"></a>Documentation
+## <a name="documentation"></a>Blog Posts
 - [CIS OCI Landing Zone Quick Start Template Version 2](https://www.ateam-oracle.com/cis-oci-landing-zone-quick-start-template-version-2)
 - [Deployment Modes for CIS OCI Landing Zone](https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone)
 - [Tenancy Pre Configuration For Deploying CIS OCI Landing Zone as a non-Administrator](https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator)
@@ -105,7 +105,7 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 > 2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] OPC request ID: f14a700dc5d00272933a327c8feb2871/5053FB2DA16689F6421821A1B178D450/D3F2FE52F3BF8FB2C769AEFF7754A9B0
 > 2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
 
-    This is due to IAM eventual consistency model, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
+This is due to IAM eventual consistency model, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
 * By default, OCI compartments are not deleted when resources are destroyed. Deletion can be enabled by setting *enable_cmp_delete* variable to true in locals.tf file. Note, however, that compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 

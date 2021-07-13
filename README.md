@@ -40,7 +40,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 
  ## <a name="architecture"></a>Architecture
  ### <a name="arch-iam"></a>IAM
-The Landing Zone template creates four compartments in the tenancy or under a enclosing compartment:
+The Landing Zone template creates four compartments in the tenancy or under an enclosing compartment:
  - A network compartment: for all networking resources.
  - A security compartment: for all logging, key management, scanning, and notifications resources. 
  - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 

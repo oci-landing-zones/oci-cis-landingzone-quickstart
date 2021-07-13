@@ -5,13 +5,10 @@ locals {
   
   unique_prefix              = length(var.unique_prefix) > 0 ? var.unique_prefix : "lz"
   top_compartment_parent_id  = length(var.existing_enclosing_compartments_parent_ocid) > 0 ? var.existing_enclosing_compartments_parent_ocid : var.tenancy_ocid
-  enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : (length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c) => {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}} : {"${local.unique_prefix}-top-cmp" : {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}}
-  #enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : (length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c) => {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment"}} : {}
-  #provisioning_group_names   = {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-provisioning-group" : var.existing_provisioning_group_name}}
+  # Whether compartments should be deleted in terraform destroy or upon resource removal.
+  enable_cmp_delete = false
+  enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : (length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c) => {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete}} : {"${local.unique_prefix}-top-cmp" : {parent_id: local.top_compartment_parent_id, description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete}}
   provisioning_group_names   = length(local.enclosing_compartments) > 0 ? {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-provisioning-group" : var.existing_provisioning_group_name}} : {(local.unique_prefix) : {group_name : var.use_existing_provisioning_group == false ? "${local.unique_prefix}-provisioning-group" : var.existing_provisioning_group_name}}
-  #provisioning_group_names_t = var.use_existing_provisioning_group == false ? {for k in keys(local.enclosing_compartments) : k => {group_name:"${k}-provisioning-group"}} : {(local.unique_prefix) : {group_name: var.existing_provisioning_group_name}}
-  #provisioning_group_names_t = {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-provisioning-group"} : } : {(local.unique_prefix) : {group_name: var.existing_provisioning_group_name}}
-  #lz_group_names             = var.use_existing_groups == false ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: ""}}
   lz_group_names             = length(local.enclosing_compartments) > 0 ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: var.use_existing_groups == false ? "${local.unique_prefix}-" : ""}}
 
   iam_admin_group_name_suffix           = var.use_existing_groups == false ? "iam-admin-group" : var.existing_iam_admin_group_name

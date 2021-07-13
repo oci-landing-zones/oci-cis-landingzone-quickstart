@@ -5,7 +5,7 @@ The *config* module is responsible for provisioning the Landing Zone resources. 
 
 Within the config folder, the Terraform files are named after the use cases they implement as described in CIS OCI Security Foundation Benchmark document. Each file prefix implements/supports use cases in the corresponding section in that document.
 
-The variables in each root module are described below in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
+The variables in each root module are described in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
 **Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
 
@@ -126,9 +126,3 @@ For adding extra objects to an existing container object (like adding subnets to
 	  ...
 ```
 In this code excerpt, the *subnets* variable is a map of subnet objects. Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. Make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
-
-## Known Facts
-### Destroying Resources
-- By design, vaults and keys are not destroyed immediately. They have a delayed delete of 30 days.
-- By design, compartments are not destroyed immediately. 
-- Tag namespaces may fail to delete on the first destroy.  Run destroy again to remove.

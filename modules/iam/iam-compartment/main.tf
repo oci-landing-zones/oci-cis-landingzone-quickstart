@@ -6,4 +6,5 @@ resource "oci_identity_compartment" "these" {
     compartment_id = each.value.parent_id
     name           = each.key
     description    = each.value.description
+    enable_delete  = each.value.enable_delete
 }

@@ -16,6 +16,8 @@ locals {
   network_compartment_name           = "${var.service_label}-network-cmp"
   database_compartment_name          = "${var.service_label}-database-cmp"
   appdev_compartment_name            = "${var.service_label}-appdev-cmp"
+  # Whether compartments should be deleted in terraform destroy or upon resource removal.
+  enable_cmp_delete = false
 
   # Whether or not to create an enclosing compartment
   parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
@@ -121,5 +123,8 @@ locals {
   network_cmp_target_name  = "${local.network_compartment_name}-scan-target"
   appdev_cmp_target_name   = "${local.appdev_compartment_name}-scan-target"
   database_cmp_target_name = "${local.database_compartment_name}-scan-target"
+
+  # Delay in seconds for slowing down resource creation
+  delay_in_secs = 30
 
 }

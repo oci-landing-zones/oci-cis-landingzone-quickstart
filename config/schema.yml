@@ -45,8 +45,8 @@ variableGroups:
 
   - title: "Notifications"
     variables:
-      - "network_admin_email_endpoint"
-      - "security_admin_email_endpoint"
+      - "network_admin_email_endpoints"
+      - "security_admin_email_endpoints"
 
   - title: "Cloud Guard"
     variables:
@@ -351,7 +351,7 @@ variables:
         - net_advanced_options
         - hub_spoke_architecture
 
-  network_admin_email_endpoint:
+  network_admin_email_endpoints:
     type: array
     items:
       type: string
@@ -360,7 +360,7 @@ variables:
     required: true
     description: "List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values)"
 
-  security_admin_email_endpoint:
+  security_admin_email_endpoints:
     type: array
     items:
       type: string

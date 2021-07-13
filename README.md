@@ -4,18 +4,19 @@
 1. [Overview](#overview)
 1. [Deliverables](#deliverables)
 1. [Architecture](#architecture)
-    1. [Network](#arch-network)
     1. [IAM](#arch-iam)
+    1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)
     1. [Compliance Checking](compliance-script.md)
 1. [Documentation](#documentation)
-1. [Frequently Asked Questions](FAQ.md)
 1. [Acknowledgements](#acknowledgements)
 1. [The Team](#team)
 1. [Feedback](#feedback)
+1. [Known Issues](#known-issues)
 1. [Contribute](#CONTRIBUTING.md)
+1. [Frequently Asked Questions](FAQ.md)
 
 ## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.1](https://www.cisecurity.org/benchmark/oracle_cloud/).    
@@ -81,7 +82,6 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Strong Security posture monitoring with Cloud Guard](https://www.ateam-oracle.com/cloud-guard-support-in-cis-oci-landing-zone)
 - [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
 - [Logging consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
-- [Landing Zone FAQ](FAQ.md)
 
 ## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
@@ -105,7 +105,7 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 > 2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] OPC request ID: f14a700dc5d00272933a327c8feb2871/5053FB2DA16689F6421821A1B178D450/D3F2FE52F3BF8FB2C769AEFF7754A9B0
 > 2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
 
-This is due to IAM eventual consistency model, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
+    This is due to IAM eventual consistency model, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
 * By default, OCI compartments are not deleted when resources are destroyed. Deletion can be enabled by setting *enable_cmp_delete* variable to true in locals.tf file. Note, however, that compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 

@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "lz_cloud_guard" {
-  count                 = length(data.oci_cloud_guard_targets.root.target_collection[0].items) > 0 ? (data.oci_cloud_guard_targets.root.target_collection[0].items[0].display_name == local.cg_target_name ? 1 : 0) : (var.cloud_guard_configuration_status == "ENABLE" ? 1 : 0)
+  count                 = var.cloud_guard_configuration_status == "ENABLE" ? (data.oci_cloud_guard_cloud_guard_configuration.this != null ? (data.oci_cloud_guard_cloud_guard_configuration.this.status != "ENABLED" ? 1 : 0) :  1) : 0
   depends_on            = [null_resource.slow_down_cloud_guard]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }

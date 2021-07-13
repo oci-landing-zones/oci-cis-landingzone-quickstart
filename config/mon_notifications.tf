@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 module "lz_notifications" {
+  depends_on = [ null_resource.slow_down_notifications ]
   source = "../modules/monitoring/notifications"
   rules = {
     ("${var.service_label}-notify-on-idp-changes-rule") = {
@@ -206,4 +207,11 @@ module "lz_notifications" {
       defined_tags        = null
     }
   }
+}
+
+resource "null_resource" "slow_down_notifications" {
+   depends_on = [ module.lz_compartments ]
+   provisioner "local-exec" {
+     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
+   }
 }

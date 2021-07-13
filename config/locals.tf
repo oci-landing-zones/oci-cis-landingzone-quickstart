@@ -124,4 +124,7 @@ locals {
   appdev_cmp_target_name   = "${local.appdev_compartment_name}-scan-target"
   database_cmp_target_name = "${local.database_compartment_name}-scan-target"
 
+  # Delay in seconds for slowing down resource creation
+  delay_in_secs = 30
+
 }

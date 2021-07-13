@@ -53,7 +53,7 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the **Input Variables** section above for the variables description. 
 
-Some variables, like *VCN CIDR Block* for instance, are defaulted in the configuration's variables.tf file and must be reviewed and reassigned values as needed.
+Some variables, like *List of CIDR blocks for the VCNs to be created* for instance, are defaulted in the configuration's variables.tf file and should be reviewed and reassigned values as needed.
 
 ![Folder Stack](images/ZipStack_3.png)
 

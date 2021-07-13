@@ -62,9 +62,14 @@ The Landing Zone template creates four compartments in the tenancy or under the 
 The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
 
 ### <a name="arch-diagram"></a>Diagram
-The diagram below shows services and resources that are deployed:
+The diagram below shows services and resources that are deployed in a single VCN deployment:
 
-![Architecture](images/Architecture.png)
+![Architecture_Single_VCN](images/Architecture_Single_VCN.png)
+
+The diagram below shows services and resources that are deployed in a Hub & Spoke VCN deployment:
+
+![Architecture_HS_VCN](images/Architecture_HS_VCN.png)
+
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
 

@@ -108,8 +108,9 @@ module "lz_root_policies" {
         "Allow Group ${local.auditor_group_name} to read network-security-groups in tenancy",
         "Allow Group ${local.auditor_group_name} to read resource-availability in tenancy",
         "Allow Group ${local.auditor_group_name} to read audit-events in tenancy",
+        "Allow Group ${local.auditor_group_name} to read users in tenancy",
         "Allow Group ${local.auditor_group_name} to use cloud-shell in tenancy",
-      "Allow Group ${local.auditor_group_name} to read vss-family in tenancy"]
+        "Allow Group ${local.auditor_group_name} to read vss-family in tenancy"]
     },
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid

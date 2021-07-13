@@ -44,7 +44,7 @@ No. The [cis_reports.py](https://github.com/oracle-quickstart/oci-cis-landingzon
 
 The user running the script should be in the Auditors group.
 
-To allow the Auditor group to write the reports to an output bucket the below policy must be added to the **${var.service_label}-auditor-policy**:
+To allow the Auditor group to write the reports to an output bucket the below policy must be added to the *<prefix>-auditor-policy* policy:
 
 `Allow group <prefix>-auditor-group to manage objects in compartment <compartment-name> where target.bucket.name='<bucket-name>'`
 
@@ -56,7 +56,7 @@ The Landing Zone can deploy multiple network architectures.  It can create multi
 
 You can choose if want to allow the creation of Internet Gateways and NAT Gateways to provide a more isolated network. 
 
-<a name="services"></a>**8. Which OCI services can be deployed by the Landing Zone??**
+<a name="services"></a>**8. Which OCI services can be deployed by the Landing Zone?**
 
 The Landing Zone can deploy the following services:
 - IAM (Identity & Access Management)

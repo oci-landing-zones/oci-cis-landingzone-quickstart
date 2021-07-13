@@ -40,7 +40,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 
  ## <a name="architecture"></a>Architecture
  ### <a name="arch-iam"></a>IAM
-The Landing Zone template creates four compartments in the tenancy or under the **enclosing compartment**:
+The Landing Zone template creates four compartments in the tenancy or under a enclosing compartment:
  - A network compartment: for all networking resources.
  - A security compartment: for all logging, key management, scanning, and notifications resources. 
  - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 
@@ -81,6 +81,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Strong Security posture monitoring with Cloud Guard](https://www.ateam-oracle.com/cloud-guard-support-in-cis-oci-landing-zone)
 - [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
 - [Logging consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
+- [Landing Zone FAQ](FAQ.md)
 
 ## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
@@ -94,7 +95,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	
 
 ## <a name="known-issues"></a>Known Issues
-- By default, OCI compartments are not deleted as part of *terraform destroy*. Deletion can be enabled by setting *enable_cmp_delete* variable to true in locals.tf file. Note, however, that compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [here](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment)
+- By default, OCI compartments are not deleted when resources are destroyed. Deletion can be enabled by setting *enable_cmp_delete* variable to true in locals.tf file. Note, however, that compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
 - Terraform or Resource Manager fails to Apply with 401 Unauthorized error.  This is due to an eventual consistency issue were the IAM policy for Cloud Guard is avialble yet.
 

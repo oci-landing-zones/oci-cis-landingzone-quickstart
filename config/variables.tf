@@ -190,31 +190,6 @@ variable "public_dst_cidrs" {
   }
 }
 
-variable "exacs_vcn_cidrs" {
-  type        = list(string)
-  default     = []
-  description = "List of CIDR blocks for the Exadata Cloud Service VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
-  validation {
-    condition     = length(var.exacs_vcn_cidrs) == 0 || (length(var.exacs_vcn_cidrs) < 10 && length(var.exacs_vcn_cidrs) > 0 && length([for c in var.exacs_vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_vcn_cidrs))
-    error_message = "Validation failed for exacs_vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
-  }
-}
-
-variable "exacs_vcn_names" {
-  type        = list(string)
-  default     = []
-  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-vcn). The list length and elements order must match exacs_vcn_cidrs'."
-  validation {
-    condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
-    error_message = "Validation failed for vcn_names: maximum of nine allowed."
-  }
-}
-
-variable "add_public_subnet_to_exacs_vcns" {
-  type    = bool
-  default = false  
-}
-
 variable "network_admin_email_endpoints" {
   type        = list(string)
   default     = []

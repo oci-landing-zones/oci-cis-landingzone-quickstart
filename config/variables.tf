@@ -144,6 +144,12 @@ variable "dmz_vcn_cidr" {
   }
 }
 
+variable "dmz_for_firewall" {
+  type = bool
+  default = false
+  description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
+}
+
 variable "dmz_number_of_subnets" {
   type        = number
   default     = 2

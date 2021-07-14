@@ -134,13 +134,6 @@ variable "hub_spoke_architecture" {
   description = "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
 }
 
-variable "dmz_for_firewall" {
-  type = bool
-  default = false
-  description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
-}
-
-
 variable "dmz_vcn_cidr" {
   type        = string
   default     = ""
@@ -149,6 +142,12 @@ variable "dmz_vcn_cidr" {
     condition     = length(var.dmz_vcn_cidr) == 0 || length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.dmz_vcn_cidr)) > 0
     error_message = "Validation failed for dmz_vcn_cidr: value must be in CIDR notation."
   }
+}
+
+variable "dmz_for_firewall" {
+  type = bool
+  default = false
+  description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
 
 variable "dmz_number_of_subnets" {

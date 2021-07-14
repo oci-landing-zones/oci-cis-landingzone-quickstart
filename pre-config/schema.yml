@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zones Pre-Config Stack"
-stackDescription: "A Stack to pre configure a tenancy for CIS Landing Zones deployment. By default, it creates the following resources: 1) one compartment in the root compartment; 2) one set of policies for Landing Zones required services in the root compartment; 3) one group to provision the Landing Zones; 4) one set of groups to manage the Landing Zones. This can be changed using the stack advanced options."
+title: "CIS OCI Landing Zone Quick Start Pre-Config"
+stackDescription: "A Stack to pre configure a tenancy for CIS Landing Zones deployment. For details check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Pre-config Module Documentation</a>."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -68,7 +68,7 @@ variables:
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details check <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">this document</a>."
+    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
     default: false
 
   enclosing_compartment_names:

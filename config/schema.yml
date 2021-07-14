@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zone Config Stack"
-stackDescription: "A Resource Manager Stack to deploy a set of CIS compliant resources in an OCI tenancy."
+title: "CIS OCI Landing Zone Quick Start Config"
+stackDescription: "A Stack to deploy a CIS (Center for Internet Security) Landing Zone in an OCI tenancy. CIS OCI Landing Zone is the combination of CIS Benchmark for OCI with OCI architecture best practices. For details, check <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-quick-start-template-version-2\">CIS OCI Landing Zone Quick Start</a>."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -93,7 +93,7 @@ variables:
   env_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Environment advanced options. For details: https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone"
+    description: "Environment advanced options. For details check <a href=\"https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone\">Landing Zone Deployment Modes</a>."
     default: false
     
   service_label:
@@ -222,7 +222,7 @@ variables:
   net_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Network advanced options. For details: https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking"
+    description: "Network advanced options. For details check <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking\">Landing Zone Networking</a>.
     default: false
 
   vcn_cidrs:

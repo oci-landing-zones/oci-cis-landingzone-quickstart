@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "CIS OCI Landing Zone Quick Start Pre-Config"
-stackDescription: "A Stack to pre configure a tenancy for CIS Landing Zones deployment. For details check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Pre-config Module Documentation</a>."
+stackDescription: "A Stack to pre configure a tenancy for CIS (Center for Internet Security) Landing Zones deployment. For details check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Pre-config Module Documentation</a>."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"

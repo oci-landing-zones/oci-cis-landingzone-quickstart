@@ -93,7 +93,7 @@ variables:
   env_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Environment advanced options"
+    description: "Environment advanced options. For details: https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone"
     default: false
     
   service_label:
@@ -114,7 +114,7 @@ variables:
   use_enclosing_compartment:
     type: boolean
     title: "Use an enclosing compartment?"
-    description: "Whether or not the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created under the root compartment, in which case you must have the required permissions."
+    description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
     visible: env_advanced_options
   
@@ -142,7 +142,7 @@ variables:
   use_existing_groups:
     type: boolean
     title: "Use existing groups?"
-    description: "Whether or not existing groups are to be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
+    description: "Whether existing groups should be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
     default: false
     required: true
     visible: env_advanced_options
@@ -222,7 +222,7 @@ variables:
   net_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Network advanced options"
+    description: "Network advanced options. For details: https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking"
     default: false
 
   vcn_cidrs:
@@ -535,7 +535,7 @@ variables:
   vss_create:
     type: boolean
     title: "Enable Vulnerability Scanning?"
-    description: "Whether or not Vulnerability Scanning is enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
     default: true
 
   vss_scan_schedule:

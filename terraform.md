@@ -88,41 +88,12 @@ Next, create a stack based on a source code control system. Using OCI Console, i
 Once the stack is created, navigate to the stack page and use the **Terraform Actions** button to plan/apply/destroy your configuration.
 
 ## How to Customize the Terraform Configuration
-The Terraform code has a single configuration root module and a few modules that actually perform the provisioning. We encourage any customization to follow this pattern as it enables consistent code reuse.
+The Terraform code has two root modules and various children modules. The root modules are *pre-config* and *config* folders. They make calls to the children modules for resource creation. The children modules are defined under the *modules* folder. As a rule of thumb, the children modules iterate through maps of objects created by the root modules. We encourage customizations to follow this pattern as it enables consistent code reuse.
 
-For bringing new resources into the Terraform configuration, like compartments or VCNs, you can simply reuse the existing modules and add extra module calls similar to the existing ones in the root module. Most modules accept a map of resource objects that are usually keyed by the resource name. 
+The file names in the root modules are self-explanatory. They are prefixed with a reference to the corresponding section name in CIS Benchmark document, followed by the OCI service or resource that they implement. For instance, iam_compartments.tf references the IAM section and implements compartments, net_vcn.tf references to the Networking section and implements VCN. mon_notifications.tf references the Monitoring section and implements notifications.
 
-For adding extra objects to an existing container object (like adding subnets to a VCN), simply add the extra objects to the existing map. For instance, looking at the net_vcn.tf file, we have:
+The root modules also have a locals.tf, where most of local variables are defined (note that some are defined directly in the files that use them). Local variables are used for processing input variables and creating the required inputs for the children modules. For example, many resource names and object maps are created as local variables. 
 
-```
-  module "cis_vcn" {
-  	source               = "../modules/network/vcn"
-  	compartment_id       = module.cis_compartments.compartments[local.network_compartment_name].id
-  	...
-  	is_create_drg        = tobool(var.is_vcn_onprem_connected)
+Small customizations, like changing resource names, changing a network security group or even adding a new subnet to a VCN can be achieved by changing the local variables.
 
-  	subnets = {
-    (local.public_subnet_name) = {
-      compartment_id    = null
-      ...
-      cidr              = var.public_subnet_cidr
-      ...
-      dns_label         = "public"
-      private           = false
-      ...
-      route_table_id    = module.cis_vcn.route_tables[local.public_subnet_route_table_name].id
-      security_list_ids = [module.cis_security_lists.security_lists[local.public_subnet_security_list_name].id]
-    }, 
-    (local.private_subnet_app_name) = {
-      compartment_id    = null
-      ...
-      cidr              = var.private_subnet_app_cidr
-      ...
-      dns_label         = "appsubnet"
-      private           = true
-      ...
-      route_table_id    = module.cis_vcn.route_tables[local.private_subnet_app_route_table_name].id
-      security_list_ids = [module.cis_security_lists.security_lists[local.private_subnet_app_security_list_name].id]
-	  ...
-```
-In this code excerpt, the *subnets* variable is a map of subnet objects. Adding a new subnet to the existing VCN is as easy as adding a new subnet object to the *subnets* map. Make sure to provide the new subnet a route table and security list. Use the available code as an example. For adding a new VCN altogether, simply provide a new tf file with contents similar to net_vcn.tf.
+Large customizations, like changing the compartments structure, are more involved and will likely require new logic in the root module. In these cases, one suggestion is creating a brand new root module while reusing the existing children modules.

@@ -9,7 +9,7 @@ locals {
     dns_label         = "dmz"
     is_create_igw     = !var.no_internet_access
     is_create_drg     = false
-    is_attach_drg     = true
+    is_attach_drg     = var.dmz_for_firewall == true ? false : true
     block_nat_traffic = false
     defined_tags      = null
     subnets = { for s in range(var.dmz_number_of_subnets) : "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet" => {

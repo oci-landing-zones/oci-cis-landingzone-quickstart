@@ -134,6 +134,13 @@ variable "hub_spoke_architecture" {
   description = "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
 }
 
+variable "dmz_for_firewall" {
+  type = bool
+  default = false
+  description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
+}
+
+
 variable "dmz_vcn_cidr" {
   type        = string
   default     = ""

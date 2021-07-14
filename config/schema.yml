@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "CIS OCI Landing Zone Quick Start Config"
-stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Landing Zone is the combination of CIS Benchmark for OCI with OCI architecture best practices. For details, check the <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-quick-start-template-version-2\">Landing Zone Quick Start documentation</a>."
+stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Landing Zone is the combination of CIS Benchmark for OCI with OCI architecture best practices."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"

@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "CIS OCI Landing Zone Quick Start Pre-Config"
-stackDescription: "A Stack to pre configure a tenancy for CIS (Center for Internet Security) Landing Zones deployment. For details check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Pre-config Module Documentation</a>."
+stackDescription: "A Stack to pre configure a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -63,12 +63,11 @@ variables:
     maxLength: 15
     pattern: "^[A-Za-z][A-Za-z0-9]{0,15}$"
     description: "If provided, a unique prefix across the tenancy that is added to all resource names created by this stack."
-    default: ""
-
+  
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s)."
+    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Pre-config Module Documentation</a>."
     default: false
 
   enclosing_compartment_names:

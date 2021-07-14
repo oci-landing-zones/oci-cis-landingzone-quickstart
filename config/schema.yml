@@ -38,6 +38,7 @@ variableGroups:
       - "no_internet_access"
       - "hub_spoke_architecture"
       - "dmz_vcn_cidr"
+      - "dmz_for_firewall"
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
       - "is_vcn_onprem_connected"
@@ -331,6 +332,16 @@ variables:
         - net_advanced_options
         - hub_spoke_architecture
 
+  dmz_for_firewall:
+    type: boolean
+    title: "Use DMZ VCN for 3rd party firewalls."
+    description: "Determines if a 3rd party firewall will be deployed in the DMZ VCN."
+    required: false
+    visible:
+      and:
+        - net_advanced_options
+        - hub_spoke_architecture
+        
   dmz_number_of_subnets:
     type: integer
     title: "Number of subnets in the DMZ VCN"

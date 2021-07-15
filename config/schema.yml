@@ -94,7 +94,8 @@ variables:
   env_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Advanced options. For details, check <a href=\"https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone\">Landing Zone Deployment Modes</a>."
+    description: "Advanced options. For details please see the <a href=\"../VARIABLES.md\">VARIABLES.md</a>."
+    #description: "Advanced options. For details, check <a href=\"https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone\">Landing Zone Deployment Modes</a>."
     default: false
     
   service_label:
@@ -223,7 +224,8 @@ variables:
   net_advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "Advanced options. For details, check <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking\">Landing Zone Networking</a>."
+    description: "Advanced options. For details please see the <a href=\"../VARIABLES.md\">VARIABLES.md</a>."
+    #description: "Advanced options. For details, check <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking\">Landing Zone Networking</a>."
     default: false
 
   vcn_cidrs:

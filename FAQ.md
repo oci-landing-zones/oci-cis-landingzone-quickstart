@@ -1,13 +1,13 @@
 # Frequently Asked Questions
 ## Questions
-- [1. What is the CIS Oracle Cloud Infrastructure Foundations Benchmark version 1.1.0?](#cis)
-- [2. What is the CIS OCI Landing Zone?](#lz)
-- [3. What is the cost of the services created by the Landing Zone?](#cost)
-- [4. What permissions are needed to deploy the Landing Zone?](#access)
-- [5. Do I have deploy the Landing Zone to use the the compliance check script?](#script)
-- [6. What permissions are needed to run the compliance script?](#script-access)
-- [7. What network architectures can be deployed by the Landing Zone?](#networking)
-- [8. Which OCI services can be deployed by the Landing Zone?](#services)
+1. [What is the CIS Oracle Cloud Infrastructure Foundations Benchmark version 1.1.0?](#cis)
+1. [What is the CIS OCI Landing Zone?](#lz)
+1. [What is the cost of the services created by the Landing Zone?](#cost)
+1. [What permissions are needed to deploy the Landing Zone?](#access)
+1. [Do I have deploy the Landing Zone to use the the compliance check script?](#script)
+1. [What permissions are needed to run the compliance script?](#script-access)
+1. [What network architectures can be deployed by the Landing Zone?](#networking)
+1. [Which OCI services can be deployed by the Landing Zone?](#services)
 
 ## Answers 
 <a name="cis"></a>**1. What is the CIS Oracle Cloud Infrastructure Foundations Benchmark version 1.1.0?**

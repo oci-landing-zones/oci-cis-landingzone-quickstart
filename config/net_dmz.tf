@@ -17,7 +17,7 @@ locals {
       defined_tags    = null
       cidr            = cidrsubnet(var.dmz_vcn_cidr, var.dmz_subnet_size, s)
       dns_label       = local.dmz_subnet_names[s]
-      private         = var.no_internet_access ? true : s == 0 ? false : true
+      private         = var.no_internet_access ? true : s == 0 || (local.is_mgmt_subnet_public && s == 2) ? false : true
       dhcp_options_id = null
       }
     }

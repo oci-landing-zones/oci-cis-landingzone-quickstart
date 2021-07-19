@@ -88,6 +88,8 @@ locals {
   spoke_subnet_names = ["web", "app", "db"]
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   dmz_subnet_names = ["outdoor", "indoor", "mgmt", "ha", "diag"]
+  # Mgmg subnet is public by default.
+  is_mgmt_subnet_public = true
 
   dmz_vcn_name = var.dmz_vcn_cidr != null ? {
     name = "${var.service_label}-dmz-vcn"
@@ -127,4 +129,6 @@ locals {
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 30
 
+  # Outputs display
+  display_outputs = true
 }

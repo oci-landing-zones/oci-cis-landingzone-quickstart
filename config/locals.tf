@@ -127,4 +127,6 @@ locals {
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 30
 
+  # Outputs display
+  display_outputs = true
 }

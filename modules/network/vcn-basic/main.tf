@@ -60,17 +60,10 @@ resource "oci_core_service_gateway" "these" {
     }
 }
 
-### DRG - Dynamic Routing Gateway
-resource "oci_core_drg" "this" {
-  count          = var.is_create_drg == true ? 1 : 0
-  compartment_id = var.compartment_id
-  display_name   = "${var.service_label}-drg"
-}
-
 ### DRG attachment to VCN
 resource "oci_core_drg_attachment" "these" {
   for_each = {for k, v in var.vcns: k => v if v.is_attach_drg == true}
-    drg_id       = var.drg_id == null ? oci_core_drg.this[0].id : var.drg_id
+    drg_id       = var.drg_id
     vcn_id       = oci_core_vcn.these[each.key].id
     display_name = "${each.key}-drg-attachment"
 }

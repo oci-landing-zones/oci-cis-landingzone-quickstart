@@ -21,10 +21,6 @@ output "service_gateways" {
   description = "The Service gateways, indexed by display_name."
   value = {for g in oci_core_service_gateway.these : g.vcn_id => g}
 }
-output "drg" {
-  description = "DRG information."
-  value       = length(oci_core_drg.this) > 0 ? oci_core_drg.this[0] : null
-}
 output "all_services" {
   description = "All services"
   value       = data.oci_core_services.all_services

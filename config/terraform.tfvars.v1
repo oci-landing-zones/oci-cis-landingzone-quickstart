@@ -1,0 +1,16 @@
+tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaaixl3xlr4kr6h3yax2zbijclgim5q2l2pv2qmfithywqhw4tgbvuq" #ateamocidev
+user_ocid            = "ocid1.user.oc1..aaaaaaaalxqallveu54dikz2yvwztfa6aaonjyn7mopu2oyy4hqjjbbdukca" #tenant admin
+fingerprint          = "c1:91:41:6a:65:87:68:02:2e:54:80:db:36:76:54:39" #tenant admin
+private_key_path     = "../private_key.pem"
+private_key_password = ""
+region               = "us-ashburn-1"
+service_label        = "lzv1"
+
+### For Networking
+is_vcn_onprem_connected       = false
+public_src_bastion_cidr       = "192.169.0.0/32"
+public_src_lbr_cidr           = "192.169.0.0/32"
+
+### For Security
+network_admin_email_endpoint  = "andre.correa@oracle"
+security_admin_email_endpoint = "andre.correa@oracle"

@@ -14,12 +14,6 @@ variable "service_gateway_cidr" {
   type        = string
 }
 
-variable "is_create_drg" {
-  description = "Whether a DRG is to be created."
-  default     = false
-  type        = bool
-}
-
 variable "drg_id" {
   description = "DRG to be attached"
   default     = null

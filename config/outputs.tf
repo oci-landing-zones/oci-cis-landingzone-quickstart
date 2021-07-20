@@ -15,7 +15,7 @@ output "dmz_subnets" {
 }
 
 output "drg" {
-    value = local.display_outputs == true ? (module.lz_vcn_spokes.drg != null ? {id: module.lz_vcn_spokes.drg.id, name: module.lz_vcn_spokes.drg.display_name, parent_id:module.lz_vcn_spokes.drg.compartment_id, time_created:module.lz_vcn_spokes.drg.time_created} : null) : null
+    value = local.display_outputs == true ? (module.lz_drg.drg != null ? {id: module.lz_drg.drg.id, name: module.lz_drg.drg.display_name, parent_id:module.lz_drg.drg.compartment_id, time_created:module.lz_drg.drg.time_created} : null) : null
 }
 
 output "service_label" {

@@ -147,7 +147,7 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[1]}-*", key)) > 0 }
 
   ## Database Subnet Route Tables
-  db_route_tables = { for key, subnet in local.all_lz_spoke_vcn_ids : replace("${key}-rtable", "vcn-", "") => {
+  db_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtable", "vcn-", "") => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id

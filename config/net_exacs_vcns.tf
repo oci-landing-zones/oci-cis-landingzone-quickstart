@@ -63,7 +63,7 @@ locals {
         description       = "VCN ${vcn_name} traffic to DRG"
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = module.lz_drg.drg != null && length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null

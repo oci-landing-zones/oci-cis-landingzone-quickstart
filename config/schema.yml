@@ -42,6 +42,7 @@ variableGroups:
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
       - "is_vcn_onprem_connected"
+      - "existing_drg_id"
       - "onprem_cidrs"
 
   - title: "Notifications"
@@ -296,6 +297,16 @@ variables:
     default: false
     visible: net_advanced_options
 
+  existing_drg_id:
+    type: string
+    title: "Existing DRG OCID"
+    description: "If using an existing DRG."
+    default: ""
+    visible: 
+      and:
+        - net_advanced_options
+        - is_vcn_onprem_connected
+        
   onprem_cidrs:
     type: array
     items:

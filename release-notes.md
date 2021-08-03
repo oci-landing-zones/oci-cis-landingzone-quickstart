@@ -1,12 +1,16 @@
-# August 2021 Release Notes - Stable 2.1.0
-1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg)
-1. [Consolidated Network and IAM notifications](#notifications_consolidation)
+# August 2021 Release Notes - Stable 2.0.3
+1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)
+1. [Consolidated Network and IAM notifications](#notifications_consolidation_2_0_3)
+1. [Database Customer Managed Key Support](#database_key_support_2_0_3)
 
-## <a name="existing_drg"></a>1. Ability to use existing Dynamic Routing Gateway (DRG) with the Landing Zone
+## <a name="existing_drg_2_0_3"></a>1. Ability to use existing Dynamic Routing Gateway (DRG) with the Landing Zone
 Customers that have an existing DRG v2 (a DRG created after April 15, 2021) can now use that existing DRG v2 instead of having the Landing Zone create a new DRG v2. This is useful for customers that have connected a FastConnect to an existing DRG.
 
-## <a name="notifications_consolidation"></a>2. Consolidated Network and IAM notifications
+## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM notifications
 In previous versions of the Landing Zone notification event rules were created for each CIS benchmark monitoring recommendation.  To help reduce the number of event rules created all the IAM recommendations are combined into a single event rule and all the network recommendations are combined into another event rule. 
+
+## <a name="database_key_support_2_0_3"></a>2. Autonomous Database Customer Managed Key Support
+ Database Administrators now have the ability to use keys from OCI Vaults in the security compartment to encrypt databases in the database compartment.
 
 # July 2021 Release Notes - Stable 2.0.0
 1. [Ability to provision the Landing Zone with narrower permissions](#narrower_permissions)

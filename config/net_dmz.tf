@@ -56,7 +56,7 @@ locals {
         is_create         = var.hub_spoke_architecture
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "${vcn_name} traffic to DRG"
         }
       ],
@@ -64,7 +64,7 @@ locals {
         is_create         = var.is_vcn_onprem_connected
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "${cidr} to DRG"
 
         }
@@ -81,7 +81,7 @@ module "lz_vcn_dmz" {
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
-  drg_id               = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+  drg_id               = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
   vcns                 = local.dmz_vcn
 }
 

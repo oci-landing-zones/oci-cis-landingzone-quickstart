@@ -174,7 +174,9 @@ module "lz_policies" {
         "Allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment_name}",
-      "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}"]
+        "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}"]
     },
     (local.appdev_admin_policy_name) = {
       compartment_id = local.parent_compartment_id

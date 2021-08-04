@@ -41,6 +41,7 @@ locals {
   network_admin_policy_name       = "${var.service_label}-network-admin-policy"
   network_admin_root_policy_name  = "${var.service_label}-network-admin-root-policy"
   database_admin_policy_name      = "${var.service_label}-database-admin-policy"
+  database_dynamic_group_policy_name = "${var.service_label}-database-dynamic_group-policy"
   database_admin_root_policy_name = "${var.service_label}-database-admin-root-policy"
   appdev_admin_policy_name        = "${var.service_label}-appdev-admin-policy"
   appdev_admin_root_policy_name   = "${var.service_label}-appdev-admin-root-policy"
@@ -73,6 +74,10 @@ locals {
                           "Allow service vulnerability-scanning-service to read vnics in tenancy",
                           "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
   os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
+
+  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}",
+        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}"]
+
 
   # Tags
   tag_namespace_name = "${var.service_label}-namesp"

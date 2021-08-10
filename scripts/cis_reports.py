@@ -920,10 +920,12 @@ class CIS_Report:
     def __cloud_guard_read_cloud_guard_configuration(self):
         print("Processing Cloud Guard Configuration...")
         try:
-            self.__cloud_guard_config = self.__cloud_guard.get_configuration(self.__tenancy.id).data
+            self.__cloud_guard_config = self.__cloud_guard.get_configuration(self.__tenancy.id).data.status
             return self.__cloud_guard_config
         except Exception as e:
-            raise RuntimeError("Error in __cloud_guard_read_cloud_guard_configuration " + str(e.args))
+            self.__cloud_guard_config = 'DISABLED'
+            print(" Cloud Guard service requires a PayGo account")
+            #raise RuntimeError("Error in __cloud_guard_read_cloud_guard_configuration " + str(e.args))
 
     ##########################################################################
     # Identity Password Policy 
@@ -1239,7 +1241,7 @@ class CIS_Report:
         #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
 
         # CIS Check 3.15 - Cloud Guard enabled
-        if self.__cloud_guard_config.status == 'ENABLED':
+        if self.__cloud_guard_config == 'ENABLED':
             self.cis_foundations_benchmark_1_1['3.15']['Status'] = True
         else:
             self.cis_foundations_benchmark_1_1['3.15']['Status'] = False

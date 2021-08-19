@@ -12,8 +12,8 @@ private_key_path     = "<path_to_tenancy_admin_private_key_pem_file>"
 private_key_password = ""
 
 ### Environment variables
-home_region          = "<tenancy_home_region>"
-unique_prefix        = "<a_label_to_prefix_resource_names_with>"
+home_region   = "<tenancy_home_region>"
+unique_prefix = "<a_label_to_prefix_resource_names_with>"
 
 # enclosing_compartment_names                 = ["<compartment1_name>","<compartment2_name>"]   # the names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. Max number of compartments is 5.
 # existing_enclosing_compartments_parent_ocid = "<existing_enclosing_compartments_parent_ocid>" # the enclosing compartments parent compartment. It defines where enclosing compartments are created. If not provided, the enclosing compartments are created in the root compartment.

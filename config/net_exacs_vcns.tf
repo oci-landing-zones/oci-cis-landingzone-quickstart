@@ -10,7 +10,9 @@ locals {
   exacs_subnet_names = var.deploy_app_layer_to_exacs_vcns == true ? [local.client_subnet_prefix, local.backup_subnet_prefix, local.exaweb_subnet_prefix, local.exaapp_subnet_prefix] : [local.client_subnet_prefix, local.backup_subnet_prefix]
 
   exacs_vcns_map = { for v in var.exacs_vcn_cidrs : "vcn${index(var.exacs_vcn_cidrs, v)}" => {
-    name = length(var.exacs_vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) > 0 ? join("", regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) : var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]) : "${var.service_label}-${index(var.exacs_vcn_cidrs, v)}-vcn"
+    name = "${var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]}-vcn" 
+    
+    # name = length(var.exacs_vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) > 0 ? join("", regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) : var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]) : "${var.service_label}-${index(var.exacs_vcn_cidrs, v)}-vcn"
     cidr = v
     }
   }
@@ -59,14 +61,14 @@ locals {
         is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "VCN ${vcn_name} traffic to DRG"
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = module.lz_drg.drg != null && length(var.dmz_vcn_cidr) == 0
+        is_create         = (module.lz_drg.drg != null || var.existing_drg_id != "") && length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "On-premises ${cidr} traffic to DRG"
       }]
     )
@@ -95,14 +97,14 @@ locals {
         is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "VCN ${vcn_name} traffic to DRG"
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = (module.lz_drg.drg != null || var.existing_drg_id != "") && length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "On-premises ${cidr} traffic to DRG"
       }]
     )
@@ -125,16 +127,24 @@ locals {
         is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "VCN ${vcn_name} traffic to DRG"
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = (module.lz_drg.drg != null || var.existing_drg_id != "") && length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "On-premises ${cidr} traffic to DRG"
-      }]
+      }],
+      [for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
+        is_create         = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) == 0
+        destination       = vcn.cidr_block
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))
+        description       = "${vcn_name} to DRG"
+        } if subnet.vcn_id != vcn.id
+      ]
     )
   } if length(regexall(".*-${local.client_subnet_prefix}-*", key)) > 0 }
 
@@ -155,16 +165,24 @@ locals {
         is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "VCN ${vcn_name} traffic to DRG"
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = module.lz_drg.drg != null #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = (module.lz_drg.drg != null || var.existing_drg_id != "") && length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "On-premises ${cidr} traffic to DRG"
-      }]
+      }],
+      [for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
+        is_create         = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) == 0
+        destination       = vcn.cidr_block
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))
+        description       = "${vcn_name} to DRG"
+        } if subnet.vcn_id != vcn.id
+      ]
     )
   } if length(regexall(".*-${local.backup_subnet_prefix}-*", key)) > 0 }
 
@@ -177,7 +195,7 @@ module "lz_exacs_vcns" {
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
-  drg_id               = module.lz_drg.drg != null ? module.lz_drg.drg.id : null
+  drg_id               = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
   vcns                 = local.exacs_vcns
 }
 

@@ -17,7 +17,7 @@ locals {
   database_compartment_name          = "${var.service_label}-database-cmp"
   appdev_compartment_name            = "${var.service_label}-appdev-cmp"
   # Whether compartments should be deleted in terraform destroy or upon resource removal.
-  enable_cmp_delete = false
+  enable_cmp_delete = true
 
   # Whether or not to create an enclosing compartment
   parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
@@ -74,10 +74,6 @@ locals {
                           "Allow service vulnerability-scanning-service to read vnics in tenancy",
                           "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
   os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
-
-  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}",
-        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}"]
-
 
   # Tags
   tag_namespace_name = "${var.service_label}-namesp"

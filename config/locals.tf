@@ -75,10 +75,6 @@ locals {
                           "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
   os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
-  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}",
-        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}"]
-
-
   # Tags
   tag_namespace_name = "${var.service_label}-namesp"
   createdby_tag_name = "CreatedBy"

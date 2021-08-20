@@ -98,6 +98,13 @@ variable "is_vcn_onprem_connected" {
   default     = false
   description = "Determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true."
 }
+
+variable "existing_drg_id" {
+  type        = string
+  default     = ""
+  description = "The DRG OCID of an existing DRG, if using an existing DRG."
+}
+
 variable "onprem_cidrs" {
   type        = list(string)
   description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. Required if is_vcn_onprem_connected is true."

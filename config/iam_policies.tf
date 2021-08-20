@@ -42,6 +42,7 @@ locals {
     "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_scope}",
   "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"]
 
+  // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   security_cmp_permissions = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment_name}",
@@ -62,6 +63,10 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}",
   "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment_name}"]
+
+  security_kms_database_permissions = local.use_existing_tenancy_policies == false && var.use_existing_groups == false ? ["Allow dynamic-group ${var.service_label}-adb-dynamic-group to manage vaults in compartment ${local.security_compartment_name}",
+        "Allow dynamic-group ${var.service_label}-adb-dynamic-group to manage keys in compartment ${local.security_compartment_name}"] : []
+
 }
 
 module "lz_root_policies" {
@@ -157,7 +162,7 @@ module "lz_policies" {
     (local.database_admin_policy_name) = {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
-      statements = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment_name}",
+      statements = concat(["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment_name}",
@@ -176,7 +181,8 @@ module "lz_policies" {
         "Allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment_name}",
         "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}",
         "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}"]
+        "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}"], 
+        local.security_kms_database_permissions)
     },
     (local.appdev_admin_policy_name) = {
       compartment_id = local.parent_compartment_id

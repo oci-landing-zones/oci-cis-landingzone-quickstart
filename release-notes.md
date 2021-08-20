@@ -1,4 +1,23 @@
-# July 2021 Release Notes
+# August 12, 2021 Release Notes - Stable 2.0.3
+1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)
+1. [Consolidated Network and IAM notifications](#notifications_consolidation_2_0_3)
+1. [Database Customer Managed Key Support](#database_key_support_2_0_3)
+1. [Compliance Checking supports free tier tenancy](#cis_report_update_2_0_3)
+
+
+## <a name="existing_drg_2_0_3"></a>1. Ability to use existing Dynamic Routing Gateway (DRG) with the Landing Zone
+Customers that have an existing DRG v2 (a DRG created after April 15, 2021) can now use that existing DRG v2 instead of having the Landing Zone create a new DRG v2. This is useful for customers that have connected a FastConnect to an existing DRG.
+
+## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM notifications
+In previous versions of the Landing Zone notification event rules were created for each CIS benchmark monitoring recommendation.  To help reduce the number of event rules created all the IAM recommendations are combined into a single event rule and all the network recommendations are combined into another event rule. 
+
+## <a name="database_key_support_2_0_3"></a>3. Autonomous Database Customer Managed Key Support
+Database Administrators now have the ability to use keys from OCI Vaults in the security compartment to encrypt databases in the database compartment.
+
+## <a name="cis_report_update_2_0_3"></a>4. Compliance Checking supports free tier tenancy
+Compliance Checking script can now be run free tier OCI tenancy.
+
+# July 2021 Release Notes - Stable 2.0.0
 1. [Ability to provision the Landing Zone with narrower permissions](#narrower_permissions)
 1. [Ability to provision Landing Zone within an enclosing compartment at any level in the compartment hierarchy](#enclosing_compartment)
 1. [Ability to reuse existing groups when provisioning the Landing Zone](#existing_groups)
@@ -40,7 +59,7 @@ In addition to the above architectures, you can choose if want to allow the crea
 The module behavior is controlled by variables described in the [Networking Variables section](VARIABLES.md#networking-variables).
 
 
-# June 2021 Release Notes
+# June 2021 Release Notes - Stable 1.1.1
 1. [Logging Consolidation with Service Connector Hub](#logging_consolidation)
 1. [Vulnerability Scanning](#vulnerability_scanning)
 

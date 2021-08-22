@@ -82,6 +82,10 @@ variableGroups:
       - "vss_scan_schedule"
       - "vss_scan_day"
 
+  - title: "Bastion Service"
+    variables:
+      - "bastion_create"
+
   - title: "Hidden Variables"
     visible: false
     variables:
@@ -591,8 +595,15 @@ variables:
         - eq:
           - vss_scan_schedule
           - "WEEKLY"
+
+# Bastion Service
+  bastion_create:
+    type: boolean
+    title: "Create Bastion Service Instance"
+    description: "Whether Bastion Service instance should be created. Even when true, a Bastion instance is only created when vcn is not hub and spoke and not connected to on-prem"
+    default: false
   
-          # Variables not required to display to user
+# Variables not required to display to user
   user_ocid:
     type: string
 

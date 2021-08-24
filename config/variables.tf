@@ -152,8 +152,8 @@ variable "dmz_vcn_cidr" {
 }
 
 variable "dmz_for_firewall" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
 
@@ -224,8 +224,15 @@ variable "exacs_vcn_names" {
 }
 
 variable "deploy_app_layer_to_exacs_vcns" {
-  type    = bool
-  default = false  
+  type        = bool
+  default     = false
+  description = "Determines if the ExaCS VCN deployed will have a Web and App Subnet to support an application deployment"
+}
+
+variable "exacs_no_internet_access" {
+  type        = bool
+  default     = true
+  description = "Determines if the ExaCS VCN deployed will have an Internet Gateway and NAT Gateway, this only ExaCS VCNs with app layer selected."
 }
 
 variable "network_admin_email_endpoints" {
@@ -247,7 +254,7 @@ variable "security_admin_email_endpoints" {
   }
 }
 variable "cloud_guard_configuration_status" {
-  default = "ENABLE"
+  default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))

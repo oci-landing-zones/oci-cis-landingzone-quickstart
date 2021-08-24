@@ -188,11 +188,11 @@ locals {
     }
   } if var.deploy_app_layer_to_exacs_vcns == true }
 
-  exacs_clt_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-clt-nsg" => {
+  exacs_app_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-app-nsg" => {
     vcn_id : v.id,
-    ingress_rules : merge({
-      ssh-exacs-app-layer-ingress-rule : {
-        is_create : var.deploy_app_layer_to_exacs_vcns == true,
+    ingress_rules : {
+      ssh-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) == 0,
         description : "SSH ingress rule for ${k}-bastion-nsg.",
         stateless : false,
         protocol : "6",
@@ -200,6 +200,84 @@ locals {
         src_type : "NSG_NAME",
         dst_port_min : 22,
         dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
+      http-ingress-rule : {
+        is_create : true,
+        description : "HTTP ingress rule for ${k}-lbr-nsg.",
+        stateless : false,
+        protocol : "6",
+        src : "${k}-lbr-nsg",
+        src_type : "NSG_NAME",
+        dst_port_min : 80,
+        dst_port_max : 80,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      }
+    },
+    egress_rules : {
+      db-egress-rule : {
+        is_create : true,
+        description : "Egress rule to ${k}-clt-nsg for app to database access.",
+        stateless : false,
+        protocol : "6",
+        dst      = "${k}-clt-nsg",
+        dst_type = "NSG_NAME",
+        src_port_min : null,
+        src_port_max : null,
+        dst_port_min : 1521,
+        dst_port_max : 1522,
+        icmp_code : null,
+        icmp_type : null
+      },
+      osn-services-egress-rule : {
+        is_create : true,
+        description : "Egress rule to ${local.valid_service_gateway_cidrs[0]}.",
+        stateless : false,
+        protocol : "6",
+        dst      = local.valid_service_gateway_cidrs[0],
+        dst_type = "SERVICE_CIDR_BLOCK",
+        src_port_min : null,
+        src_port_max : null,
+        dst_port_min : 443,
+        dst_port_max : 443,
+        icmp_code : null,
+        icmp_type : null
+      }
+    }
+  } if var.deploy_app_layer_to_exacs_vcns == true }
+
+  exacs_clt_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-clt-nsg" => {
+    vcn_id : v.id,
+    ingress_rules : merge({
+      ssh-exacs-app-layer-ingress-rule : {
+        is_create : var.deploy_app_layer_to_exacs_vcns == true && var.dmz_vcn_cidr == "",
+        description : "SSH ingress rule for ${k}-bastion-nsg.",
+        stateless : false,
+        protocol : "6",
+        src : "${k}-bastion-nsg",
+        src_type : "NSG_NAME",
+        dst_port_min : 22,
+        dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
+      http-exacs-app-layer-ingress-rule : {
+        is_create : var.deploy_app_layer_to_exacs_vcns == true,
+        description : "HTTP ingress rule for ${k}-app-nsg.",
+        stateless : false,
+        protocol : "6",
+        src : "${k}-app-nsg",
+        src_type : "NSG_NAME",
+        dst_port_min : 1521,
+        dst_port_max : 1522,
         src_port_min : null,
         src_port_max : null,
         icmp_type : null,
@@ -232,34 +310,6 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
-      },
-      error-messages-ingress-rule : {
-        is_create : true,
-        description : "Enables the hosts in the VCN to receive connectivity error messages from each other.",
-        stateless : false,
-        protocol : "1",
-        src : v.cidr_block,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : null,
-        dst_port_max : null,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : 3,
-        icmp_code : null
-      },
-      mtu-discovery-ingress-rule : {
-        is_create : true,
-        description : "Enables hosts in the VCN to receive Path MTU Discovery fragmentation messages.",
-        stateless : false,
-        protocol : "1",
-        src : local.anywhere,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : null,
-        dst_port_max : null,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : 3,
-        icmp_code : 4
       },
       ons-ingress-ingress-rule : {
         is_create : true,
@@ -304,7 +354,7 @@ locals {
         icmp_code : null
       }},
       { for c in var.onprem_cidrs : "ssh-on-prem-ingress-rule-${index(var.onprem_cidrs,c)}" => {
-        is_create : true #var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
+        is_create : var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
         description : "SSH ingress rule for on-premises CIDR ${c}.",
         stateless : false,
         protocol : "6",
@@ -330,7 +380,22 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
-      }}
+      }},
+      { for k,v in module.lz_vcn_spokes.vcns : "db-spoke-${k}-ingress-rule" => {
+        is_create : length(var.dmz_vcn_cidr) == 0 && var.hub_spoke_architecture == true,
+        description : "SSH ingress rule for VCN ${k} CIDR ${v.cidr_block}.",
+        stateless : false,
+        protocol : "6",
+        src : v.cidr_block,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 1521,
+        dst_port_max : 1522,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      }},
+
     ),
     egress_rules : {
       ssh-client-subnet-egress-rule : {
@@ -366,78 +431,7 @@ locals {
 
   exacs_bkp_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-bkp-nsg" => {
     vcn_id = v.id
-    ingress_rules : merge({
-      ssh-exacs-app-layer-ingress-rule : {
-        is_create : var.deploy_app_layer_to_exacs_vcns == true,
-        description : "SSH ingress rule for ${k}-bastion-nsg.",
-        stateless : false,
-        protocol : "6",
-        src : "${k}-bastion-nsg",
-        src_type : "NSG_NAME",
-        dst_port_min : 22,
-        dst_port_max : 22,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-      },
-      ssh-dmz-vcn-ingress-rule : {
-        is_create : length(var.dmz_vcn_cidr) > 0,
-        description : "SSH ingress rule for DMZ VCN.",
-        stateless : false,
-        protocol : "6",
-        src : var.dmz_vcn_cidr,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : 22,
-        dst_port_max : 22,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-      },
-      error-messages-ingress-rule : {
-        is_create : true,
-        description : "Enables the hosts in the VCN to receive connectivity error messages from each other.",
-        stateless : false,
-        protocol : "1",
-        src : v.cidr_block,
-        src_type : "CIDR_BLOCK",
-        src_port_min : null,
-        src_port_max : null,
-        dst_port_min : 1521,
-        dst_port_max : 1522,
-        icmp_code : 3,
-        icmp_type : null
-      },
-      mtu-discovery-ingress-rule : {
-        is_create : true,
-        description : "Enables hosts in the VCN to receive Path MTU Discovery fragmentation messages.",
-        stateless : false,
-        protocol : "1",
-        src : local.anywhere,
-        src_type : "CIDR_BLOCK",
-        src_port_min : null,
-        src_port_max : null,
-        dst_port_min : 1521,
-        dst_port_max : 1522,
-        icmp_code : 3,
-        icmp_type : 4
-      }},
-      {for c in var.onprem_cidrs : "ssh-on-prem-ingress-rule-${index(var.onprem_cidrs,c)}" => {
-        is_create : true,
-        description : "SSH ingress rule for on-premises CIDR ${c}",
-        stateless : false,
-        protocol : "6",
-        src : c,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : 22,
-        dst_port_max : 22,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-      }}
-    ),
+    ingress_rules : {},
     egress_rules : {
       osn-services-egress-rule : {
         is_create : true,
@@ -461,5 +455,5 @@ module "lz_exacs_nsgs" {
   depends_on     = [module.lz_exacs_vcns]
   source         = "../modules/network/security"
   compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
-  nsgs           = merge(local.exacs_bastions_nsgs, local.exacs_lbr_nsgs, local.exacs_clt_nsgs, local.exacs_bkp_nsgs)
+  nsgs           = merge(local.exacs_bastions_nsgs, local.exacs_lbr_nsgs, local.exacs_app_nsgs, local.exacs_clt_nsgs, local.exacs_bkp_nsgs)
 }

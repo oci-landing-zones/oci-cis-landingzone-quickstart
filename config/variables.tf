@@ -223,10 +223,10 @@ variable "exacs_vcn_names" {
   }
 }
 
-variable "deploy_app_layer_to_exacs_vcns" {
+variable "deploy_app_tier_to_exacs_vcns" {
   type        = bool
   default     = false
-  description = "Determines if the ExaCS VCN deployed will have a Web and App Subnet to support an application deployment"
+  description = "Determines if the ExaCS VCN deployed will have a Web and App Subnet to support application deployments."
 }
 
 variable "exacs_no_internet_access" {

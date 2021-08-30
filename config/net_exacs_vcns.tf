@@ -7,12 +7,12 @@ locals {
   exaweb_subnet_prefix = "web"
   exaapp_subnet_prefix = "app"
 
-  exacs_subnet_names = var.deploy_app_layer_to_exacs_vcns == true ? [local.client_subnet_prefix, local.backup_subnet_prefix, local.exaweb_subnet_prefix, local.exaapp_subnet_prefix] : [local.client_subnet_prefix, local.backup_subnet_prefix]
+  exacs_subnet_names = var.deploy_app_tier_to_exacs_vcns == true ? [local.client_subnet_prefix, local.backup_subnet_prefix, local.exaweb_subnet_prefix, local.exaapp_subnet_prefix] : [local.client_subnet_prefix, local.backup_subnet_prefix]
 
   exacs_vcns_map = { for v in var.exacs_vcn_cidrs : "vcn${index(var.exacs_vcn_cidrs, v)}" => {
-    name = "${var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]}-vcn" 
+    #name = "${var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]}-vcn" 
 
-    # name = length(var.exacs_vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) > 0 ? join("", regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) : var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]) : "${var.service_label}-${index(var.exacs_vcn_cidrs, v)}-vcn"
+    name = length(var.exacs_vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) > 0 ? join("", regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) : var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]) : "${var.service_label}-${index(var.exacs_vcn_cidrs, v)}-vcn"
     cidr = v
     }
   }
@@ -22,7 +22,7 @@ locals {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = vcn.cidr
     dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("", regexall("[a-zA-Z0-9]+", vcn.name)), 0, 11)}${local.region_key}" : "${substr(vcn.name, 0, 11)}${local.region_key}"
-    is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : ((!var.no_internet_access == true && !var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns) ? true : false)
+    is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : ((!var.no_internet_access == true && !var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns) ? true : false)
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
     block_nat_traffic = false
     defined_tags      = null
@@ -31,7 +31,7 @@ locals {
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
       dns_label       = s
-      private         = length(var.dmz_vcn_cidr) > 0 ? false : ((!var.no_internet_access == true && !var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns) ? true : false)
+      private         = length(var.dmz_vcn_cidr) > 0 ? false : ((!var.no_internet_access == true && !var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns) ? true : false)
       dhcp_options_id = null
       }}
     }}
@@ -44,14 +44,14 @@ locals {
     subnet_id      = subnet.id
     defined_tags   = null
     route_rules = concat([{
-      is_create         = length(var.dmz_vcn_cidr) > 0 || var.no_internet_access || (var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns) ? true : false
+      is_create         = length(var.dmz_vcn_cidr) > 0 || var.no_internet_access || (var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns) ? true : false
       destination       = local.valid_service_gateway_cidrs[0]
       destination_type  = "SERVICE_CIDR_BLOCK"
       network_entity_id = module.lz_exacs_vcns.service_gateways[subnet.vcn_id].id
       description       = "All OSN Sercices to SGW"
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access &&  (!var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns)? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access &&  (!var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns)? true : false
         destination       = local.valid_service_gateway_cidrs[1]
         destination_type  = "SERVICE_CIDR_BLOCK"
         network_entity_id = module.lz_exacs_vcns.service_gateways[subnet.vcn_id].id
@@ -65,7 +65,7 @@ locals {
         description       = "All traffic goes to the DMZ"
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && (!var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns) ? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && (!var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns) ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? module.lz_exacs_vcns.internet_gateways[subnet.vcn_id].id : null
@@ -118,7 +118,7 @@ locals {
       description       = "${local.valid_service_gateway_cidrs[0]} traffic to SGW"
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && !var.exacs_no_internet_access && var.deploy_app_layer_to_exacs_vcns ? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && !var.exacs_no_internet_access && var.deploy_app_tier_to_exacs_vcns ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? module.lz_exacs_vcns.nat_gateways[subnet.vcn_id].id : null

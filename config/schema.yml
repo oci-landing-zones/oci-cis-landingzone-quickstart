@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zone Quick Start Config"
-stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Landing Zone is the combination of CIS Benchmark for OCI with OCI architecture best practices."
+title: "OCI Secure Landing Zone Quick Start Configuration"
+stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foudantions Benchmark for OCI with OCI architecture best practices."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -44,7 +44,30 @@ variableGroups:
       - "is_vcn_onprem_connected"
       - "existing_drg_id"
       - "onprem_cidrs"
+  
+  - title: "Advanced Databases"
+    variables: 
+      - "deploy_exacs"
+      - "deploy_adbd"
 
+  - title: "Exadata Cloud Service"
+    variables:
+      - "exacs_vcn_cidrs"
+      - "override_exacs_vcn_names"
+      - "exacs_vcn_names"
+      - "deploy_exainfra_cmp"
+      - "deploy_app_tier_to_exacs_vcns"
+      - "exacs_no_internet_access"  
+    visible: deploy_exacs
+    
+  - title: "Autonomous Database - Dedicated (ADB-D)"
+    variables:
+      - "adbd_vcn_cidrs"
+      - "override_adbd_vcn_names"
+      - "adbd_vcn_names"
+      - "deploy_adbd_infra_cmp"
+    visible: deploy_adbd  
+  
   - title: "Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -322,8 +345,8 @@ variables:
   
   no_internet_access:
     type: boolean
-    title: "No Internet Access?"
-    description: "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to 'Connect Landing Zone to on-premises network?'."
+    title: "Block Internet Access?"
+    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to 'Connect Landing Zone to on-premises network?'."
     default: false
     visible: net_advanced_options
 
@@ -374,6 +397,121 @@ variables:
       and:
         - net_advanced_options
         - hub_spoke_architecture
+
+  deploy_exacs:
+    type: boolean
+    title: "Deploy infrastructure for Exadata Cloud Service?"
+    description: "Check if you intend to deploy Exadata Cloud service. Configure networking and infrastructure compartment for Exadata."
+    default: false
+
+  deploy_adbd:
+    type: boolean
+    title: "Deploy infrastructure for ADB-D (Autonomous Database - Dedicated)?"
+    description: "Check if you intend to deploy ADB-D Cloud service. Configure networking and infrastructure compartment for ADB-D."
+    default: false  
+
+  exacs_vcn_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    required: true
+    maxItems: 9
+    minItems: 1
+    title: "Exadata VCNs CIDR blocks list."
+    description: "CIDR blocks for the Exadata VCNs in CIDR notation."
+    default: []
+    visible: deploy_exacs
+
+  override_exacs_vcn_names:
+    type: boolean
+    title: "Override Exadata VCNs default names?"
+    description: "All Exadata VCN names are defaulted to <service-label>-<index>-exa-vcn. Check to override."
+    default: false
+    visible: deploy_exacs
+
+  exacs_vcn_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 9
+    minItems: 1
+    title: "List of custom names to be given to the Exadata VCNs."
+    description: "The Exadata VCNs custom names, overriding the default Exadata VCNs names. There must be one name corresponding to each CIDR block provided in 'Exadata VCNs CIDR blocks list.', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    required: false
+    default: []
+    visible: 
+      and:
+        - deploy_exacs
+        - override_exacs_vcn_names
+
+  deploy_exainfra_cmp:
+    type: boolean
+    title: "Create compartment for Exadata infrastructure?"
+    description: "Whether a compartment for Exadata infrastructure should be created. In unchecked, Exadata infrastructure should be created in the database compartment."
+    default: true
+    visible: deploy_exacs
+    
+  deploy_app_tier_to_exacs_vcns:
+    type: boolean
+    title: "Create application tier networking in Exadata VCNs?"
+    description: "Whether the Exadata VCNs deployed will have a Web and App Subnet to support application deployments."
+    default: false
+    visible: deploy_exacs
+
+  exacs_no_internet_access:
+    type: boolean
+    title: "Block Internet Access for Exadata VCNs?"
+    description: "Determines if the Exadata VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created and attached to the app tier (not to Exadata tier) for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created."
+    default: true
+    visible: 
+      and:
+        - deploy_exacs
+        - deploy_app_tier_to_exacs_vcns
+
+  adbd_vcn_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    required: true
+    maxItems: 9
+    minItems: 1
+    title: "ADB-D VCNs CIDR blocks list."
+    description: "CIDR blocks for the ADB-D (Autonomous Database - Dedicated) VCNs in CIDR notation."
+    default: []
+    visible: deploy_adbd
+
+  override_adbd_vcn_names:
+    type: boolean
+    title: "Override ADB-D VCNs default names?"
+    description: "All ADB-D VCN names are defaulted to <service-label>-<index>-adbd-vcn. Check to override."
+    default: false
+    visible: deploy_adbd
+
+  adbd_vcn_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 9
+    minItems: 1
+    title: "List of custom names to be given to the ADB-D VCNs."
+    description: "The ADB-D VCNs custom names, overriding the default ADB-D VCNs names. There must be one name corresponding to each CIDR block provided in 'ADB-D VCNs CIDR blocks list.', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    required: false
+    default: []
+    visible: 
+      and:
+        - deploy_adbd
+        - override_adbd_vcn_names
+
+  deploy_abdd_infra_cmp:
+    type: boolean
+    title: "Create compartment for ADB-D Extadata infrastructure?"
+    description: "Whether a compartment for ADB-D Exadata infrastructure should be created. In unchecked, ADB-D Exadata infrastructure is created in the database compartment."
+    default: true
+    visible: deploy_adbd
 
   network_admin_email_endpoints:
     type: array

@@ -86,6 +86,10 @@ variable "existing_announcement_reader_group_name" {
   type    = string
   default = ""
 }
+variable "existing_exainfra_admin_group_name" {
+  type    = string
+  default = ""
+}
 
 # Networking
 variable "no_internet_access" {
@@ -216,23 +220,54 @@ variable "exacs_vcn_cidrs" {
 variable "exacs_vcn_names" {
   type        = list(string)
   default     = []
-  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-vcn). The list length and elements order must match exacs_vcn_cidrs'."
+  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-exa-vcn). The list length and elements order must match exacs_vcn_cidrs'."
   validation {
     condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
-    error_message = "Validation failed for vcn_names: maximum of nine allowed."
+    error_message = "Validation failed for exacs_vcn_names: maximum of nine allowed."
   }
 }
 
+variable "deploy_exainfra_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether a compartment for Exadata infrastructure should be created. In false, Exadaya infrastructure should be created in the database compartment."
+}
 variable "deploy_app_tier_to_exacs_vcns" {
   type        = bool
   default     = false
-  description = "Determines if the ExaCS VCN deployed will have a Web and App Subnet to support application deployments."
+  description = "Whether the Exadata VCNs deployed will have a Web and App Subnet to support application deployments."
 }
 
 variable "exacs_no_internet_access" {
   type        = bool
   default     = true
-  description = "Determines if the ExaCS VCN deployed will have an Internet Gateway and NAT Gateway, this only ExaCS VCNs with app layer selected."
+  description = "Determines if the ExaCS VCN deployed will have an Internet Gateway and NAT Gateway. This only applies when an app tier is deployed in the ExaCS VCNs."
+}
+
+variable "adbd_vcn_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks for the ADB-D VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
+  validation {
+    condition     = length(var.adbd_vcn_cidrs) == 0 || (length(var.adbd_vcn_cidrs) < 10 && length(var.adbd_vcn_cidrs) > 0 && length([for c in var.adbd_vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.adbd_vcn_cidrs))
+    error_message = "Validation failed for adbd_vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
+  }
+}
+
+variable "adbd_vcn_names" {
+  type        = list(string)
+  default     = []
+  description = "List of custom names to be given to the ADB-D Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-adbd-vcn). The list length and elements order must match adbd_vcn_cidrs'."
+  validation {
+    condition     = length(var.adbd_vcn_names) == 0 || length(var.adbd_vcn_names) < 10
+    error_message = "Validation failed for adbd_vcn_names: maximum of nine allowed."
+  }
+}
+
+variable "deploy_adbd_infra_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether a compartment for ADB-D infrastructure should be created. In false, ADB-D infrastructure should be created in the database compartment."
 }
 
 variable "network_admin_email_endpoints" {

@@ -74,6 +74,15 @@ data "oci_identity_groups" "existing_announcement_reader_group" {
     values = [var.existing_announcement_reader_group_name]
   }
 }
+
+data "oci_identity_groups" "existing_exainfra_admin_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_exainfra_admin_group_name]
+  }
+}
+
 data "oci_cloud_guard_cloud_guard_configuration" "this" {
   compartment_id = var.tenancy_ocid
 }

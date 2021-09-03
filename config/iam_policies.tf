@@ -4,7 +4,7 @@
 ### This Terraform configuration provisions Landing Zone policies.
 
 locals {
-  // Permissions to be created always at the root compartment
+  // IAM admin permissions to be created always at the root compartment
   iam_root_permissions = ["Allow group ${local.iam_admin_group_name} to inspect users in tenancy",
     "Allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
     "Allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${local.cred_admin_group_name}'}",
@@ -17,7 +17,7 @@ locals {
     "Allow group ${local.iam_admin_group_name} to read audit-events in tenancy",
   "Allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
 
-  // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
+  // IAM admin permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   iam_enccmp_permissions = ["Allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
     "Allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}",
     "Allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
@@ -26,14 +26,14 @@ locals {
     "Allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_scope}",
   "Allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_scope}"]
 
-  // Permissions to be created always at the root compartment
+  // Security admin permissions to be created always at the root compartment
   security_root_permissions = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
     "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
     "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
     "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
   "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
 
-  // Permissions to be created always at the enclosing compartment level, which *can* be the root compartment
+  // Security admin permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
     "Allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
     "Allow group ${local.security_admin_group_name} to manage repos in ${local.policy_scope}",
@@ -42,7 +42,8 @@ locals {
     "Allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_scope}",
   "Allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"]
 
-  security_cmp_permissions = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
+  ## Security admin permissions 
+  security_permissions = ["Allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage keys in compartment ${local.security_compartment_name}",
@@ -61,7 +62,117 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage orm-stacks in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment_name}",
     "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment_name}",
-  "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment_name}"]
+    "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment_name}"]
+
+  ## Network admin permissions
+  network_permissions = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage virtual-network-family in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage dns in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage load-balancers in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage orm-stacks in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage orm-jobs in compartment ${local.network_compartment_name}",
+        "Allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment_name}",
+        "Allow Group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment_name}",
+        "Allow Group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}"]  
+
+  ## Database admin permissions
+  database_permissions = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use subnets in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use vnics in compartment ${local.network_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use subnets in compartment ${local.network_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
+        "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}"] 
+
+  ## AppDev admin permissions
+  appdev_permissions = ["Allow group ${local.appdev_admin_group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage functions-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage ons-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage streams in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage cluster-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage logs in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage instance-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to use subnets in compartment ${local.network_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to use vnics in compartment ${local.network_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to use load-balancers in compartment ${local.network_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read autonomous-database-family in compartment ${local.database_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
+        "Allow group ${local.appdev_admin_group_name} to manage instance-images in compartment ${local.security_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_scope}",
+        "Allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}",
+        "Allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read audit-events in compartment ${local.appdev_compartment_name}",
+        "Allow group ${local.appdev_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}"] 
+
+    ## Exadata admin permissions
+    exainfra_permissions_on_exainfra_cmp = ["Allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}"]
+    exainfra_permissions_on_database_cmp = ["Allow group ${local.database_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.database_compartment_name}"]
+
+    default_policies = { 
+      (local.network_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
+        statements = local.network_permissions
+      },
+      (local.security_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
+        statements     = concat(local.security_enccmp_permissions, local.security_permissions)
+      },
+      (local.database_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
+        statements = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == false ? concat(local.database_permissions,local.exainfra_permissions_on_database_cmp) : local.database_permissions
+      },
+      (local.appdev_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
+        statements = local.appdev_permissions
+      },
+      (local.iam_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
+        statements     = local.iam_enccmp_permissions
+      }
+    }
+
+    exainfra_policy = {
+      (local.exainfra_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment_name}."
+        statements  = local.exainfra_permissions_on_exainfra_cmp
+      }
+    }
+  
+    policies = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_policies, local.exainfra_policy) : local.default_policies
 }
 
 module "lz_root_policies" {
@@ -116,7 +227,7 @@ module "lz_root_policies" {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
       statements = ["Allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
-      "Allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
+                    "Allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
     },
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
@@ -124,7 +235,7 @@ module "lz_root_policies" {
       statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
         "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
         "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
-      "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
+        "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
     }
   } : {}
 }
@@ -133,90 +244,5 @@ module "lz_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
   depends_on = [module.lz_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
-  policies = {
-    (local.network_admin_policy_name) = {
-      compartment_id = local.parent_compartment_id
-      description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
-      statements = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage virtual-network-family in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage dns in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage load-balancers in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage orm-stacks in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage orm-jobs in compartment ${local.network_compartment_name}",
-        "Allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment_name}",
-        "Allow Group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment_name}",
-      "Allow Group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}"]
-    },
-    (local.security_admin_policy_name) = {
-      compartment_id = local.parent_compartment_id
-      description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
-      statements     = concat(local.security_enccmp_permissions, local.security_cmp_permissions)
-    },
-    (local.database_admin_policy_name) = {
-      compartment_id = local.parent_compartment_id
-      description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
-      statements = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use subnets in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use vnics in compartment ${local.network_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use subnets in compartment ${local.network_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
-        "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}"]
-    },
-    (local.appdev_admin_policy_name) = {
-      compartment_id = local.parent_compartment_id
-      description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
-      statements = ["Allow group ${local.appdev_admin_group_name} to read all-resources in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage functions-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage api-gateway-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage ons-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage streams in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage cluster-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage logs in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage instance-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to use subnets in compartment ${local.network_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to use network-security-groups in compartment ${local.network_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to use vnics in compartment ${local.network_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to use load-balancers in compartment ${local.network_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read autonomous-database-family in compartment ${local.database_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read vaults in compartment ${local.security_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to inspect keys in compartment ${local.security_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
-        "Allow group ${local.appdev_admin_group_name} to manage instance-images in compartment ${local.security_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_scope}",
-        "Allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}",
-        "Allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment_name}",
-        "Allow group ${local.appdev_admin_group_name} to read audit-events in compartment ${local.appdev_compartment_name}",
-      "Allow group ${local.appdev_admin_group_name} to read vss-family in compartment ${local.security_compartment_name}"]
-    },
-    (local.iam_admin_policy_name) = {
-      compartment_id = local.parent_compartment_id
-      description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
-      statements     = local.iam_enccmp_permissions
-    }
-  }
+  policies = local.policies
 }

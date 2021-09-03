@@ -16,10 +16,8 @@ module "lz_top_compartment" {
   }
 }
 
-module "lz_compartments" {
-  source    = "../modules/iam/iam-compartment"
-  providers = { oci = oci.home }
-  compartments = {
+locals {
+  default_compartments = {
     (local.security_compartment_name) = {
       parent_id     = local.parent_compartment_id
       description   = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
@@ -41,4 +39,20 @@ module "lz_compartments" {
       enable_delete = local.enable_cmp_delete
     }
   }
+
+  exainfra_compartment = {
+    (local.exainfra_compartment_name) = {
+      parent_id     = local.parent_compartment_id
+      description   = "Landing Zone compartment for Exadata infrastructure."
+      enable_delete = local.enable_cmp_delete
+    }
+  }
+
+  compartments = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_compartments, local.exainfra_compartment) : local.default_compartments  
+
+}
+module "lz_compartments" {
+  source    = "../modules/iam/iam-compartment"
+  providers = { oci = oci.home }
+  compartments = local.compartments
 }

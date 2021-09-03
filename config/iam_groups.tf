@@ -3,11 +3,8 @@
 
 ### This Terraform configuration provisions Landing Zone groups.
 
-module "lz_groups" {
-  source       = "../modules/iam/iam-group"
-  providers    = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
-  groups = var.use_existing_groups == false ? {
+locals {
+  default_groups = {
     (local.network_admin_group_name) = {
       description  = "Landing Zone group for managing networking in compartment ${local.network_compartment_name}."
       user_ids     = []
@@ -48,5 +45,19 @@ module "lz_groups" {
       user_ids     = []
       defined_tags = null
     },
-  } : {}
+  }
+  exainfra_group = {
+    (local.exainfra_admin_group_name) = {
+      description  = "Landing Zone group for managing Exadata infrastructure in the tenancy."
+      user_ids     = []
+      defined_tags = null
+    }
+  }
+  groups = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_groups,local.exainfra_group) : local.default_groups
+}
+module "lz_groups" {
+  source       = "../modules/iam/iam-group"
+  providers    = { oci = oci.home }
+  tenancy_ocid = var.tenancy_ocid
+  groups = var.use_existing_groups == false ? local.groups : {}
 }

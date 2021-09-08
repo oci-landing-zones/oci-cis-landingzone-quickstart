@@ -104,8 +104,6 @@ locals {
     cidr = var.dmz_vcn_cidr
   } : {}
 
-  is_exacs_internet_connected = var.deploy_app_tier_to_exacs_vcns && !var.exacs_no_internet_access
-
   ### Object Storage
   oss_key_name = "${var.service_label}-oss-key"
   bucket_name  = "${var.service_label}-bucket"

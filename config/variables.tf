@@ -242,17 +242,6 @@ variable "deploy_exainfra_cmp" {
   default     = true
   description = "Whether a compartment for Exadata infrastructure should be created. In false, Exadaya infrastructure should be created in the database compartment."
 }
-variable "deploy_app_tier_to_exacs_vcns" {
-  type        = bool
-  default     = false
-  description = "Whether the Exadata VCNs deployed will have a Web and App Subnet to support application deployments."
-}
-
-variable "exacs_no_internet_access" {
-  type        = bool
-  default     = true
-  description = "Determines if the ExaCS VCN deployed will have an Internet Gateway and NAT Gateway. This only applies when an app tier is deployed in the ExaCS VCNs."
-}
 
 variable "adbd_vcn_cidrs" {
   type        = list(string)

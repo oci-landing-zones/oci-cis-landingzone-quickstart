@@ -56,8 +56,6 @@ variableGroups:
       - "override_exacs_vcn_names"
       - "exacs_vcn_names"
       - "deploy_exainfra_cmp"
-      - "deploy_app_tier_to_exacs_vcns"
-      - "exacs_no_internet_access"  
     visible: deploy_exacs
     
   - title: "Autonomous Database - Dedicated (ADB-D)"
@@ -453,23 +451,6 @@ variables:
     default: true
     visible: deploy_exacs
     
-  deploy_app_tier_to_exacs_vcns:
-    type: boolean
-    title: "Create application tier networking in Exadata VCNs?"
-    description: "Whether the Exadata VCNs deployed will have a Web and App Subnet to support application deployments."
-    default: false
-    visible: deploy_exacs
-
-  exacs_no_internet_access:
-    type: boolean
-    title: "Block Internet Access for Exadata VCNs?"
-    description: "Determines if the Exadata VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created and attached to the app tier (not to Exadata tier) for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created."
-    default: true
-    visible: 
-      and:
-        - deploy_exacs
-        - deploy_app_tier_to_exacs_vcns
-
   adbd_vcn_cidrs:
     type: array
     items:

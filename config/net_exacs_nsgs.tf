@@ -6,9 +6,9 @@
 locals {
   exacs_bastions_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-bastion-nsg" => {
     vcn_id : v.id,
-    ingress_rules : merge({
+    ingress_rules : merge(/* {
       ssh-dmz-ingress-rule : {
-        is_create : length(var.dmz_vcn_cidr) > 0,
+        is_create : true, #length(var.dmz_vcn_cidr) > 0,
         description : "Allows SSH connections from hosts in DMZ VCN.",
         stateless : false,
         protocol : "6",
@@ -20,10 +20,10 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
-      }}, 
-      { for cidr in var.onprem_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-        is_create : (var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0),
-        description : "Allows SSH connections from on-premises CIDR ${cidr}.",
+      }}, */ 
+      { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+        is_create : length(var.dmz_vcn_cidr) == 0,
+        description : "Allows SSH connections from on-premises ${cidr} CIDR range.",
         stateless : false,
         protocol : "6",
         src : cidr,
@@ -36,7 +36,7 @@ locals {
         icmp_code : null
       }},
       { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
-        is_create : !var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
+        is_create : true, #length(var.dmz_vcn_cidr) == 0 && local.is_exacs_internet_connected,
         description : "Allows SSH connections from ${cidr} CIDR range.",
         protocol : "6",
         stateless : false,
@@ -52,7 +52,7 @@ locals {
     ),
     egress_rules : {
       clt-egress_rule : {
-        is_create : length(var.dmz_vcn_cidr) == 0,
+        is_create : true, #length(var.dmz_vcn_cidr) == 0,
         description : "Allows SSH connections to hosts in ${k}-clt-nsg NSG.",
         stateless : false,
         protocol : "6",
@@ -65,8 +65,22 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
+      app-egress_rule : {
+        is_create : true, #length(var.dmz_vcn_cidr) == 0,
+        description : "Allows SSH connections to hosts in ${k}-app-nsg NSG.",
+        stateless : false,
+        protocol : "6",
+        dst      = "${k}-app-nsg",
+        dst_type = "NSG_NAME",
+        dst_port_min : 22,
+        dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
       osn-services-egress-rule : {
-        is_create : length(var.dmz_vcn_cidr) == 0,
+        is_create : true, #length(var.dmz_vcn_cidr) == 0,
         description : "Allows access to ${local.valid_service_gateway_cidrs[0]}.",
         stateless : false,
         protocol : "6",
@@ -80,13 +94,13 @@ locals {
         icmp_code : null
       }
     }
-  } if var.deploy_app_tier_to_exacs_vcns == true }
+  } if local.is_exacs_internet_connected == true && length(var.dmz_vcn_cidr) == 0 }
 
   exacs_lbr_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-lbr-nsg" => {
     vcn_id : v.id,
     ingress_rules : merge({
-      ssh-ingress-rule : {
-        is_create : length(var.dmz_vcn_cidr) == 0 && var.deploy_app_tier_to_exacs_vcns == true,
+      /* ssh-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) == 0, #&& var.deploy_app_tier_to_exacs_vcns == true,
         description : "Allows SSH connections from hosts in ${k}-bastion-nsg NSG.",
         stateless : false,
         protocol : "6",
@@ -98,8 +112,8 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
-      },
-      dmz-services-ingress-rule : {
+      }, */
+      dmz-http-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
         description : "Allows HTTPS connections from hosts in DMZ VCN.",
         stateless : false,
@@ -114,7 +128,7 @@ locals {
         icmp_code : null
       }},
       { for cidr in var.onprem_cidrs : "http-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-        is_create : var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
+        is_create : true, #length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
         description : "Allows HTTPS connections from on-premises ${cidr} CIDR range.",
         stateless : false,
         protocol : "6",
@@ -128,7 +142,7 @@ locals {
         icmp_code : null
       }},
       { for cidr in var.public_src_lbr_cidrs : "http-public-ingress-rule-${index(var.public_src_lbr_cidrs, cidr)}" => {
-        is_create : !var.no_internet_access && length(var.dmz_vcn_cidr) == 0 && length(var.public_src_lbr_cidrs) > 0,
+        is_create : local.is_exacs_internet_connected == true,
         description : "Allows HTTPS connections from ${cidr} CIDR range.",
         stateless : false,
         protocol : "6",
@@ -176,9 +190,9 @@ locals {
 
   exacs_app_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-app-nsg" => {
     vcn_id : v.id,
-    ingress_rules : {
+    ingress_rules : merge({
       ssh-bastion-nsg-ingress-rule : {
-        is_create : length(var.dmz_vcn_cidr) == 0,
+        is_create : local.is_exacs_internet_connected == true && length(var.dmz_vcn_cidr) == 0,
         description : "Allows SSH connections from hosts in ${k}-bastion-nsg NSG.",
         stateless : false,
         protocol : "6",
@@ -218,8 +232,22 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
+      }},
+      { for c in var.onprem_src_ssh_cidrs : "ssh-on-prem-ingress-rule-${index(var.onprem_src_ssh_cidrs,c)}" => {
+        is_create : length(var.dmz_vcn_cidr) == 0,
+        description : "Allows SSH connections from on-premises hosts included in ${c} CIDR range.",
+        stateless : false,
+        protocol : "6",
+        src : c,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 22,
+        dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
       }
-    },
+    }),
     egress_rules : {
       sqlnet-clt-nsg-egress-rule : {
         is_create : true,
@@ -270,7 +298,7 @@ locals {
     vcn_id : v.id,
     ingress_rules : merge({
       ssh-bastion-nsg-ingress-rule : {
-        is_create : var.deploy_app_tier_to_exacs_vcns == true && var.dmz_vcn_cidr == "",
+        is_create : var.deploy_app_tier_to_exacs_vcns == true && length(var.dmz_vcn_cidr) == 0,
         description : "Allows for SSH connections from hosts in ${k}-bastion-nsg NSG.",
         stateless : false,
         protocol : "6",
@@ -358,7 +386,7 @@ locals {
         description : "Allows Oracle Notification Services (ONS) communication from hosts in ${k}-clt-nsg NSG for Fast Application Notifications (FAN).",
         stateless : false,
         protocol : "6",
-        src : "${k}-clt-nsg" #module.lz_exacs_vcns.subnets[replace(k,"-vcn","-${local.client_subnet_prefix}-snt")].cidr_block,
+        src : "${k}-clt-nsg", 
         src_type : "NSG_NAME",
         dst_port_min : 6200,
         dst_port_max : 6200,
@@ -372,7 +400,7 @@ locals {
         description : "Allows SQLNet connections from hosts in ${k}-clt-nsg NSG.",
         stateless : false,
         protocol : "6",
-        src : "${k}-clt-nsg" #module.lz_exacs_vcns.subnets[replace(k,"-vcn","-${local.client_subnet_prefix}-snt")].cidr_block,
+        src : "${k}-clt-nsg",
         src_type : "NSG_NAME",
         dst_port_min : 1521,
         dst_port_max : 1522,
@@ -386,7 +414,7 @@ locals {
         description : "Allows SSH connections from hosts in ${k}-clt-nsg NSG.",
         stateless : false,
         protocol : "6",
-        src : "${k}-clt-nsg" #module.lz_exacs_vcns.subnets[replace(k,"-vcn","-${local.client_subnet_prefix}-snt")].cidr_block,
+        src : "${k}-clt-nsg", #module.lz_exacs_vcns.subnets[replace(k,"-vcn","-${local.client_subnet_prefix}-snt")].cidr_block,
         src_type : "NSG_NAME",
         dst_port_min : 22,
         dst_port_max : 22,
@@ -395,8 +423,8 @@ locals {
         icmp_type : null,
         icmp_code : null
       }},
-      { for c in var.onprem_cidrs : "ssh-on-prem-ingress-rule-${index(var.onprem_cidrs,c)}" => {
-        is_create : var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
+      { for c in var.onprem_src_ssh_cidrs : "ssh-on-prem-ingress-rule-${index(var.onprem_src_ssh_cidrs,c)}" => {
+        is_create : length(var.dmz_vcn_cidr) == 0,# && length(var.onprem_cidrs) > 0,
         description : "Allows SSH connections from on-premises hosts included in ${c} CIDR range.",
         stateless : false,
         protocol : "6",
@@ -410,7 +438,7 @@ locals {
         icmp_code : null
       }},
       { for c in var.onprem_cidrs : "sqlnet-on-prem-ingress-rule-${index(var.onprem_cidrs,c)}" => {
-        is_create : true #var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
+        is_create : true #length(var.dmz_vcn_cidr) == 0, var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
         description : "Allows SQLNet connections from on-premises hosts included in ${c} CIDR range.",
         stateless : false,
         protocol : "6",
@@ -424,7 +452,7 @@ locals {
         icmp_code : null
       }},
       { for k,v in module.lz_vcn_spokes.vcns : "sqlnet-spoke-${k}-ingress-rule" => {
-        is_create : length(var.dmz_vcn_cidr) == 0 && var.hub_spoke_architecture == true,
+        is_create : var.hub_spoke_architecture == true, #&& length(var.dmz_vcn_cidr) == 0,
         description : "Allows SQLNet connections from hosts in VCN ${k} (${v.cidr_block} CIDR range).",
         stateless : false,
         protocol : "6",
@@ -438,7 +466,7 @@ locals {
         icmp_code : null
       }},
       { for k,v in module.lz_vcn_spokes.vcns : "ons-spoke-${k}-ingress-rule" => {
-        is_create : length(var.dmz_vcn_cidr) == 0 && var.hub_spoke_architecture == true,
+        is_create : var.hub_spoke_architecture == true, #&& length(var.dmz_vcn_cidr) == 0,
         description : "Allows Oracle Notification Services (ONS) communication from hosts in VCN ${k} (${v.cidr_block} CIDR range) for Fast Application Notifications (FAN).",
         stateless : false,
         protocol : "6",

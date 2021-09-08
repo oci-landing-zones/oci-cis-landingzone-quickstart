@@ -91,6 +91,11 @@ variable "existing_exainfra_admin_group_name" {
   default = ""
 }
 
+variable "existing_adbexainfra_admin_group_name" {
+  type    = string
+  default = ""
+}
+
 # Networking
 variable "no_internet_access" {
   default     = false

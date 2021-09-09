@@ -18,7 +18,7 @@ locals {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
     cidr              = vcn.cidr
     dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("", regexall("[a-zA-Z0-9]+", vcn.name)), 0, 11)}${local.region_key}" : "${substr(vcn.name, 0, 11)}${local.region_key}"
-    is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : (!var.no_internet_access == true ? true : false)
+    is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : (! var.no_internet_access == true ? true : false)
     is_attach_drg     = length(var.onprem_cidrs) > 0 || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
     block_nat_traffic = false
     defined_tags      = null
@@ -40,7 +40,7 @@ locals {
   # Output from VCNs
   all_lz_spoke_vcn_ids = module.lz_vcn_spokes.vcns
   all_lz_spoke_subnets = module.lz_vcn_spokes.subnets
-  
+
   ### Route Tables ###
   ## Web Subnet Route Tables
   web_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtable", "vcn-", "") => {
@@ -56,7 +56,7 @@ locals {
       description       = "Traffic destined to ${local.valid_service_gateway_cidrs[0]} goes to Service Gateway."
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && ! var.no_internet_access ? true : false
         destination       = local.valid_service_gateway_cidrs[1]
         destination_type  = "SERVICE_CIDR_BLOCK"
         network_entity_id = module.lz_vcn_spokes.service_gateways[subnet.vcn_id].id
@@ -70,10 +70,10 @@ locals {
         description       = "Traffic destined to ${local.anywhere} goes to Internet Gateway."
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && ! var.no_internet_access ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? module.lz_vcn_spokes.internet_gateways[subnet.vcn_id].id : null
+        network_entity_id = length(var.dmz_vcn_cidr) == 0 && ! var.no_internet_access ? module.lz_vcn_spokes.internet_gateways[subnet.vcn_id].id : null
         description       = "Traffic destined to ${local.anywhere} goes to Internet Gateway."
 
       }
@@ -93,7 +93,7 @@ locals {
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
         }
-      ]  
+      ]
     )
   } if length(regexall(".*-${local.spoke_subnet_names[0]}-*", key)) > 0 }
 
@@ -118,10 +118,10 @@ locals {
         description       = "Traffic destined to ${local.anywhere} goes to DRG."
       },
       {
-        is_create         = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? true : false
+        is_create         = length(var.dmz_vcn_cidr) == 0 && ! var.no_internet_access ? true : false
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access ? module.lz_vcn_spokes.nat_gateways[subnet.vcn_id].id : null
+        network_entity_id = length(var.dmz_vcn_cidr) == 0 && ! var.no_internet_access ? module.lz_vcn_spokes.nat_gateways[subnet.vcn_id].id : null
         description       = "Traffic destined to ${local.anywhere} goes to NAT Gateway."
 
       }
@@ -198,7 +198,7 @@ locals {
 
 module "lz_vcn_spokes" {
   source               = "../modules/network/vcn-basic"
-  depends_on           = [ null_resource.slow_down_vcn ]
+  depends_on           = [null_resource.slow_down_vcn]
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
@@ -215,8 +215,8 @@ module "lz_route_tables_spokes" {
 }
 
 resource "null_resource" "slow_down_vcn" {
-   depends_on = [ module.lz_compartments ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-   }
+  depends_on = [module.lz_compartments]
+  provisioner "local-exec" {
+    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
+  }
 }

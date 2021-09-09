@@ -238,7 +238,7 @@ locals {
         icmp_code : null
       }
     },
-    egress_rules : {
+    egress_rules : merge({
       db-egress-rule : {
         is_create : true,
         description : "Egress rule to ${k}-db-nsg for app to database access.",
@@ -266,9 +266,37 @@ locals {
         dst_port_max : 443,
         icmp_code : null,
         icmp_type : null
-      }
-    }
-  } }
+      }},
+      { for c in var.exacs_vcn_cidrs : "sqlnet-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+        is_create : var.hub_spoke_architecture == true,
+        description : "Allows SQLNet connections to Exadata Database service in ${c} CIDR range.",
+        stateless : false,
+        protocol : "6",
+        dst      = c,
+        dst_type = "CIDR_BLOCK",
+        src_port_min : null,
+        src_port_max : null,
+        dst_port_min : 1521,
+        dst_port_max : 1522,
+        icmp_code : null,
+        icmp_type : null
+      }},
+      { for c in var.exacs_vcn_cidrs : "ons-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+        is_create : var.hub_spoke_architecture == true,
+        description : "Allows Oracle Notification Services (ONS) communication to hosts in ${c} CIDR range for Fast Application Notifications (FAN).",
+        stateless : false,
+        protocol : "6",
+        dst      = c,
+        dst_type = "CIDR_BLOCK",
+        src_port_min : null,
+        src_port_max : null,
+        dst_port_min : 6200,
+        dst_port_max : 6200,
+        icmp_code : null,
+        icmp_type : null
+      }})
+    } 
+  }
 
   db_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-nsg" => {
     vcn_id = v.id

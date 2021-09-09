@@ -10,7 +10,7 @@ locals {
 
   ssh_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-ssh-egress-rule" => {
     is_create : true,
-    description : "SSH egress rule to ${k}.",
+    description : "Allows SSH connections to hosts in ${k} VCN (${v.cidr_block} CIDR range).",
     protocol : "6",
     stateless : false,
     dst : v.cidr_block,
@@ -23,9 +23,54 @@ locals {
     icmp_code : null
   } } : {}
 
+  ssh_dmz_to_exacs_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 && length(var.exacs_vcn_cidrs) > 0 ? { for k, v in module.lz_exacs_vcns.vcns : "ssh-exacs-${k}-egress-rule" => {
+    is_create : true,
+    description : "Allows SSH connections to hosts in Exadata ${k} VCN (${v.cidr_block} CIDR range).",
+    protocol : "6",
+    stateless : false,
+    dst : v.cidr_block,
+    dst_type : "CIDR_BLOCK",
+    dst_port_min : 22,
+    dst_port_max : 22,
+    src_port_min : null,
+    src_port_max : null,
+    icmp_type : null,
+    icmp_code : null
+  } } : {}
+
+  ons_dmz_to_exacs_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 && length(var.exacs_vcn_cidrs) > 0 ? { for k, v in module.lz_exacs_vcns.vcns : "ons-exacs-${k}-egress-rule" => {
+    is_create : true,
+    description : "Allows Oracle Notification Services (ONS) communication to hosts in Exadata ${k} VCN (${v.cidr_block} CIDR range) for Fast Application Notifications (FAN).",
+    protocol : "6",
+    stateless : false,
+    dst : v.cidr_block,
+    dst_type : "CIDR_BLOCK",
+    dst_port_min : 6200,
+    dst_port_max : 6200,
+    src_port_min : null,
+    src_port_max : null,
+    icmp_type : null,
+    icmp_code : null
+  } } : {}
+
+  sqlnet_dmz_to_exacs_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 && length(var.exacs_vcn_cidrs) > 0 ? { for k, v in module.lz_exacs_vcns.vcns : "sqlnet-exacs-${k}-egress-rule" => {
+    is_create : true,
+    description : "Allows SQLNet connections to hosts in Exadata ${k} VCN (${v.cidr_block} CIDR range).",
+    protocol : "6",
+    stateless : false,
+    dst : v.cidr_block,
+    dst_type : "CIDR_BLOCK",
+    dst_port_min : 1521,
+    dst_port_max : 1522,
+    src_port_min : null,
+    src_port_max : null,
+    icmp_type : null,
+    icmp_code : null
+  } } : {}
+
   http_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-http-egress-rule" => {
     is_create : true,
-    description : "HTTP egress rule to ${k}.",
+    description : "Allows HTTP connections to ${k} VCN (${v.cidr_block} CIDR range).",
     protocol : "6",
     stateless : false,
     dst : v.cidr_block,
@@ -98,7 +143,7 @@ module "lz_nsgs_dmz" {
 
           }
       }),
-      egress_rules : merge(local.ssh_dmz_to_spokes_nsg_egress_rules,
+      egress_rules : merge(local.ssh_dmz_to_spokes_nsg_egress_rules, local.ssh_dmz_to_exacs_nsg_egress_rules,
         { dmz-services-egress-rule : {
           is_create : true,
           description : "SSH egress rule to ${local.dmz_services_nsg_name}.",
@@ -175,7 +220,7 @@ module "lz_nsgs_dmz" {
           icmp_code : null
           }
       }),
-      egress_rules : merge(local.http_dmz_to_spokes_nsg_egress_rules,
+      egress_rules : merge(local.http_dmz_to_spokes_nsg_egress_rules, local.ons_dmz_to_exacs_nsg_egress_rules, local.sqlnet_dmz_to_exacs_nsg_egress_rules,
         { osn-services-egress-rule : {
           is_create : true,
           description : "OSN egress rule to ${local.valid_service_gateway_cidrs[0]}.",

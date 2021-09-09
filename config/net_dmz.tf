@@ -48,7 +48,7 @@ locals {
         destination       = local.anywhere
         destination_type  = "CIDR_BLOCK"
         network_entity_id = !var.no_internet_access ? module.lz_vcn_dmz.internet_gateways[subnet.vcn_id].id : null
-        description       = "Traffic destined to ${local.anywhere} goes to Internet Gateway."
+        description       = "Traffic destined to ${local.anywhere} CIDR range goes to Internet Gateway."
 
       }
       ],
@@ -57,7 +57,7 @@ locals {
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
-        description       = "Traffic destined to ${vcn.cidr_block} CIDR range goes to DRG."
+        description       = "Traffic destined to ${vcn_name} VCN (${vcn.cidr_block} CIDR range) goes to DRG."
         }
       ],
       [for cidr in var.onprem_cidrs : {
@@ -65,7 +65,7 @@ locals {
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
-        description       = "Traffic destined to ${cidr} goes to DRG."
+        description       = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
         }
       ],
       [for cidr in var.exacs_vcn_cidrs : {
@@ -73,7 +73,7 @@ locals {
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
-        description       = "Traffic destined to Exadata ${cidr} CIDR range goes to DRG."
+        description       = "Traffic destined to Exadata VCN (${cidr} CIDR range) goes to DRG."
         }
       ]
       )

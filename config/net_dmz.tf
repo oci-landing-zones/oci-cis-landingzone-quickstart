@@ -18,6 +18,39 @@ locals {
       dns_label       = local.dmz_subnet_names[s]
       private         = var.no_internet_access ? true : s == 0 || (local.is_mgmt_subnet_public && s == 2) ? false : true
       dhcp_options_id = null
+      security_lists = { icmp_list : {
+        compartment_id : null
+        is_create : true
+        ingress_rules : [{
+          protocol : "1"
+          stateless : false
+          description : null
+          src : local.anywhere
+          icmp_type : 3
+          icmp_code : 4
+          src_port_min : null
+          src_port_max : null
+          src_type : null
+          dst_port_min : null 
+          dst_port_max : null
+        }]
+        egress_rules : [{
+          protocol : "1"
+          stateless : false
+          description : null
+          dst : local.anywhere
+          dst_type : null
+          icmp_type : 3
+          icmp_code : 4
+          src_port_min : null 
+          src_port_max : null
+          dst_port_min : null
+          dst_port_max : null
+        }]
+        defined_tags  = null
+        freeform_tags = null
+        }
+      }
       }
     }
     }

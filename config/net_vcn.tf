@@ -29,10 +29,44 @@ locals {
       dns_label       = s
       private         = length(var.dmz_vcn_cidr) > 0 || var.no_internet_access ? true : (index(local.spoke_subnet_names, s) == 0 ? false : true)
       dhcp_options_id = null
+      security_lists = { icmp_security_list : {
+        compartment_id : null
+        is_create : true
+        ingress_rules : [{
+          protocol : "1"
+          stateless : false
+          description : null
+          src : local.anywhere
+          icmp_type : 3
+          icmp_code : 4
+          src_port_min : null
+          src_port_max : null
+          src_type : null
+          dst_port_min : null 
+          dst_port_max : null
+        }]
+        egress_rules : [{
+          protocol : "1"
+          stateless : false
+          description : null
+          dst : local.anywhere
+          dst_type : null
+          icmp_type : 3
+          icmp_code : 4
+          src_port_min : null 
+          src_port_max : null
+          dst_port_min : null
+          dst_port_max : null
+        }]
+        defined_tags  = null
+        freeform_tags = null
+        }
+      }
       }
     }
     }
   }
+
 
   # All VCNs
   all_lz_spoke_vcns = local.vcns
@@ -191,7 +225,7 @@ locals {
 
 module "lz_vcn_spokes" {
   source               = "../modules/network/vcn-basic"
-  depends_on           = [ null_resource.slow_down_vcn ]
+  depends_on           = [null_resource.slow_down_vcn]
   compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
@@ -208,8 +242,8 @@ module "lz_route_tables_spokes" {
 }
 
 resource "null_resource" "slow_down_vcn" {
-   depends_on = [ module.lz_compartments ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-   }
+  depends_on = [module.lz_compartments]
+  provisioner "local-exec" {
+    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
+  }
 }

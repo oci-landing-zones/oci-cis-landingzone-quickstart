@@ -25,3 +25,7 @@ output "all_services" {
   description = "All services"
   value       = data.oci_core_services.all_services
 }
+
+output "all_security_lists" {
+  value = local.security_lists
+}

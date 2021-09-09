@@ -265,7 +265,7 @@ variable "exacs_vcn_names" {
 variable "deploy_exainfra_cmp" {
   type        = bool
   default     = true
-  description = "Whether a compartment for Exadata infrastructure should be created. In false, Exadaya infrastructure should be created in the database compartment."
+  description = "Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment."
 }
 
 variable "adbd_vcn_cidr" {

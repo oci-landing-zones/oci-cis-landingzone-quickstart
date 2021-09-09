@@ -66,7 +66,7 @@ locals {
         is_create         = var.hub_spoke_architecture
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
-        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to ${vcn_name} VCN goes to DRG."
         } if subnet.vcn_id != vcn.id
       ]
@@ -82,11 +82,11 @@ locals {
     route_rules = concat([
       {
         is_create         = true
-        destination       = local.valid_service_gateway_cidrs[1]
+        destination       = local.valid_service_gateway_cidrs[0]
         destination_type  = "SERVICE_CIDR_BLOCK"
         network_entity_id = module.lz_exacs_vcns.service_gateways[subnet.vcn_id].id
-        description       = "Traffic destined to ${local.valid_service_gateway_cidrs[1]} goes to Service Gateway."
-      }],
+        description       = "Traffic destined to ${local.valid_service_gateway_cidrs[0]} goes to Service Gateway."
+      }]/* ,
       [for vcn_name, vcn in module.lz_vcn_dmz.vcns : {
         is_create         = length(var.dmz_vcn_cidr) > 0 
         destination       = vcn.cidr_block
@@ -108,7 +108,7 @@ locals {
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))
         description       = "Traffic destined to ${vcn_name} VCN goes to DRG."
         } if subnet.vcn_id != vcn.id
-      ]
+      ] */
     )
   } if length(regexall(".*-${local.backup_subnet_prefix}-*", key)) > 0 }
 

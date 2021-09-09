@@ -9,11 +9,13 @@ locals {
 
   exacs_vcns_map = { for v in var.exacs_vcn_cidrs : "vcn${index(var.exacs_vcn_cidrs, v)}" => {
     #name = "${var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]}-vcn" 
-
     name = length(var.exacs_vcn_names) > 0 ? (length(regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) > 0 ? join("", regexall("[a-zA-Z0-9-]+", var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)])) : var.exacs_vcn_names[index(var.exacs_vcn_cidrs, v)]) : "${var.service_label}-${index(var.exacs_vcn_cidrs, v)}-exa-vcn"
     cidr = v
+    subnets_cidr = {
+      (local.client_subnet_prefix): length(var.exacs_client_subnet_cidrs) > 0 ? var.exacs_client_subnet_cidrs[index(var.exacs_vcn_cidrs, v)] : "", 
+      (local.backup_subnet_prefix): length(var.exacs_backup_subnet_cidrs) > 0 ? var.exacs_backup_subnet_cidrs[index(var.exacs_vcn_cidrs, v)] : ""
     }
-  }
+  }}
 
   ### VCNs ###
   exacs_vcns = { for key, vcn in local.exacs_vcns_map : vcn.name => {
@@ -27,7 +29,7 @@ locals {
     subnets = { for s in local.exacs_subnet_names : replace("${vcn.name}-${s}-snt", "-vcn", "") => {
       compartment_id  = null
       defined_tags    = null
-      cidr            = cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
+      cidr            = length(vcn.subnets_cidr[s]) > 0 ? vcn.subnets_cidr[s] : cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
       dns_label       = s
       private         = true
       dhcp_options_id = null

@@ -53,7 +53,15 @@ locals {
       defined_tags = null
     }
   }
-  groups = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_groups,local.exainfra_group) : local.default_groups
+  adbexainfra_group = {
+    (local.adbexainfra_admin_group_name) = {
+      description  = "Landing Zone group for managing Autonomous Exadata infrastructure in the tenancy."
+      user_ids     = []
+      defined_tags = null
+    }
+  }
+
+  groups = merge(local.default_groups,(length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? local.exainfra_group : {}),(length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? local.adbexainfra_group : {}))
 }
 module "lz_groups" {
   source       = "../modules/iam/iam-group"

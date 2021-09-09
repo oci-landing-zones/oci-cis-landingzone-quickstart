@@ -58,7 +58,7 @@ locals {
 
 
 
-  compartments = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_compartments, local.exainfra_compartment) : local.default_compartments  
+  compartments = merge(local.default_compartments, (length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? local.exainfra_compartment : {}),(length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? local.adbexainfra_compartment : {}))   
 
 }
 module "lz_compartments" {

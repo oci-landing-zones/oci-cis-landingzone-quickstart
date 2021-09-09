@@ -66,10 +66,17 @@ locals {
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to ${cidr} goes to DRG."
-
         }
-
-    ])
+      ],
+      [for cidr in var.exacs_vcn_cidrs : {
+        is_create         = var.hub_spoke_architecture
+        destination       = cidr
+        destination_type  = "CIDR_BLOCK"
+        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
+        description       = "Traffic destined to Exadata ${cidr} CIDR range goes to DRG."
+        }
+      ]
+      )
   } }
 
 }

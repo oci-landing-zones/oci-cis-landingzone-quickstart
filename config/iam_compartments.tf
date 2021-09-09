@@ -48,6 +48,16 @@ locals {
     }
   }
 
+  adbexainfra_compartment = {
+    (local.adbexainfra_compartment_name) = {
+      parent_id     = local.parent_compartment_id
+      description   = "Landing Zone compartment for Autnonomous Exadata infrastructure."
+      enable_delete = local.enable_cmp_delete
+    }
+  }
+
+
+
   compartments = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_compartments, local.exainfra_compartment) : local.default_compartments  
 
 }

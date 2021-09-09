@@ -49,21 +49,21 @@ locals {
       description       = "Traffic destined to ${local.valid_service_gateway_cidrs[0]} goes to Service Gateway."
       }],
       [for vcn_name, vcn in module.lz_vcn_dmz.vcns : {
-        is_create         = length(var.dmz_vcn_cidr) > 0 #module.lz_drg.drg != null && length(var.dmz_vcn_cidr) == 0
+        is_create         = length(var.dmz_vcn_cidr) > 0
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to ${vcn_name} VCN goes to DRG."
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = var.existing_drg_id != "" || module.lz_drg.drg.id != null #(module.lz_drg.drg != null || var.existing_drg_id != "") && length(var.dmz_vcn_cidr) == 0
+        is_create         = var.existing_drg_id != "" || module.lz_drg.drg.id != null
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to on-premises ${cidr} goes to DRG."
       }],
       [for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
-        is_create         = var.hub_spoke_architecture #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = var.hub_spoke_architecture
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))
@@ -86,31 +86,23 @@ locals {
         destination_type  = "SERVICE_CIDR_BLOCK"
         network_entity_id = module.lz_exacs_vcns.service_gateways[subnet.vcn_id].id
         description       = "Traffic destined to ${local.valid_service_gateway_cidrs[1]} goes to Service Gateway."
-      },
-      /* {
-        is_create         = length(var.dmz_vcn_cidr) > 0
-        destination       = local.anywhere
-        destination_type  = "CIDR_BLOCK"
-        network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
-        description       = "Traffic goes to the DMZ"
-      }
-       */],
+      }],
       [for vcn_name, vcn in module.lz_vcn_dmz.vcns : {
-        is_create         = length(var.dmz_vcn_cidr) > 0 #module.lz_drg.drg != null && length(var.dmz_vcn_cidr) == 0
+        is_create         = length(var.dmz_vcn_cidr) > 0 
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to ${vcn_name} VCN goes to DRG."
       }],
       [for cidr in var.onprem_cidrs : {
-        is_create         = var.existing_drg_id != "" || module.lz_drg.drg.id != null #var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0
+        is_create         = var.existing_drg_id != "" || module.lz_drg.drg.id != null 
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
         description       = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
       }],
       [for vcn_name, vcn in local.all_lz_spoke_vcn_ids : {
-        is_create         = var.hub_spoke_architecture #&& length(var.dmz_vcn_cidr) == 0
+        is_create         = var.hub_spoke_architecture
         destination       = vcn.cidr_block
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null))

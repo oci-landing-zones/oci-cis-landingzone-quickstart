@@ -60,9 +60,9 @@ variableGroups:
     
   - title: "Autonomous Database - Dedicated (ADB-D)"
     variables:
-      - "adbd_vcn_cidrs"
-      - "override_adbd_vcn_names"
-      - "adbd_vcn_names"
+      - "adbd_vcn_cidr"
+      - "override_adbd_vcn_name"
+      - "adbd_vcn_name"
       - "deploy_adbd_infra_cmp"
     visible: deploy_adbd  
   
@@ -451,41 +451,31 @@ variables:
     default: true
     visible: deploy_exacs
     
-  adbd_vcn_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+  adbd_vcn_cidr:
+    type: string
+    title: "ADB-D VCN CIDR block."
+    description: "CIDR block for the ADB-D (Autonomous Database - Dedicated) VCN in CIDR notation."
+    default: ""
     required: true
-    maxItems: 9
-    minItems: 1
-    title: "ADB-D VCNs CIDR blocks list."
-    description: "CIDR blocks for the ADB-D (Autonomous Database - Dedicated) VCNs in CIDR notation."
-    default: []
     visible: deploy_adbd
 
-  override_adbd_vcn_names:
+  override_adbd_vcn_name:
     type: boolean
-    title: "Override ADB-D VCNs default names?"
-    description: "All ADB-D VCN names are defaulted to <service-label>-<index>-adbd-vcn. Check to override."
+    title: "Override ADB-D VCN default name?"
+    description: "The ADB-D VCN name defaults to <service-label>-<index>-adbd-vcn. Check to override."
     default: false
     visible: deploy_adbd
 
-  adbd_vcn_names:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 9
-    minItems: 1
+  adbd_vcn_name:
+    type: string
     title: "List of custom names to be given to the ADB-D VCNs."
     description: "The ADB-D VCNs custom names, overriding the default ADB-D VCNs names. There must be one name corresponding to each CIDR block provided in 'ADB-D VCNs CIDR blocks list.', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     required: false
-    default: []
+    default: ""
     visible: 
       and:
         - deploy_adbd
-        - override_adbd_vcn_names
+        - override_adbd_vcn_name
 
   deploy_abdd_infra_cmp:
     type: boolean

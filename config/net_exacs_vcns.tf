@@ -36,7 +36,7 @@ locals {
 
   ### Route Tables ###
   ## Client Subnet Route Tables
-  clt_route_tables = { for key, subnet in module.lz_exacs_vcns.subnets : replace("${key}-rtable", "vcn-", "") => {
+  clt_route_tables = { for key, subnet in module.lz_exacs_vcns.subnets : "${key}-rtable" => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
@@ -74,7 +74,7 @@ locals {
   } if length(regexall(".*-${local.client_subnet_prefix}-*", key)) > 0 }
 
   ## Backup Subnet Route Tables
-  bkp_route_tables = { for key, subnet in module.lz_exacs_vcns.subnets : replace("${key}-rtable", "vcn-", "") => {
+  bkp_route_tables = { for key, subnet in module.lz_exacs_vcns.subnets : "${key}-rtable" => {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id

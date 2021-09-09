@@ -248,30 +248,31 @@ variable "deploy_exainfra_cmp" {
   description = "Whether a compartment for Exadata infrastructure should be created. In false, Exadaya infrastructure should be created in the database compartment."
 }
 
-variable "adbd_vcn_cidrs" {
-  type        = list(string)
-  default     = []
-  description = "List of CIDR blocks for the ADB-D VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
+variable "adbd_vcn_cidr" {
+  type        = string
+  default     = ""
+  description = "The CIDR block for the ADB-D VCN to be created in CIDR notation. If hub_spoke_architecture is true, this VCN is turned into spoke VCN."
   validation {
-    condition     = length(var.adbd_vcn_cidrs) == 0 || (length(var.adbd_vcn_cidrs) < 10 && length(var.adbd_vcn_cidrs) > 0 && length([for c in var.adbd_vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.adbd_vcn_cidrs))
-    error_message = "Validation failed for adbd_vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
+    condition     = length(var.adbd_vcn_cidr) == 0 || length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.adbd_vcn_cidr)) > 0
+    error_message = "Validation failed for adbd_vcn_cidr: value must be in CIDR notation."
   }
 }
 
-variable "adbd_vcn_names" {
-  type        = list(string)
-  default     = []
-  description = "List of custom names to be given to the ADB-D Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-adbd-vcn). The list length and elements order must match adbd_vcn_cidrs'."
+
+variable "adbd_vcn_name" {
+  type        = string
+  default     = ""
+  description = "The custom name to be given to the ADB-D Cloud Service VCN, overriding the default VCN names (<service-label>-<index>-adbd-vcn). The list length and elements order must match adbd_vcn_cidr'."
   validation {
-    condition     = length(var.adbd_vcn_names) == 0 || length(var.adbd_vcn_names) < 10
-    error_message = "Validation failed for adbd_vcn_names: maximum of nine allowed."
+    condition     = length(var.adbd_vcn_name) == 0 || length(var.adbd_vcn_name) < 2
+    error_message = "Validation failed for adbd_vcn_names: maximum of 1 allowed."
   }
 }
 
 variable "deploy_adbd_infra_cmp" {
   type        = bool
-  default     = true
-  description = "Whether a compartment for ADB-D infrastructure should be created. In false, ADB-D infrastructure should be created in the database compartment."
+  default     = false
+  description = "Whether a compartment for ADB-D infrastructure should be created. If false, ADB-D infrastructure should be created in the database compartment."
 }
 
 variable "network_admin_email_endpoints" {

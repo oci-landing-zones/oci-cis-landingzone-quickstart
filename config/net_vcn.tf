@@ -19,7 +19,7 @@ locals {
     cidr              = vcn.cidr
     dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("", regexall("[a-zA-Z0-9]+", vcn.name)), 0, 11)}${local.region_key}" : "${substr(vcn.name, 0, 11)}${local.region_key}"
     is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : (!var.no_internet_access == true ? true : false)
-    is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
+    is_attach_drg     = length(var.onprem_cidrs) > 0 || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
     block_nat_traffic = false
     defined_tags      = null
     subnets = { for s in local.spoke_subnet_names : replace("${vcn.name}-${s}-subnet", "-vcn", "") => {
@@ -40,7 +40,7 @@ locals {
   # Output from VCNs
   all_lz_spoke_vcn_ids = module.lz_vcn_spokes.vcns
   all_lz_spoke_subnets = module.lz_vcn_spokes.subnets
-
+  
   ### Route Tables ###
   ## Web Subnet Route Tables
   web_route_tables = { for key, subnet in local.all_lz_spoke_subnets : replace("${key}-rtable", "vcn-", "") => {
@@ -87,7 +87,7 @@ locals {
         } if subnet.vcn_id != vcn.id
       ],
       [for cidr in var.onprem_cidrs : {
-        is_create         = var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0
+        is_create         = length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
@@ -136,7 +136,7 @@ locals {
         } if subnet.vcn_id != vcn.id
       ],
       [for cidr in var.onprem_cidrs : {
-        is_create         = var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0
+        is_create         = length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
@@ -176,7 +176,7 @@ locals {
         } if subnet.vcn_id != vcn.id
       ],
       [for cidr in var.onprem_cidrs : {
-        is_create         = var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0
+        is_create         = length(var.dmz_vcn_cidr) == 0
         destination       = cidr
         destination_type  = "CIDR_BLOCK"
         network_entity_id = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)

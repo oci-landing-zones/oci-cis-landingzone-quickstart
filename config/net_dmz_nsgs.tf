@@ -10,7 +10,7 @@ locals {
 
   ssh_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-ssh-egress-rule" => {
     is_create : true,
-    description : "SSH egress rule to ${k}.",
+    description : "Allows SSH connections to hosts in ${k} VCN (${v.cidr_block} CIDR range).",
     protocol : "6",
     stateless : false,
     dst : v.cidr_block,
@@ -70,7 +70,7 @@ locals {
 
   http_dmz_to_spokes_nsg_egress_rules = length(var.dmz_vcn_cidr) > 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-dmz-http-egress-rule" => {
     is_create : true,
-    description : "HTTP egress rule to ${k}.",
+    description : "Allows HTTP connections to ${k} VCN (${v.cidr_block} CIDR range).",
     protocol : "6",
     stateless : false,
     dst : v.cidr_block,

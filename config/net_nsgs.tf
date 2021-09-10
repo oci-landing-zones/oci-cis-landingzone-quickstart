@@ -22,7 +22,7 @@ locals {
         icmp_code : null
       }
       }, { for cidr in var.onprem_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-        is_create : (var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0),
+        is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0),
         description : "SSH ingress rule for on-premises CIDR ${cidr}.",
         stateless : false,
         protocol : "6",
@@ -37,7 +37,7 @@ locals {
       }
       },
       { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
-        is_create : !var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
+        is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
         description : "SSH ingress rule for ${cidr}.",
         protocol : "6",
         stateless : false,
@@ -144,7 +144,7 @@ locals {
         icmp_code : null
       }
       }, { for cidr in var.onprem_cidrs : "http-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-        is_create : var.is_vcn_onprem_connected && length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
+        is_create : length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0,
         description : "HTTPS ingress rule for on-premises CIDR ${cidr}.",
         stateless : false,
         protocol : "6",

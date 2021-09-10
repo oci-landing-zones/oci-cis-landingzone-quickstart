@@ -102,11 +102,11 @@ variable "no_internet_access" {
   type        = bool
   description = "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required."
 }
-variable "is_vcn_onprem_connected" {
+/* variable "is_vcn_onprem_connected" {
   type        = bool
   default     = false
   description = "Determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true."
-}
+} */
 
 variable "existing_drg_id" {
   type        = string
@@ -126,7 +126,7 @@ variable "onprem_cidrs" {
 
 variable "onprem_src_ssh_cidrs" {
   type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. It must be a subset of onprem_cidrs"
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. It must be a subset of onprem_cidrs."
   default     = []
   validation {
     condition     = length([for c in var.onprem_src_ssh_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_src_ssh_cidrs)
@@ -136,11 +136,11 @@ variable "onprem_src_ssh_cidrs" {
 
 variable "vcn_cidrs" {
   type        = list(string)
-  default     = ["10.0.0.0/20"]
+  default     = []
   description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
     condition     = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs)
-    error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
+    error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Maximum of nine allowed."
   }
 }
 

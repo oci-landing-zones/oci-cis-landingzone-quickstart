@@ -232,6 +232,15 @@ variable "exacs_vcn_cidrs" {
   }
 }
 
+variable "exacs_vcn_names" {
+  type        = list(string)
+  default     = []
+  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-exa-vcn). The VCN name relates to one and only VCN, and it is applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable."
+  validation {
+    condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
+    error_message = "Validation failed for exacs_vcn_names: maximum of nine allowed."
+  }
+}
 variable "exacs_client_subnet_cidrs" {
   type        = list(string)
   default     = []
@@ -249,16 +258,6 @@ variable "exacs_backup_subnet_cidrs" {
   validation {
     condition     = length(var.exacs_backup_subnet_cidrs) == 0 || (length(var.exacs_backup_subnet_cidrs) < 10 && length(var.exacs_backup_subnet_cidrs) > 0 && length([for c in var.exacs_backup_subnet_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_backup_subnet_cidrs))
     error_message = "Validation failed for exacs_backup_subnet_cidrs: values must be in CIDR notation."
-  }
-}
-
-variable "exacs_vcn_names" {
-  type        = list(string)
-  default     = []
-  description = "List of custom names to be given to the Exadata Cloud Service VCNs, overriding the default VCN names (<service-label>-<index>-exa-vcn). The VCN name relates to one and only VCN, and it is applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable."
-  validation {
-    condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
-    error_message = "Validation failed for exacs_vcn_names: maximum of nine allowed."
   }
 }
 

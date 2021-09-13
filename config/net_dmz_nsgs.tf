@@ -88,7 +88,7 @@ locals {
     ingress_rules : {},
     egress_rules : { for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) > 0,
-      description : "Egress HTTPS rule to ${cidr}.",
+      description : "Allos HTTPS connections to hosts in ${cidr} CIDR range.",
       stateless : false,
       protocol : "6",
       dst      = cidr,
@@ -115,7 +115,7 @@ module "lz_nsgs_dmz" {
       ingress_rules : merge(
         { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
           is_create : (!var.no_internet_access && length(var.onprem_cidrs) == 0 && length(var.public_src_bastion_cidrs) > 0),
-          description : "SSH ingress rule for ${cidr}.",
+          description : "Allows SSH connections from hosts in ${cidr} CIDR range.",
           protocol : "6",
           stateless : false,
           src : cidr,
@@ -129,7 +129,7 @@ module "lz_nsgs_dmz" {
         } },
         { for cidr in var.onprem_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
           is_create : length(var.onprem_cidrs) > 0,
-          description : "SSH ingress rule for on-premises CIDR ${cidr}.",
+          description : "Allows SSH connections from hosts in on-premises ${cidr} CIDR range.",
           protocol : "6",
           stateless : false,
           src : cidr,
@@ -146,7 +146,7 @@ module "lz_nsgs_dmz" {
       egress_rules : merge(local.ssh_dmz_to_spokes_nsg_egress_rules, local.ssh_dmz_to_exacs_nsg_egress_rules,
         { dmz-services-egress-rule : {
           is_create : true,
-          description : "SSH egress rule to ${local.dmz_services_nsg_name}.",
+          description : "Allows SSH connections to hosts in ${local.dmz_services_nsg_name} NSG.",
           protocol : "6",
           stateless : false,
           dst      = local.dmz_services_nsg_name,
@@ -160,7 +160,7 @@ module "lz_nsgs_dmz" {
         } },
         { osn-services-egress-rule : {
           is_create : true,
-          description : "OSN egress rule to ${local.valid_service_gateway_cidrs[0]}.",
+          description : "Allows HTTPS connections to hosts in ${local.valid_service_gateway_cidrs[0]}.",
           protocol : "6",
           stateless : false,
           dst      = local.valid_service_gateway_cidrs[0],
@@ -178,7 +178,7 @@ module "lz_nsgs_dmz" {
       ingress_rules : merge({
         ssh-ingress-rule : {
           is_create : true,
-          description : " SSH ingress rule from ${local.dmz_bastions_nsg_name}.",
+          description : "Allows SSH connections from hosts in ${local.dmz_bastions_nsg_name} NSG.",
           protocol : "6",
           stateless : false,
           src : local.dmz_bastions_nsg_name,
@@ -192,7 +192,7 @@ module "lz_nsgs_dmz" {
         }
         }, { for cidr in var.onprem_cidrs : "http-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
           is_create : length(var.onprem_cidrs) > 0,
-          description : "HTTPS ingress rule for on-premises CIDR ${cidr}.",
+          description : "Allows HTTPS connections from hosts in on-premises ${cidr} CIDR range.",
           protocol : "6",
           stateless : false,
           src : cidr,
@@ -207,7 +207,7 @@ module "lz_nsgs_dmz" {
         },
         { for cidr in var.public_src_lbr_cidrs : "http-public-ingress-rule--${index(var.public_src_lbr_cidrs, cidr)}" => {
           is_create : !var.no_internet_access && length(var.public_src_lbr_cidrs) > 0,
-          description : "HTTPS ingress rule for ${cidr}.",
+          description : "Allows HTTPS connections from hosts in ${cidr} CIDR range.",
           protocol : "6",
           stateless : false,
           src : cidr,
@@ -223,7 +223,7 @@ module "lz_nsgs_dmz" {
       egress_rules : merge(local.http_dmz_to_spokes_nsg_egress_rules, local.ons_dmz_to_exacs_nsg_egress_rules, local.sqlnet_dmz_to_exacs_nsg_egress_rules,
         { osn-services-egress-rule : {
           is_create : true,
-          description : "OSN egress rule to ${local.valid_service_gateway_cidrs[0]}.",
+          description : "Allows HTTPS connections to ${local.valid_service_gateway_cidrs[0]}.",
           protocol : "6",
           stateless : false,
           dst      = local.valid_service_gateway_cidrs[0],

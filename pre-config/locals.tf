@@ -11,14 +11,17 @@ locals {
   provisioning_group_names   = length(local.enclosing_compartments) > 0 ? {for k in keys(local.enclosing_compartments) : k => {group_name: var.use_existing_provisioning_group == false ? "${k}-provisioning-group" : var.existing_provisioning_group_name}} : {(local.unique_prefix) : {group_name : var.use_existing_provisioning_group == false ? "${local.unique_prefix}-provisioning-group" : var.existing_provisioning_group_name}}
   lz_group_names             = length(local.enclosing_compartments) > 0 ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: var.use_existing_groups == false ? "${local.unique_prefix}-" : ""}}
 
-  iam_admin_group_name_suffix           = var.use_existing_groups == false ? "iam-admin-group" : var.existing_iam_admin_group_name
-  cred_admin_group_name_suffix          = var.use_existing_groups == false ? "cred-admin-group" : var.existing_iam_admin_group_name
-  network_admin_group_name_suffix       = var.use_existing_groups == false ? "network-admin-group" : var.existing_iam_admin_group_name
-  security_admin_group_name_suffix      = var.use_existing_groups == false ? "security-admin-group" : var.existing_iam_admin_group_name
-  appdev_admin_group_name_suffix        = var.use_existing_groups == false ? "appdev-admin-group" : var.existing_iam_admin_group_name
-  database_admin_group_name_suffix      = var.use_existing_groups == false ? "database-admin-group" : var.existing_iam_admin_group_name
-  auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group" : var.existing_iam_admin_group_name
-  announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : var.existing_iam_admin_group_name
+  iam_admin_group_name_suffix           = var.use_existing_groups == false ? "iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+  cred_admin_group_name_suffix          = var.use_existing_groups == false ? "cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+  network_admin_group_name_suffix       = var.use_existing_groups == false ? "network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+  security_admin_group_name_suffix      = var.use_existing_groups == false ? "security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+  appdev_admin_group_name_suffix        = var.use_existing_groups == false ? "appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+  database_admin_group_name_suffix      = var.use_existing_groups == false ? "database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+  auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+  announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+  exainfra_admin_group_name             = var.use_existing_groups == false ? "exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
+  adbexainfra_admin_group_name          = var.use_existing_groups == false ? "adbexainfra-admin-group" : data.oci_identity_groups.existing_adbexainfra_admin_group.groups[0].name
+
 
   grant_tenancy_level_mgmt_policies = true
   services_policy_name   = "${local.unique_prefix}-services-policy"

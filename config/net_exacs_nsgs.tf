@@ -9,7 +9,7 @@ locals {
     ingress_rules : merge({
       ssh-dmz-vcn-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
-        description : "Allows for SSH connections from hosts in DMZ VCN.",
+        description : "Allows for SSH connections from hosts in DMZ VCN (${var.dmz_vcn_cidr} CIDR range).",
         stateless : false,
         protocol : "6",
         src : var.dmz_vcn_cidr,
@@ -23,7 +23,7 @@ locals {
       },
       sqlnet-dmz_vcn-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
-        description : "Allows for SQLNet connections from hosts in DMZ VCN.",
+        description : "Allows for SQLNet connections from hosts in DMZ VCN (${var.dmz_vcn_cidr} CIDR range).",
         stateless : false,
         protocol : "6",
         src : var.dmz_vcn_cidr,

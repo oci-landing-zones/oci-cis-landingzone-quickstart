@@ -117,28 +117,7 @@ resource "oci_core_security_list" "these" {
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
 
-  # dynamic "egress_security_rules" {
-  #   for_each = each.value.egress_rules
-  #   content {
-  #     destination = egress_security_rules.value.dst
-  #     protocol    = egress_security_rules.value.protocol
-  #     stateless   = egress_security_rules.value.stateless
-  #     icmp_options {
-  #       type = egress_security_rules.value.icmp_type
-  #       code = egress_security_rules.value.icmp_code
-  #     }
-  #     tcp_options {
-  #         max = null
-  #         min = null
-  #       source_port_range {
-  #         max = null
-  #         min = null
-  #       }
-  #     }
-  #   }
-  # }
-
-  # egress, protocol: ICMP
+  # egress, protocol: ICMP with ICMP type
   dynamic "egress_security_rules" {
     iterator = rule
     for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
@@ -150,7 +129,7 @@ resource "oci_core_security_list" "these" {
         icmp_type : x.icmp_type
         icmp_code : x.icmp_code
 
-    } if x.protocol == "1"]
+    } if x.protocol == "1" && x.icmp_type != null]
 
     content {
       protocol         = rule.value.proto
@@ -164,6 +143,28 @@ resource "oci_core_security_list" "these" {
     }
   }
 
+  # egress, protocol: ICMP without ICMP type
+  dynamic "egress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
+      {
+        proto : x.protocol
+        dst : x.dst
+        dst_type : x.dst_type
+        stateless : x.stateless
+        icmp_type : x.icmp_type
+        icmp_code : x.icmp_code
+
+    } if x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
+
+    content {
+      protocol         = rule.value.proto
+      destination      = rule.value.dst
+      destination_type = rule.value.dst_type
+      stateless        = rule.value.stateless
+    }
+  }
+
   #  egress, proto: TCP  - no src port, no dst port
   dynamic "egress_security_rules" {
     iterator = rule
@@ -173,7 +174,7 @@ resource "oci_core_security_list" "these" {
         dst : x.dst
         dst_type : x.dst_type
         stateless : x.stateless
-    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null ]
+    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
       protocol         = rule.value.proto
@@ -220,8 +221,8 @@ resource "oci_core_security_list" "these" {
         dst : x.dst
         dst_type : x.dst_type
         stateless : x.stateless
-        dst_port_min : x.dst_port.min
-        dst_port_max : x.dst_port.max
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
     } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
@@ -250,7 +251,7 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null ]
+    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
       protocol         = rule.value.proto
@@ -269,13 +270,85 @@ resource "oci_core_security_list" "these" {
       }
     }
   }
+  #  egress, proto: UDP  - no src port, no dst port
+  dynamic "egress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
+      {
+        proto : x.protocol
+        dst : x.dst
+        dst_type : x.dst_type
+        stateless : x.stateless
+    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      destination      = rule.value.dst
+      destination_type = rule.value.dst_type
+      stateless        = rule.value.stateless
+    }
+  }
+
+  #  egress, proto: UDP  - src port, no dst port
+  dynamic "egress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
+      {
+        proto : x.protocol
+        dst : x.dst
+        dst_type : x.dst_type
+        stateless : x.stateless
+        src_port_min : x.src_port_min
+        src_port_max : x.src_port_max
+    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      destination      = rule.value.dst
+      destination_type = rule.value.dst_type
+      stateless        = rule.value.stateless
+
+      udp_options {
+        source_port_range {
+          max = rule.value.src_port_max
+          min = rule.value.src_port_min
+        }
+      }
+    }
+  }
+
+  #  egress, proto: UDP  - no src port, dst port
+  dynamic "egress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
+      {
+        proto : x.protocol
+        dst : x.dst
+        dst_type : x.dst_type
+        stateless : x.stateless
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
+    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+
+    content {
+      protocol         = rule.value.proto
+      destination      = rule.value.dst
+      destination_type = rule.value.dst_type
+      stateless        = rule.value.stateless
+
+      udp_options {
+        max = rule.value.dst_port_max
+        min = rule.value.dst_port_min
+      }
+    }
+  }
 
   #  egress, proto: UDP  - src port, dst port
   dynamic "egress_security_rules" {
     iterator = rule
     for_each = [for x in each.value.egress_rules != null ? each.value.egress_rules : local.default_security_list_opt.egress_rules :
       {
-        protocol : x.protocol
+        proto : x.protocol
         dst : x.dst
         dst_type : x.dst_type
         stateless : x.stateless
@@ -283,10 +356,10 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "17"]
+    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
-      protocol         = rule.value.protocol
+      protocol         = rule.value.proto
       destination      = rule.value.dst
       destination_type = rule.value.dst_type
       stateless        = rule.value.stateless
@@ -303,19 +376,264 @@ resource "oci_core_security_list" "these" {
     }
   }
 
-
-
-
+   # ingress, protocol: ICMP with ICMP type
   dynamic "ingress_security_rules" {
-    for_each = each.value.ingress_rules
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        icmp_type : x.icmp_type
+        icmp_code : x.icmp_code
+
+    } if x.protocol == "1" && x.icmp_type != null]
+
     content {
-      source    = ingress_security_rules.value.src
-      protocol  = ingress_security_rules.value.protocol
-      stateless = ingress_security_rules.value.stateless
+      protocol         = rule.value.proto
+      source           = rule.value.src
+      source_type      = rule.value.src_type
+      stateless        = rule.value.stateless
       icmp_options {
-        type = ingress_security_rules.value.icmp_type
-        code = ingress_security_rules.value.icmp_code
+        type = rule.value.icmp_type
+        code = rule.value.icmp_code
       }
     }
   }
+
+  # ingress, protocol: ICMP without ICMP type
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        icmp_type : x.icmp_type
+        icmp_code : x.icmp_code
+
+    } if x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
+
+    content {
+      protocol         = rule.value.proto
+      source           = rule.value.src
+      source_type      = rule.value.src_type
+      stateless        = rule.value.stateless
+    }
+  }
+
+
+  #  ingress, proto: TCP  - no src port, no dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      source           = rule.value.src
+      source_type      = rule.value.src_type
+      stateless        = rule.value.stateless
+    }
+  }
+
+  #  ingress, proto: TCP  - src port, no dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        src_port_min : x.src_port_min
+        src_port_max : x.src_port_max
+    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      tcp_options {
+        source_port_range {
+          max = rule.value.src_port_max
+          min = rule.value.src_port_min
+        }
+      }
+    }
+  }
+
+  #  ingress, proto: TCP  - no src port, dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
+    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      tcp_options {
+        max = rule.value.dst_port_max
+        min = rule.value.dst_port_min
+      }
+    }
+  }
+
+  #  ingress, proto: TCP  - src port, dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        src_port_min : x.src_port_min
+        src_port_max : x.src_port_max
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
+    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      tcp_options {
+        max = rule.value.dst_port_max
+        min = rule.value.dst_port_min
+
+        source_port_range {
+          max = rule.value.src_port_max
+          min = rule.value.src_port_min
+        }
+      }
+    }
+  }
+  #  ingress, proto: UDP  - no src port, no dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+    }
+  }
+
+  #  ingress, proto: UDP  - src port, no dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        src_port_min : x.src_port_min
+        src_port_max : x.src_port_max
+    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      udp_options {
+        source_port_range {
+          max = rule.value.src_port_max
+          min = rule.value.src_port_min
+        }
+      }
+    }
+  }
+
+  #  ingress, proto: UDP  - no src port, dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
+    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      udp_options {
+        max = rule.value.dst_port_max
+        min = rule.value.dst_port_min
+      }
+    }
+  }
+
+  #  ingress, proto: UDP  - src port, dst port
+  dynamic "ingress_security_rules" {
+    iterator = rule
+    for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
+      {
+        proto : x.protocol
+        src : x.src
+        src_type : x.src_type
+        stateless : x.stateless
+        src_port_min : x.src_port_min
+        src_port_max : x.src_port_max
+        dst_port_min : x.dst_port_min
+        dst_port_max : x.dst_port_max
+    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+
+    content {
+      protocol         = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless        = rule.value.stateless
+
+      udp_options {
+        max = rule.value.dst_port_max
+        min = rule.value.dst_port_min
+
+        source_port_range {
+          max = rule.value.src_port_max
+          min = rule.value.src_port_min
+        }
+      }
+    }
+  }
+
 }

@@ -46,14 +46,15 @@ locals {
       defined_tags = null
     },
   }
-  exainfra_group = {
+  exainfra_group = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
     (local.exainfra_admin_group_name) = {
       description  = "Landing Zone group for managing Exadata infrastructure in the tenancy."
       user_ids     = []
       defined_tags = null
     }
-  }
-  groups = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_groups,local.exainfra_group) : local.default_groups
+  } : {}
+  
+  groups = merge(local.default_groups,local.exainfra_group)
 }
 module "lz_groups" {
   source       = "../modules/iam/iam-group"

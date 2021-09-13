@@ -41,10 +41,6 @@ variable "enclosing_compartment_names" {
     type    = list(string)
     default = []
     description = "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. Max number of compartments is 5."
-    validation {
-        condition     = length(var.enclosing_compartment_names) <= 5
-        error_message = "Validation failed for enclosing_compartment_names: Maximum number of values allowed is 5."
-    }
 }
 variable "existing_enclosing_compartments_parent_ocid" {
     type    = string

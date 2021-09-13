@@ -164,15 +164,15 @@ locals {
       }
     }
 
-    exainfra_policy = {
+    exainfra_policy = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
       (local.exainfra_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment_name}."
         statements  = local.exainfra_permissions_on_exainfra_cmp
       }
-    }
+    } : {}
   
-    policies = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? merge(local.default_policies, local.exainfra_policy) : local.default_policies
+    policies = merge(local.default_policies, local.exainfra_policy)
 }
 
 module "lz_root_policies" {

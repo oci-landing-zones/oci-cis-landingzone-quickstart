@@ -31,26 +31,21 @@ variableGroups:
   - title: "Network"
     variables:
       - "vcn_cidrs"
-      - "override_vcn_names"
-      - "vcn_names"
-      - "public_src_bastion_cidrs"
-      - "public_src_lbr_cidrs"
-      - "public_dst_cidrs"
       - "net_advanced_options"
-      - "no_internet_access"
+      - "vcn_names"
+      - "existing_drg_id"
       - "hub_spoke_architecture"
+      - "deploy_exacs"
+      - "deploy_adbd"
+  
+  - title: "Hub & Spoke Network Architecture"
+    variables:
       - "dmz_vcn_cidr"
       - "dmz_for_firewall"
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
-      - "existing_drg_id"
-      - "onprem_cidrs"
+    visible: hub_spoke_architecture  
   
-  - title: "Advanced Databases"
-    variables: 
-      - "deploy_exacs"
-      - "deploy_adbd"
-
   - title: "Exadata Cloud Service"
     variables:
       - "exacs_vcn_cidrs"
@@ -59,16 +54,31 @@ variableGroups:
       - "exacs_client_subnet_cidrs"
       - "exacs_backup_subnet_cidrs"
       - "deploy_exainfra_cmp"
-    visible: deploy_exacs
+    visible: 
+      - and: 
+        - net_advanced_options
+        - deploy_exacs
     
   - title: "Autonomous Database - Dedicated (ADB-D)"
     variables:
       - "adbd_vcn_cidr"
-      - "override_adbd_vcn_name"
+      - "adbd_advanced_options"
       - "adbd_vcn_name"
       - "deploy_adbd_infra_cmp"
-    visible: deploy_adbd  
+    visible: 
+      - and: 
+        - net_advanced_options
+        - deploy_adbd  
   
+  - title: "Connectivity"
+    variables:
+      - "no_internet_access"
+      - "public_src_bastion_cidrs"
+      - "public_src_lbr_cidrs"
+      - "public_dst_cidrs"
+      - "onprem_cidrs"
+      - "onprem_src_ssh_cidrs"
+
   - title: "Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -268,7 +278,6 @@ variables:
     type: boolean
     title: "Show Advanced Options"
     description: "Advanced options. For details please see the <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
-    #description: "Advanced options. For details, check <a href=\"https://www.ateam-oracle.com/cis-oci-landing-zone-v2-networking\">Landing Zone Networking</a>."
     default: false
 
   vcn_cidrs:
@@ -279,15 +288,9 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "List of CIDR blocks for the VCNs to be created"
-    description: "CIDR blocks for the VCNs in CIDR notation. When 'Deploy Hub & Spoke Architecture?' is selected under 'Show Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    title: "VCNs CIDR Blocks"
+    description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub & Spoke Architecture?' is selected under 'Show Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: []
-
-  override_vcn_names:
-    type: boolean
-    title: "Override VCN default names?"
-    description: "All VCN names are defaulted to <service-label>-<index>-vcn. Check to override."
-    default: false
 
   vcn_names:
     type: array
@@ -296,10 +299,10 @@ variables:
     uniqueItems: true
     maxItems: 9
     minItems: 1
-    title: "List of custom names to be given to the VCNs"
-    description: "The VCN custom names, overriding the default VCN names. There must be one name corresponding to each CIDR block provided in 'List of CIDR blocks for the VCNs to be created', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    title: "VCNs Custom Names"
+    description: "The VCNs custom names, overriding the default VCNs names. There must be one name corresponding to each CIDR block provided in 'VCNs CIDR Blocks', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     required: false
-    visible: override_vcn_names
+    visible: net_advanced_options
     default: []  
 
   public_src_bastion_cidrs:
@@ -307,7 +310,7 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound SSH CIDR List"
+    title: "Inbound SSH CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
     default: []
@@ -317,7 +320,7 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound HTTPS CIDR List"
+    title: "Inbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
     default: []
@@ -327,7 +330,7 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Outbound HTTPS CIDR List"
+    title: "Outbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
     default: []  
@@ -337,35 +340,30 @@ variables:
     title: "Existing DRG OCID"
     description: "If using an existing DRG."
     default: ""
-    visible: 
-      and:
-        - net_advanced_options
-        - is_vcn_onprem_connected
+    visible: net_advanced_options
         
   onprem_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "On-premises network CIDR blocks"
+    title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
-    visible: net_advanced_options
+    description: "On-premises IP ranges allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
     
   onprem_src_ssh_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "On-premises network CIDR blocks allowed to connect over SSH"
+    title: "On-premises network CIDR Blocks Allowed to Connect over SSH"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. It must be a subset of 'On-premises network CIDR blocks'."
-    visible: net_advanced_options
+    description: "On-premises IP ranges allowed to make SSH inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
     
   no_internet_access:
     type: boolean
     title: "Block Internet Access?"
-    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to 'Connect Landing Zone to on-premises network?'."
+    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to provide 'On-premises network CIDR blocks'."
     default: false
     visible: net_advanced_options
 
@@ -378,9 +376,9 @@ variables:
   
   dmz_vcn_cidr:
     type: string
-    title: "CIDR Block for the DMZ VCN"
+    title: "DMZ VCN CIDR Block"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "DMZ VCN IP range in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. Required if 'Deploy Hub & Spoke Architecture?' is checked."
+    description: "IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. Required if 'Deploy Hub & Spoke Architecture?' is checked."
     required: ${hub_spoke_architecture}
     visible:
       and:
@@ -389,7 +387,7 @@ variables:
 
   dmz_for_firewall:
     type: boolean
-    title: "Use DMZ VCN for 3rd party firewalls."
+    title: "Use DMZ VCN for 3rd-Party Firewalls"
     description: "Determines if a 3rd party firewall will be deployed in the DMZ VCN."
     required: false
     visible:
@@ -399,7 +397,7 @@ variables:
         
   dmz_number_of_subnets:
     type: integer
-    title: "Number of subnets in the DMZ VCN"
+    title: "Number of Subnets in the DMZ VCN"
     description: "The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required."
     required: false
     visible:
@@ -419,15 +417,17 @@ variables:
 
   deploy_exacs:
     type: boolean
-    title: "Deploy infrastructure for Exadata Cloud Service?"
+    title: "Deploy Infrastructure for Exadata Cloud Service?"
     description: "Check if you intend to deploy Exadata Cloud service. Configure networking and infrastructure compartment for Exadata."
     default: false
+    visible: net_advanced_options
 
   deploy_adbd:
     type: boolean
-    title: "Deploy infrastructure for ADB-D (Autonomous Database - Dedicated)?"
+    title: "Deploy Infrastructure for ADB-D (Autonomous Database - Dedicated)?"
     description: "Check if you intend to deploy ADB-D Cloud service. Configure networking and infrastructure compartment for ADB-D."
-    default: false  
+    default: false
+    visible: net_advanced_options  
 
   exacs_vcn_cidrs:
     type: array
@@ -437,7 +437,7 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "CIDR blocks for Exadata VCNs"
+    title: "Exadata VCNs CIDR Blocks"
     description: "CIDR blocks for the Exadata VCNs in CIDR notation."
     default: []
     visible: deploy_exacs
@@ -445,7 +445,7 @@ variables:
   exa_advanced_options:
     type: boolean
     title: "Advanced Options"
-    description: "Shows advanced options for Exadata Cloud service."
+    description: "Shows advanced options for Exadata Cloud service infrastructure."
     default: false
     visible: deploy_exacs
 
@@ -456,7 +456,7 @@ variables:
     uniqueItems: true
     maxItems: 9
     minItems: 1
-    title: "Custom names for Exadata VCNs"
+    title: "Exadata VCNs Custom Names"
     description: "The Exadata VCNs custom names, overriding the default Exadata VCNs names. Each provided name relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     required: false
     default: []
@@ -473,7 +473,7 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "CIDR blocks for Exadata VCNs client subnets"
+    title: "CIDR Blocks for Exadata VCNs Client Subnets"
     description: "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: 
       and:
@@ -488,7 +488,7 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "CIDR blocks for Exadata backup subnets"
+    title: "CIDR Blocks for Exadata Backup Subnets"
     description: "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: 
       and:
@@ -497,7 +497,7 @@ variables:
 
   deploy_exainfra_cmp:
     type: boolean
-    title: "Create compartment for Exadata infrastructure?"
+    title: "Create Compartment for Exadata Infrastructure?"
     description: "Whether a compartment for Exadata infrastructure should be created. In unchecked, Exadata infrastructure should be created in the database compartment."
     default: true
     visible: 
@@ -507,36 +507,39 @@ variables:
     
   adbd_vcn_cidr:
     type: string
-    title: "ADB-D VCN CIDR block."
+    title: "ADB-D VCN CIDR Block"
     description: "CIDR block for the ADB-D (Autonomous Database - Dedicated) VCN in CIDR notation."
     default: ""
-    required: true
+    required: false
     visible: deploy_adbd
 
-  override_adbd_vcn_name:
+  adbd_advanced_options:
     type: boolean
-    title: "Override ADB-D VCN default name?"
-    description: "The ADB-D VCN name defaults to <service-label>-<index>-adbd-vcn. Check to override."
+    title: "Advanced Options"
+    description: "Shows advanced options for ADB-D Exadata infrastructure."
     default: false
     visible: deploy_adbd
 
   adbd_vcn_name:
     type: string
-    title: "List of custom names to be given to the ADB-D VCNs."
-    description: "The ADB-D VCNs custom names, overriding the default ADB-D VCNs names. There must be one name corresponding to each CIDR block provided in 'ADB-D VCNs CIDR blocks list.', in the same order. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    title: "ADB-D VCN Custom Name"
+    description: "ADB-D VCN custom names, overriding the default VCN name."
     required: false
     default: ""
     visible: 
       and:
         - deploy_adbd
-        - override_adbd_vcn_name
+        - adbd_advanced_options
 
-  deploy_abdd_infra_cmp:
+  deploy_adbd_infra_cmp:
     type: boolean
-    title: "Create compartment for ADB-D Extadata infrastructure?"
-    description: "Whether a compartment for ADB-D Exadata infrastructure should be created. In unchecked, ADB-D Exadata infrastructure is created in the database compartment."
+    title: "Create Compartment for ADB-D Exadata Infrastructure?"
+    description: "Whether a compartment for ADB-D Exadata infrastructure should be created. In unchecked, ADB-D Exadata infrastructure should be created in the database compartment."
     default: true
-    visible: deploy_adbd
+    visible: 
+      and:
+        - deploy_adbd
+        - adbd_advanced_options
 
   network_admin_email_endpoints:
     type: array

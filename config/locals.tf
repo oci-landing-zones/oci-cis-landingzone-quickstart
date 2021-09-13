@@ -138,7 +138,7 @@ locals {
   database_cmp_target_name = "${local.database_compartment_name}-scan-target"
 
   # Delay in seconds for slowing down resource creation
-  delay_in_secs = 30
+  delay_in_secs = 60
 
   # Outputs display
   display_outputs = true

@@ -38,7 +38,7 @@ locals {
   auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  adbexainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-adbexainfra-admin-group" : data.oci_identity_groups.existing_adbexainfra_admin_group.groups[0].name
+  adbexainfra_admin_group_name   = var.use_existing_groups == false ? "${var.service_label}-adbexainfra-admin-group" : data.oci_identity_groups.existing_adbexainfra_admin_group.groups[0].name
 
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
@@ -56,7 +56,7 @@ locals {
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
-  adbexainfra_admin_policy_name      = "${var.service_label}-adbexainfra-admin-policy"
+  adbexainfra_admin_policy_name   = "${var.service_label}-adbexainfra-admin-policy"
 
   services_policy_name   = "${var.service_label}-services-policy"
   cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",

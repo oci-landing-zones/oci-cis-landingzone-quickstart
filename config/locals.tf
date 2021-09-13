@@ -17,9 +17,9 @@ locals {
   database_compartment_name          = "${var.service_label}-database-cmp"
   appdev_compartment_name            = "${var.service_label}-appdev-cmp"
   exainfra_compartment_name          = "${var.service_label}-exainfra-cmp"
-  adbexainfra_compartment_name         = "${var.service_label}-adbdexainfra-cmp"
+  adbexainfra_compartment_name       = "${var.service_label}-adbdexainfra-cmp"
 
-  # Whether compartments should be deleted in terraform destroy or upon resource removal.
+  # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
   # Whether or not to create an enclosing compartment

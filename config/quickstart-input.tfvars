@@ -51,6 +51,11 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # exacs_vcn_names           = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
 # deploy_exainfra_cmp       = true # whether to deploy a compartment for Exadata infrastructure.
 
+### Autonomous Exadata Infrastructure variables
+# adbd_vcn_cidr               = "<cidr>" #CIDR Block to be used when creating the VCN
+# adbd_vcn_name               = "<name>" #The custom name to be given to the ADB-D Cloud Service VCN, overriding the default VCN name (<service-label>-<index>-adbd-vcn).
+# deploy_adbd_infra_cmp       = true # whether to deploy a compartment for Autonomous Exadata infrastructure.
+
 ### Notifications variables
 network_admin_email_endpoints  = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all network related notifications.
 security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all security related notifications.

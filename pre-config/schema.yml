@@ -77,8 +77,6 @@ variables:
     items:
       type: string
     uniqueItems: true
-    maxItems: 5
-    minItems: 0
     title: "Enclosing Compartment Names"
     description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name ending in '-top-cmp'. (Type the name and hit enter to enter multiple values)."
     required: false

@@ -40,7 +40,7 @@ variable "existing_provisioning_group_name" {
 variable "enclosing_compartment_names" {
     type    = list(string)
     default = []
-    description = "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp. Max number of compartments is 5."
+    description = "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name <unique_prefix>-top-cmp."
 }
 variable "existing_enclosing_compartments_parent_ocid" {
     type    = string

@@ -27,5 +27,6 @@ output "all_services" {
 }
 
 output "all_security_lists" {
-  value = local.security_lists
+  description = "All Network Security Lists"
+  value = {for sl in oci_core_security_list.these : sl.display_name => sl}
 }

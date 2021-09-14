@@ -6,22 +6,22 @@
 locals {
   default_groups = {
     (local.network_admin_group_name) = {
-      description  = "Landing Zone group for managing networking in compartment ${local.network_compartment_name}."
+      description  = "Landing Zone group for managing networking in compartment ${local.network_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.security_admin_group_name) = {
-      description  = "Landing Zone group for managing security services in compartment ${local.security_compartment_name}."
+      description  = "Landing Zone group for managing security services in compartment ${local.security_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.appdev_admin_group_name) = {
-      description  = "Landing Zone group for managing app development related services in compartment ${local.appdev_compartment_name}."
+      description  = "Landing Zone group for managing app development related services in compartment ${local.appdev_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.database_admin_group_name) = {
-      description  = "Landing Zone group for managing databases in compartment ${local.database_compartment_name}."
+      description  = "Landing Zone group for managing databases in compartment ${local.database_compartment.name}."
       user_ids     = []
       defined_tags = null
     },

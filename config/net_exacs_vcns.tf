@@ -19,7 +19,7 @@ locals {
 
   ### VCNs ###
   exacs_vcns = { for key, vcn in local.exacs_vcns_map : vcn.name => {
-    compartment_id    = module.lz_compartments.compartments[local.network_compartment_name].id
+    compartment_id    = module.lz_compartments.compartments[local.network_compartment.name].id
     cidr              = vcn.cidr
     dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("", regexall("[a-zA-Z0-9]+", vcn.name)), 0, 11)}${local.region_key}" : "${substr(vcn.name, 0, 11)}${local.region_key}"
     is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : true
@@ -120,7 +120,7 @@ locals {
 
 module "lz_exacs_vcns" {
   source               = "../modules/network/vcn-basic"
-  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
+  compartment_id       = module.lz_compartments.compartments[local.network_compartment.name].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
   drg_id               = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
@@ -131,6 +131,6 @@ module "lz_exacs_vcns" {
 module "lz_exacs_route_tables" {
   depends_on           = [module.lz_exacs_vcns]
   source               = "../modules/network/vcn-routing"
-  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
+  compartment_id       = module.lz_compartments.compartments[local.network_compartment.name].id
   subnets_route_tables = local.exacs_subnets_route_tables
 }

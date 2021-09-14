@@ -11,20 +11,20 @@ locals {
 
   ### IAM
   # Default compartment names
-  default_enclosing_compartment_name = "${var.service_label}-top-cmp"
-  security_compartment_name          = "${var.service_label}-security-cmp"
-  network_compartment_name           = "${var.service_label}-network-cmp"
-  database_compartment_name          = "${var.service_label}-database-cmp"
-  appdev_compartment_name            = "${var.service_label}-appdev-cmp"
-  exainfra_compartment_name          = "${var.service_label}-exainfra-cmp"
-  adbexainfra_compartment_name       = "${var.service_label}-adbdexainfra-cmp"
+  default_enclosing_compartment = {"key":"${var.service_label}-top-cmp", "name":"${var.service_label}-top-cmp"}
+  security_compartment          = {"key":"${var.service_label}-security-cmp", "name":"${var.service_label}-security-cmp"}
+  network_compartment           = {"key":"${var.service_label}-network-cmp", "name":"${var.service_label}-network-cmp"}
+  database_compartment          = {"key":"${var.service_label}-database-cmp", "name":"${var.service_label}-database-cmp"}
+  appdev_compartment            = {"key":"${var.service_label}-appdev-cmp", "name":"${var.service_label}-appdev-cmp"}
+  exainfra_compartment          = {"key":"${var.service_label}-exainfra-cmp", "name":"${var.service_label}-exainfra-cmp"}
+  adbexainfra_compartment       = {"key":"${var.service_label}-adbdexainfra-cmp", "name":"${var.service_label}-adbdexainfra-cmp"}
 
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
   # Whether or not to create an enclosing compartment
-  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
-  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
+  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.name].id) : var.tenancy_ocid
+  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment.name) : "tenancy"
   policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
   use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
 
@@ -82,8 +82,8 @@ locals {
                           "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
   os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
-  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}",
-        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment_name}"]
+  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
+        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
 
 
   # Tags
@@ -132,10 +132,10 @@ locals {
 
   ### Scanning
   scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment_name}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment_name}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment_name}-scan-target"
-  database_cmp_target_name = "${local.database_compartment_name}-scan-target"
+  security_cmp_target_name = "${local.security_compartment.name}-scan-target"
+  network_cmp_target_name  = "${local.network_compartment.name}-scan-target"
+  appdev_cmp_target_name   = "${local.appdev_compartment.name}-scan-target"
+  database_cmp_target_name = "${local.database_compartment.name}-scan-target"
 
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 60

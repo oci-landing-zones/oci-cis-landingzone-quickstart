@@ -8,8 +8,9 @@ module "lz_top_compartment" {
   source    = "../modules/iam/iam-compartment"
   providers = { oci = oci.home }
   compartments = {
-    (local.default_enclosing_compartment_name) = {
+    (local.default_enclosing_compartment.key) = {
       parent_id     = var.tenancy_ocid
+      name          = local.default_enclosing_compartment.name
       description   = "Landing Zone enclosing compartment, enclosing all Landing Zone compartments."
       enable_delete = local.enable_cmp_delete
     }
@@ -17,50 +18,56 @@ module "lz_top_compartment" {
 }
 
 locals {
-  default_compartments = {
-    (local.security_compartment_name) = {
+  default_cmps = {
+    (local.security_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.security_compartment.name
       description   = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
       enable_delete = local.enable_cmp_delete
     },
-    (local.network_compartment_name) = {
+    (local.network_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.network_compartment.name
       description   = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
       enable_delete = local.enable_cmp_delete
     },
-    (local.appdev_compartment_name) = {
+    (local.appdev_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.appdev_compartment.name
       description   = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
       enable_delete = local.enable_cmp_delete
     },
-    (local.database_compartment_name) = {
+    (local.database_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.database_compartment.name
       description   = "Landing Zone compartment for all database related resources."
       enable_delete = local.enable_cmp_delete
     }
   }
 
-  exainfra_compartment = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
-    (local.exainfra_compartment_name) = {
+  exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
+    (local.exainfra_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.exainfra_compartment.name
       description   = "Landing Zone compartment for Exadata infrastructure."
       enable_delete = local.enable_cmp_delete
     }
   } : {}
 
-  adbexainfra_compartment = length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? {
-    (local.adbexainfra_compartment_name) = {
+  adbexainfra_cmp = length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? {
+    (local.adbexainfra_compartment.key) = {
       parent_id     = local.parent_compartment_id
+      name          = local.adbexainfra_compartment.name
       description   = "Landing Zone compartment for Autnonomous Exadata infrastructure."
       enable_delete = local.enable_cmp_delete
     }
   } : {}
 
-  compartments = merge(local.default_compartments, local.exainfra_compartment, local.adbexainfra_compartment)
+  cmps = merge(local.default_cmps, local.exainfra_cmp, local.adbexainfra_cmp)
 
 }
 module "lz_compartments" {
   source    = "../modules/iam/iam-compartment"
   providers = { oci = oci.home }
-  compartments = local.compartments
+  compartments = local.cmps
 }

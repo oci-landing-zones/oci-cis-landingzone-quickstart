@@ -247,6 +247,6 @@ locals {
 module "lz_exacs_nsgs" {
   depends_on     = [module.lz_exacs_vcns]
   source         = "../modules/network/security"
-  compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
+  compartment_id = module.lz_compartments.compartments[local.network_compartment.name].id
   nsgs           = merge(local.exacs_clt_nsgs, local.exacs_bkp_nsgs)
 }

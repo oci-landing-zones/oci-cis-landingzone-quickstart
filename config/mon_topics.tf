@@ -4,7 +4,7 @@
 module "lz_security_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ null_resource.slow_down_topics ]
-  compartment_id                 = module.lz_compartments.compartments[local.security_compartment.name].id
+  compartment_id                 = module.lz_compartments.compartments[local.security_compartment.key].id
   notification_topic_name        = "${var.service_label}-security-topic"
   notification_topic_description = "Landing Zone topic for security related notifications."
   subscriptions = { for e in var.security_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
@@ -23,7 +23,7 @@ module "lz_security_topic" {
 module "lz_network_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ null_resource.slow_down_topics ]
-  compartment_id                 = module.lz_compartments.compartments[local.security_compartment.name].id
+  compartment_id                 = module.lz_compartments.compartments[local.security_compartment.key].id
   notification_topic_name        = "${var.service_label}-network-topic"
   notification_topic_description = "Landing Zone topic for network related notifications."
 

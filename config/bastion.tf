@@ -3,10 +3,10 @@
 
 module "lz_app_bastion" {
     source = "../modules/security/bastion"
-    count = (var.bastion_create == true && var.is_vcn_onprem_connected  == false && var.hub_spoke_architecture == false) ? 1 : 0
+    count = (var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false) ? 1 : 0
     bastion = {
         name = local.bastion_name
-        compartment_id = module.lz_compartments.compartments[local.appdev_compartment_name].id
+        compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
         target_subnet_id = module.lz_vcn_spokes.subnets[replace("${keys(module.lz_vcn_spokes.vcns)[0]}-${local.spoke_subnet_names[1]}-subnet", "-vcn", "")].id
         client_cidr_block_allow_list = var.public_src_bastion_cidrs
         max_session_ttl_in_seconds = local.bastion_max_session_ttl_in_seconds
@@ -16,12 +16,12 @@ module "lz_app_bastion" {
 module "lz_app_bastion_sec_list" {
     depends_on     = [module.lz_vcn_spokes]
     source         = "../modules/network/security"
-    count = (var.bastion_create == true && var.is_vcn_onprem_connected  == false && var.hub_spoke_architecture == false) ? 1 : 0
-    compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
+    count = (var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false) ? 1 : 0
+    compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
     security_lists = {
         ("${var.service_label}-0-bastion_security_list") = {
             vcn_id = module.lz_vcn_spokes.vcns[keys(module.lz_vcn_spokes.vcns)[0]].id,
-            compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id,
+            compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id,
             defined_tags    = null,
             ingress_rules = [],
             egress_rules = [{
@@ -49,7 +49,7 @@ data "oci_core_subnet" "lz_app_subnet" {
 
 resource "oci_core_subnet" "lz_app_subnet_update"{
     depends_on     = [module.lz_vcn_spokes, module.lz_app_bastion_sec_list]
-    count = (var.bastion_create == true && var.is_vcn_onprem_connected  == false && var.hub_spoke_architecture == false) ? 1 : 0
+    count = (var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false) ? 1 : 0
     //cidr_block = module.lz_vcn_spokes.subnets[replace("${keys(module.lz_vcn_spokes.vcns)[0]}-${local.spoke_subnet_names[1]}-subnet", "-vcn", "")].cidr_block
     //compartment_id = module.lz_compartments.compartments[local.network_compartment_name].id
     //vcn_id = module.lz_vcn_spokes.vcns[keys(module.lz_vcn_spokes.vcns)[0]].id

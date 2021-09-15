@@ -4,6 +4,7 @@
 variable "compartments" {
   type = map(object({
     parent_id     = string
+    name          = string
     description   = string
     enable_delete = string
   }))

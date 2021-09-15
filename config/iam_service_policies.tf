@@ -9,7 +9,7 @@ module "lz_services_policy" {
         (local.services_policy_name) = {
             compartment_id = var.tenancy_ocid
             description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
-            statements     = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements, local.database_kms_statements)
+            statements     = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
         }
     } : {}
 }

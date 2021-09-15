@@ -233,17 +233,12 @@ locals {
 module "lz_vcn_spokes" {
   source               = "../modules/network/vcn-basic"
   depends_on           = [null_resource.slow_down_vcn]
-<<<<<<< HEAD
-  compartment_id       = module.lz_compartments.compartments[local.network_compartment_name].id
-=======
   compartment_id       = module.lz_compartments.compartments[local.network_compartment.key].id
->>>>>>> 89b17cbcd42539af721e09b6347427eba096e831
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
   drg_id               = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
   vcns                 = local.all_lz_spoke_vcns
 }
-
 
 module "lz_route_tables_spokes" {
   depends_on           = [module.lz_vcn_spokes]

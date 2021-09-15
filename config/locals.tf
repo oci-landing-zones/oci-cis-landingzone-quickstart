@@ -23,7 +23,7 @@ locals {
   enable_cmp_delete = false
 
   # Whether or not to create an enclosing compartment
-  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.name].id) : var.tenancy_ocid
+  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.key].id) : var.tenancy_ocid
   parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment.name) : "tenancy"
   policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
   use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
@@ -132,10 +132,10 @@ locals {
 
   ### Scanning
   scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment.name}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment.name}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment.name}-scan-target"
-  database_cmp_target_name = "${local.database_compartment.name}-scan-target"
+  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
+  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
+  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
+  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
 
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 60

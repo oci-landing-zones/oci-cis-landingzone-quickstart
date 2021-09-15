@@ -4,7 +4,7 @@
 ### Creates a vault.
 module "lz_vault" {
     source            = "../modules/security/vaults"
-    compartment_id    = module.lz_compartments.compartments[local.security_compartment.name].id
+    compartment_id    = module.lz_compartments.compartments[local.security_compartment.key].id
     vault_name        = local.vault_name
     vault_type        = local.vault_type
 }
@@ -13,7 +13,7 @@ module "lz_vault" {
 ### Creates the OSS key in the vault created in the above step.
 module "lz_keys" {
     source                = "../modules/security/keys"
-    compartment_id        = module.lz_compartments.compartments[local.security_compartment.name].id
+    compartment_id        = module.lz_compartments.compartments[local.security_compartment.key].id
     vault_mgmt_endPoint   = module.lz_vault.vault.management_endpoint
     keys              = {
         (local.oss_key_name) = {

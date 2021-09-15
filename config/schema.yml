@@ -437,8 +437,8 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "Exadata VCNs CIDR Blocks"
-    description: "CIDR blocks for the Exadata VCNs in CIDR notation."
+    title: "Exadata VCNs CIDR Blocks (Must not overlap with 192.168.128.0/20)"
+    description: "CIDR blocks for the Exadata VCNs in CIDR notation. Be mindful about Exadata \"Requirements for IP Address Space\" in <a href=\"https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm\">OCI documentation."
     default: []
     visible: deploy_exacs
 
@@ -473,7 +473,7 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "CIDR Blocks for Exadata VCNs Client Subnets"
+    title: "CIDR Blocks for Exadata VCNs Client Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: 
       and:
@@ -488,7 +488,7 @@ variables:
     required: false
     maxItems: 9
     minItems: 1
-    title: "CIDR Blocks for Exadata Backup Subnets"
+    title: "CIDR Blocks for Exadata Backup Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: 
       and:

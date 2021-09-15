@@ -25,3 +25,8 @@ output "all_services" {
   description = "All services"
   value       = data.oci_core_services.all_services
 }
+
+output "all_security_lists" {
+  description = "All Network Security Lists"
+  value = {for sl in oci_core_security_list.these : sl.display_name => sl}
+}

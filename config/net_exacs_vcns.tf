@@ -33,6 +33,7 @@ locals {
       dns_label       = s
       private         = true
       dhcp_options_id = null
+      security_lists  = {}
       }}
     }}
 

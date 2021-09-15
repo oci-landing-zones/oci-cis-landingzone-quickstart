@@ -427,5 +427,5 @@ variable "vss_scan_day" {
 variable "bastion_create" {
   type        = bool
   default     = false
-  description = "Create a OCI Bastion Service Instance. If set to true, a bastion instance will be created in appdev compartment and app subnet if the network is not connected to on-prem and is also not a hub and spoke network."
+  description = "Create a OCI Bastion Service Instance. If set to true, a Bastion instance will be created in appdev compartment and app subnet if the network is not connected to the on-premises network and is also not a Hub & Spoke network."
 }

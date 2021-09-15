@@ -766,7 +766,7 @@ variables:
   bastion_create:
     type: boolean
     title: "Create Bastion Service Instance"
-    description: "Whether Bastion Service instance should be created. Even when true, a Bastion instance is only created when vcn is not hub and spoke and not connected to on-prem"
+    description: "Whether Bastion Service instance should be created. Even when true, a Bastion instance is only created when VCN is not Hub & Spoke and is not connected to the on-premises network."
     default: false
   
 # Variables not required to display to user

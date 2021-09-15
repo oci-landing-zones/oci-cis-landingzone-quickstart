@@ -129,7 +129,7 @@ resource "oci_core_security_list" "these" {
         icmp_type : x.icmp_type
         icmp_code : x.icmp_code
 
-    } if x.protocol == "1" && x.icmp_type != null]
+    } if x.is_create && x.protocol == "1" && x.icmp_type != null]
 
     content {
       protocol         = rule.value.proto
@@ -155,7 +155,7 @@ resource "oci_core_security_list" "these" {
         icmp_type : x.icmp_type
         icmp_code : x.icmp_code
 
-    } if x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
+    } if x.is_create && x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
 
     content {
       protocol         = rule.value.proto
@@ -174,7 +174,7 @@ resource "oci_core_security_list" "these" {
         dst : x.dst
         dst_type : x.dst_type
         stateless : x.stateless
-    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
       protocol         = rule.value.proto
@@ -195,7 +195,7 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         src_port_min : x.src_port_min
         src_port_max : x.src_port_max
-    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
       protocol         = rule.value.proto
@@ -223,7 +223,7 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
       protocol         = rule.value.proto
@@ -251,7 +251,7 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
       protocol         = rule.value.proto
@@ -279,7 +279,7 @@ resource "oci_core_security_list" "these" {
         dst : x.dst
         dst_type : x.dst_type
         stateless : x.stateless
-    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
       protocol         = rule.value.proto
@@ -300,7 +300,7 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         src_port_min : x.src_port_min
         src_port_max : x.src_port_max
-    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
       protocol         = rule.value.proto
@@ -328,7 +328,7 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
       protocol         = rule.value.proto
@@ -356,7 +356,7 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
       protocol         = rule.value.proto
@@ -376,7 +376,7 @@ resource "oci_core_security_list" "these" {
     }
   }
 
-   # ingress, protocol: ICMP with ICMP type
+  # ingress, protocol: ICMP with ICMP type
   dynamic "ingress_security_rules" {
     iterator = rule
     for_each = [for x in each.value.ingress_rules != null ? each.value.ingress_rules : local.default_security_list_opt.ingress_rules :
@@ -388,13 +388,13 @@ resource "oci_core_security_list" "these" {
         icmp_type : x.icmp_type
         icmp_code : x.icmp_code
 
-    } if x.protocol == "1" && x.icmp_type != null]
+    } if x.is_create && x.protocol == "1" && x.icmp_type != null]
 
     content {
-      protocol         = rule.value.proto
-      source           = rule.value.src
-      source_type      = rule.value.src_type
-      stateless        = rule.value.stateless
+      protocol    = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless   = rule.value.stateless
       icmp_options {
         type = rule.value.icmp_type
         code = rule.value.icmp_code
@@ -414,13 +414,13 @@ resource "oci_core_security_list" "these" {
         icmp_type : x.icmp_type
         icmp_code : x.icmp_code
 
-    } if x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
+    } if x.is_create && x.protocol == "1" && x.icmp_type == null && x.icmp_code == null]
 
     content {
-      protocol         = rule.value.proto
-      source           = rule.value.src
-      source_type      = rule.value.src_type
-      stateless        = rule.value.stateless
+      protocol    = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless   = rule.value.stateless
     }
   }
 
@@ -434,13 +434,13 @@ resource "oci_core_security_list" "these" {
         src : x.src
         src_type : x.src_type
         stateless : x.stateless
-    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
-      protocol         = rule.value.proto
-      source           = rule.value.src
-      source_type      = rule.value.src_type
-      stateless        = rule.value.stateless
+      protocol    = rule.value.proto
+      source      = rule.value.src
+      source_type = rule.value.src_type
+      stateless   = rule.value.stateless
     }
   }
 
@@ -455,13 +455,13 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         src_port_min : x.src_port_min
         src_port_max : x.src_port_max
-    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       tcp_options {
         source_port_range {
@@ -483,13 +483,13 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       tcp_options {
         max = rule.value.dst_port_max
@@ -511,13 +511,13 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "6" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       tcp_options {
         max = rule.value.dst_port_max
@@ -539,13 +539,13 @@ resource "oci_core_security_list" "these" {
         src : x.src
         src_type : x.src_type
         stateless : x.stateless
-    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
     }
   }
 
@@ -560,13 +560,13 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         src_port_min : x.src_port_min
         src_port_max : x.src_port_max
-    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min == null && x.dst_port_max == null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       udp_options {
         source_port_range {
@@ -588,13 +588,13 @@ resource "oci_core_security_list" "these" {
         stateless : x.stateless
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min == null && x.src_port_max == null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       udp_options {
         max = rule.value.dst_port_max
@@ -616,13 +616,13 @@ resource "oci_core_security_list" "these" {
         src_port_max : x.src_port_max
         dst_port_min : x.dst_port_min
         dst_port_max : x.dst_port_max
-    } if x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
+    } if x.is_create && x.protocol == "17" && x.src_port_min != null && x.src_port_max != null && x.dst_port_min != null && x.dst_port_max != null]
 
     content {
-      protocol         = rule.value.proto
+      protocol    = rule.value.proto
       source      = rule.value.src
       source_type = rule.value.src_type
-      stateless        = rule.value.stateless
+      stateless   = rule.value.stateless
 
       udp_options {
         max = rule.value.dst_port_max

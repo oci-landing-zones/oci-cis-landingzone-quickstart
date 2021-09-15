@@ -1,5 +1,9 @@
+output "service_label" {
+    value = local.display_outputs == true ? var.service_label : null
+}
+
 output "compartments" {
-    value = local.display_outputs == true ? {for k, v in module.lz_compartments.compartments : k => {id:v.id, parent_id:v.compartment_id, time_created:v.time_created}} : null
+    value = local.display_outputs == true ? {for k, v in module.lz_compartments.compartments : k => {name:v.name, id:v.id, parent_id:v.compartment_id, time_created:v.time_created}} : null
 }
 
 output "vcns" {
@@ -16,8 +20,4 @@ output "dmz_subnets" {
 
 output "drg" {
     value = local.display_outputs == true ? (module.lz_drg.drg != null ? {id: module.lz_drg.drg.id, name: module.lz_drg.drg.display_name, parent_id:module.lz_drg.drg.compartment_id, time_created:module.lz_drg.drg.time_created} : null) : null
-}
-
-output "service_label" {
-    value = local.display_outputs == true ? var.service_label : null
 }

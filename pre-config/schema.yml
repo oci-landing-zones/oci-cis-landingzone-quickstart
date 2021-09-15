@@ -33,6 +33,8 @@ variableGroups:
       - "existing_database_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
+      - "existing_adbexainfra_admin_group_name"
+      - "existing_exainfra_admin_group_name"
     visible: advanced_options  
   
   - title: "Policies"
@@ -75,10 +77,8 @@ variables:
     items:
       type: string
     uniqueItems: true
-    maxItems: 5
-    minItems: 0
-    title: "Enclosing Compartment Names (max 5)"
-    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name ending in '-top-cmp'. (Type the name and hit enter to enter multiple values, up to a maximum of 5)."
+    title: "Enclosing Compartment Names"
+    description: "The names of the enclosing compartments that will be created to hold Landing Zone compartments. If not provided, one compartment is created with default name ending in '-top-cmp'. (Type the name and hit enter to enter multiple values)."
     required: false
     default: []
 
@@ -158,9 +158,21 @@ variables:
   existing_announcement_reader_group_name:
     type: string
     title: "Existing announcement readers group name"
-    description: "Existing group to which annoucement reading policies will be granted to."
+    description: "Existing group to which announcement reading policies will be granted to."
     visible: use_existing_groups
       
+  existing_adbexainfra_admin_group_name:
+    type: string
+    title: "Existing ADB-D Exadata infrastructure group name"
+    description: "Existing group to which ADB-D Exadata infrastructure management policies will be granted to."
+    visible: use_existing_groups    
+
+  existing_exainfra_admin_group_name:
+    type: string
+    title: "Existing Exadata Cloud service infrastructure group name"
+    description: "Existing group to which Exadata Cloud service infrastructure management policies will be granted to."
+    visible: use_existing_groups
+
   # Hidden variables
   tenancy_ocid:
     type: string

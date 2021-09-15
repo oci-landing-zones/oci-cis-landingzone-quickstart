@@ -7,4 +7,5 @@
 **/.csv
 *.pem
 **/terraform.tfvars
+**/terraform_*.tfvars
 test/**

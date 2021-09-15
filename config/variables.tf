@@ -244,7 +244,7 @@ variable "exacs_vcn_names" {
 variable "exacs_client_subnet_cidrs" {
   type        = list(string)
   default     = []
-  description = "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each CIDR value relates to one and only one VCN, applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable."
+  description = "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each CIDR value relates to one and only one VCN, applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable. CIDRs must not overlap with 192.168.128.0/20."
   validation {
     condition     = length(var.exacs_client_subnet_cidrs) == 0 || (length(var.exacs_client_subnet_cidrs) < 10 && length(var.exacs_client_subnet_cidrs) > 0 && length([for c in var.exacs_client_subnet_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_client_subnet_cidrs))
     error_message = "Validation failed for exacs_client_subnet_cidrs: values must be in CIDR notation."
@@ -254,7 +254,7 @@ variable "exacs_client_subnet_cidrs" {
 variable "exacs_backup_subnet_cidrs" {
   type        = list(string)
   default     = []
-  description = "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each CIDR value relates to one and only one VCN, applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable."
+  description = "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each CIDR value relates to one and only one VCN, applied to the VCN CIDR assigned to the same index in exacs_vcn_cidrs variable. CIDRs must not overlap with 192.168.128.0/20."
   validation {
     condition     = length(var.exacs_backup_subnet_cidrs) == 0 || (length(var.exacs_backup_subnet_cidrs) < 10 && length(var.exacs_backup_subnet_cidrs) > 0 && length([for c in var.exacs_backup_subnet_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_backup_subnet_cidrs))
     error_message = "Validation failed for exacs_backup_subnet_cidrs: values must be in CIDR notation."

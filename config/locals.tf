@@ -142,4 +142,7 @@ locals {
 
   # Outputs display
   display_outputs = true
+
+  bastion_name = "${var.service_label}Bastion"
+  bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
 }

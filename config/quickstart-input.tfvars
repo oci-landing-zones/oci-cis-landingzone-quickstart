@@ -82,4 +82,7 @@ security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # lis
 # vss_scan_schedule = "WEEKLY"
 # vss_scan_day      = "SUNDAY"
 
+##### Bastion Service variables
+# bastion_create = false
+
 

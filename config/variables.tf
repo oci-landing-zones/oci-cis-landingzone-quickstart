@@ -423,3 +423,9 @@ variable "vss_scan_day" {
     error_message = "Validation failed for vss_scan_day: valid values are SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY (case insensitive)."
   }
 }
+
+variable "bastion_create" {
+  type        = bool
+  default     = false
+  description = "Create a OCI Bastion Service Instance. If set to true, a bastion instance will be created in appdev compartment and app subnet if the network is not connected to on-prem and is also not a hub and spoke network."
+}

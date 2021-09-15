@@ -91,7 +91,10 @@ data "oci_identity_groups" "existing_adbexainfra_admin_group" {
   }
 }
 
-
 data "oci_cloud_guard_cloud_guard_configuration" "this" {
   compartment_id = var.tenancy_ocid
+}
+
+data "oci_objectstorage_namespace" "this" {
+    compartment_id = var.tenancy_ocid
 }

@@ -37,6 +37,7 @@ variable "vcns" {
       dhcp_options_id = string,
       defined_tags    = map(string)
       security_lists = map(object({
+        is_create     = bool
         defined_tags  = map(string),
         freeform_tags = map(string),
         ingress_rules = list(object({

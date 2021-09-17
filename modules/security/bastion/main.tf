@@ -1,9 +1,9 @@
-resource "oci_bastion_bastion" "this" {
-    bastion_type = "standard"
-    compartment_id = var.bastion.compartment_id
-    target_subnet_id = var.bastion.target_subnet_id
-
-    name = var.bastion.name
-    client_cidr_block_allow_list = var.bastion.client_cidr_block_allow_list
-    max_session_ttl_in_seconds = var.bastion.max_session_ttl_in_seconds
+resource "oci_bastion_bastion" "these" {
+  for_each = var.bastions  
+    bastion_type     = "STANDARD"
+    compartment_id   = each.value.compartment_id
+    target_subnet_id = each.value.target_subnet_id
+    name             = each.value.name
+    client_cidr_block_allow_list = each.value.client_cidr_block_allow_list
+    max_session_ttl_in_seconds   = each.value.max_session_ttl_in_seconds
 }

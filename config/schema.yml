@@ -33,7 +33,7 @@ variableGroups:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
-      - "are_vcns_onprem_connected"
+      - "is_vcn_onprem_connected"
       - "existing_drg_id"
       - "hub_spoke_architecture"
       - "dmz_vcn_cidr"
@@ -357,7 +357,7 @@ variables:
   no_internet_access:
     type: boolean
     title: "Block Internet Access?"
-    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to provide 'On-premises network CIDR blocks'."
+    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to check 'Connect Landing Zone VCN(s) to on-premises network?' in the Networking section above."
     default: false
 
   hub_spoke_architecture:

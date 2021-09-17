@@ -11,13 +11,13 @@ locals {
 
   ### IAM
   # Default compartment names
-  default_enclosing_compartment = {"key":"${var.service_label}-top-cmp", "name":"${var.service_label}-top-cmp"}
-  security_compartment          = {"key":"${var.service_label}-security-cmp", "name":"${var.service_label}-security-cmp"}
-  network_compartment           = {"key":"${var.service_label}-network-cmp", "name":"${var.service_label}-network-cmp"}
-  database_compartment          = {"key":"${var.service_label}-database-cmp", "name":"${var.service_label}-database-cmp"}
-  appdev_compartment            = {"key":"${var.service_label}-appdev-cmp", "name":"${var.service_label}-appdev-cmp"}
-  exainfra_compartment          = {"key":"${var.service_label}-exainfra-cmp", "name":"${var.service_label}-exainfra-cmp"}
-  adbexainfra_compartment       = {"key":"${var.service_label}-adbdexainfra-cmp", "name":"${var.service_label}-adbdexainfra-cmp"}
+  default_enclosing_compartment = {key:"${var.service_label}-top-cmp",          name:"${var.service_label}-top-cmp"}
+  security_compartment          = {key:"${var.service_label}-security-cmp",     name:"${var.service_label}-security-cmp"}
+  network_compartment           = {key:"${var.service_label}-network-cmp",      name:"${var.service_label}-network-cmp"}
+  database_compartment          = {key:"${var.service_label}-database-cmp",     name:"${var.service_label}-database-cmp"}
+  appdev_compartment            = {key:"${var.service_label}-appdev-cmp",       name:"${var.service_label}-appdev-cmp"}
+  exainfra_compartment          = {key:"${var.service_label}-exainfra-cmp",     name:"${var.service_label}-exainfra-cmp"}
+  adbexainfra_compartment       = {key:"${var.service_label}-adbdexainfra-cmp", name:"${var.service_label}-adbdexainfra-cmp"}
 
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
@@ -143,6 +143,6 @@ locals {
   # Outputs display
   display_outputs = true
 
-  bastion_name = "${var.service_label}Bastion"
+  bastion_name = "${var.service_label}-bastion"
   bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
 }

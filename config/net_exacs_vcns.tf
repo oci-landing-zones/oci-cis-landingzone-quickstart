@@ -17,7 +17,6 @@ locals {
     }
   }}
 
-  ### VCNs ###
   exacs_vcns = { for key, vcn in local.exacs_vcns_map : vcn.name => {
     compartment_id    = module.lz_compartments.compartments[local.network_compartment.key].id
     cidr              = vcn.cidr
@@ -28,14 +27,62 @@ locals {
     defined_tags      = null
     subnets = { for s in local.exacs_subnet_names : replace("${vcn.name}-${s}-snt", "-vcn", "") => {
       compartment_id  = null
+      name            = replace("${vcn.name}-${s}-snt", "-vcn", "")
       defined_tags    = null
       cidr            = length(vcn.subnets_cidr[s]) > 0 ? vcn.subnets_cidr[s] : cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
       dns_label       = s
       private         = true
       dhcp_options_id = null
-      security_lists  = {}
+      security_lists  = {"security-list" = {
+        is_create = true
+        compartment_id = null
+        ingress_rules = [{
+          is_create = (s == local.client_subnet_prefix)
+          protocol = "6"
+          stateless = false
+          description = "Allows SSH connections from hosts in Exadata client subnet."
+          src = length(vcn.subnets_cidr[s]) > 0 ? vcn.subnets_cidr[s] : cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
+          icmp_type = null
+          icmp_code = null
+          src_port_min = null
+          src_port_max = null
+          src_type = "CIDR_BLOCK"
+          dst_port_min = "22" 
+          dst_port_max = "22"
+        }]
+        egress_rules = [{
+          is_create = (s == local.client_subnet_prefix)
+          protocol = "6"
+          stateless = false
+          description = "Allows SSH connections to hosts in Exadata client subnet."
+          dst = length(vcn.subnets_cidr[s]) > 0 ? vcn.subnets_cidr[s] : cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
+          dst_type = "CIDR_BLOCK"
+          icmp_type = null
+          icmp_code = null
+          src_port_min = null 
+          src_port_max = null
+          dst_port_min = "22"
+          dst_port_max = "22"
+        },
+        {
+          is_create = (s == local.client_subnet_prefix && var.bastion_create == true && length(var.onprem_cidrs) == 0 && && var.hub_spoke_architecture == false)
+          protocol = "6"
+          stateless = false
+          description = "Allows SSH connections to hosts in ${vcn.cidr} CIDR range."
+          dst = vcn.cidr
+          dst_type = "CIDR_BLOCK"
+          icmp_type = null
+          icmp_code = null
+          src_port_min = null 
+          src_port_max = null
+          dst_port_min = "22"
+          dst_port_max = "22"
+        }]
+        defined_tags  = null
+        freeform_tags = null
       }}
     }}
+  }}
 
   ### Route Tables ###
   ## Client Subnet Route Tables

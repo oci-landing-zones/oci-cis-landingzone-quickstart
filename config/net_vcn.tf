@@ -24,39 +24,29 @@ locals {
     defined_tags      = null
     subnets = { for s in local.spoke_subnet_names : replace("${vcn.name}-${s}-subnet", "-vcn", "") => {
       compartment_id  = null
+      name            = replace("${vcn.name}-${s}-subnet", "-vcn", "")
       defined_tags    = null
       cidr            = cidrsubnet(vcn.cidr, 4, index(local.spoke_subnet_names, s))
       dns_label       = s
       private         = length(var.dmz_vcn_cidr) > 0 || var.no_internet_access ? true : (index(local.spoke_subnet_names, s) == 0 ? false : true)
       dhcp_options_id = null
-      security_lists = { icmp_security_list : {
+      security_lists = { "security-list" : {
         compartment_id : null
         is_create : true
-        ingress_rules : [{
-          protocol : "1"
-          stateless : false
-          description : null
-          src : local.anywhere
-          icmp_type : 3
-          icmp_code : 4
-          src_port_min : null
-          src_port_max : null
-          src_type : null
-          dst_port_min : null 
-          dst_port_max : null
-        }]
+        ingress_rules : []
         egress_rules : [{
-          protocol : "1"
+          is_create : s == "app" && var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false
+          protocol : "6"
           stateless : false
-          description : null
-          dst : local.anywhere
-          dst_type : null
-          icmp_type : 3
-          icmp_code : 4
+          description : "Allows SSH connections to hosts in ${vcn.cidr} CIDR range."
+          dst : vcn.cidr
+          dst_type : "CIDR_BLOCK"
+          icmp_type : null
+          icmp_code : null
           src_port_min : null 
           src_port_max : null
-          dst_port_min : null
-          dst_port_max : null
+          dst_port_min : "22"
+          dst_port_max : "22"
         }]
         defined_tags  = null
         freeform_tags = null

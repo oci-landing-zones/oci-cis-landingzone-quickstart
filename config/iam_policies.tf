@@ -99,6 +99,16 @@ locals {
         "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}"] 
 
+  ## Exadata admin permissions
+  database_permissions_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
+        "Allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to read cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage databases in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}"] : []     
+
   ## AppDev admin permissions
   appdev_permissions = ["Allow group ${local.appdev_admin_group_name} to read all-resources in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to manage functions-family in compartment ${local.appdev_compartment.name}",
@@ -134,10 +144,10 @@ locals {
         "Allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}"] 
 
     ## Exadata admin permissions
-    exainfra_permissions_on_exainfra_cmp = ["Allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
-                                            "Allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
-                                            "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}"]
-    
+    exainfra_permissions = ["Allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}"]
+
     default_policies = { 
       (local.network_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
@@ -152,7 +162,7 @@ locals {
       (local.database_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
-        statements = local.database_permissions
+        statements = concat(local.database_permissions, local.database_permissions_on_exainfra_cmp)
       },
       (local.appdev_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
@@ -170,7 +180,7 @@ locals {
       (local.exainfra_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."
-        statements  = local.exainfra_permissions_on_exainfra_cmp
+        statements  = local.exainfra_permissions
       }
     } : {}
   

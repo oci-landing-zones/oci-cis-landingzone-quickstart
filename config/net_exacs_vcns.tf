@@ -65,7 +65,7 @@ locals {
           dst_port_max = "22"
         },
         {
-          is_create = (s == local.client_subnet_prefix && var.bastion_create == true && length(var.onprem_cidrs) == 0 && && var.hub_spoke_architecture == false)
+          is_create = (s == local.client_subnet_prefix && var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false)
           protocol = "6"
           stateless = false
           description = "Allows SSH connections to hosts in ${vcn.cidr} CIDR range."

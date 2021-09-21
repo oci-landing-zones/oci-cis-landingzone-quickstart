@@ -37,20 +37,34 @@ Variable Name | Description | Required | Default Value
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | Yes | ["10.0.0.0/20"]
+**vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | []
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
-**public_src_bastion_cidrs** | External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
-**public_src_lbr_cidrs** | External IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
-**public_dst_cidrs** | External IP ranges in CIDR notation for HTTPS outbound connections. | No | []
-**no_internet_access** | Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required. | Yes | false
-**hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | Yes | false
+**is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is created and attached to the VCNs. | No | false
+**existing_drg_id** | The OCID of an existing DRG. If provided, no DRG is created even if *is_vc_onprem_connected* is set to true.  | No | ""
+**hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | No | false
 **dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. | Yes, if *hub_spoke_architecture* is true | ""
 **dmz_for_firewall** | Determines if the DMZ VCN will be used for deploying 3rd party firewalls via terraform. DRG attachments will not be created. | No | false
 **dmz_number_of_subnets** | The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required. | Yes, if *dmz_vcn_cidr* is provided  | 2
 **dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if *dmz_vcn_cidr*'s prefix is 20 (/20) and *dmz_subnet_size* is 4, subnets are going to be /24. | Yes, if *dmz_vcn_cidr* is provided  | 4
-**is_vcn_onprem_connected** | whether the VCN is connected to on-premises, in which case a DRG is created and attached to the VCN. | Yes | false
-**existing_drg_id** | The DRG OCID of an existing DRG, if using an existing DRG. | No | ""
-**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | Yes, if *is_vcn_onprem_connected* is true | []
+
+### <a name="exadata_variables"></a>Exadata Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**exacs_vcn_cidrs** | List of CIDR blocks for the Exadata VCNs, in CIDR notation. Each provided CIDR relates to one and only one VCN. Be mindful about Exadata *Requirements for IP Address Space* in <a href="https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm">OCI documentation</a>. You can provide up to nine CIDRs. | No | []
+**exacs_vcn_names** | List of Exadata VCNs custom names, overriding the default Exadata VCNs names. Each provided name relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. You can provide up to nine names. | No | []
+**exacs_client_subnet_cidrs** | List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs. | No | []
+**exacs_backup_subnet_cidrs** | List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs.| No | []
+**exacs_vcn_cidrs** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | true
+
+### <a name="connectivity_variables"></a>Connectivity Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to set *is_vcn_onprem_connected* to true. | No | false
+**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
+**public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
+**public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. | No | []
+**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
+**onprem_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value
@@ -61,12 +75,12 @@ Variable Name | Description | Required | Default Value
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment. | Yes | ENABLE
+**cloud_guard_configuration_status** | Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment. | No | ENABLE
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**create_service_connector_audit** | Whether to create Service Connector Hub for Audit logs. | Yes | false
+**create_service_connector_audit** | Whether to create Service Connector Hub for Audit logs. | No | false
 **service_connector_audit_target** | Destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
 **service_connector_audit_state** | State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
 **service_connector_audit_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
@@ -74,7 +88,7 @@ Variable Name | Description | Required | Default Value
 **sch_audit_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
 **sch_audit_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
 **sch_audit_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
-**create_service_connector_vcnFlowLogs** | Whether to create Service Connector Hub for VCN Flow logs. | Yes | false
+**create_service_connector_vcnFlowLogs** | Whether to create Service Connector Hub for VCN Flow logs. | No | false
 **service_connector_vcnFlowLogs_target** | Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
 **service_connector_vcnFlowLogs_state** | State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
 **service_connector_vcnFlowLogs_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
@@ -86,9 +100,9 @@ Variable Name | Description | Required | Default Value
 ### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | Yes | true
-**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | Yes | "WEEKLY"
-**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | Yes | "SUNDAY"
+**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | No | true
+**vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | No | "WEEKLY"
+**vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | No | "SUNDAY"
 
 ## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
 Input variables used in the pre-config module are all defined in pre-config/variables.tf:

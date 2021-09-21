@@ -295,7 +295,7 @@ variables:
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"
-    description: "If selected, a DRG is provisioned. Required if 'Block Internet Access?' is checked in the \"Connectivity\" section."
+    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is created and attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked in the \"Connectivity\" section."
     default: false
     visible: net_advanced_options
 
@@ -306,7 +306,7 @@ variables:
     uniqueItems: true  
     title: "Inbound SSH CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_src_lbr_cidrs:
@@ -316,7 +316,7 @@ variables:
     uniqueItems: true  
     title: "Inbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_dst_cidrs:
@@ -326,13 +326,13 @@ variables:
     uniqueItems: true  
     title: "Outbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "External IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
     default: []  
 
   existing_drg_id:
     type: string
     title: "Existing DRG OCID"
-    description: "If using an existing DRG."
+    description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
     default: ""
     visible: net_advanced_options
         
@@ -343,7 +343,7 @@ variables:
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "On-premises IP ranges allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
     
   onprem_src_ssh_cidrs:
     type: array
@@ -352,7 +352,7 @@ variables:
     uniqueItems: true  
     title: "On-premises network CIDR Blocks Allowed to Connect over SSH"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "On-premises IP ranges allowed to make SSH inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
+    description: "List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
     
   no_internet_access:
     type: boolean
@@ -431,7 +431,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "Exadata VCNs CIDR Blocks (Must not overlap with 192.168.128.0/20)"
-    description: "CIDR blocks for the Exadata VCNs in CIDR notation. Be mindful about Exadata \"Requirements for IP Address Space\" in <a href=\"https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm\">OCI documentation</a>."
+    description: "CIDR blocks for the Exadata VCNs in CIDR notation. Be mindful about Exadata \"Requirements for IP Address Space\" in <a href=\"https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm\">OCI documentation</a>. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: []
 #    visible: deploy_exacs
 
@@ -490,7 +490,7 @@ variables:
   deploy_exainfra_cmp:
     type: boolean
     title: "Create Compartment for Exadata Infrastructure?"
-    description: "Whether a compartment for Exadata infrastructure should be created. In unchecked, Exadata infrastructure should be created in the database compartment."
+    description: "Whether a compartment for Exadata infrastructure should be created. If unchecked, Exadata infrastructure should be created in the database compartment."
     default: true
     visible: exa_advanced_options
     #  and:

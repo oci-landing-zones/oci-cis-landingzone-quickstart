@@ -102,7 +102,7 @@ locals {
   ## Exadata admin permissions
   database_permissions_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
         "Allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
-        "Allow group ${local.database_admin_group_name} to read cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
         "Allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
         "Allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
         "Allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",

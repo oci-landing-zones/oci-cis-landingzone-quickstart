@@ -13,16 +13,16 @@ Customers can now provision networks, compartment, group and policies for Exadat
 Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned for a single VCN and it does not allow access to other VCNs. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network.
 
 ## <a name="sec_lists_2_1_0">Individual Security Lists for Subnets</a>
-Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that requires Security Lists instead of Network Security Groups.
+Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that require Security Lists instead of Network Security Groups.
 
 ## <a name="cmp_renaming_2_1_0">Ability to Rename Compartments</a>
-The Landing Zone creates compartments names with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time, with all policies adjusted accordingly. 
+The Landing Zone creates compartments with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time with all policies adjusted accordingly. 
 
 ## <a name="rules_descriptions_update_2_1_0">Updates to NSGs and Route Rules Descriptions</a>
 The descriptions of rules in NSGs and route tables have been updated aiming at more clarity and verbiage standardization.
 
 ## <a name="orm_update_2_1_0">Updates to Resource Manager Interface</a>
-With the introduction of Exadata support, Landing Zone schema.yaml has been update for better usability in OCI Resource Manager. A new variables group named 'Connectivity' has been introduced, containing the variables for defining the properties controlling the sources and destination addresses for Landing Zone connectivity. 
+With the introduction of Exadata support, Landing Zone schema.yaml has been update for better usability in OCI Resource Manager. A new variables group named 'Connectivity' has been introduced, containing the variables for defining properties that control the sources and destinations for Landing Zone connectivity. 
 
 # August 12, 2021 Release Notes - Stable 2.0.3
 1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)

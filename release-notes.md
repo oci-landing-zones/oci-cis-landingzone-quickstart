@@ -1,6 +1,32 @@
+# September 24, 2021 Release Notes - Stable 2.1.0
+1. [Ability to Provision Infrastructure for Exadata Deployments](#exadata_2_1_0)
+1. [OCI Bastion Service Integration](#bastion_2_1_0)
+1. [Individual Security Lists for Subnets](#sec_lists_2_1_0)
+1. [Ability to Rename Compartments](#cmp_renaming_2_1_0)
+1. [Updates to NSGs and Route Rules Descriptions](#rules_descriptions_update_2_1_0)
+1. [Updates to Resource Manager Interface](#orm_update_2_1_0)
+
+## <a name="exadata_2_1_0">Ability to Provision Infrastructure for Exadata Deployments</a>
+Customers can now provision networks, compartment, group and policies for Exadata deployments. The provisioned Exadata resources are deployed in tandem with the overall Landing Zone configuration. VCNs are provisioned with client and backup subnets. A compartment is by default created for the Exadata infrastructure and an extra group and policies are configured accordingly. Optionally, users may opt for deploying Exadata infrastructure in the database compartment with appropriate permissions granted to database administrators.
+
+## <a name="bastion_2_1_0">OCI Bastion Service Integration</a>
+Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned for a single VCN and it does not allow access to other VCNs. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network.
+
+## <a name="sec_lists_2_1_0">Individual Security Lists for Subnets</a>
+Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that requires Security Lists instead of Network Security Groups.
+
+## <a name="cmp_renaming_2_1_0">Ability to Rename Compartments</a>
+The Landing Zone creates compartments names with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time, with all policies adjusted accordingly. 
+
+## <a name="rules_descriptions_update_2_1_0">Updates to NSGs and Route Rules Descriptions</a>
+The descriptions of rules in NSGs and route tables have been updated aiming at more clarity and verbiage standardization.
+
+## <a name="orm_update_2_1_0">Updates to Resource Manager Interface</a>
+With the introduction of Exadata support, Landing Zone schema.yaml has been update for better usability in OCI Resource Manager. A new variables group named 'Connectivity' has been introduced, containing the variables for defining the properties controlling the sources and destination addresses for Landing Zone connectivity. 
+
 # August 12, 2021 Release Notes - Stable 2.0.3
 1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)
-1. [Consolidated Network and IAM notifications](#notifications_consolidation_2_0_3)
+1. [Consolidated Network and IAM Notifications](#notifications_consolidation_2_0_3)
 1. [Database Customer Managed Key Support](#database_key_support_2_0_3)
 1. [Compliance Checking supports free tier tenancy](#cis_report_update_2_0_3)
 
@@ -8,7 +34,7 @@
 ## <a name="existing_drg_2_0_3"></a>1. Ability to use existing Dynamic Routing Gateway (DRG) with the Landing Zone
 Customers that have an existing DRG v2 (a DRG created after April 15, 2021) can now use that existing DRG v2 instead of having the Landing Zone create a new DRG v2. This is useful for customers that have connected a FastConnect to an existing DRG.
 
-## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM notifications
+## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM Notifications
 In previous versions of the Landing Zone notification event rules were created for each CIS benchmark monitoring recommendation.  To help reduce the number of event rules created all the IAM recommendations are combined into a single event rule and all the network recommendations are combined into another event rule. 
 
 ## <a name="database_key_support_2_0_3"></a>3. Autonomous Database Customer Managed Key Support

@@ -111,8 +111,7 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
-      - "bastion_create"
-
+  
 variables:
   env_advanced_options:
     type: boolean
@@ -750,13 +749,6 @@ variables:
           - vss_scan_schedule
           - "WEEKLY"
 
-# Bastion Service
-#  bastion_create:
-#    type: boolean
-#    title: "Create Bastion Service Instance"
-#    description: "Whether Bastion Service instance should be created. Even when true, a Bastion instance is only created when VCN is not Hub & Spoke and is not connected to the on-premises network."
-#    default: false
-  
 # Variables not required to display to user
   user_ocid:
     type: string

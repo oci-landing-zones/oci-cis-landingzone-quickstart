@@ -10,7 +10,7 @@
 Customers can now provision networks, compartment, group and policies for Exadata deployments. The provisioned Exadata resources are deployed in tandem with the overall Landing Zone configuration. VCNs are provisioned with client and backup subnets. A compartment is by default created for the Exadata infrastructure and an extra group and policies are configured accordingly. Optionally, users may opt for deploying Exadata infrastructure in the database compartment with appropriate permissions granted to database administrators.
 
 ## <a name="bastion_2_1_0">OCI Bastion Service Integration</a>
-Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned for a single VCN and it does not allow access to other VCNs. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network.
+Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned into a VCN if a single VCN or a single Exadata VCN is being deployed. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network. In these cases, SSH inbound access is expected to be provided by Bastion servers in the DMZ (Hub) or hosts in the on-premises network.
 
 ## <a name="sec_lists_2_1_0">Individual Security Lists for Subnets</a>
 Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that require Security Lists instead of Network Security Groups.

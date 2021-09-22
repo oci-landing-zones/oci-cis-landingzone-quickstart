@@ -35,7 +35,7 @@ locals {
     ]
 
   ])
-
+  
   default_security_list_opt = {
     display_name   = "unnamed"
     compartment_id = null

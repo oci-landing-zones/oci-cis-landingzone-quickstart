@@ -35,7 +35,7 @@ locals {
         is_create : true
         ingress_rules : []
         egress_rules : [{
-          is_create : s == "app" && var.bastion_create == true && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false
+          is_create : s == "app" && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false
           protocol : "6"
           stateless : false
           description : "Allows SSH connections to hosts in ${vcn.cidr} CIDR range."

@@ -29,19 +29,22 @@ variable "vcns" {
     is_create_igw     = bool,
     is_attach_drg     = bool,
     block_nat_traffic = bool,
+    defined_tags      = map(string)
     subnets = map(object({
-      compartment_id  = string,
-      cidr            = string,
-      dns_label       = string,
-      private         = bool,
-      dhcp_options_id = string,
-      defined_tags    = map(string)
-      security_lists = map(object({
-        is_create     = bool
-        defined_tags  = map(string),
-        freeform_tags = map(string),
-        ingress_rules = list(object({
-          is_create    = bool
+      compartment_id    = string,
+      name              = string,
+      cidr              = string,
+      dns_label         = string,
+      private           = bool,
+      dhcp_options_id   = string,
+      defined_tags      = map(string)
+      security_lists    = map(object({
+        is_create      = bool,
+        compartment_id = string,
+        defined_tags   = map(string),
+        freeform_tags  = map(string),
+        ingress_rules  = list(object({
+          is_create    = bool,
           stateless    = bool,
           protocol     = string,
           description  = string,
@@ -55,7 +58,7 @@ variable "vcns" {
           icmp_code    = number
         })),
         egress_rules = list(object({
-          is_create    = bool
+          is_create    = bool,
           stateless    = bool,
           protocol     = string,
           description  = string,
@@ -69,8 +72,6 @@ variable "vcns" {
           icmp_code    = number
         }))
       }))
-    })),
-
-    defined_tags = map(string)
+    }))
   }))
 }

@@ -154,6 +154,12 @@ variable "vcn_names" {
   }
 }
 
+variable "is_vcn_onprem_connected" {
+  type        = bool
+  default     = false
+  description = "Determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true."
+}
+
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false

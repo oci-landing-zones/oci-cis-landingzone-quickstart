@@ -47,7 +47,7 @@ Variable Name | Description | Required | Default Value
 **dmz_number_of_subnets** | The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required. | Yes, if *dmz_vcn_cidr* is provided  | 2
 **dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if *dmz_vcn_cidr*'s prefix is 20 (/20) and *dmz_subnet_size* is 4, subnets are going to be /24. | Yes, if *dmz_vcn_cidr* is provided  | 4
 
-### <a name="exadata_variables"></a>Exadata Variables
+### <a name="exadata_variables"></a>Exadata Cloud Service Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **exacs_vcn_cidrs** | List of CIDR blocks for the Exadata VCNs, in CIDR notation. Each provided CIDR relates to one and only one VCN. Be mindful about Exadata *Requirements for IP Address Space* in <a href="https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm">OCI documentation</a>. You can provide up to nine CIDRs. | No | []
@@ -64,7 +64,7 @@ Variable Name | Description | Required | Default Value
 **public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
 **public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. | No | []
 **onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
-**onprem_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
+**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value

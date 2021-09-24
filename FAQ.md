@@ -84,10 +84,10 @@ The Landing Zone can deploy the following services:
 - Vulnerability Scanning
     - Targets
     - Recipe
+- Bastion
 - Events Rules
 - Notifications
     - Topics
     - Subscriptions
 - Object Storage
-- Bastion
 

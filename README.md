@@ -29,6 +29,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Cloud Guard
 - Logging
 - Vulnerability Scanning
+- Bastion
 - Events
 - Notifications
 - Object Storage

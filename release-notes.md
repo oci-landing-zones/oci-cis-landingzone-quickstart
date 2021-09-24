@@ -1,6 +1,37 @@
+# September 24, 2021 Release Notes - Stable 2.1.0
+1. [Ability to Provision Infrastructure for Exadata Cloud Service Deployments](#exadata_2_1_0)
+1. [OCI Bastion Service Integration](#bastion_2_1_0)
+1. [Individual Security Lists for Subnets](#sec_lists_2_1_0)
+1. [Ability to Rename Compartments](#cmp_renaming_2_1_0)
+1. [Updates to NSGs and Route Rules Descriptions](#rules_descriptions_update_2_1_0)
+1. [Input Variable for SSH Connectivity from On-premises Network](#on_prem_ssh_cidrs_2_1_0)
+1. [Updates to Resource Manager Interface](#orm_update_2_1_0)
+
+## <a name="exadata_2_1_0">Ability to Provision Infrastructure for Exadata Cloud Service Deployments</a>
+Landing Zone can now provision VCNs, compartment, group and policies for Exadata Cloud Service (ExaCS) deployments. The provisioned resources are deployed in tandem with the overall Landing Zone configuration. VCNs are provisioned with client and backup subnets. If a Hub & Spoke network architecture is being deployed, the ExaCS VCNs are configured as spoke VCNs. A compartment is by default created for the ExaCS infrastructure and an extra group and policies are configured accordingly. Optionally, users may opt for deploying ExaCS infrastructure in the database compartment with appropriate permissions granted to database administrators.
+
+## <a name="bastion_2_1_0">OCI Bastion Service Integration</a>
+Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned into a VCN if a single VCN or a single ExaCS VCN is being deployed. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network. In these cases, SSH inbound access is expected to be provided by Bastion servers in the DMZ (Hub) or hosts in the on-premises network.
+
+## <a name="sec_lists_2_1_0">Individual Security Lists for Subnets</a>
+Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that require Security Lists instead of Network Security Groups.
+
+## <a name="cmp_renaming_2_1_0">Ability to Rename Compartments</a>
+Landing Zone creates compartments with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time with all policies adjusted accordingly. 
+
+## <a name="rules_descriptions_update_2_1_0">Updates to NSGs and Route Rules Descriptions</a>
+The descriptions of rules in NSGs and route tables have been updated aiming at more clarity and verbiage standardization.
+
+## <a name="on_prem_ssh_cidrs_2_1_0">Input Variable for SSH Connectivity from On-premises Network</a>
+Variable *onprem_src_ssh_cidrs* is introduced. It is a list of on-premises CIDR blocks allowed to connect to Landing Zone over SSH. It is added to network security rules for ingress connectivity to Landing Zone networks. The *on_prem_ssh_cidrs* must be a subset of the *onprem_cidrs* variable, which are used for routing between on-premises and Landing Zone networks.
+
+## <a name="orm_update_2_1_0">Updates to Resource Manager Interface</a>
+With the introduction of Exadata Cloud Service support, Landing Zone schema.yaml has been updated for better usability in OCI Resource Manager. A new variable group named 'Connectivity' has been introduced, containing variables for defining properties that control the sources and destinations for Landing Zone connectivity. 
+
+
 # August 12, 2021 Release Notes - Stable 2.0.3
 1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)
-1. [Consolidated Network and IAM notifications](#notifications_consolidation_2_0_3)
+1. [Consolidated Network and IAM Notifications](#notifications_consolidation_2_0_3)
 1. [Database Customer Managed Key Support](#database_key_support_2_0_3)
 1. [Compliance Checking supports free tier tenancy](#cis_report_update_2_0_3)
 
@@ -8,7 +39,7 @@
 ## <a name="existing_drg_2_0_3"></a>1. Ability to use existing Dynamic Routing Gateway (DRG) with the Landing Zone
 Customers that have an existing DRG v2 (a DRG created after April 15, 2021) can now use that existing DRG v2 instead of having the Landing Zone create a new DRG v2. This is useful for customers that have connected a FastConnect to an existing DRG.
 
-## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM notifications
+## <a name="notifications_consolidation_2_0_3"></a>2. Consolidated Network and IAM Notifications
 In previous versions of the Landing Zone notification event rules were created for each CIS benchmark monitoring recommendation.  To help reduce the number of event rules created all the IAM recommendations are combined into a single event rule and all the network recommendations are combined into another event rule. 
 
 ## <a name="database_key_support_2_0_3"></a>3. Autonomous Database Customer Managed Key Support

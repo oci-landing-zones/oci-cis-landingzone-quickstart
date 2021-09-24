@@ -62,7 +62,7 @@ data "oci_core_network_security_groups" "these" {
 
 locals {
   local_nsg_ids  = { for i in oci_core_network_security_group.these : i.display_name => i.id }
-  remote_nsg_ids = { for k,v in var.nsgs : k => [for i in data.oci_core_network_security_groups.these[k].network_security_groups : i.id]}
+  remote_nsg_ids = { for k,v in var.nsgs : k => [for i in data.oci_core_network_security_groups.these[k].network_security_groups : i.id] if contains(keys(data.oci_core_network_security_groups.these),k)}
   nsg_ids        = merge(local.remote_nsg_ids, local.local_nsg_ids)
 }
 

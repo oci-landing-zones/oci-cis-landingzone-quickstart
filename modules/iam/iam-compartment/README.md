@@ -22,10 +22,10 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| compartments | n/a | <pre>map(object({<br>    parent_id    = string<br>    description  = string<br>  }))</pre> | n/a | yes |
+| compartments | n/a | <pre>map(object({<br>    parent_id     = string<br>    name          = string<br>    description   = string<br>    enable_delete = string<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| compartments | The compartments, indexed by name. |
+| compartments | The compartments, indexed by keys in var.compartments. |

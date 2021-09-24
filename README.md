@@ -41,26 +41,32 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 
  ## <a name="architecture"></a>Architecture
  ### <a name="arch-iam"></a>IAM
-The Landing Zone template creates four compartments in the tenancy or under an enclosing compartment:
- - A network compartment: for all networking resources.
- - A security compartment: for all logging, key management, scanning, and notifications resources. 
- - An application development compartment: for application development related services, including compute, storage, functions, streams, Kubernetes, API Gateway, etc. 
- - A database compartment: for all database resources. 
- - An enclosing compartment: provision the above four Landing Zone compartments within a compartment at any level in the compartment hierarchy. 
+The Landing Zone template creates a few compartments in the tenancy root compartment or under an enclosing compartment:
+ - Network compartment: for all networking resources.
+ - Security compartment: for all logging, key management, scanning, and notifications resources. 
+ - Application Development compartment: for application development related services, including Compute, Storage, Functions, Streams, Kubernetes, API Gateway, etc. 
+ - Database compartment: for all database resources. 
+ - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud service, customers can choose between creating a specific compartment or using the Database compartment.   
+ - Enclosing compartment: a compartment at any level in the compartment hierarchy to hold the above compartments. 
 
 The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
 
  ### <a name="arch-networking"></a>Networking
- The Terraform code deploys a standard three-tier network architecture within one or more Virtual Cloud Network (VCN)s. The three tiers are divided into:
+ The Terraform code provisions a standard three-tier network architecture within one or more Virtual Cloud Network (VCN)s. The three tiers are divided into:
  
  - One public subnet for load balancers and bastion servers;
  - Two private subnets: one for the application tier and one for the database tier.
+
+Optionally, the Terraform code can provision one or more VCNs configured for Exadata deployments. These VCNs are comprised of:
+
+- One private client subnet;
+- One private backup subnet.
  
 The VCNs are either stand alone networks or in one of the below Hub and Spoke architectures:
 - **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over a single FastConnect private virtual circuit or Site-to-Site VPN and uses a DRG as the hub.
 - **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a hub VCN before they can be sent to another network.
 
-The above can be deploy without the creation of Internet Gateways and NAT Gateways to provide a more isolated network. 
+The above can be deployed without the creation of Internet Gateways and NAT Gateways to provide a more isolated network. 
 
 ### <a name="arch-diagram"></a>Diagram
 The diagram below shows services and resources that are deployed in a single VCN deployment:
@@ -112,7 +118,7 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
         2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
     ```
 
-        This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
+    This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
 * **OCI Compartment Deletion**
     * By design, OCI compartments are not deleted upon Terraform destroy by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).

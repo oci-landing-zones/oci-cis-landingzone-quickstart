@@ -50,7 +50,7 @@ To allow the Auditor group to write the reports to an output bucket the below po
 
 <a name="networking"></a>**7. What network architectures can be deployed by the Landing Zone?**
 
-The Landing Zone can deploy multiple network architectures.  It can create multiple VCNs as either stand alone networks or in one of the below Hub and Spoke architectures:
+The Landing Zone can deploy multiple network architectures.  It can create multiple VCNs (including VCNs configured for Exadata Cloud service deployments) as either stand alone networks or in one of the below Hub and Spoke architectures:
 - **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over a single FastConnect private virtual circuit or Site-to-Site VPN and uses a DRG as the hub.
 - **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a hub VCN before they can be sent to another network.
 
@@ -89,4 +89,5 @@ The Landing Zone can deploy the following services:
     - Topics
     - Subscriptions
 - Object Storage
+- Bastion
 

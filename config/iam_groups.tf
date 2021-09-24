@@ -3,28 +3,25 @@
 
 ### This Terraform configuration provisions Landing Zone groups.
 
-module "lz_groups" {
-  source       = "../modules/iam/iam-group"
-  providers    = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
-  groups = var.use_existing_groups == false ? {
+locals {
+  default_groups = {
     (local.network_admin_group_name) = {
-      description  = "Landing Zone group for managing networking in compartment ${local.network_compartment_name}."
+      description  = "Landing Zone group for managing networking in compartment ${local.network_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.security_admin_group_name) = {
-      description  = "Landing Zone group for managing security services in compartment ${local.security_compartment_name}."
+      description  = "Landing Zone group for managing security services in compartment ${local.security_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.appdev_admin_group_name) = {
-      description  = "Landing Zone group for managing app development related services in compartment ${local.appdev_compartment_name}."
+      description  = "Landing Zone group for managing app development related services in compartment ${local.appdev_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
     (local.database_admin_group_name) = {
-      description  = "Landing Zone group for managing databases in compartment ${local.database_compartment_name}."
+      description  = "Landing Zone group for managing databases in compartment ${local.database_compartment.name}."
       user_ids     = []
       defined_tags = null
     },
@@ -48,5 +45,21 @@ module "lz_groups" {
       user_ids     = []
       defined_tags = null
     },
+  }
+  exainfra_group = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
+    (local.exainfra_admin_group_name) = {
+      description  = "Landing Zone group for managing Exadata infrastructure in the tenancy."
+      user_ids     = []
+      defined_tags = null
+    }
   } : {}
+  
+  groups = merge(local.default_groups,local.exainfra_group)
+
+}
+module "lz_groups" {
+  source       = "../modules/iam/iam-group"
+  providers    = { oci = oci.home }
+  tenancy_ocid = var.tenancy_ocid
+  groups = var.use_existing_groups == false ? local.groups : {}
 }

@@ -86,6 +86,10 @@ variable "existing_announcement_reader_group_name" {
   type    = string
   default = ""
 }
+variable "existing_exainfra_admin_group_name" {
+  type    = string
+  default = ""
+}
 
 # Networking
 variable "no_internet_access" {
@@ -93,10 +97,10 @@ variable "no_internet_access" {
   type        = bool
   description = "Determines if the network will have direct access to the internet. If false, an Internet Gateway and NAT Gateway are created. If true, Internet Gateway and NAT Gateway are NOT created and both is_vcn_onprem_connected and onprem_cidr become required."
 }
-variable "is_vcn_onprem_connected" {
+ variable "is_vcn_onprem_connected" {
   type        = bool
   default     = false
-  description = "Determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true."
+  description = "Whether the VCNs are connected to the on-premises network, in which case a DRG is created and attached to the VCNs. This must be true if 'no_internet_access' is true and 'existing_drg_id' is not provided."
 }
 
 variable "existing_drg_id" {
@@ -107,11 +111,21 @@ variable "existing_drg_id" {
 
 variable "onprem_cidrs" {
   type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. Required if is_vcn_onprem_connected is true."
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
   default     = []
   validation {
     condition     = length([for c in var.onprem_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_cidrs)
     error_message = "Validation failed for onprem_cidrs: values must be in CIDR notation."
+  }
+}
+
+variable "onprem_src_ssh_cidrs" {
+  type        = list(string)
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. They must be a subset of onprem_cidrs."
+  default     = []
+  validation {
+    condition     = length([for c in var.onprem_src_ssh_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_src_ssh_cidrs)
+    error_message = "Validation failed for onprem_src_ssh_cidrs: values must be in CIDR notation."
   }
 }
 
@@ -120,7 +134,7 @@ variable "vcn_cidrs" {
   default     = ["10.0.0.0/20"]
   description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
-    condition     = length(var.vcn_cidrs) < 10 && length(var.vcn_cidrs) > 0 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs)
+    condition     = length(var.vcn_cidrs) > 0 && (length(var.vcn_cidrs) < 10 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs))
     error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
   }
 }
@@ -152,8 +166,8 @@ variable "dmz_vcn_cidr" {
 }
 
 variable "dmz_for_firewall" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
 
@@ -203,6 +217,51 @@ variable "public_dst_cidrs" {
   }
 }
 
+variable "exacs_vcn_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks for the Exadata Cloud Service VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can provider up to nine CIDRs."
+  validation {
+    condition     = length(var.exacs_vcn_cidrs) == 0 || (length(var.exacs_vcn_cidrs) < 10 && length(var.exacs_vcn_cidrs) > 0 && length([for c in var.exacs_vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_vcn_cidrs))
+    error_message = "Validation failed for exacs_vcn_cidrs: values must be in CIDR notation."
+  }
+}
+
+variable "exacs_vcn_names" {
+  type        = list(string)
+  default     = []
+  description = "List of Exadata VCNs custom names, overriding the default Exadata VCNs names. Each provided name relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'exacs_vcn_cidrs'. You can provide up to nine names."
+  validation {
+    condition     = length(var.exacs_vcn_names) == 0 || length(var.exacs_vcn_names) < 10
+    error_message = "Validation failed for exacs_vcn_names: maximum of nine allowed."
+  }
+}
+variable "exacs_client_subnet_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'exacs_vcn_cidrs'. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs."
+  validation {
+    condition     = length(var.exacs_client_subnet_cidrs) == 0 || (length(var.exacs_client_subnet_cidrs) < 10 && length(var.exacs_client_subnet_cidrs) > 0 && length([for c in var.exacs_client_subnet_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_client_subnet_cidrs))
+    error_message = "Validation failed for exacs_client_subnet_cidrs: values must be in CIDR notation."
+  }
+}
+
+variable "exacs_backup_subnet_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'exacs_vcn_cidrs'. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs"
+  validation {
+    condition     = length(var.exacs_backup_subnet_cidrs) == 0 || (length(var.exacs_backup_subnet_cidrs) < 10 && length(var.exacs_backup_subnet_cidrs) > 0 && length([for c in var.exacs_backup_subnet_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.exacs_backup_subnet_cidrs))
+    error_message = "Validation failed for exacs_backup_subnet_cidrs: values must be in CIDR notation."
+  }
+}
+
+variable "deploy_exainfra_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment."
+}
+
 variable "network_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -222,7 +281,7 @@ variable "security_admin_email_endpoints" {
   }
 }
 variable "cloud_guard_configuration_status" {
-  default = "ENABLE"
+  default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))

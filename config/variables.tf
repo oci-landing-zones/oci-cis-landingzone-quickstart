@@ -91,11 +91,6 @@ variable "existing_exainfra_admin_group_name" {
   default = ""
 }
 
-variable "existing_adbexainfra_admin_group_name" {
-  type    = string
-  default = ""
-}
-
 # Networking
 variable "no_internet_access" {
   default     = false
@@ -136,11 +131,11 @@ variable "onprem_src_ssh_cidrs" {
 
 variable "vcn_cidrs" {
   type        = list(string)
-  default     = []
+  default     = ["10.0.0.0/20"]
   description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
-    condition     = length(var.vcn_cidrs) == 0 || (length(var.vcn_cidrs) < 10 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs))
-    error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Maximum of nine allowed."
+    condition     = length(var.vcn_cidrs) > 0 && (length(var.vcn_cidrs) < 10 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs))
+    error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
   }
 }
 
@@ -265,33 +260,6 @@ variable "deploy_exainfra_cmp" {
   type        = bool
   default     = true
   description = "Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment."
-}
-
-variable "adbd_vcn_cidr" {
-  type        = string
-  default     = ""
-  description = "The CIDR block for the ADB-D VCN to be created in CIDR notation. If hub_spoke_architecture is true, this VCN is turned into spoke VCN."
-  validation {
-    condition     = length(var.adbd_vcn_cidr) == 0 || length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$", var.adbd_vcn_cidr)) > 0
-    error_message = "Validation failed for adbd_vcn_cidr: value must be in CIDR notation."
-  }
-}
-
-
-variable "adbd_vcn_name" {
-  type        = string
-  default     = ""
-  description = "The custom name to be given to the ADB-D Cloud Service VCN, overriding the default VCN names (<service-label>-<index>-adbd-vcn). The list length and elements order must match adbd_vcn_cidr'."
-  validation {
-    condition     = length(var.adbd_vcn_name) == 0 || length(var.adbd_vcn_name) < 2
-    error_message = "Validation failed for adbd_vcn_names: maximum of 1 allowed."
-  }
-}
-
-variable "deploy_adbd_infra_cmp" {
-  type        = bool
-  default     = false
-  description = "Whether a compartment for ADB-D infrastructure should be created. If false, ADB-D infrastructure should be created in the database compartment."
 }
 
 variable "network_admin_email_endpoints" {

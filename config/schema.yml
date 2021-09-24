@@ -24,7 +24,6 @@ variableGroups:
       - "existing_appdev_admin_group_name"
       - "existing_database_admin_group_name"
       - "existing_exainfra_admin_group_name"
-      - "existing_adbexainfra_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
  
@@ -50,13 +49,6 @@ variableGroups:
       - "exacs_backup_subnet_cidrs"
       - "deploy_exainfra_cmp"
     
-  - title: "Autonomous Database - Dedicated (ADB-D)"
-    variables:
-      - "adbd_vcn_cidr"
-      - "adbd_advanced_options"
-      - "adbd_vcn_name"
-      - "deploy_adbd_infra_cmp"
-  
   - title: "Connectivity"
     variables:
       - "no_internet_access"
@@ -233,15 +225,6 @@ variables:
         - env_advanced_options
         - use_existing_groups      
   
-  existing_adbexainfra_admin_group_name:
-    type: string
-    title: "Existing admin group name for ADB-D Exadata infrastructure"
-    description: "Existing group to which ADB-D Exadata infrastructure management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups      
-      
   existing_auditor_group_name:
     type: string
     title: "Existing auditors group name"
@@ -276,7 +259,7 @@ variables:
     minItems: 1
     title: "VCNs CIDR Blocks"
     description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub & Spoke Architecture?' is selected under 'Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
-    default: []
+    default: ["10.0.0.0/20"]
 
   vcn_names:
     type: array
@@ -407,20 +390,6 @@ variables:
         - net_advanced_options
         - hub_spoke_architecture
 
-#  deploy_exacs:
-#    type: boolean
-#    title: "Deploy Infrastructure for Exadata Cloud Service?"
-#    description: "Check if you intend to deploy Exadata Cloud service. Configure networking and infrastructure compartment for Exadata."
-#    default: false
-#    visible: net_advanced_options
-
-#  deploy_adbd:
-#    type: boolean
-#    title: "Deploy Infrastructure for ADB-D (Autonomous Database - Dedicated)?"
-#    description: "Check if you intend to deploy ADB-D Cloud service. Configure networking and infrastructure compartment for ADB-D."
-#    default: false
-#    visible: net_advanced_options  
-
   exacs_vcn_cidrs:
     type: array
     items:
@@ -432,7 +401,6 @@ variables:
     title: "Exadata VCNs CIDR Blocks (Must not overlap with 192.168.128.0/20)"
     description: "CIDR blocks for the Exadata VCNs in CIDR notation. Be mindful about Exadata \"Requirements for IP Address Space\" in <a href=\"https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm\">OCI documentation</a>. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: []
-#    visible: deploy_exacs
 
   exa_advanced_options:
     type: boolean
@@ -452,10 +420,7 @@ variables:
     required: false
     default: []
     visible: exa_advanced_options
-    #  and:
-    #    - deploy_exacs
-    #    - exa_advanced_options
-
+    
   exacs_client_subnet_cidrs:
     type: array
     items:
@@ -467,10 +432,7 @@ variables:
     title: "CIDR Blocks for Exadata VCNs Client Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: exa_advanced_options
-    #  and:
-    #    - deploy_exacs
-    #    - exa_advanced_options
-
+    
   exacs_backup_subnet_cidrs:
     type: array
     items:
@@ -482,56 +444,14 @@ variables:
     title: "CIDR Blocks for Exadata Backup Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: exa_advanced_options
-    #  and:
-    #    - deploy_exacs
-    #    - exa_advanced_options
-
+    
   deploy_exainfra_cmp:
     type: boolean
     title: "Create Compartment for Exadata Infrastructure?"
     description: "Whether a compartment for Exadata infrastructure should be created. If unchecked, Exadata infrastructure should be created in the database compartment."
     default: true
     visible: exa_advanced_options
-    #  and:
-    #    - deploy_exacs
-    #    - exa_advanced_options
     
-  adbd_vcn_cidr:
-    type: string
-    title: "ADB-D VCN CIDR Block"
-    description: "CIDR block for the ADB-D (Autonomous Database - Dedicated) VCN in CIDR notation."
-    default: ""
-    required: false
-  #  visible: deploy_adbd
-
-  adbd_advanced_options:
-    type: boolean
-    title: "Advanced Options"
-    description: "Advanced options for ADB-D Exadata infrastructure."
-    default: false
-  #  visible: deploy_adbd
-
-  adbd_vcn_name:
-    type: string
-    title: "ADB-D VCN Custom Name"
-    description: "ADB-D VCN custom names, overriding the default VCN name."
-    required: false
-    default: ""
-    visible: adbd_advanced_options
-    #  and:
-    #    - deploy_adbd
-    #    - adbd_advanced_options
-
-  deploy_adbd_infra_cmp:
-    type: boolean
-    title: "Create Compartment for ADB-D Exadata Infrastructure?"
-    description: "Whether a compartment for ADB-D Exadata infrastructure should be created. In unchecked, ADB-D Exadata infrastructure should be created in the database compartment."
-    default: true
-    visible: adbd_advanced_options
-    #  and:
-    #    - deploy_adbd
-    #    - adbd_advanced_options
-
   network_admin_email_endpoints:
     type: array
     items:

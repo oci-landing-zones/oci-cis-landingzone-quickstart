@@ -8,25 +8,26 @@
 1. [Updates to Resource Manager Interface](#orm_update_2_1_0)
 
 ## <a name="exadata_2_1_0">Ability to Provision Infrastructure for Exadata Cloud Service Deployments</a>
-Landing Zone can now provision VCNs, compartment, group and policies for Exadata deployments. The provisioned resources are deployed in tandem with the overall Landing Zone configuration. VCNs are provisioned with client and backup subnets. If a Hub & Spoke network architecture is being deployed, the Exadata VCNs are configured as spoke VCNs. A compartment is by default created for the Exadata infrastructure and an extra group and policies are configured accordingly. Optionally, users may opt for deploying Exadata infrastructure in the database compartment with appropriate permissions granted to database administrators.
+Landing Zone can now provision VCNs, compartment, group and policies for Exadata Cloud Service (ExaCS) deployments. The provisioned resources are deployed in tandem with the overall Landing Zone configuration. VCNs are provisioned with client and backup subnets. If a Hub & Spoke network architecture is being deployed, the ExaCS VCNs are configured as spoke VCNs. A compartment is by default created for the ExaCS infrastructure and an extra group and policies are configured accordingly. Optionally, users may opt for deploying ExaCS infrastructure in the database compartment with appropriate permissions granted to database administrators.
 
 ## <a name="bastion_2_1_0">OCI Bastion Service Integration</a>
-Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned into a VCN if a single VCN or a single Exadata VCN is being deployed. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network. In these cases, SSH inbound access is expected to be provided by Bastion servers in the DMZ (Hub) or hosts in the on-premises network.
+Customers can now leverage OCI Bastion Service in Landing Zone. A Bastion resource is provisioned into a VCN if a single VCN or a single ExaCS VCN is being deployed. Customers can later on create a Bastion session using the provisioned Bastion resource. The Bastion resource is not provisioned for Hub & Spoke architecture or if the Landing Zone VCNs are connected to an on-premises network. In these cases, SSH inbound access is expected to be provided by Bastion servers in the DMZ (Hub) or hosts in the on-premises network.
 
 ## <a name="sec_lists_2_1_0">Individual Security Lists for Subnets</a>
 Individual security lists are now created for all subnets. This is useful for customers planning on deploying services that require Security Lists instead of Network Security Groups.
 
 ## <a name="cmp_renaming_2_1_0">Ability to Rename Compartments</a>
-The Landing Zone creates compartments with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time with all policies adjusted accordingly. 
+Landing Zone creates compartments with auto-generated names, prefixed by the service_label variable value. Landing Zone compartments can be renamed at any point in time with all policies adjusted accordingly. 
 
 ## <a name="rules_descriptions_update_2_1_0">Updates to NSGs and Route Rules Descriptions</a>
 The descriptions of rules in NSGs and route tables have been updated aiming at more clarity and verbiage standardization.
 
 ## <a name="on_prem_ssh_cidrs_2_1_0">Input Variable for SSH Connectivity from On-premises Network</a>
-Variable *onprem_src_ssh_cidrs* is introduced. It is a list of on-premises CIDR blocks allowed to connect to Landing Zone over SSH. It is added to network security rules for ingress connectivity to Landing Zone networks. The existing *onprem_cidrs* variable remains, used in routing between on-premises and Landing Zone networks. 
+Variable *onprem_src_ssh_cidrs* is introduced. It is a list of on-premises CIDR blocks allowed to connect to Landing Zone over SSH. It is added to network security rules for ingress connectivity to Landing Zone networks. The *on_prem_ssh_cidrs* must be a subset of the *onprem_cidrs* variable, which are used for routing between on-premises and Landing Zone networks.
 
 ## <a name="orm_update_2_1_0">Updates to Resource Manager Interface</a>
-With the introduction of Exadata support, Landing Zone schema.yaml has been update for better usability in OCI Resource Manager. A new variables group named 'Connectivity' has been introduced, containing the variables for defining properties that control the sources and destinations for Landing Zone connectivity. 
+With the introduction of Exadata Cloud Service support, Landing Zone schema.yaml has been updated for better usability in OCI Resource Manager. A new variable group named 'Connectivity' has been introduced, containing variables for defining properties that control the sources and destinations for Landing Zone connectivity. 
+
 
 # August 12, 2021 Release Notes - Stable 2.0.3
 1. [Ability to use existing Dynamic Routing Gateway (DRG) v2 with the Landing Zone](#existing_drg_2_0_3)

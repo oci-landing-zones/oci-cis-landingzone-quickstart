@@ -33,7 +33,6 @@ variableGroups:
       - "existing_database_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
-      - "existing_adbexainfra_admin_group_name"
       - "existing_exainfra_admin_group_name"
     visible: advanced_options  
   
@@ -161,12 +160,6 @@ variables:
     description: "Existing group to which announcement reading policies will be granted to."
     visible: use_existing_groups
       
-  existing_adbexainfra_admin_group_name:
-    type: string
-    title: "Existing ADB-D Exadata infrastructure group name"
-    description: "Existing group to which ADB-D Exadata infrastructure management policies will be granted to."
-    visible: use_existing_groups    
-
   existing_exainfra_admin_group_name:
     type: string
     title: "Existing Exadata Cloud service infrastructure group name"

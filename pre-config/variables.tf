@@ -92,8 +92,4 @@ variable "existing_announcement_reader_group_name" {
 variable "existing_exainfra_admin_group_name" {
     type    = string
     default = ""
-} 
-variable "existing_adbexainfra_admin_group_name" {
-    type    = string
-    default = ""
 }

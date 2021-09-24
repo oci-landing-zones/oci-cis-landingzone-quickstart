@@ -54,15 +54,7 @@ locals {
     }
   } : {}
   
-  adbexainfra_group = length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? {
-    (local.adbexainfra_admin_group_name) = {
-      description  = "Landing Zone group for managing Autonomous Exadata infrastructure in the tenancy."
-      user_ids     = []
-      defined_tags = null
-    }
-  } : {}
-  
-  groups = merge(local.default_groups,local.exainfra_group, local.adbexainfra_group)
+  groups = merge(local.default_groups,local.exainfra_group)
 
 }
 module "lz_groups" {

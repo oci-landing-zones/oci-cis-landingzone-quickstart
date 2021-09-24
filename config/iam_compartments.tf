@@ -54,16 +54,7 @@ locals {
     }
   } : {}
 
-  adbexainfra_cmp = length(var.adbd_vcn_cidr) > 0 && var.deploy_adbd_infra_cmp == true ? {
-    (local.adbexainfra_compartment.key) = {
-      parent_id     = local.parent_compartment_id
-      name          = local.adbexainfra_compartment.name
-      description   = "Landing Zone compartment for Autnonomous Exadata infrastructure."
-      enable_delete = local.enable_cmp_delete
-    }
-  } : {}
-
-  cmps = merge(local.default_cmps, local.exainfra_cmp, local.adbexainfra_cmp)
+  cmps = merge(local.default_cmps, local.exainfra_cmp)
 
 }
 module "lz_compartments" {

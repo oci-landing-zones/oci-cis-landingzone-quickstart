@@ -21,8 +21,8 @@ locals {
         icmp_type : null,
         icmp_code : null
       }
-      }, { for cidr in var.onprem_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-        is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_cidrs) > 0),
+      }, { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+        is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_src_ssh_cidrs) > 0),
         description : "Allows SSH connections from hosts in on-premises ${cidr} CIDR range.",
         stateless : false,
         protocol : "6",

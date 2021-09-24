@@ -127,8 +127,8 @@ module "lz_nsgs_dmz" {
           icmp_type : null,
           icmp_code : null
         } },
-        { for cidr in var.onprem_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_cidrs, cidr)}" => {
-          is_create : length(var.onprem_cidrs) > 0,
+        { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+          is_create : length(var.onprem_src_ssh_cidrs) > 0,
           description : "Allows SSH connections from hosts in on-premises ${cidr} CIDR range.",
           protocol : "6",
           stateless : false,

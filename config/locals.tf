@@ -11,17 +11,19 @@ locals {
 
   ### IAM
   # Default compartment names
-  default_enclosing_compartment_name = "${var.service_label}-top-cmp"
-  security_compartment_name          = "${var.service_label}-security-cmp"
-  network_compartment_name           = "${var.service_label}-network-cmp"
-  database_compartment_name          = "${var.service_label}-database-cmp"
-  appdev_compartment_name            = "${var.service_label}-appdev-cmp"
-  # Whether compartments should be deleted in terraform destroy or upon resource removal.
+  default_enclosing_compartment = {key:"${var.service_label}-top-cmp",          name:"${var.service_label}-top-cmp"}
+  security_compartment          = {key:"${var.service_label}-security-cmp",     name:"${var.service_label}-security-cmp"}
+  network_compartment           = {key:"${var.service_label}-network-cmp",      name:"${var.service_label}-network-cmp"}
+  database_compartment          = {key:"${var.service_label}-database-cmp",     name:"${var.service_label}-database-cmp"}
+  appdev_compartment            = {key:"${var.service_label}-appdev-cmp",       name:"${var.service_label}-appdev-cmp"}
+  exainfra_compartment          = {key:"${var.service_label}-exainfra-cmp",     name:"${var.service_label}-exainfra-cmp"}
+  
+  # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
   # Whether or not to create an enclosing compartment
-  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment_name].id) : var.tenancy_ocid
-  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment_name) : "tenancy"
+  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.key].id) : var.tenancy_ocid
+  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment.name) : "tenancy"
   policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
   use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
 
@@ -34,7 +36,8 @@ locals {
   cred_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
   auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
-
+  exainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
+  
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
   security_admin_root_policy_name = "${var.service_label}-security-admin-root-policy"
@@ -50,7 +53,8 @@ locals {
   cred_admin_policy_name          = "${var.service_label}-credential-admin-policy"
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
-
+  exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
+  
   services_policy_name   = "${var.service_label}-services-policy"
   cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
                             "Allow service cloudguard to read compartments in tenancy",
@@ -75,6 +79,10 @@ locals {
                           "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
   os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
+  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
+        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
+
+
   # Tags
   tag_namespace_name = "${var.service_label}-namesp"
   createdby_tag_name = "CreatedBy"
@@ -96,7 +104,6 @@ locals {
     name = "${var.service_label}-dmz-vcn"
     cidr = var.dmz_vcn_cidr
   } : {}
-
 
   ### Object Storage
   oss_key_name = "${var.service_label}-oss-key"
@@ -122,14 +129,17 @@ locals {
 
   ### Scanning
   scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment_name}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment_name}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment_name}-scan-target"
-  database_cmp_target_name = "${local.database_compartment_name}-scan-target"
+  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
+  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
+  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
+  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
 
   # Delay in seconds for slowing down resource creation
-  delay_in_secs = 30
+  delay_in_secs = 60
 
   # Outputs display
   display_outputs = true
+
+  bastion_name = "${var.service_label}-bastion"
+  bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
 }

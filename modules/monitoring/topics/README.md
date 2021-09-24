@@ -32,5 +32,5 @@ No Modules.
 
 | Name | Description |
 |------|-------------|
-| subcriptions | The subscriptions, indexed by endpoint value. |
+| subscriptions | The topic subscriptions. |
 | topic | Topic information. |

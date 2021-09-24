@@ -2,6 +2,6 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 output "compartments" {
-  description = "The compartments, indexed by name."
-  value = {for c in oci_identity_compartment.these : c.name => c}
+  description = "The compartments, indexed by keys in var.compartments."
+  value = {for k, v in var.compartments : k => oci_identity_compartment.these[k]}
 } 

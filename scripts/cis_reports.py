@@ -1234,12 +1234,6 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
                 self.cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
 
-
-        # if(all(x in self.__subnet_logs for x in all_subnet_ids)):
-        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = True
-        # else:
-        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
-
         # CIS Check 3.15 - Cloud Guard enabled
         if self.__cloud_guard_config == 'ENABLED':
             self.cis_foundations_benchmark_1_1['3.15']['Status'] = True

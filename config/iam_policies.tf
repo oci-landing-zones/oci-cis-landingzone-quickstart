@@ -157,7 +157,8 @@ locals {
                             "Allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-                            "Allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
+                            "Allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}"]
 
     default_policies = { 
       (local.network_admin_policy_name) = {

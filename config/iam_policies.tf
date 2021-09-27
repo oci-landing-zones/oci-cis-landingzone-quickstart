@@ -83,8 +83,7 @@ locals {
         "Allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
-        "Allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}",
-        "Allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}"]  
+        "Allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"]  
 
   ## Database admin permissions
   database_permissions = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment.name}",

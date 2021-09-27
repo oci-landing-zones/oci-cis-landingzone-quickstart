@@ -75,8 +75,8 @@ locals {
         "Allow group ${local.network_admin_group_name} to manage orm-stacks in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage orm-jobs in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment.name}",
-        "Allow Group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
-        "Allow Group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}"]  
 
   ## Database admin permissions
@@ -228,12 +228,12 @@ module "lz_root_policies" {
         "Allow group ${local.auditor_group_name} to read public-ips in tenancy",
         "Allow group ${local.auditor_group_name} to read file-family in tenancy",
         "Allow group ${local.auditor_group_name} to read instance-configurations in tenancy",
-        "Allow Group ${local.auditor_group_name} to read network-security-groups in tenancy",
-        "Allow Group ${local.auditor_group_name} to read resource-availability in tenancy",
-        "Allow Group ${local.auditor_group_name} to read audit-events in tenancy",
-        "Allow Group ${local.auditor_group_name} to read users in tenancy",
-        "Allow Group ${local.auditor_group_name} to use cloud-shell in tenancy",
-        "Allow Group ${local.auditor_group_name} to read vss-family in tenancy"]
+        "Allow group ${local.auditor_group_name} to read network-security-groups in tenancy",
+        "Allow group ${local.auditor_group_name} to read resource-availability in tenancy",
+        "Allow group ${local.auditor_group_name} to read audit-events in tenancy",
+        "Allow group ${local.auditor_group_name} to read users in tenancy",
+        "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
+        "Allow group ${local.auditor_group_name} to read vss-family in tenancy"]
     },
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid

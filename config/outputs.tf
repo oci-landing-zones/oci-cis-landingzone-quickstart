@@ -25,3 +25,7 @@ output "dmz_subnets" {
 output "drg" {
     value = local.display_outputs == true ? (module.lz_drg.drg != null ? {id: module.lz_drg.drg.id, name: module.lz_drg.drg.display_name, parent_id:module.lz_drg.drg.compartment_id, time_created:module.lz_drg.drg.time_created} : null) : null
 }
+
+output "cidrs" {
+    value = [cidrsubnet("10.0.0.0/20", 4, 0), cidrsubnet("10.0.0.0/20", 4, 1)]
+}

@@ -63,7 +63,8 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage orm-jobs in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to manage orm-config-source-providers in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment.name}",
-    "Allow group ${local.security_admin_group_name} to read work-requests in compartment ${local.security_compartment.name}"]
+    "Allow group ${local.security_admin_group_name} to read work-requests in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage bastion-family in compartment ${local.security_compartment.name}"]
 
   ## Network admin permissions
   network_permissions = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment.name}",
@@ -77,7 +78,10 @@ locals {
         "Allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
-        "Allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}"]  
+        "Allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]  
 
   ## Database admin permissions
   database_permissions = ["Allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment.name}",
@@ -97,7 +101,10 @@ locals {
         "Allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
-        "Allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}"] 
+        "Allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
   ## Exadata admin permissions
   database_permissions_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
@@ -141,12 +148,16 @@ locals {
         "Allow group ${local.appdev_admin_group_name} to manage orm-config-source-providers in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read audit-events in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
-        "Allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}"] 
+        "Allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
     ## Exadata admin permissions
     exainfra_permissions = ["Allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
-                            "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}"]
+                            "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
     default_policies = { 
       (local.network_admin_policy_name) = {

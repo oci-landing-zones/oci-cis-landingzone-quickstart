@@ -1257,15 +1257,6 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
                 self.cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
 
-
-        # for bucket in all
-        # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
-        # if(all(x in  all_bucket_names for x in self.__write_bucket_logs)):
-        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = True
-        # else:
-        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
-
-
         # CIS Section 4 Checks
         for bucket in self.__buckets:
             if 'public_access_type' in bucket:

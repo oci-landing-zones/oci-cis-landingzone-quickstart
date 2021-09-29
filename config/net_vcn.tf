@@ -33,7 +33,20 @@ locals {
       security_lists = { "security-list" : {
         compartment_id : null
         is_create : true
-        ingress_rules : []
+        ingress_rules : [{
+          is_create : s == "app" && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false
+          protocol : "6"
+          stateless : false
+          description : "Allows SSH connections from hosts in ${vcn.cidr} CIDR range."
+          src : vcn.cidr
+          src_type : "CIDR_BLOCK"
+          icmp_type : null
+          icmp_code : null
+          src_port_min : null 
+          src_port_max : null
+          dst_port_min : "22"
+          dst_port_max : "22"
+        }]
         egress_rules : [{
           is_create : s == "app" && length(var.onprem_cidrs) == 0 && var.hub_spoke_architecture == false
           protocol : "6"

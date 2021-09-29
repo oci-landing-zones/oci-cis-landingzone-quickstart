@@ -1234,12 +1234,6 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
                 self.cis_foundations_benchmark_1_1['3.14']['Findings'].append(subnet)
 
-
-        # if(all(x in self.__subnet_logs for x in all_subnet_ids)):
-        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = True
-        # else:
-        #     self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
-
         # CIS Check 3.15 - Cloud Guard enabled
         if self.__cloud_guard_config == 'ENABLED':
             self.cis_foundations_benchmark_1_1['3.15']['Status'] = True
@@ -1262,15 +1256,6 @@ class CIS_Report:
             if not(bucket['name'] in self.__write_bucket_logs):
                 self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
                 self.cis_foundations_benchmark_1_1['3.17']['Findings'].append(bucket)
-
-
-        # for bucket in all
-        # # if(all(x in test_list for x in sub_list)) Checking if all buckets have write enabeled 
-        # if(all(x in  all_bucket_names for x in self.__write_bucket_logs)):
-        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = True
-        # else:
-        #     self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
-
 
         # CIS Section 4 Checks
         for bucket in self.__buckets:

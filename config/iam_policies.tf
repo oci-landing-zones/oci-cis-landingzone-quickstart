@@ -83,6 +83,7 @@ locals {
         "Allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"]  
 
   ## Database admin permissions
@@ -107,6 +108,7 @@ locals {
         "Allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
         "Allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
         "Allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"] 
 
   ## Exadata admin permissions
@@ -154,16 +156,20 @@ locals {
         "Allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"] 
 
     ## Exadata admin permissions
     exainfra_permissions = ["Allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
+                            # Grants for Bastion session creation
                             "Allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
-                            "Allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}"]
+                            "Allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
+                            "Allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
     default_policies = { 
       (local.network_admin_policy_name) = {

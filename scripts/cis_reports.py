@@ -209,7 +209,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Written by Josh Hammer & Andre Correa, updated June 4, 2021.")
+        print("Updated October 11, 2021.")
         print("oci-python-sdk version 2.47.0")
         print("Starts at " + self.start_time_str)
         self.__config = config

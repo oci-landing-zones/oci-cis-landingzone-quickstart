@@ -210,17 +210,12 @@ class CIS_Report:
         # Start print time info
         self.__print_header("Running CIS Reports...")
         print("Written by Josh Hammer & Andre Correa, updated June 4, 2021.")
-        print("oci-python-sdk version 2.39.0")
+        print("oci-python-sdk version 2.47.0")
         print("Starts at " + self.start_time_str)
         self.__config = config
         self.__signer = signer
         # Working with input variables from
         self.__output_bucket = output_bucket
-        # By Default it is today's date
-        if report_directory:
-            self.__report_directory = report_directory
-        else:
-            self.__report_directory = self.start_date
 
         # By Default it is passed True to print all output
         if print_to_screen.upper() == 'TRUE':
@@ -285,6 +280,12 @@ class CIS_Report:
                 config["tenancy"]).data
             self.__regions = self.__identity.list_region_subscriptions(
                 self.__tenancy.id).data
+            
+            # By Default it is today's date
+            if report_directory:
+                self.__report_directory = report_directory
+            else:
+                self.__report_directory = self.__tenancy.description + "-" + self.start_date
 
         except Exception as e:
             raise RuntimeError(

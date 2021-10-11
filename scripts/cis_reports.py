@@ -839,7 +839,7 @@ class CIS_Report:
                         for log in logs:
                             log_record = {
                                 "compartment_id": log.compartment_id,
-                                "display_name":  log.display_name,
+                                "display_name": log.display_name,
                                 "id": log.id,
                                 "is_enabled": log.is_enabled,
                                 "lifecycle_state": log.lifecycle_state,
@@ -962,8 +962,7 @@ class CIS_Report:
             return self.__cloud_guard_config
         except Exception as e:
             self.__cloud_guard_config = 'DISABLED'
-            print(" Cloud Guard service requires a PayGo account")
-            #raise RuntimeError("Error in __cloud_guard_read_cloud_guard_configuration " + str(e.args))
+            print("Cloud Guard service requires a PayGo account")
 
     ##########################################################################
     # Identity Password Policy
@@ -1074,7 +1073,6 @@ class CIS_Report:
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_analyze_tenancy_data(self):
-        #print("Command Line : " + ' '.join(x for x in sys.argv[1:]))
 
         # 1.1 Check - checking if their are additional policies
         policy_counter = 0
@@ -1119,7 +1117,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['external_identifier'] == None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['external_identifier'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_1_1['1.7']['Status'] = False
                 self.cis_foundations_benchmark_1_1['1.7']['Findings'].append(
                     user)
@@ -1197,7 +1195,7 @@ class CIS_Report:
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if user['external_identifier'] == None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
+            if user['external_identifier'] is None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
                 self.cis_foundations_benchmark_1_1['1.12']['Status'] = False
                 self.cis_foundations_benchmark_1_1['1.12']['Findings'].append(
                     user)
@@ -1259,7 +1257,7 @@ class CIS_Report:
             if tag['value'] == "${iam.principal.name}":
                 self.cis_foundations_benchmark_1_1['3.2']['Status'] = True
 
-      # CIS Check 3.3 - Check for Active Notification and Subscription
+        # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.__subscriptions) > 0:
             self.cis_foundations_benchmark_1_1['3.3']['Status'] = True
 
@@ -1293,7 +1291,6 @@ class CIS_Report:
         # CIS Check 3.16 - Encryption keys over 365
         for vault in self.__vaults:
             for key in vault['keys']:
-                #print(key['time_created'] + ' >= ' + self.kms_key_time_max_datetime)
                 if self.kms_key_time_max_datetime >= key['time_created']:
                     self.cis_foundations_benchmark_1_1['3.16']['Status'] = False
                     self.cis_foundations_benchmark_1_1['3.16']['Findings'].append(
@@ -1393,7 +1390,7 @@ class CIS_Report:
 
         for key, recommendation in self.cis_foundations_benchmark_1_1.items():
             report_file_name = self.__print_to_csv_file(
-                self.__report_directory,  "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
+                self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
             if report_file_name and self.__output_bucket:
                 self.__os_copy_report_to_object_storage(
                     self.__output_bucket, report_file_name)

@@ -35,7 +35,7 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # vcn_names               = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one CIDR, nth element to vcn_cidrs' nth element. 
 # is_vcn_onprem_connected = false # determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true.
 # existing_drg_id         = "" # the OCID of an existing DRG. If provided, no DRG is created even if is_vcn_onprem_connected is checked.
-# hub_spoke_architecture  = false # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
+# hub_spoke_architecture  = true # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
 # dmz_vcn_cidr            = "<dmz_vcn_cidr>" # IP range in CIDR notation for the DMZ (a.k.a Hub) VCN.
 # dmz_number_of_subnets   = 2 # number of subnets in DMZ VCN.
 # dmz_subnet_size         = 4 # number of additional bits with which to extend the DMZ VCN CIDR prefix.
@@ -50,7 +50,7 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Network Connectivity variables
-public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
+# public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
 # no_internet_access       = false # whether the Landing Zone VCN(s) are Internet connected.
 # public_src_lbr_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make HTTPS inbound connections.
 # public_dst_cidrs         = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation for HTTPS outbound connections.
@@ -59,12 +59,13 @@ public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external I
 
 
 ### Notifications variables
-network_admin_email_endpoints  = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all network related notifications.
-security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all security related notifications.
+network_admin_email_endpoints  = ["<e-mail1>","<e-mail2>","...","<emailn>"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints = ["<e-mail1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+compute_admin_email_endpoints = ["<e-mail1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
 
 
 ### Cloud Guard variables
-# cloud_guard_configuration_status = "ENABLED"
+#cloud_guard_configuration_status = "ENABLED"
 
 
 ### Service Connector Hub variables

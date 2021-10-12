@@ -285,7 +285,8 @@ variables:
     type: array
     items:
       type: string
-    uniqueItems: true  
+    uniqueItems: true 
+    required: true 
     title: "Inbound SSH CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "List of external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"

@@ -272,8 +272,6 @@ variable "network_admin_email_endpoints" {
   }
 }
 
-
-
 variable "security_admin_email_endpoints" {
   type        = list(string)
   default     = []

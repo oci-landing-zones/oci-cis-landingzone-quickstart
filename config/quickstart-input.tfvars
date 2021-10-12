@@ -50,9 +50,9 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Network Connectivity variables
+public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
 # no_internet_access       = false # whether the Landing Zone VCN(s) are Internet connected.
 # public_src_lbr_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make HTTPS inbound connections.
-# public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
 # public_dst_cidrs         = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation for HTTPS outbound connections.
 # onprem_cidrs             = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs that are routeable to Landing Zone networks.
 # onprem_src_ssh_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs allowed to connect to Landing Zone networks over SSH. They must be a subset of onprem_cidrs.

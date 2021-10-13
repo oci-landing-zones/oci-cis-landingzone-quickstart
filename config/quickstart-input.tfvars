@@ -5,16 +5,16 @@
 ##### The commented variable assignments are for variables with a default value in variables.tf. For overriding them, uncomment the variable and provide an appropriate value.
 
 ### Tenancy Connectivity variables
-tenancy_ocid         = "<tenancy_ocid>"
-user_ocid            = "<user_ocid>"
-fingerprint          = "<user_api_key_fingerprint>"
-private_key_path     = "<path_to_user_private_key_file>"
+tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaaurvmqdgj6ojptrf65tfqkswtuovpqanb54be3ixr44c6idqll6na"
+user_ocid            = "ocid1.user.oc1..aaaaaaaa2f3sfutsfp4bxuxisffqu7gxkzznqebpilv5ehvv6ecve7znywea"
+fingerprint          = "a6:9f:dc:c8:f4:9d:ab:2c:41:1d:2c:b2:4b:9e:9b:af"
+private_key_path     = "/Users/chrussel/Desktop/python/all_keys/studiorecordings.pem"
 private_key_password = ""
 
 
 ### Environment/IAM variables
-region        = "<tenancy_region>"
-service_label = "<a_label_to_prefix_resource_names_with>"
+region        = "us-phoenix-1"
+service_label = "studiolz"
 # use_enclosing_compartment               = false
 # existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"
@@ -31,11 +31,11 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Networking variables
-# vcn_cidrs               = ["10.0.0.0/20","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].
+vcn_cidrs               = ["10.0.0.0/20","172.16.0.0/16","192.168.0.0/16"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].
 # vcn_names               = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one CIDR, nth element to vcn_cidrs' nth element. 
 # is_vcn_onprem_connected = false # determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true.
 # existing_drg_id         = "" # the OCID of an existing DRG. If provided, no DRG is created even if is_vcn_onprem_connected is checked.
-# hub_spoke_architecture  = false # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
+hub_spoke_architecture  = true # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
 # dmz_vcn_cidr            = "<dmz_vcn_cidr>" # IP range in CIDR notation for the DMZ (a.k.a Hub) VCN.
 # dmz_number_of_subnets   = 2 # number of subnets in DMZ VCN.
 # dmz_subnet_size         = 4 # number of additional bits with which to extend the DMZ VCN CIDR prefix.
@@ -50,7 +50,7 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Network Connectivity variables
-  public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
+public_src_bastion_cidrs = ["164.0.0.0/8"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
 # no_internet_access       = false # whether the Landing Zone VCN(s) are Internet connected.
 # public_src_lbr_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make HTTPS inbound connections.
 # public_dst_cidrs         = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation for HTTPS outbound connections.
@@ -59,13 +59,14 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Notifications variables
-network_admin_email_endpoints  = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
-security_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
-compute_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+network_admin_email_endpoints  = ["chad.russell@oracle.com"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints = ["chad.russell@oracle.com"] # list of email addresses for all security related notifications.
+compute_admin_email_endpoints = ["chad.russell@oracle.com"] # list of email addresses for all security related notifications.
+database_admin_email_endpoints = ["chad.russell@oracle.com"] # list of email addresses for all security related notifications.
 
 
 ### Cloud Guard variables
-# cloud_guard_configuration_status = "ENABLED"
+#cloud_guard_configuration_status = "ENABLED"
 
 
 ### Service Connector Hub variables
@@ -84,7 +85,7 @@ compute_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list
 
 
 ### Vulnerability Scanning Service variables
-# vss_create        = true
-# vss_scan_schedule = "WEEKLY"
-# vss_scan_day      = "SUNDAY"
+vss_create        = true
+vss_scan_schedule = "WEEKLY"
+vss_scan_day      = "SUNDAY"
 

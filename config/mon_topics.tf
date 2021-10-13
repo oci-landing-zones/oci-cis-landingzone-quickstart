@@ -39,6 +39,25 @@ module "lz_compute_topic" {
   }
 }
 
+module "lz_database_topic" {
+  source                         = "../modules/monitoring/topics"
+  depends_on                     = [ null_resource.slow_down_topics ]
+  compartment_id                 = module.lz_compartments.compartments[local.database_compartment].id
+  notification_topic_name        = "${var.service_label}-database-topic"
+  notification_topic_description = "Landing Zone topic for database performance related notifications."
+  subscriptions = { for e in var.database_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+    
+    ### Examples of other subscription methods:
+    /* 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    */
+  }
+}
+
 module "lz_network_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ null_resource.slow_down_topics ]

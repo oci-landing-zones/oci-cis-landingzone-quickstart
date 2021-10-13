@@ -292,6 +292,16 @@ variable "compute_admin_email_endpoints" {
   }
 }
 
+variable "database_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all database related notifications."
+  validation {
+    condition     = length([for e in var.database_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.database_admin_email_endpoints)
+    error_message = "Validation failed database_admin_email_endpoints: invalid email address."
+  }
+}
+
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."

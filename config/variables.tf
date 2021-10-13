@@ -282,6 +282,16 @@ variable "security_admin_email_endpoints" {
   }
 }
 
+variable "storage_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all storage related notifications."
+  validation {
+    condition     = length([for e in var.storage_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.storage_admin_email_endpoints)
+    error_message = "Validation failed storage_admin_email_endpoints: invalid email address."
+  }
+}
+
 variable "compute_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -289,6 +299,16 @@ variable "compute_admin_email_endpoints" {
   validation {
     condition     = length([for e in var.compute_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.compute_admin_email_endpoints)
     error_message = "Validation failed compute_admin_email_endpoints: invalid email address."
+  }
+}
+
+variable "governance_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all governance related notifications."
+  validation {
+    condition     = length([for e in var.governance_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.governance_admin_email_endpoints)
+    error_message = "Validation failed governance_admin_email_endpoints: invalid email address."
   }
 }
 
@@ -301,6 +321,8 @@ variable "database_admin_email_endpoints" {
     error_message = "Validation failed database_admin_email_endpoints: invalid email address."
   }
 }
+
+
 
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"

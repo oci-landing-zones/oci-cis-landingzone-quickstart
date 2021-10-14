@@ -6,7 +6,7 @@
 CIS Compliance checking script will now prepend the OCI tenancy's display name to the output directory it creates if no directory is specified.  An example output directory `tenancy_display_name-20211013`.
 
 ## <a name="bastion_service_update">Bastion Service Enabled by public_src_bastion_cidrs</a>
-Now [OCI Bastion service] (https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm) is enabled when one more *public_src_bastion_cidrs* are provide **and** a single VCN deployment is selected.  In the previous version it was enabled by default when a single VCN deployment.
+Now [OCI Bastion service] (https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm) is enabled when one or more *public_src_bastion_cidrs* are provided **and** a single VCN deployment is selected.  In the previous version it was enabled by default in a single VCN deployment.
 
 # September 24, 2021 Release Notes - Stable 2.1.0
 1. [Ability to Provision Infrastructure for Exadata Cloud Service Deployments](#exadata_2_1_0)

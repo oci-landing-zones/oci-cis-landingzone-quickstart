@@ -99,7 +99,7 @@ module "lz_governance_topic" {
 module "lz_network_topic" {
   source                         = "../modules/monitoring/topics"
   depends_on                     = [ null_resource.slow_down_topics ]
-  compartment_id                 = module.lz_compartments.compartments[local.security_compartment.key].id
+  compartment_id                 = module.lz_compartments.compartments[local.network_compartment.key].id
   notification_topic_name        = "${var.service_label}-network-topic"
   notification_topic_description = "Landing Zone topic for network related notifications."
 

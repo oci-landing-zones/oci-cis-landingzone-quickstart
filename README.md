@@ -1,3 +1,5 @@
+[![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
+
 # CIS OCI Landing Zone Quick Start Template
 
 ## Table of Contents

@@ -171,6 +171,12 @@ variable "dmz_for_firewall" {
   description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
 
+variable "create_alarms_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates alarm artifacts in disabled state when set to false"
+}
+
 variable "dmz_number_of_subnets" {
   type        = number
   default     = 2

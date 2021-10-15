@@ -70,6 +70,8 @@ governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # l
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"
 
+### Alarm Configuration
+create_alarms_as_enabled = false 
 
 ### Service Connector Hub variables
 # create_service_connector_audit                 = false

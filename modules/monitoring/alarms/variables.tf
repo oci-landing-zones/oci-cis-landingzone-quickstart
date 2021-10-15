@@ -12,9 +12,10 @@ variable "alarms" {
      namespace = string
      query = string
      severity = string
+     metric_compartment_id_in_subtree = bool
     }))
 }
-    
+   
 /*variable "topics" {
   type = map(string)
 }*/

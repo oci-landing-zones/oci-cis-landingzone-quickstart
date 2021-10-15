@@ -44,6 +44,12 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 ![Folder Stack](images/ZipStack_1.png)
 
+Alternatively, you can simply click the button below to supply the zip file directly from GitHub without downloading it:
+
+[![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
+
+The button will take you to Resource Manager service page where you can proceed with the Stack creation.
+
 3. In **Working Directory**, make sure the config folder is selected.
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.

@@ -8,7 +8,7 @@ module "lz_notifications" {
     ("${var.service_label}-notify-on-iam-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.identitycontrolplane.createidentityprovider",
@@ -40,9 +40,9 @@ module "lz_notifications" {
     },
     
 ("${var.service_label}-notify-on-security-changes-rule") = {
-      compartment_id      = var.tenancy_ocid
+      compartment_id      = module.lz_compartments.compartments[local.network_compartment.key].id
       description         = "Landing Zone events rule to detect when security related resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.virtualnetwork.changesecuritylistcompartment",
@@ -65,9 +65,9 @@ module "lz_notifications" {
     },
 
 ("${var.service_label}-notify-on-storage-changes-rule") = {
-      compartment_id      = var.tenancy_ocid
+      compartment_id      = module.lz_compartments.compartments[local.appdev_compartment.key].id
       description         = "Landing Zone events rule to detect when storage resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.objectstorage.createbucket",
@@ -85,9 +85,9 @@ module "lz_notifications" {
     },
 
     ("${var.service_label}-notify-on-database-changes-rule") = {
-      compartment_id      = var.tenancy_ocid
+      compartment_id      = module.lz_compartments.compartments[local.database_compartment.key].id
       description         = "Landing Zone events rule to detect when database resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.databaseservice.updateautonomousdatabaseacl.begin",
@@ -164,9 +164,9 @@ module "lz_notifications" {
     },
 
     ("${var.service_label}-notify-on-governance-changes-rule") = {
-      compartment_id      = var.tenancy_ocid
+      compartment_id      = module.lz_compartments.compartments[local.security_compartment.key].id
       description         = "Landing Zone events rule to detect when governance resources such as budgets and financial tracking constructs are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.budgets.createalertrule",
@@ -187,9 +187,9 @@ module "lz_notifications" {
     },
 
     ("${var.service_label}-notify-on-compute-changes-rule") = {
-      compartment_id      = var.tenancy_ocid
+      compartment_id      = module.lz_compartments.compartments[local.appdev_compartment.key].id
       description         = "Landing Zone events rule to detect when compute related resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.autoscaling.createautoscalingconfiguration",
@@ -233,9 +233,9 @@ module "lz_notifications" {
     },
 
     ("${var.service_label}-notify-on-network-changes-rule") = {
-      compartment_id      = local.parent_compartment_id
+      compartment_id      = module.lz_compartments.compartments[local.network_compartment.key].id
       description         = "Landing Zone events rule to detect when networking resources are created, updated or deleted."
-      is_enabled          = true
+      is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
         {"eventType":
           ["com.oraclecloud.virtualnetwork.createvcn",

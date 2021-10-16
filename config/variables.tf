@@ -177,6 +177,13 @@ variable "create_alarms_as_enabled" {
   description = "Creates alarm artifacts in disabled state when set to false"
 }
 
+variable "create_events_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates event rules artifacts in disabled state when set to false"
+}
+
+
 variable "dmz_number_of_subnets" {
   type        = number
   default     = 2

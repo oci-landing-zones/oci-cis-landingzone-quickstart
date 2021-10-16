@@ -71,7 +71,11 @@ governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # cloud_guard_configuration_status = "ENABLED"
 
 ### Alarm Configuration
-create_alarms_as_enabled = false 
+#create_alarms_as_enabled = false 
+
+### Events Configuration
+#create_events_as_enabled = false 
+
 
 ### Service Connector Hub variables
 # create_service_connector_audit                 = false

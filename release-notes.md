@@ -1,6 +1,12 @@
+# October 15, 2021 Release Notes - Stable 2.1.2
+1. [Click to Deploy button](#click_to_deploy)
+
+## <a name="click_to_deploy">Click to Deploy button</a>
+1. Resource Manager stack can be created directly from GitHub repository through a single button click. The zip file with the source code is passed directly to Resource Manager Create Stack API. 
+
 # October 13, 2021 Release Notes - Stable 2.1.1
-1. [CIS Compliance Checking Script Updates](##cis_script_2_1_1)
-1. [Bastion Service Enabled by public_src_bastion_cidrs](##bastion_service_update)
+1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)
+1. [Bastion Service Enabled by public_src_bastion_cidrs](#bastion_service_update)
 
 ## <a name="cis_script_2_1_1">CIS Compliance Checking Script Updates</a>
 CIS Compliance checking script will now prepend the OCI tenancy's display name to the output directory it creates if no directory is specified.  An example output directory `tenancy_display_name-20211013`.

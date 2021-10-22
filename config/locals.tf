@@ -54,6 +54,8 @@ locals {
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
+
+  message_format = "ons_optimized"
   
   services_policy_name   = "${var.service_label}-services-policy"
   cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",

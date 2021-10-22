@@ -335,6 +335,10 @@ variable "database_admin_email_endpoints" {
   }
 }
 
+variable "message_format" {
+  type    = string
+  default = "ons_optimized"
+}
 
 
 variable "cloud_guard_configuration_status" {

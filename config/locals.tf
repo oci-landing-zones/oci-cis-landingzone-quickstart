@@ -138,7 +138,7 @@ locals {
 
   ### Governance
   budget_display_name = "${var.service_label}-main-budget"
-  budget_description  = var.use_enclosing_compartment == true ? "Budget at enclosing comp level" : "Budget at root level"
+  budget_description  = var.use_enclosing_compartment == true ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
 
 
   # Delay in seconds for slowing down resource creation

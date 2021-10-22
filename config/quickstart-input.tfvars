@@ -15,7 +15,7 @@ private_key_password = ""
 ### Environment/IAM variables
 region        = "us-phoenix-1"
 service_label = "budget"
- use_enclosing_compartment               = false
+ use_enclosing_compartment               = true
  existing_enclosing_compartment_ocid     = "ocid1.compartment.oc1..aaaaaaaa5pbecwse5jpzs4cxl6xno3hv23f6ilylfc7wc5iccwcqqeqnvzda" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"
 # use_existing_groups                     = false

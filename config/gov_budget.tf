@@ -9,6 +9,7 @@ module "lz_budget" {
   service_label           = var.service_label
   budget_alert_recipients = join(", ", [for s in var.governance_admin_email_endpoints : s])
   budget_alert_threshold  = var.budget_alert_threshold
+  tenancy_id              = var.tenancy_ocid
 }
 
 

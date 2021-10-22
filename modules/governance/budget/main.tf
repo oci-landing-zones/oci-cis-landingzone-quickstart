@@ -4,7 +4,7 @@
 resource oci_budget_budget this {
   amount                                = var.budget_amount
   budget_processing_period_start_offset = "1"
-  compartment_id                        = var.compartment_id
+  compartment_id                        = var.tenancy_id
   description  = var.budget_description
   display_name = var.budget_display_name
   reset_period = "MONTHLY"

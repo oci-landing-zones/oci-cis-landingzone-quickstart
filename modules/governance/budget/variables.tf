@@ -30,3 +30,6 @@ variable "budget_alert_recipients" {
   description = "List of email recipients."
 }
 
+variable "tenancy_id" {
+  description = "The tenancy ocid."
+}

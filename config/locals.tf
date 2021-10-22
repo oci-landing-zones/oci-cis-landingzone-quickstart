@@ -3,11 +3,13 @@
 
 locals {
 
+
   ### Discovering the home region name and region key.
   regions_map         = { for r in data.oci_identity_regions.these.regions : r.key => r.name } # All regions indexed by region key.
   regions_map_reverse = { for r in data.oci_identity_regions.these.regions : r.name => r.key } # All regions indexed by region name.
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
+
 
   ### IAM
   # Default compartment names
@@ -133,6 +135,11 @@ locals {
   network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
   appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
   database_cmp_target_name = "${local.database_compartment.key}-scan-target"
+
+  ### Governance
+  budget_display_name = "${var.service_label}-main-budget"
+  budget_description  = var.use_enclosing_compartment == true ? "Budget at enclosing comp level" : "Budget at root level"
+
 
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 60

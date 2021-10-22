@@ -12,6 +12,9 @@ resource "oci_monitoring_alarm" "these" {
     namespace = each.value.namespace
     query = each.value.query
     severity = each.value.severity
+    message_format = each.value.message_format
+    pending_duration = each.value.pending_duration
+
 
     
     }

@@ -62,6 +62,7 @@ variableGroups:
     variables:
       - "network_admin_email_endpoints"
       - "security_admin_email_endpoints"
+      - "governance_admin_email_endpoints"
 
   - title: "Cloud Guard"
     variables:
@@ -469,6 +470,15 @@ variables:
     title: "Security Admin Email Endpoints"
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
+
+  governance_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Governance Admin Email Endpoints"
+    required: true
+    description: "List of email addresses for all governance related notifications. (Type an email address and hit enter to enter multiple values)"
 
   cloud_guard_configuration_status:
     type: enum

@@ -61,7 +61,7 @@ service_label = "budget"
 ### Notifications variables
 network_admin_email_endpoints    = ["johannes.murmann@oracle.com"] # list of email addresses for all network related notifications.
 security_admin_email_endpoints   = ["johannes.murmann@oracle.com"] # list of email addresses for all security related notifications.
-governance_admin_email_endpoints = ["johannes.murmann@oracle.com","jmurmann12@gmail.com"] # list of email addresses for all governance related notifications.
+#governance_admin_email_endpoints = ["johannes.murmann@oracle.com","jmurmann12@gmail.com"] # list of email addresses for all governance related notifications.
 
 ### Cloud Guard variables
  cloud_guard_configuration_status = "DISABLE"

@@ -70,6 +70,10 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"]
 
+  ##Compute Agent Permissions
+  compute_agent_permissions = ["Allow dynamic-group ${local.compute_agent_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Network admin permissions
   network_permissions = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment.name}",
@@ -185,10 +189,15 @@ locals {
                             "Allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
     default_policies = { 
-      (local.network_admin_policy_name) = {
+      (local.compute_agent_policy_name) = {
         compartment_id = local.parent_compartment_id
-        description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
-        statements = local.network_permissions
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage compute agent related services."
+        statements = local.compute_agent_permissions
+      },
+       (local.network_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
+        statements = local.compute_agent_permissions
       },
       (local.security_admin_policy_name) = {
         compartment_id = local.parent_compartment_id

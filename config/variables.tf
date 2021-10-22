@@ -280,6 +280,16 @@ variable "security_admin_email_endpoints" {
     error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
+
+variable "governance_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all governance related notifications."
+  validation {
+    condition     = length([for e in var.governance_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.governance_admin_email_endpoints)
+    error_message = "Validation failed governance_admin_email_endpoints: invalid email address."
+  }
+}
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
@@ -390,4 +400,27 @@ variable "vss_scan_day" {
     condition     = contains(["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"], upper(var.vss_scan_day))
     error_message = "Validation failed for vss_scan_day: valid values are SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY (case insensitive)."
   }
+}
+
+# Governance
+variable "budget_alert_threshold" {
+  type        = number
+  default     = 75
+  description = "The threshold for triggering the alert expressed as a whole number or decimal value. 75% is the default."
+  validation {
+    condition     = var.budget_alert_threshold > 0 && var.budget_alert_threshold < 9999
+    error_message = "Validation failed for budget_alert_threshold: Values should be between 1 and 9999."
+   }
+}
+
+variable "budget_amount" {
+  type        = number
+  default     = 75
+  description = "The amount of the budget expressed as a whole number in the currency of the customer's rate card"
+}
+
+variable "create_budget" {
+  type        = bool
+  default     = false
+  description = "Create a budget."
 }

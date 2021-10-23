@@ -1,3 +1,38 @@
+# October 24, 2021 Release Notes - Stable 2.2.0
+1. [Enablement of events and alarms specific to compute, storage, database and governance](#events_and_alarms)
+1. [Addition of e-mail distribution endpoint personas for storage, compute and governance](#operational_personas)
+1. [Configurability of general alarm and event enablement](#alarm_configurability)
+1. [Events moved from root to respective LZ compartments](#events_moved_to_respective_lz_compartments)
+1. [Resource Manager interface updated](#resource_manager_interface_updated)
+
+## <a name="events_and_alarms">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
+Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment.  This includes compute instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.   Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.  
+
+For databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.  Autonomous Database Critical Events and Cloud Exadata Infrastructure events are now tracked in this release. 
+
+There are also new alarms that monitor Up/Down status for VPN and FastConnect services deployed in the Network compartment of the Landing Zone.  
+
+## <a name="operational_personas">Addition of E-mail Distribution Personas for Storage, Compute and Governance</a>
+New operational personas can be notified including new e-mail endpoints for compute admins, database admins, storage admins and governance administrators.  
+
+## <a name="alarm_configurability">Configurability of General Alarm and Event Enablement</a>
+Alarms and events are configurable and enabled by default to meet OCI CIS Benchmark security standards.  The core tfvars configuration file has two new configurable fields including "create_alarms_as_enabled = true" and "create_events_as_enabled = true".   By changing either of these to false all events and alarms specific to the Landing Zone deployment can be disabled respectively.   
+
+## <a name="events_moved_to_respective_lz_compartments">Events Moved from Root to Respective LZ Compartments</a>
+Events have been moved to their respective compartments.   For instance, network event rules have been moved to the network compartment so network administrators can managed their own rules without needing access to the Root compartment of the Landing Zone. 
+
+Additionally event rules for compute and database reside respectively in the compute and database compartments.  
+
+New governance event rules have been placed in the security compartment.  
+
+## <a name="resource_manager_interface_updated">Resource Manager Interface Updated</a>
+The Resource Manager interface has been updated to account for the 
+two new configurable "event" and "alarm" fields which are:
+
+ "create_alarms_as_enabled = true" 
+
+ "create_events_as_enabled = true"
+
 # September 24, 2021 Release Notes - Stable 2.1.0
 1. [Ability to Provision Infrastructure for Exadata Cloud Service Deployments](#exadata_2_1_0)
 1. [OCI Bastion Service Integration](#bastion_2_1_0)

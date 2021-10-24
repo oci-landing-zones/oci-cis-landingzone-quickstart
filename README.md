@@ -31,6 +31,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Vulnerability Scanning
 - Bastion
 - Events
+- Alarms
 - Notifications
 - Object Storage
 

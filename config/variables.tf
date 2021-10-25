@@ -342,7 +342,7 @@ variable "message_format" {
 
 
 variable "cloud_guard_configuration_status" {
-  default     = []
+  default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))

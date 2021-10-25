@@ -16,7 +16,7 @@ module "lz_compute_alarms" {
            query = "CpuUtilization[1m].mean() > 80"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
            
         },
@@ -31,7 +31,7 @@ module "lz_compute_alarms" {
            query = "instance_status[1m].count() == 1"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         },
 
@@ -45,7 +45,7 @@ module "lz_compute_alarms" {
            query = "maintenance_status[1m].count() == 1"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         },
 
@@ -59,7 +59,7 @@ module "lz_compute_alarms" {
            query = "health_status[1m].count() == 1"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         },
 
@@ -73,7 +73,7 @@ module "lz_compute_alarms" {
            query = "MemoryUtilization[1m].mean() > 80"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         }
     }
@@ -93,7 +93,7 @@ module "lz_database_alarms" {
            query = "CpuUtilization[1m].mean() > 80"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         },
 
@@ -107,7 +107,7 @@ module "lz_database_alarms" {
            query = "StorageUtilization[1m].mean() > 80"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         }
         
@@ -127,7 +127,7 @@ module "lz_network_alarms" {
            query = "TunnelState[1m].mean() == 0"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         },
 
@@ -141,7 +141,7 @@ module "lz_network_alarms" {
            query = "ConnectionState[1m].mean() == 0"
            severity = "critical"
            metric_compartment_id_in_subtree = true
-           message_format = "PRETTY_JSON"
+           message_format = var.alarm_message_format
            pending_duration = "PT5M"
         }
         

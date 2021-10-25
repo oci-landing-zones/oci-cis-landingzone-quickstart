@@ -335,9 +335,14 @@ variable "database_admin_email_endpoints" {
   }
 }
 
-variable "message_format" {
+variable "alarm_message_format" {
   type    = string
-  default = "ons_optimized"
+  default = "PRETTY_JSON"
+  description = "Format of the message sent by Alarms"
+  validation {
+    condition = contains(["PRETTY_JSON", "ONS_OPTIMIZED", "RAW"], upper(var.alarm_message_format))
+    error_message = "Validation failed for alarm_message_format: valid values (case insensitive) are PRETTY_JSON, RAW, or ONS_OPTIMIZED."
+  }
 }
 
 

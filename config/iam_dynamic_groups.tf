@@ -16,6 +16,11 @@ module "lz_dynamic_groups" {
       description    = "Landing Zone dynamic group for functions in ${local.appdev_compartment.name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment.key].id}'}"
     },
+     ("${var.service_label}-appdev-computeagent-dynamic-group") = {
+      compartment_id = var.tenancy_ocid
+      description    = "Landing Zone dynamic group for compute agents in ${local.appdev_compartment.name} compartment."
+      matching_rule  = "ALL {resource.type = 'managementagent',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment.key].id}'}"
+    }
     ("${var.service_label}-database-kms-dynamic-group") = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for databases in ${local.database_compartment.name} compartment."

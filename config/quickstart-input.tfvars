@@ -59,12 +59,22 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Notifications variables
-network_admin_email_endpoints  = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all network related notifications.
-security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all security related notifications.
+network_admin_email_endpoints  = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+compute_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
+database_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
+storage_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
+governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all governance related notifications such as budget and finance.
 
 
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"
+
+### Alarm Configuration
+create_alarms_as_enabled = true 
+
+### Events Configuration
+create_events_as_enabled = true 
 
 
 ### Service Connector Hub variables

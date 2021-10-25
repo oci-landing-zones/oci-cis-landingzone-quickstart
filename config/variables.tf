@@ -171,6 +171,19 @@ variable "dmz_for_firewall" {
   description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
 
+variable "create_alarms_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates alarm artifacts in disabled state when set to false"
+}
+
+variable "create_events_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates event rules artifacts in disabled state when set to false"
+}
+
+
 variable "dmz_number_of_subnets" {
   type        = number
   default     = 2
@@ -271,6 +284,7 @@ variable "network_admin_email_endpoints" {
     error_message = "Validation failed network_admin_email_endpoints: invalid email address."
   }
 }
+
 variable "security_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -280,6 +294,53 @@ variable "security_admin_email_endpoints" {
     error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
+
+variable "storage_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all storage related notifications."
+  validation {
+    condition     = length([for e in var.storage_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.storage_admin_email_endpoints)
+    error_message = "Validation failed storage_admin_email_endpoints: invalid email address."
+  }
+}
+
+variable "compute_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all compute related notifications."
+  validation {
+    condition     = length([for e in var.compute_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.compute_admin_email_endpoints)
+    error_message = "Validation failed compute_admin_email_endpoints: invalid email address."
+  }
+}
+
+variable "governance_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all governance related notifications."
+  validation {
+    condition     = length([for e in var.governance_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.governance_admin_email_endpoints)
+    error_message = "Validation failed governance_admin_email_endpoints: invalid email address."
+  }
+}
+
+variable "database_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all database related notifications."
+  validation {
+    condition     = length([for e in var.database_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.database_admin_email_endpoints)
+    error_message = "Validation failed database_admin_email_endpoints: invalid email address."
+  }
+}
+
+variable "message_format" {
+  type    = string
+  default = "ons_optimized"
+}
+
+
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
   description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."

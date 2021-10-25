@@ -33,7 +33,10 @@ Variable Name | Description | Required | Default Value
 **existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true | None
 **existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true | None
 **existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true | None
-
+### <a name="alarm_variables"></a>Alarm Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_alarms_as_enabled** | Configures alarms to be enabled or disabled. | yes | [false]
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------

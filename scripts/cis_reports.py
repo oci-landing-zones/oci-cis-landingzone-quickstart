@@ -1105,7 +1105,9 @@ class CIS_Report:
                 if ("to use groups in tenancy".upper() in statement.upper() or
                     "to use users in tenancy".upper() in statement.upper() or
                         "to manage groups in tenancy".upper() in statement.upper() or
-                        "to manage users in tenancy".upper() in statement.upper()):
+                        "to manage users in tenancy".upper() in statement.upper() 
+                        and statement.upper() != "allow any-user to manage all-resources in compartment managedcompartmentforpaas where request.user.name = /__psm*/".upper()
+                        and statement.upper() != "allow service PSM to manage users in tenancy where target.user.name = /__PSM*/".upper()):
                     self.cis_foundations_benchmark_1_1['1.3']['Status'] = False
                     self.cis_foundations_benchmark_1_1['1.3']['Findings'].append(
                         policy)

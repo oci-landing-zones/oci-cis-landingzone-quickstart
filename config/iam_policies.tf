@@ -15,7 +15,7 @@ locals {
     "Allow group ${local.iam_admin_group_name} to manage network-sources in tenancy",
     "Allow group ${local.iam_admin_group_name} to manage quota in tenancy",
     "Allow group ${local.iam_admin_group_name} to read audit-events in tenancy",
-  "Allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
+    "Allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
 
   // IAM admin permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   iam_enccmp_permissions = ["Allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
@@ -31,7 +31,7 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
     "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
     "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
-  "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
+    "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
 
   // Security admin permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
@@ -65,7 +65,15 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to read work-requests in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to manage bastion-family in compartment ${local.security_compartment.name}",
-    "Allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment.name}"]
+    "Allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage cloudevents-rules in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"]
+
+  ##Compute Agent Permissions
+  compute_agent_permissions = ["Allow dynamic-group ${local.compute_agent_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Network admin permissions
   network_permissions = ["Allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment.name}",
@@ -84,6 +92,9 @@ locals {
         "Allow group ${local.network_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"]  
 
   ## Database admin permissions
@@ -109,6 +120,9 @@ locals {
         "Allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
         "Allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"] 
 
   ## Exadata admin permissions
@@ -157,6 +171,9 @@ locals {
         "Allow group ${local.appdev_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"] 
 
     ## Exadata admin permissions
@@ -172,10 +189,15 @@ locals {
                             "Allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
     default_policies = { 
-      (local.network_admin_policy_name) = {
+      (local.compute_agent_policy_name) = {
         compartment_id = local.parent_compartment_id
-        description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
-        statements = local.network_permissions
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage compute agent related services."
+        statements = local.compute_agent_permissions
+      },
+       (local.network_admin_policy_name) = {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
+        statements = local.compute_agent_permissions
       },
       (local.security_admin_policy_name) = {
         compartment_id = local.parent_compartment_id

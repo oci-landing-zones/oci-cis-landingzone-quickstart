@@ -4,6 +4,7 @@
 1. [Configurability of general alarm and event enablement](#alarm_configurability)
 1. [Events moved from root to respective LZ compartments](#events_moved_to_respective_lz_compartments)
 1. [Resource Manager interface updated](#resource_manager_interface_updated)
+1. [Click to Deploy button](#click_to_deploy)
 
 ## <a name="events_and_alarms">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
 Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment.  This includes compute instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.   Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.  
@@ -32,6 +33,20 @@ two new configurable "event" and "alarm" fields which are:
  "create_alarms_as_enabled = true" 
 
  "create_events_as_enabled = true"
+
+## <a name="click_to_deploy">Click to Deploy button</a>
+Resource Manager stack can be created directly from GitHub repository through a single button click. The zip file with the source code is passed directly to Resource Manager Create Stack API. 
+
+# October 13, 2021 Release Notes - Stable 2.1.1
+1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)
+1. [Bastion Service Enabled by public_src_bastion_cidrs](#bastion_service_update)
+
+## <a name="cis_script_2_1_1">CIS Compliance Checking Script Updates</a>
+CIS Compliance checking script will now prepend the OCI tenancy's display name to the output directory it creates if no directory is specified.  An example output directory `tenancy_display_name-20211013`.
+
+## <a name="bastion_service_update">Bastion Service Enabled by public_src_bastion_cidrs</a>
+Now [OCI Bastion service] (https://docs.oracle.com/en-us/iaas/Content/Bastion/Concepts/bastionoverview.htm) is enabled when one or more *public_src_bastion_cidrs* are provided **and** a single VCN deployment is selected.  In the previous version it was enabled by default in a single VCN deployment.
+>>>>>>> release-notes.md
 
 # September 24, 2021 Release Notes - Stable 2.1.0
 1. [Ability to Provision Infrastructure for Exadata Cloud Service Deployments](#exadata_2_1_0)

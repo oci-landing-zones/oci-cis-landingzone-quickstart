@@ -8,7 +8,7 @@ module "lz_notifications" {
     ("${var.service_label}-notify-on-iam-changes-rule") = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM resources are created, updated or deleted."
-      is_enabled          = var.create_events_as_enabled
+      is_enabled          = true
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.identitycontrolplane.createidentityprovider",
@@ -42,7 +42,7 @@ module "lz_notifications" {
 ("${var.service_label}-notify-on-security-changes-rule") = {
       compartment_id      = module.lz_compartments.compartments[local.network_compartment.key].id
       description         = "Landing Zone events rule to detect when security related resources are created, updated or deleted."
-      is_enabled          = var.create_events_as_enabled
+      is_enabled          = true
       condition           = <<EOT
             {"eventType": 
             ["com.oraclecloud.virtualnetwork.changesecuritylistcompartment",
@@ -145,7 +145,7 @@ module "lz_notifications" {
     ("${var.service_label}-notify-on-network-changes-rule") = {
       compartment_id      = module.lz_compartments.compartments[local.network_compartment.key].id
       description         = "Landing Zone events rule to detect when networking resources are created, updated or deleted."
-      is_enabled          = var.create_events_as_enabled
+      is_enabled          = true
       condition           = <<EOT
         {"eventType":
           ["com.oraclecloud.virtualnetwork.createvcn",

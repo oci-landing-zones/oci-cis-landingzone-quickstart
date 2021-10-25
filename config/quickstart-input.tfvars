@@ -42,10 +42,10 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Exadata variables
-# exacs_vcn_cidrs           = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
-# exacs_client_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_backup_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_vcn_names           = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
+# exacs_vcn_cidrs           = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
+# exacs_client_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_backup_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_vcn_names           = ["<name_1>","<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
 # deploy_exainfra_cmp       = true # whether to deploy a compartment for Exadata infrastructure.
 
 

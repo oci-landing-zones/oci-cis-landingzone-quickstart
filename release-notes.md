@@ -6,6 +6,7 @@
 1. [Resource Manager interface updated](#resource_manager_interface_updated_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
 1. [Compliance Checking Script Update](#script_update_2_2_0)
+1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
 
 
 ## <a name="events_and_alarms_2_2_0">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
@@ -41,6 +42,9 @@ Resource Manager stack can be created directly from GitHub repository through a 
 
 ## <a name="script_update_2_2_0">Compliance Checking Script Update</a>
 Updated the compliance checking script to improve handling of Oracle PSM policy statements.
+
+## <a name="svg_architecture_files">Added SVG versions of Core Architecture Files</a>
+Added SVG versions of Core Architecture Files so users can modify their own versions of the files per any custom modifications to the CIS LZ.
 
 # October 13, 2021 Release Notes - Stable 2.1.1
 1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)

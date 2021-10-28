@@ -72,8 +72,16 @@ Variable Name | Description | Required | Default Value
 ### <a name="notification_variables"></a>Notification Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
 **security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
+**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
+**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. | No | None
+**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. | No | None
+**governance_admin_email_endpoints** | List of email addresses for all governance related notifications. | No | None
+**database_admin_email_endpoints** | List of email addresses for all database related notifications. | No | None
+**create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to False. | No | False
+**create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
+
+**alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value

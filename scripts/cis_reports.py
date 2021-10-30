@@ -4,7 +4,7 @@
 #
 # cis_reports.py
 # @author base: Adi Zohar
-# @author: Josh Hammer and Andre Correa
+# @author: Josh Hammer, Andre Correa and Chad Russell
 #
 # Supports Python 3 and above
 #
@@ -208,8 +208,8 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
         # Start print time info
-        self.__print_header("Running CIS Reports...")
-        print("Updated October 11, 2021.")
+        self.__print_header("Running CIS Reports for " + "..." + " " + region_name + " " + "Region")
+        print("Updated October 30, 2021.")
         print("oci-python-sdk version 2.47.0")
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -285,7 +285,7 @@ class CIS_Report:
             if report_directory:
                 self.__report_directory = report_directory
             else:
-                self.__report_directory = self.__tenancy.description + "-" + self.start_date
+                self.__report_directory = self.__tenancy.description + "-" + region_name + "-" + self.start_date
 
         except Exception as e:
             raise RuntimeError(
@@ -1367,9 +1367,9 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
 
         # Screen output for CIS Summary Report
-        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report" + region_name)
         print('Num' + "\t" + "Level " +
-              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
+              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title' + region_name)
         print('#' * 90)
         for finding in summary_report:
             # If print_to_screen is False it will only print non-compliant findings
@@ -1401,7 +1401,7 @@ class CIS_Report:
     def __report_collect_tenancy_data(self):
 
         self.__print_header("Processing Tenancy Data for " +
-                            self.__tenancy.name + "...")
+                            self.__tenancy.name + " " + region_name + "...")
 
         self.__compartments = self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
@@ -1460,7 +1460,7 @@ class CIS_Report:
 
             # get the file name of the CSV
 
-            file_name = header + "_" + file_subject
+            file_name = header + "_" + file_subject + "_" + region_name
             file_name = (file_name.replace(" ", "_")
                          ).replace(".", "-") + ".csv"
             file_path = os.path.join(report_directory, file_name)
@@ -1642,11 +1642,11 @@ def execute_report():
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication')
     cmd = parser.parse_args()
-    # Getting  Command line  arguments
-    # cmd = set_parser_arguments()
-    # if cmd is None:
+    #Getting  Command line  arguments
+    #cmd = set_parser_arguments()
+    #if cmd is None:
     #     pass
-    #     # return
+    #     return
 
     # Identity extract compartments
     config, signer = create_signer(
@@ -1657,8 +1657,75 @@ def execute_report():
     report.report_generate_cis_report()
 
 
+############################################
+# Loop on all regions
+############################################
+# Get Command Line Parser
+parser = argparse.ArgumentParser()
+parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
+parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
+parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
+parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
+cmd = parser.parse_args()
+
+
+##########################################################################
+# Load compartments
+##########################################################################
+def identity_read_compartments(identity, tenancy):
+
+    print("Loading Compartments...")
+    try:
+        compartments = oci.pagination.list_call_get_all_results(
+            identity.list_compartments,
+            tenancy.id,
+            compartment_id_in_subtree=True
+        ).data
+
+        # Add root compartment which is not part of the list_compartments
+        compartments.append(tenancy)
+
+        print("    Total " + str(len(compartments)) + " compartments loaded.")
+        return compartments
+
+    except Exception as e:
+        raise RuntimeError("Error in identity_read_compartments: " + str(e.args))
+
+# Identity extract compartments
+config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+compartments = []
+tenancy = None
+try:
+    print("\nConnecting to Identity Service...")
+    identity = oci.identity.IdentityClient(config, signer=signer)
+    if cmd.proxy:
+        identity.base_client.session.proxies = {'https': cmd.proxy}
+
+    tenancy = identity.get_tenancy(config["tenancy"]).data
+    regions = identity.list_region_subscriptions(tenancy.id).data
+
+    print("Tenant Name : " + str(tenancy.name))
+    print("Tenant Id   : " + tenancy.id)
+    print("")
+
+    compartments = identity_read_compartments(identity, tenancy)
+
+except Exception as e:
+    raise RuntimeError("\nError extracting compartments section - " + str(e))
+
+print("\nLoading Region...")
+data = []
+warnings = 0
+for region_name in [str(es.region_name) for es in regions]:
+
+    print("\nRegion " + region_name + "...")
+
+    # set the region in the config and signer
+    config['region'] = region_name
+    signer.region = region_name
+    execute_report()
 ##########################################################################
 # Main
 ##########################################################################
 
-execute_report()
+#execute_report()

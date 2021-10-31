@@ -187,6 +187,9 @@ class CIS_Report:
     # For Vaults and Keys checks
     __vaults = []
 
+    # For Region
+    __current_region = ""
+
     # For ONS Subscriptions
     __subscriptions = []
 
@@ -206,12 +209,14 @@ class CIS_Report:
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, current_region):
         # Start print time info
-        self.__print_header("Running CIS Reports for " + "..." + " " + region_name + " " + "Region")
+        self.__current_region = current_region
+        self.__print_header("Running CIS Reports...")
         print("Updated October 30, 2021.")
         print("oci-python-sdk version 2.47.0")
         print("Starts at " + self.start_time_str)
+        print("Current region is " + current_region )
         self.__config = config
         self.__signer = signer
         # Working with input variables from
@@ -283,9 +288,9 @@ class CIS_Report:
             
             # By Default it is today's date
             if report_directory:
-                self.__report_directory = report_directory
+                self.__report_directory = report_directory + self.__current_region
             else:
-                self.__report_directory = self.__tenancy.description + "-" + region_name + "-" + self.start_date
+                self.__report_directory = self.__tenancy.description + "-" + self.start_date + "-" + self.__current_region
 
         except Exception as e:
             raise RuntimeError(
@@ -1105,9 +1110,7 @@ class CIS_Report:
                 if ("to use groups in tenancy".upper() in statement.upper() or
                     "to use users in tenancy".upper() in statement.upper() or
                         "to manage groups in tenancy".upper() in statement.upper() or
-                        "to manage users in tenancy".upper() in statement.upper() 
-                        and statement.upper() != "allow any-user to manage all-resources in compartment managedcompartmentforpaas where request.user.name = /__psm*/".upper()
-                        and statement.upper() != "allow service PSM to manage users in tenancy where target.user.name = /__PSM*/".upper()):
+                        "to manage users in tenancy".upper() in statement.upper()):
                     self.cis_foundations_benchmark_1_1['1.3']['Status'] = False
                     self.cis_foundations_benchmark_1_1['1.3']['Findings'].append(
                         policy)
@@ -1337,7 +1340,7 @@ class CIS_Report:
                     item)
 
     ##########################################################################
-    # Orchestras data collection - analysis and report generation
+    # Orchestrates data collection - analysis and report generation
     ##########################################################################
 
     def report_generate_cis_report(self):
@@ -1367,9 +1370,9 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
 
         # Screen output for CIS Summary Report
-        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report" + region_name)
+        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
         print('Num' + "\t" + "Level " +
-              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title' + region_name)
+              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
         print('#' * 90)
         for finding in summary_report:
             # If print_to_screen is False it will only print non-compliant findings
@@ -1386,7 +1389,7 @@ class CIS_Report:
         self.__print_header("Writing reports to CSV")
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
-        # Out putting to a bucket if I have one
+        # Outputting to a bucket if I have one
         if summary_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, summary_file_name)
@@ -1401,7 +1404,7 @@ class CIS_Report:
     def __report_collect_tenancy_data(self):
 
         self.__print_header("Processing Tenancy Data for " +
-                            self.__tenancy.name + " " + region_name + "...")
+                            self.__tenancy.name + " " + self.__current_region + " " + "Region" + "..." )
 
         self.__compartments = self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
@@ -1460,7 +1463,7 @@ class CIS_Report:
 
             # get the file name of the CSV
 
-            file_name = header + "_" + file_subject + "_" + region_name
+            file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")
                          ).replace(".", "-") + ".csv"
             file_path = os.path.join(report_directory, file_name)
@@ -1642,90 +1645,37 @@ def execute_report():
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication')
     cmd = parser.parse_args()
-    #Getting  Command line  arguments
-    #cmd = set_parser_arguments()
-    #if cmd is None:
+    # Getting  Command line  arguments
+    # cmd = set_parser_arguments()
+    # if cmd is None:
     #     pass
-    #     return
+    #     # return
 
-    # Identity extract compartments
+    # Identity extract regions and compartments
     config, signer = create_signer(
         cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket,
-                        cmd.report_directory, cmd.print_to_screen)
-
-    report.report_generate_cis_report()
-
-
-############################################
-# Loop on all regions
-############################################
-# Get Command Line Parser
-parser = argparse.ArgumentParser()
-parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
-parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
-parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
-parser.add_argument('-dt', action='store_true', default=False, dest='is_delegation_token', help='Use Delegation Token for Authentication')
-cmd = parser.parse_args()
-
-
-##########################################################################
-# Load compartments
-##########################################################################
-def identity_read_compartments(identity, tenancy):
-
-    print("Loading Compartments...")
-    try:
-        compartments = oci.pagination.list_call_get_all_results(
-            identity.list_compartments,
-            tenancy.id,
-            compartment_id_in_subtree=True
-        ).data
-
-        # Add root compartment which is not part of the list_compartments
-        compartments.append(tenancy)
-
-        print("    Total " + str(len(compartments)) + " compartments loaded.")
-        return compartments
-
-    except Exception as e:
-        raise RuntimeError("Error in identity_read_compartments: " + str(e.args))
-
-# Identity extract compartments
-config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-compartments = []
-tenancy = None
-try:
-    print("\nConnecting to Identity Service...")
     identity = oci.identity.IdentityClient(config, signer=signer)
-    if cmd.proxy:
-        identity.base_client.session.proxies = {'https': cmd.proxy}
-
     tenancy = identity.get_tenancy(config["tenancy"]).data
     regions = identity.list_region_subscriptions(tenancy.id).data
+    
+    
+    for region_name in [str(es.region_name) for es in regions]:
 
-    print("Tenant Name : " + str(tenancy.name))
-    print("Tenant Id   : " + tenancy.id)
-    print("")
+       
 
-    compartments = identity_read_compartments(identity, tenancy)
+        # set the region in the config and signer
+        config['region'] = region_name
+        signer.region = region_name
+       
+        report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket,
+                        cmd.report_directory, cmd.print_to_screen, region_name)
 
-except Exception as e:
-    raise RuntimeError("\nError extracting compartments section - " + str(e))
+        report.report_generate_cis_report()
 
-print("\nLoading Region...")
-data = []
-warnings = 0
-for region_name in [str(es.region_name) for es in regions]:
 
-    print("\nRegion " + region_name + "...")
 
-    # set the region in the config and signer
-    config['region'] = region_name
-    signer.region = region_name
-    execute_report()
 ##########################################################################
 # Main
 ##########################################################################
 
-#execute_report()
+execute_report()

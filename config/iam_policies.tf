@@ -171,6 +171,13 @@ locals {
                             "Allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
                             "Allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
+// Cost admin permissions to be created always at the root compartment
+  cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
+                           "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
+                           "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
+                           "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
+
+
     default_policies = { 
       (local.network_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
@@ -271,6 +278,11 @@ module "lz_root_policies" {
         "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
         "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
         "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
+    },
+    (local.cost_admin_root_policy_name) = {
+      compartment_id = var.tenancy_ocid
+      description    = "Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
+      statements     = local.cost_root_permissions
     }
   } : {}
 }

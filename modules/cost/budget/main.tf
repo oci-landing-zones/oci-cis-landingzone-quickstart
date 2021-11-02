@@ -16,8 +16,8 @@ resource oci_budget_budget this {
 
 resource oci_budget_alert_rule this {
   budget_id = oci_budget_budget.this.id
-  display_name = "${var.service_label}-alertonforecastbreach"
-  #message = <<Optional value not found in discovery>>
+  display_name = "${var.service_label}-alert-on-forecasted-spent"
+  #message = ""
   recipients     = var.budget_alert_recipients
   threshold      = var.budget_alert_threshold
   threshold_type = "PERCENTAGE"

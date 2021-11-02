@@ -1,7 +1,7 @@
 
 module "lz_budget" {
   count                   = var.create_budget == true ? 1 : 0
-  source                  = "../modules/governance/budget"
+  source                  = "../modules/cost/budget"
   budget_amount           = var.budget_amount
   budget_description      = local.budget_description
   budget_display_name     = local.budget_display_name

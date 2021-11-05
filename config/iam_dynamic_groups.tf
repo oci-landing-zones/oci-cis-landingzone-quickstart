@@ -1,11 +1,8 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-module "lz_dynamic_groups" {
-  depends_on = [module.lz_compartments]
-  source     = "../modules/iam/iam-dynamic-group"
-  providers  = { oci = oci.home }
-  dynamic_groups = var.use_existing_groups == false ? {
+locals {
+  default_dynamic_groups = var.use_existing_groups == false ? {
     ("${var.service_label}-sec-fun-dynamic-group") = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for functions in ${local.security_compartment.name} compartment."
@@ -27,5 +24,12 @@ module "lz_dynamic_groups" {
       matching_rule  = "ALL {resource.compartment.id = '${module.lz_compartments.compartments[local.database_compartment.key].id}'}"
     }
   } : {}
+}
+
+module "lz_dynamic_groups" {
+  depends_on = [module.lz_compartments]
+  source     = "../modules/iam/iam-dynamic-group"
+  providers  = { oci = oci.home }
+  dynamic_groups = local.default_dynamic_groups
 }
 

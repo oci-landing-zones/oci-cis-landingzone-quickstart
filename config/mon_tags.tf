@@ -5,16 +5,8 @@
 ### and tag defaults in the specified tag_defaults_compartment_id. 
 ### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
 
-module "lz_tags" {
-  source                       = "../modules/monitoring/tags"
-  providers                    = { oci = oci.home }
-  tenancy_ocid                 = var.tenancy_ocid
-  tag_namespace_compartment_id = local.parent_compartment_id
-  tag_namespace_name           = local.tag_namespace_name
-  tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
-  tag_defaults_compartment_id  = local.parent_compartment_id
-
-  tags = { # the map keys are meant to be the tag names.
+locals {
+  default_tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {
       tag_description         = "Landing Zone tag that identifies who created the resource."
       tag_is_cost_tracking    = true
@@ -32,4 +24,16 @@ module "lz_tags" {
       tag_default_is_required = false
     }
   }
+}
+
+module "lz_tags" {
+  source                       = "../modules/monitoring/tags"
+  providers                    = { oci = oci.home }
+  tenancy_ocid                 = var.tenancy_ocid
+  tag_namespace_compartment_id = local.parent_compartment_id
+  tag_namespace_name           = local.tag_namespace_name
+  tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
+  tag_defaults_compartment_id  = local.parent_compartment_id
+
+  tags = local.default_tags
 } 

@@ -5,15 +5,15 @@
 
 locals = {
     # Default alarms names
-    compute_high_compute_alarm = {key:"${var.service_label}-high-cpu-alarm",   name:"${var.service_label}-high-cpu-alarm"}
-    compute_instance_status_alarm = {key:"${var.service_label}-instance-status-alarm",   name:"${var.service_label}-instance-status-alarm"}
-    compute_vm_instance_status_alarm = {key:"${var.service_label}-vm-maintenance-alarm",   name:"${var.service_label}-vm-maintenance-alarm"}
-    compute_bare_metal_unhealthy_alarm = {key:"${var.service_label}-bare-metal-unhealthy-alarm",   name:"${var.service_label}-bare-metal-unhealthy-alarm"}
-    compute_high_memory_alarm = {key:"${var.service_label}-high-memory-alarm", name:"${var.service_label}-high-memory-alarm"}
-    database_adb_cpu_alarm = {key:"${var.service_label}-adb-cpu-alarm", name:"${var.service_label}-adb-cpu-alarm"}
-    database_adb_storage_alarm = {key:"${var.service_label}-adb-storage-alarm", name:"${var.service_label}-adb-storage-alarm"}
-    network_vpn_status_alarm = {key:"${var.service_label}-vpn-status-alarm", name:"${var.service_label}-vpn-status-alarm"}
-    network_fast_connect_status_alarm = {key:"${var.service_label}-fast-connect-status-alarm", name:"${var.service_label}-fast-connect-status-alarm"}
+    compute_high_compute_alarm          = {key:"${var.service_label}-high-cpu-alarm",               name:"${var.service_label}-high-cpu-alarm"}
+    compute_instance_status_alarm       = {key:"${var.service_label}-instance-status-alarm",        name:"${var.service_label}-instance-status-alarm"}
+    compute_vm_instance_status_alarm    = {key:"${var.service_label}-vm-maintenance-alarm",         name:"${var.service_label}-vm-maintenance-alarm"}
+    compute_bare_metal_unhealthy_alarm  = {key:"${var.service_label}-bare-metal-unhealthy-alarm",   name:"${var.service_label}-bare-metal-unhealthy-alarm"}
+    compute_high_memory_alarm           = {key:"${var.service_label}-high-memory-alarm",            name:"${var.service_label}-high-memory-alarm"}
+    database_adb_cpu_alarm              = {key:"${var.service_label}-adb-cpu-alarm",                name:"${var.service_label}-adb-cpu-alarm"}
+    database_adb_storage_alarm          = {key:"${var.service_label}-adb-storage-alarm",            name:"${var.service_label}-adb-storage-alarm"}
+    network_vpn_status_alarm            = {key:"${var.service_label}-vpn-status-alarm",             name:"${var.service_label}-vpn-status-alarm"}
+    network_fast_connect_status_alarm   = {key:"${var.service_label}-fast-connect-status-alarm",    name:"${var.service_label}-fast-connect-status-alarm"}
 }
 
 module "lz_compute_alarms" {

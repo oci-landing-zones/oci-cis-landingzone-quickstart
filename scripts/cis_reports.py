@@ -158,44 +158,7 @@ class CIS_Report:
     _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
 
-    # Tenancy Data
-    __tenancy = None
-    __cloud_guard_config = None
-
-    # For IAM Checks
-    __tenancy_password_policy = None
-    __compartments = []
-    __policies = []
-    __users = []
-    __groups_to_users = []
-    __tag_defaults = []
-
-    __buckets = []
-
-    # For Networking checks
-    __network_security_groups = []
-    __network_security_lists = []
-    __network_subnets = []
-
-    __event_rules = []
-
-    __logging_list = []
-    # For Logging & Monitoring checks
-    __subnet_logs = []
-    __write_bucket_logs = []
-
-    # For Vaults and Keys checks
-    __vaults = []
-
-    # For Region
-    __current_region = ""
-
-    # For ONS Subscriptions
-    __subscriptions = []
-
-    # Results from Advanced search query
-    __resources_in_root_compartment = []
-
+    
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -211,6 +174,46 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, current_region):
         # Start print time info
+        # Tenancy Data
+        self.__tenancy = None
+        self.__cloud_guard_config = None
+
+        # For IAM Checks
+        self.__tenancy_password_policy = None
+        self.__compartments = []
+        self.__policies = []
+        self.__users = []
+        self.__groups_to_users = []
+        self.__tag_defaults = []
+        print("*************")
+        self.__buckets = []
+        print("*"*10)
+        print(self.__buckets)
+        print("*"*10)
+        # For Networking checks
+        self.__network_security_groups = []
+        self.__network_security_lists = []
+        self.__network_subnets = []
+
+        self.__event_rules = []
+
+        self.__logging_list = []
+        # For Logging & Monitoring checks
+        self.__subnet_logs = []
+        self.__write_bucket_logs = []
+
+        # For Vaults and Keys checks
+        self.__vaults = []
+
+        # For Region
+        self.__current_region = ""
+
+        # For ONS Subscriptions
+        self.__subscriptions = []
+
+        # Results from Advanced search query
+        self.__resources_in_root_compartment = []
+
         self.__current_region = current_region
         self.__print_header("Running CIS Reports...")
         print("Updated October 30, 2021.")
@@ -306,7 +309,7 @@ class CIS_Report:
     # Load compartments
     ##########################################################################
     def __identity_read_compartments(self):
-
+        self.__compartments = []
         print("Processing Compartments...")
         try:
             self.__compartments = oci.pagination.list_call_get_all_results(
@@ -328,6 +331,7 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
+        self.__groups_to_users = []
         print("Processing User Groups and Group Memberships...")
         try:
             # Getting all Groups in the Tenancy
@@ -362,6 +366,7 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
+        self.__users = []
         print("Processing Users...")
         try:
             # Getting all users in the Tenancy
@@ -497,7 +502,7 @@ class CIS_Report:
     # Tenancy IAM Policies
     ##########################################################################
     def __identity_read_tenancy_policies(self):
-
+        self.__policies = []
         print("Processing IAM Policies in root...")
         # Get all policy at the tenacy level
         try:
@@ -516,9 +521,10 @@ class CIS_Report:
                         "statements": policy.statements
                     }
                     self.__policies.append(record)
-
+            
             return self.__policies
-
+            
+            
         except Exception as e:
             raise RuntimeError(
                 "Error in __identity_read_tenancy_policies: " + str(e.args))
@@ -527,6 +533,7 @@ class CIS_Report:
     # Get Objects Store Buckets
     ##########################################################################
     def __os_read_buckets(self):
+        
         print("Processing Object Store Buckets...")
         # Getting OS Namespace
         try:
@@ -537,6 +544,7 @@ class CIS_Report:
 
         try:
             # Collecting buckets from each compartment
+            
             for compartment in self.__compartments:
                 # Skipping the managed pass compartment
                 if self.__if_not_managed_paas_compartment(compartment.name):
@@ -545,10 +553,11 @@ class CIS_Report:
                         self.__os_namespace,
                         compartment.id
                     ).data
-
+                    print(buckets_data)
                     # Getting Bucket Info
                     for bucket in buckets_data:
                         try:
+                            
                             bucket_info = self.__os_client.get_bucket(
                                 self.__os_namespace, bucket.name).data
                             record = {
@@ -588,12 +597,12 @@ class CIS_Report:
             return self.__buckets
         except Exception as e:
             raise RuntimeError("Error in __os_read_buckets " + str(e.args))
-
+        
     ##########################################################################
     # Network Security Groups
     ##########################################################################
     def __network_read_network_security_groups_rules(self):
-
+        self.__network_security_groups = []
         print("Processing Network Security Groups...")
         # print(network)
         # print(compartments)
@@ -652,11 +661,11 @@ class CIS_Report:
     # Network Security Lists
     ##########################################################################
     def __network_read_network_security_lists(self):
-
+        self.__network_security_lists = []
         print("Processing Network Security Lists...")
         # print(network)
         # print(compartments)
-        # Loopig Through Compartments Except Mnaaged
+        # Looping Through Compartments Except Mnaaged
         try:
             for compartment in self.__compartments:
                 if self.__if_not_managed_paas_compartment(compartment.name):
@@ -713,9 +722,11 @@ class CIS_Report:
     # Network Subnets Lists
     ##########################################################################
     def __network_read_network_subnets(self):
+        self.__network_subnets = []
         print("Processing Network Subnets...")
         try:
             # Looping through compartments in tenancy
+            subnets_data = []
             for compartment in self.__compartments:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     subnets_data = oci.pagination.list_call_get_all_results(
@@ -782,7 +793,7 @@ class CIS_Report:
     # Events
     ##########################################################################
     def __events_read_event_rules(self):
-
+        self.__event_rules = []
         print("Processing Event Rules...")
         try:
             for compartment in self.__compartments:
@@ -813,7 +824,7 @@ class CIS_Report:
     # Logging - Log Groups and Logs
     ##########################################################################
     def __logging_read_log_groups_and_logs(self):
-
+        self.__logging_list = []
         print("Processing Log Groups and Logs...")
 
         try:
@@ -886,6 +897,7 @@ class CIS_Report:
     # Vault Keys
     ##########################################################################
     def __vault_read_vaults(self):
+        self.__vaults = []
         print("Processing Vaults and Keys...")
         # Iterating through compartments
         for compartment in self.__compartments:
@@ -944,6 +956,7 @@ class CIS_Report:
     # Audit Configuration
     ##########################################################################
     def __audit_read__tenancy_audit_configuration(self):
+        self.__audit_retention_period = []
         # Pulling the Audit Configuration
         print("Processing Audit Configuration...")
 
@@ -961,6 +974,7 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
+        self.__cloud_guard_config = []
         print("Processing Cloud Guard Configuration...")
         try:
             self.__cloud_guard_config = self.__cloud_guard.get_configuration(
@@ -974,6 +988,7 @@ class CIS_Report:
     # Identity Password Policy
     ##########################################################################
     def __identity_read_tenancy_password_policy(self):
+        self.__tenancy_password_policy = []
         print("Processing Tenancy Password Policy...")
         try:
             self.__tenancy_password_policy = self.__identity.get_authentication_policy(
@@ -987,6 +1002,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
+        self.__subscriptions = []
         print("Processing Subscriptions...")
         try:
             # Iterate through compartments to get all subscriptions
@@ -1017,6 +1033,7 @@ class CIS_Report:
     # Identity Tag Default
     ##########################################################################
     def __identity_read_tag_defaults(self):
+        self.__tag_defaults = []
         print("Processing Tag Defaults..")
         try:
             # Getting Tag Default for the Root Compartment - Only
@@ -1047,6 +1064,8 @@ class CIS_Report:
     # Run advanced search structure query
     ##########################################################################
     def __search_run_structured_query(self, query):
+        self.__search_results = []
+        search_results = []
         try:
             structured_search = oci.resource_search.models.StructuredSearchDetails(query=query, type='Structured',
                                                                                    matching_context_type=oci.resource_search.models.SearchDetails.MATCHING_CONTEXT_TYPE_NONE)
@@ -1063,6 +1082,10 @@ class CIS_Report:
     # Resources in root compartment
     ##########################################################################
     def __search_resources_in_root_compartment(self):
+        self.__resources_in_root_compartment = []
+        query = []
+        resources_in_root_data = []
+        record = []
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
         print("Processing resources in the root compartment...")
         resources_in_root_data = self.__search_run_structured_query(query)
@@ -1079,8 +1102,8 @@ class CIS_Report:
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_analyze_tenancy_data(self):
-
-        # 1.1 Check - checking if their are additional policies
+        self.__policies = []
+        # 1.1 Check - checking if there are additional policies
         policy_counter = 0
         for policy in self.__policies:
             for statement in policy['statements']:
@@ -1304,6 +1327,7 @@ class CIS_Report:
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
+        
         for bucket in self.__buckets:
             if not(bucket['name'] in self.__write_bucket_logs):
                 self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
@@ -1311,6 +1335,7 @@ class CIS_Report:
                     bucket)
 
         # CIS Section 4 Checks
+        
         for bucket in self.__buckets:
             if 'public_access_type' in bucket:
                 if bucket['public_access_type'] != 'NoPublicAccess':
@@ -1327,7 +1352,7 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(
                     bucket)
                 self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
-
+        self.__buckets = []
         # CIS Section 5 Checks
         # Checking if more than one compartment becuae of the ManagedPaaS Compartment
         if len(self.__compartments) < 2:
@@ -1344,6 +1369,7 @@ class CIS_Report:
     ##########################################################################
 
     def report_generate_cis_report(self):
+        summary_report = []
         # This function reports generates CSV reports
 
         # Collecting all the tenancy data
@@ -1354,6 +1380,7 @@ class CIS_Report:
 
         # Creating summary report
         summary_report = []
+        record = []
         for key, recommendation in self.cis_foundations_benchmark_1_1.items():
             record = {
                 "Recommendation #": key,
@@ -1393,7 +1420,7 @@ class CIS_Report:
         if summary_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, summary_file_name)
-
+        report_file_name = []
         for key, recommendation in self.cis_foundations_benchmark_1_1.items():
             report_file_name = self.__print_to_csv_file(
                 self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
@@ -1408,21 +1435,22 @@ class CIS_Report:
 
         self.__compartments = self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
-        self.__vault_read_vaults()
+        #self.__vault_read_vaults()
         self.__audit_read__tenancy_audit_configuration()
         self.__identity_read_tenancy_password_policy()
-        self.__identity_read_tenancy_policies()
-        self.__identity_read_groups_and_membership()
-        self.__identity_read_users()
+        #self.__identity_read_tenancy_policies()
+        #self.__identity_read_groups_and_membership()
+        #self.__identity_read_users()
+        self.__buckets = []
         self.__os_read_buckets()
-        self.__logging_read_log_groups_and_logs()
-        self.__search_resources_in_root_compartment()
-        self.__events_read_event_rules()
-        self.__ons_read_subscriptions()
-        self.__network_read_network_security_lists()
-        self.__network_read_network_security_groups_rules()
-        self.__network_read_network_subnets()
-        self.__identity_read_tag_defaults()
+        #self.__logging_read_log_groups_and_logs()
+        #self.__search_resources_in_root_compartment()
+        #self.__events_read_event_rules()
+        #self.__ons_read_subscriptions()
+        #self.__network_read_network_security_lists()
+        #self.__network_read_network_security_groups_rules()
+        #self.__network_read_network_subnets()
+        #self.__identity_read_tag_defaults()
 
     ##########################################################################
     # Copy Report to Object Storage
@@ -1462,20 +1490,23 @@ class CIS_Report:
                 return None
 
             # get the file name of the CSV
-
+            file_name = []
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")
                          ).replace(".", "-") + ".csv"
             file_path = os.path.join(report_directory, file_name)
 
             # add start_date to each dictionary
+            result = []
             result = [dict(item, extract_date=self.start_time_str)
                       for item in data]
 
             # generate fields
+            fields = []
             fields = [key for key in result[0].keys()]
 
             with open(file_path, mode='w', newline='') as csv_file:
+                writer = []
                 writer = csv.DictWriter(csv_file, fieldnames=fields)
 
                 # write header
@@ -1485,11 +1516,13 @@ class CIS_Report:
                     writer.writerow(row)
 
             print("CSV: " + file_subject.ljust(22) + " --> " + file_path)
-            # Used by Uplaoad to
+            # Used by Upload
+               
             return file_path
-
+           
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
+        
 
     ##########################################################################
     # Print header centered
@@ -1658,10 +1691,11 @@ def execute_report():
     tenancy = identity.get_tenancy(config["tenancy"]).data
     regions = identity.list_region_subscriptions(tenancy.id).data
     
+    #print(regions)
     
-    for region_name in [str(es.region_name) for es in regions]:
+    for region in regions: 
 
-       
+        region_name = region.region_name
 
         # set the region in the config and signer
         config['region'] = region_name

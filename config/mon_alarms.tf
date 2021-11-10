@@ -3,7 +3,7 @@
 
 ### This Terraform configuration provisions alarms for the tenancy.
 
-locals = {
+locals {
     # Default alarms names
     compute_high_compute_alarm          = {key:"${var.service_label}-high-cpu-alarm",               name:"${var.service_label}-high-cpu-alarm"}
     compute_instance_status_alarm       = {key:"${var.service_label}-instance-status-alarm",        name:"${var.service_label}-instance-status-alarm"}

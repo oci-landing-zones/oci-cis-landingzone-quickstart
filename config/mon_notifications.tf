@@ -7,7 +7,7 @@ module "lz_notifications" {
   rules = {
     ("${var.service_label}-notify-on-iam-changes-rule") = {
       compartment_id      = var.tenancy_ocid
-      description         = "Landing Zone CIS related events rule to detect when IAM and network resources are created, updated or deleted."
+      description         = "Landing Zone CIS related events rule to detect when IAM resources are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT
             {"eventType": 
@@ -29,48 +29,7 @@ module "lz_notifications" {
             "com.oraclecloud.identitycontrolplane.deleteuser",
             "com.oraclecloud.identitycontrolplane.updateuser",
             "com.oraclecloud.identitycontrolplane.updateusercapabilities",
-            "com.oraclecloud.identitycontrolplane.updateuserstate",
-            "com.oraclecloud.virtualnetwork.createvcn",
-            "com.oraclecloud.virtualnetwork.deletevcn",
-            "com.oraclecloud.virtualnetwork.updatevcn",
-            "com.oraclecloud.virtualnetwork.createroutetable",
-            "com.oraclecloud.virtualnetwork.deleteroutetable",
-            "com.oraclecloud.virtualnetwork.updateroutetable",
-            "com.oraclecloud.virtualnetwork.changeroutetablecompartment",
-            "com.oraclecloud.virtualnetwork.createsecuritylist",
-            "com.oraclecloud.virtualnetwork.deletesecuritylist",
-            "com.oraclecloud.virtualnetwork.updatesecuritylist",
-            "com.oraclecloud.virtualnetwork.changesecuritylistcompartment",
-            "com.oraclecloud.virtualnetwork.createnetworksecuritygroup",
-            "com.oraclecloud.virtualnetwork.deletenetworksecuritygroup",
-            "com.oraclecloud.virtualnetwork.updatenetworksecuritygroup",
-            "com.oraclecloud.virtualnetwork.updatenetworksecuritygroupsecurityrules",
-            "com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment",
-            "com.oraclecloud.virtualnetwork.createdrg",
-            "com.oraclecloud.virtualnetwork.deletedrg",
-            "com.oraclecloud.virtualnetwork.updatedrg",
-            "com.oraclecloud.virtualnetwork.createdrgattachment",
-            "com.oraclecloud.virtualnetwork.deletedrgattachment",
-            "com.oraclecloud.virtualnetwork.updatedrgattachment",
-            "com.oraclecloud.virtualnetwork.createinternetgateway",
-            "com.oraclecloud.virtualnetwork.deleteinternetgateway",
-            "com.oraclecloud.virtualnetwork.updateinternetgateway",
-            "com.oraclecloud.virtualnetwork.changeinternetgatewaycompartment",
-            "com.oraclecloud.virtualnetwork.createlocalpeeringgateway",
-            "com.oraclecloud.virtualnetwork.deletelocalpeeringgateway",
-            "com.oraclecloud.virtualnetwork.updatelocalpeeringgateway",
-            "com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment",
-            "com.oraclecloud.natgateway.createnatgateway",
-            "com.oraclecloud.natgateway.deletenatgateway",
-            "com.oraclecloud.natgateway.updatenatgateway",
-            "com.oraclecloud.natgateway.changenatgatewaycompartment",
-            "com.oraclecloud.servicegateway.createservicegateway",
-            "com.oraclecloud.servicegateway.deleteservicegateway.begin",
-            "com.oraclecloud.servicegateway.deleteservicegateway.end",
-            "com.oraclecloud.servicegateway.attachserviceid",
-            "com.oraclecloud.servicegateway.detachserviceid",
-            "com.oraclecloud.servicegateway.updateservicegateway",
-            "com.oraclecloud.servicegateway.changeservicegatewaycompartment"]
+            "com.oraclecloud.identitycontrolplane.updateuserstate"]
             }
             EOT
       actions_action_type = "ONS"
@@ -81,7 +40,7 @@ module "lz_notifications" {
     },
     
 ("${var.service_label}-notify-on-security-changes-rule") = {
-      compartment_id      = module.lz_compartments.compartments[local.network_compartment.key].id
+      compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when security related resources are created, updated or deleted."
       is_enabled          = true
       condition           = <<EOT

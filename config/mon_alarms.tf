@@ -21,7 +21,7 @@ module "lz_compute_alarms" {
     alarms =  length(var.compute_admin_email_endpoints) > 0 ? {
         (local.compute_high_compute_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
-           destinations = [module.lz_compute_topic.topic.id]
+           destinations = [module.lz_topics[local.compute_topic_name].id]
            display_name = local.compute_high_compute_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
@@ -36,7 +36,7 @@ module "lz_compute_alarms" {
 
        (local.compute_instance_status_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
-           destinations = [module.lz_compute_topic.topic.id]
+           destinations = [module.lz_topics[local.compute_topic_name].id]
            display_name = local.compute_instance_status_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
@@ -50,7 +50,7 @@ module "lz_compute_alarms" {
 
         (local.compute_vm_instance_status_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
-           destinations = [module.lz_compute_topic.topic.id] 
+           destinations = [module.lz_topics[local.compute_topic_name].id] 
            display_name = local.compute_vm_instance_status_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
@@ -64,7 +64,7 @@ module "lz_compute_alarms" {
 
         (local.compute_bare_metal_unhealthy_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
-           destinations = [module.lz_compute_topic.topic.id] 
+           destinations = [module.lz_topics[local.compute_topic_name].id] 
            display_name = local.compute_bare_metal_unhealthy_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
@@ -78,7 +78,7 @@ module "lz_compute_alarms" {
 
         (local.compute_high_memory_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
-           destinations = [module.lz_compute_topic.topic.id] 
+           destinations = [module.lz_topics[local.compute_topic_name].id] 
            display_name = local.compute_high_memory_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
@@ -98,7 +98,7 @@ module "lz_database_alarms" {
     alarms = length(var.database_admin_email_endpoints) > 0 ?  {
         (local.database_adb_cpu_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
-           destinations = [module.lz_database_topic.topic.id]
+           destinations = [module.lz_topics[local.database_topic_name].id]
            display_name = local.database_adb_cpu_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
@@ -112,7 +112,7 @@ module "lz_database_alarms" {
 
        (local.database_adb_storage_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
-           destinations = [module.lz_database_topic.topic.id] 
+           destinations = [module.lz_topics[local.database_topic_name].id] 
            display_name = local.database_adb_storage_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
@@ -132,7 +132,7 @@ module "lz_network_alarms" {
     alarms = length(var.compute_admin_email_endpoints) > 0 ? {
         (local.network_vpn_status_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
-           destinations = [module.lz_network_topic.topic.id]  
+           destinations = [module.lz_topics[local.network_topic_name].id]  
            display_name = local.network_vpn_status_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
@@ -146,7 +146,7 @@ module "lz_network_alarms" {
 
        (local.network_fast_connect_status_alarm.key) = {
            compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
-           destinations = [module.lz_network_topic.topic.id] 
+           destinations = [module.lz_topics[local.network_topic_name].id] 
            display_name = local.network_fast_connect_status_alarm.name
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id

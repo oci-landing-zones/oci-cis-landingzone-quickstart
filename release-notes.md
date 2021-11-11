@@ -44,10 +44,10 @@ Resource Manager stack can be created directly from GitHub repository through a 
 ## <a name="script_update_2_2_0">Compliance Checking Script Update</a>
 Updated the compliance checking script to improve handling of Oracle PSM policy statements.
 
-## <a name="multi-region-support-script_update_2_2_0"Compliance Checking Script Multi-Region Support</a>
+## <a name="multi-region-support-script_update_2_2_0">Compliance Checking Script Multi-Region Support</a>
 Updated the compliance checking script to support reports for all subscribed regions for a given tenancy.  IAM related report content only executed on home region. 
 
-## <a name="bastion-nsg-rule-support-for-rdp_2_2_0"RDP Enablement for Bastion Access</a>
+## <a name="bastion-nsg-rule-support-for-rdp_2_2_0">RDP Enablement for Bastion Access</a>
 Bastion NSG rules support RDP in addition to existing SSH ingress rule. Enabled as part of onprem_src_ssh_cidrs variable in variables.tf  
 
 

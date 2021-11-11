@@ -1,4 +1,4 @@
-# October 24, 2021 Release Notes - Stable 2.2.0
+# November 17, 2021 Release Notes - Stable 2.2.0
 1. [Enablement of events and alarms specific to compute, storage, database and governance](#events_and_alarms_2_2_0)
 1. [Addition of e-mail distribution endpoint personas for storage, compute and governance](#operational_personas_2_2_0)
 1. [Configurability of general alarm and event enablement](#alarm_configurability_2_2_0)
@@ -6,6 +6,8 @@
 1. [Resource Manager interface updated](#resource_manager_interface_updated_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
 1. [Compliance Checking Script Update](#script_update_2_2_0)
+1. [Compliance Checking Script multi-region support](#multi-region-support-script_update_2_2_0)
+1. [Bastion NSG rule support for RDP](#bastion-nsg-rule-support-for-rdp_2_2_0)
 
 
 ## <a name="events_and_alarms_2_2_0">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
@@ -41,6 +43,13 @@ Resource Manager stack can be created directly from GitHub repository through a 
 
 ## <a name="script_update_2_2_0">Compliance Checking Script Update</a>
 Updated the compliance checking script to improve handling of Oracle PSM policy statements.
+
+## <a name="multi-region-support-script_update_2_2_0</a>
+Updated the compliance checking script to support reports for all subscribed regions for a given tenancy.  IAM related report content only executed on home region. 
+
+## <a name="bastion-nsg-rule-support-for-rdp_2_2_0</a>
+Bastion NSG rules support RDP in addition to existing SSH ingress rule. Enabled as part of onprem_src_ssh_cidrs variable in variables.tf  
+
 
 # October 13, 2021 Release Notes - Stable 2.1.1
 1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)

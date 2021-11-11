@@ -48,7 +48,7 @@ Updated the compliance checking script to improve handling of Oracle PSM policy 
 Updated the compliance checking script to support reports for all subscribed regions for a given tenancy.  IAM related report content only executed on home region. 
 
 ## <a name="bastion-nsg-rule-support-for-rdp_2_2_0">RDP Enablement for Bastion Access</a>
-Bastion NSG rules support RDP in addition to existing SSH ingress rule. Enabled as part of onprem_src_ssh_cidrs variable in variables.tf  
+Bastion NSG rules support RDP in addition to existing SSH ingress rule. Enabled as part of onprem_src_ssh_cidrs variable in variables.tf  .   Description for bastion nsg rule update for RDP added to Resource Manager interface as well. 
 
 
 # October 13, 2021 Release Notes - Stable 2.1.1

@@ -86,12 +86,6 @@ locals {
   database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
         "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
 
-
-  # Tags
-  tag_namespace_name = "${var.service_label}-namesp"
-  createdby_tag_name = "CreatedBy"
-  createdon_tag_name = "CreatedOn"
-
   ### Network
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]

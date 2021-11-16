@@ -6,6 +6,14 @@
 ### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
 
 locals {
+  all_tags = {} # To be used in an override file.
+  tag_namespace_name = {} # To be used in an override file.
+
+  createdby_tag_name = "CreatedBy"
+  createdon_tag_name = "CreatedOn"
+
+  default_tag_namespace_name = "${var.service_label}-namesp"
+  
   default_tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {
       tag_description         = "Landing Zone tag that identifies who created the resource."
@@ -31,9 +39,8 @@ module "lz_tags" {
   providers                    = { oci = oci.home }
   tenancy_ocid                 = var.tenancy_ocid
   tag_namespace_compartment_id = local.parent_compartment_id
-  tag_namespace_name           = local.tag_namespace_name
+  tag_namespace_name           = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
   tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.parent_compartment_id
-
-  tags = local.default_tags
+  tags = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
 } 

@@ -2,6 +2,8 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+  all_dynamic_groups = {}
+  
   default_dynamic_groups = {
     ("${each.key}-fun-dynamic-group") = {
       compartment_id = var.tenancy_ocid
@@ -20,6 +22,6 @@ module "lz_dynamic_groups" {
   source     = "../modules/iam/iam-dynamic-group"
   depends_on = [module.lz_top_compartments]
   for_each   = local.enclosing_compartments
-  dynamic_groups = default_dynamic_groups
+  dynamic_groups = length(local.all_dynamic_groups) > 0 ? local.all_dynamic_groups : local.default_dynamic_groups
 }
 

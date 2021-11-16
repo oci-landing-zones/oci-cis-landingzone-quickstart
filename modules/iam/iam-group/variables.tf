@@ -23,8 +23,9 @@ variable "tenancy_ocid" {
 variable "groups" {
   description = "Group parameters"
   type = map(object({
-    description  = string,
-    user_ids     = list(string),
-    defined_tags = map(string),
+    description   = string,
+    user_ids      = list(string),
+    defined_tags  = map(string),
+    freeform_tags = map(string)
   }))
 }

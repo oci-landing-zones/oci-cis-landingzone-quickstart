@@ -4,6 +4,9 @@
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
 
 locals {
+  all_scan_recipes = {}
+  all_scan_targets = {}
+  
   default_scan_recipes = var.vss_create == true ? {
     (local.scan_default_recipe_name) = {
       compartment_id  = module.lz_compartments.compartments[local.security_compartment.key].id
@@ -65,8 +68,8 @@ locals {
 module "lz_scanning" {
   source     = "../modules/security/vss"
   depends_on = [null_resource.slow_down_vss]
-  scan_recipes = local.default_scan_recipes
-  scan_targets = local.default_scan_targets
+  scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
+  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.default_scan_targets
 }
 
 resource "null_resource" "slow_down_vss" {

@@ -4,14 +4,15 @@
 locals {
   spoke_bastion = {for subnet in module.lz_vcn_spokes.subnets : subnet.display_name => {
       name = "${replace(subnet.display_name,"/[^a-zA-Z0-9]/","")}Bastion"
-      compartment_id = local.security_compartment_id 
+      compartment_id = local.security_compartment_id
+      target_subnet_id = subnet.id
       client_cidr_block_allow_list = var.public_src_bastion_cidrs
       max_session_ttl_in_seconds = local.bastion_max_session_ttl_in_seconds
     } if length(var.vcn_cidrs) == 1 && !var.is_vcn_onprem_connected && var.hub_spoke_architecture == false && (length(regexall(".*${local.spoke_subnet_names[1]}*", subnet.display_name)) > 0)}
   
   exacs_bastion = {for subnet in module.lz_exacs_vcns.subnets : subnet.display_name => {
       name = "${replace(subnet.display_name,"/[^a-zA-Z0-9]/","")}Bastion"
-      compartment_id = local.security_compartment_id 
+      compartment_id = local.security_compartment_id
       target_subnet_id = subnet.id
       client_cidr_block_allow_list = var.public_src_bastion_cidrs
       max_session_ttl_in_seconds = local.bastion_max_session_ttl_in_seconds

@@ -5,8 +5,8 @@ resource "oci_ons_notification_topic" "these" {
     #Required
     for_each = var.topics
         compartment_id = each.value.compartment_id
-        name           = each.value.notification_topic_name
-        description    = each.value.notification_topic_description
+        name           = each.value.name
+        description    = each.value.description
         defined_tags   = each.value.defined_tags
         freeform_tags  = each.value.freeform_tags  
     }

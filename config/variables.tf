@@ -43,11 +43,16 @@ variable "existing_enclosing_compartment_ocid" {
 variable "policies_in_root_compartment" {
   type        = string
   default     = "CREATE"
-  description = "Whether required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
+  description = "Whether required grants at the root compartment should be created or simply used. Valid values: 'CREATE' and 'USE'. If 'CREATE', make sure the user executing this stack has permissions to create grants in the root compartment. If 'USE', no grants are created."
   validation {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
+}
+variable "use_existing_grants_in_enc_compartment" {
+  type        = bool
+  default     = false
+  description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
 }
 variable "use_existing_groups" {
   type        = bool
@@ -89,6 +94,37 @@ variable "existing_announcement_reader_group_name" {
 variable "existing_exainfra_admin_group_name" {
   type    = string
   default = ""
+}
+
+variable "extend_landing_zone_to_new_region" {
+  default = false
+  type    = bool
+  description = "Whether Landing Zone is being extended to another region. When set to true, IAM resources are reused."
+}
+variable "existing_network_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing network compartment."
+}
+variable "existing_security_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing security compartment."
+}
+variable "existing_appdev_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing appdev compartment."
+}
+variable "existing_database_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing database compartment."
+}
+variable "existing_exainfra_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing Exadata infrastructure compartment."
 }
 
 # Networking
@@ -170,19 +206,6 @@ variable "dmz_for_firewall" {
   default     = false
   description = "Will a supported 3rd Party Firewall be deployed in the DMZ."
 }
-
-variable "create_alarms_as_enabled" {
-  type        = bool
-  default     = false
-  description = "Creates alarm artifacts in disabled state when set to false"
-}
-
-variable "create_events_as_enabled" {
-  type        = bool
-  default     = false
-  description = "Creates event rules artifacts in disabled state when set to false"
-}
-
 
 variable "dmz_number_of_subnets" {
   type        = number
@@ -284,7 +307,6 @@ variable "network_admin_email_endpoints" {
     error_message = "Validation failed network_admin_email_endpoints: invalid email address."
   }
 }
-
 variable "security_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -294,7 +316,6 @@ variable "security_admin_email_endpoints" {
     error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
-
 variable "storage_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -335,6 +356,18 @@ variable "database_admin_email_endpoints" {
   }
 }
 
+variable "create_alarms_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates alarm artifacts in disabled state when set to false"
+}
+
+variable "create_events_as_enabled" {
+  type        = bool
+  default     = false
+  description = "Creates event rules artifacts in disabled state when set to false"
+}
+
 variable "alarm_message_format" {
   type    = string
   default = "PRETTY_JSON"
@@ -344,7 +377,6 @@ variable "alarm_message_format" {
     error_message = "Validation failed for alarm_message_format: valid values (case insensitive) are PRETTY_JSON, RAW, or ONS_OPTIMIZED."
   }
 }
-
 
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"

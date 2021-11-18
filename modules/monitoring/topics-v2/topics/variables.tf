@@ -3,10 +3,10 @@
 
 variable "topics" {
   type = map(object({
-     compartment_id                 = string
-     notification_topic_name        = string
-     notification_topic_description = string
-     defined_tags                   = map(string)
-     freeform_tags                  = map(string)
+     compartment_id   = string
+     name             = string
+     description      = string
+     defined_tags     = map(string)
+     freeform_tags    = map(string)
     }))
 }

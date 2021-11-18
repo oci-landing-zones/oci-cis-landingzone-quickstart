@@ -492,7 +492,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Storage Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
 
   database_admin_email_endpoints:
@@ -501,7 +501,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Database Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
 
   governance_admin_email_endpoints:
@@ -510,7 +510,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Governance Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all governance related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
 
   create_alarms_as_enabled:

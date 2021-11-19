@@ -68,6 +68,7 @@ variableGroups:
       - "governance_admin_email_endpoints"
       - "create_alarms_as_enabled"
       - "create_events_as_enabled"
+      - "alarm_message_format"
 
   - title: "Cloud Guard"
     variables:
@@ -482,7 +483,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Compute Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
 
   storage_admin_email_endpoints:
@@ -491,7 +492,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Storage Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
 
   database_admin_email_endpoints:
@@ -500,7 +501,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Database Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
 
   governance_admin_email_endpoints:
@@ -509,21 +510,31 @@ variables:
       type: string
     uniqueItems: true
     title: "Governance Admin Email Endpoints"
-    required: true
+    required: false
     description: "List of email addresses for all governance related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
 
-  "create_alarms_as_enabled":
+  create_alarms_as_enabled:
     type: boolean
     title: "Create alarms as enabled?"
     description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
     default: false
     
-  "create_events_as_enabled":
+  create_events_as_enabled:
     type: boolean
     title: "Create events as enabled?"
     description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
     default: false
 
+  alarm_message_format:
+    type: enum
+    title: "Alarm Message Format"
+    description: "Format of the message sent by Alarms"
+    required: true
+    enum:
+      - PRETTY_JSON
+      - ONS_OPTIMIZED
+      - RAW
+      
   cloud_guard_configuration_status:
     type: enum
     title: "Cloud Guard Configuration Status"

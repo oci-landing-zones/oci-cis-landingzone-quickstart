@@ -18,6 +18,3 @@ variable "alarms" {
     }))
 }
    
-/*variable "topics" {
-  type = map(string)
-}*/

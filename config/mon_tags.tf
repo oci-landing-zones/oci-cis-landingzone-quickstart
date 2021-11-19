@@ -42,5 +42,5 @@ module "lz_tags" {
   tag_namespace_name           = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
   tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.parent_compartment_id
-  tags = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
+  tags                         = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
 } 

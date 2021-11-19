@@ -49,11 +49,11 @@ variable "policies_in_root_compartment" {
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
-variable "use_existing_grants_in_enc_compartment" {
-  type        = bool
-  default     = false
-  description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
-}
+# variable "use_existing_grants_in_enc_compartment" {
+#   type        = bool
+#   default     = false
+#   description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
+# }
 variable "use_existing_groups" {
   type        = bool
   default     = false
@@ -96,36 +96,36 @@ variable "existing_exainfra_admin_group_name" {
   default = ""
 }
 
-variable "extend_landing_zone_to_new_region" {
-  default = false
-  type    = bool
-  description = "Whether Landing Zone is being extended to another region. When set to true, IAM resources are reused."
-}
-variable "existing_network_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing network compartment."
-}
-variable "existing_security_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing security compartment."
-}
-variable "existing_appdev_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing appdev compartment."
-}
-variable "existing_database_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing database compartment."
-}
-variable "existing_exainfra_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing Exadata infrastructure compartment."
-}
+# variable "extend_landing_zone_to_new_region" {
+#   default = false
+#   type    = bool
+#   description = "Whether Landing Zone is being extended to another region. When set to true, IAM resources are reused."
+# }
+# variable "existing_network_cmp_ocid" {
+#   default = null
+#   type    = string
+#   description = "OCID of an existing network compartment."
+# }
+# variable "existing_security_cmp_ocid" {
+#   default = null
+#   type    = string
+#   description = "OCID of an existing security compartment."
+# }
+# variable "existing_appdev_cmp_ocid" {
+#   default = null
+#   type    = string
+#   description = "OCID of an existing appdev compartment."
+# }
+# variable "existing_database_cmp_ocid" {
+#   default = null
+#   type    = string
+#   description = "OCID of an existing database compartment."
+# }
+# variable "existing_exainfra_cmp_ocid" {
+#   default = null
+#   type    = string
+#   description = "OCID of an existing Exadata infrastructure compartment."
+# }
 
 # Networking
 variable "no_internet_access" {

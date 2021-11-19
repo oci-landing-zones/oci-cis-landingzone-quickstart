@@ -4,12 +4,12 @@
 locals  {
   # Topics
   # id is for future use
-  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: var.existing_security_cmp_ocid == null ? module.lz_compartments.compartments[local.security_compartment.key].id : var.existing_security_cmp_ocid, id : null}
-  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: var.existing_network_cmp_ocid == null ? module.lz_compartments.compartments[local.network_compartment.key].id : var.existing_network_cmp_ocid, id : null}
-  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: var.existing_appdev_cmp_ocid == null ? module.lz_compartments.compartments[local.appdev_compartment.key].id : var.existing_appdev_cmp_ocid, id : null}
-  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: var.existing_database_cmp_ocid == null ? module.lz_compartments.compartments[local.database_compartment.key].id : var.existing_database_cmp_ocid, id : null }
-  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: var.existing_appdev_cmp_ocid == null ? module.lz_compartments.compartments[local.appdev_compartment.key].id : var.existing_appdev_cmp_ocid, id : null }
-  governance_topic  = {key: "GOVERNANCE-TOPIC", name: "${var.service_label}-governance-topic", cmp_id: var.existing_security_cmp_ocid == null ? module.lz_compartments.compartments[local.security_compartment.key].id : var.existing_security_cmp_ocid, id : null}
+  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: module.lz_compartments.compartments[local.security_compartment.key].id, id : null}
+  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: module.lz_compartments.compartments[local.network_compartment.key].id, id : null}
+  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null}
+  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: module.lz_compartments.compartments[local.database_compartment.key].id, id : null }
+  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null }
+  governance_topic  = {key: "GOVERNANCE-TOPIC", name: "${var.service_label}-governance-topic", cmp_id: module.lz_compartments.compartments[local.security_compartment.key].id, id : null}
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {
@@ -18,7 +18,7 @@ locals  {
       description    = "Landing Zone topic for security related notifications."
       defined_tags   = null
       freeform_tags  = null  
-    } if length(var.security_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
+    } #if length(var.security_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
   }  
 
   regional_topics = merge(
@@ -87,7 +87,7 @@ module "lz_home_region_subscriptions" {
         endpoint       = e       # Protocol matching endpoints: "https://www.oracle.com", "https://your.pagerduty.endpoint.url", "https://your.slack.endpoint.url", "<function_ocid>"
         defined_tags   = null
         freeform_tags  = null
-      } if var.extend_landing_zone_to_new_region == false
+      } # if var.extend_landing_zone_to_new_region == false
     }
 }
 

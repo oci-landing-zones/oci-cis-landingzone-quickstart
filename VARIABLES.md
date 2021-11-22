@@ -33,10 +33,7 @@ Variable Name | Description | Required | Default Value
 **existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true | None
 **existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true | None
 **existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true | None
-### <a name="alarm_variables"></a>Alarm Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**create_alarms_as_enabled** | Configures alarms to be enabled or disabled. | yes | [false]
+
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
@@ -69,18 +66,19 @@ Variable Name | Description | Required | Default Value
 **onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
 **onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 
-### <a name="notification_variables"></a>Notification Variables
+### <a name="notification_variables"></a>Notifications Alarms and Events Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
 **network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
-**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. | No | None
-**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. | No | None
-**governance_admin_email_endpoints** | List of email addresses for all governance related notifications. | No | None
-**database_admin_email_endpoints** | List of email addresses for all database related notifications. | No | None
+**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. If no email addresses are provided the topic, events and alarms associated with storage are not created. | No | None
+**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. If no email addresses are provided the topic, events and alarms associated with compute are not created.| No | None
+**governance_admin_email_endpoints** | List of email addresses for all governance related notifications. If no email addresses are provided the topic, events and alarms associated with governance are not created.| No | None
+**database_admin_email_endpoints** | List of email addresses for all database related notifications. If no email addresses are provided the topic, events and alarms associated with database are not created.| No | None
 **create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to False. | No | False
 **create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
 **alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON
+
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value

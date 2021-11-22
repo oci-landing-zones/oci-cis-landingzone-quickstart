@@ -1,50 +1,33 @@
-# October 24, 2021 Release Notes - Stable 2.2.0
-1. [Enablement of events and alarms specific to compute, storage, database and governance](#events_and_alarms_2_2_0)
-1. [Addition of e-mail distribution endpoint personas for storage, compute and governance](#operational_personas_2_2_0)
-1. [Configurability of general alarm and event enablement](#alarm_configurability_2_2_0)
-1. [Events moved from root to respective LZ compartments](#events_moved_to_respective_lz_compartments_2_2_0)
-1. [Resource Manager interface updated](#resource_manager_interface_updated_2_2_0)
+# November 22, 2021 Release Notes - Stable 2.2.0
+1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#topics_2_2_0)
+1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
+1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
-1. [Compliance Checking Script Update](#script_update_2_2_0)
 1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
 
 
-## <a name="events_and_alarms_2_2_0">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
-Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment.  This includes compute instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.   Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.  
+## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing Deployments)</a>
+In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone Deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions will be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.
 
-For databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.  Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release. 
+## <a name="events_and_alarms_2_2_0">Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance</a>
+Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment. Operational alarms and events can be enabled by entering an email address in. This includes following alarms:
+- AppDev Compartment
+    - Instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment
+    - Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set
+- Database Compartment 
+    - Databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage
+    - Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release
+- Network Compartment
+    - Up/Down status for VPN and FastConnect services in the Network compartment of the Landing Zone
 
-There are also new alarms that monitor Up/Down status for VPN and FastConnect services deployed in the Network compartment of the Landing Zone.  
-
-## <a name="operational_personas_2_2_0">Addition of E-mail Distribution Personas for Storage, Compute and Governance</a>
-New operational personas can be notified including new e-mail endpoints for compute admins, database admins, storage admins and governance administrators.  
-
-## <a name="alarm_configurability_2_2_0">Configurability of General Alarm and Event Enablement</a>
-Alarms and events are configurable and enabled by default to meet OCI CIS Benchmark security standards.  The core tfvars configuration file has two new configurable fields including "create_alarms_as_enabled = true" and "create_events_as_enabled = true".   By changing either of these to false all events and alarms specific to the Landing Zone deployment can be disabled respectively.   
-
-## <a name="events_moved_to_respective_lz_compartments_2_2_0">Events Moved from Root to Respective LZ Compartments</a>
-Events have been moved to their respective compartments.   For instance, network event rules have been moved to the network compartment so network administrators can managed their own rules without needing access to the Root compartment of the Landing Zone. 
-
-Additionally event rules for compute and database reside respectively in the compute and database compartments.  
-
-New governance event rules have been placed in the security compartment.  
-
-## <a name="resource_manager_interface_updated_2_2_0">Resource Manager Interface Updated</a>
-The Resource Manager interface has been updated to account for the 
-two new configurable "event" and "alarm" fields which are:
-
- "create_alarms_as_enabled = true" 
-
- "create_events_as_enabled = true"
+## <a name="script_update_2_2_0">Compliance Checking Script Runs in All Regions</a>
+The compliance checking script now runs checks on all available regions in the tenancy and has improved handling of Oracle PSM policy statements.
 
 ## <a name="click_to_deploy_2_2_0">Click to Deploy button</a>
 Resource Manager stack can be created directly from GitHub repository through a single button click. The zip file with the source code is passed directly to Resource Manager Create Stack API. 
 
-## <a name="script_update_2_2_0">Compliance Checking Script Update</a>
-Updated the compliance checking script to improve handling of Oracle PSM policy statements.
-
 ## <a name="svg_architecture_files">Added SVG versions of Core Architecture Files</a>
-Added SVG versions of Core Architecture Files so users can modify their own versions of the files per any custom modifications to the CIS LZ.
+Added SVG versions of Core Architecture Files so users can modify the architectures using Draw.io.
 
 # October 13, 2021 Release Notes - Stable 2.1.1
 1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)

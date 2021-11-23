@@ -1,24 +1,24 @@
 # November 22, 2021 Release Notes - Stable 2.2.0
-1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#topics_2_2_0)
+1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)
 1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
 1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
 1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
 
 
-## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing Deployments)</a>
-In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone Deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions will be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.
+## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing deployments)</a>
+In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions to be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.
 
 ## <a name="events_and_alarms_2_2_0">Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance</a>
-Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment. Operational alarms and events can be enabled by entering an email address in. This includes following alarms:
+Customers can now deploy events and alarms specific to operational areas including Compute, Storage, Database and Governance as part of the default Landing Zone deployment. Operational alarms and events can be enabled by entering an email address in. This includes following alarms:
 - AppDev Compartment
-    - Instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment
-    - Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set
+    - Instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.
+    - Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.
 - Database Compartment 
-    - Databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage
-    - Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release
+    - Databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.
+    - Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release.
 - Network Compartment
-    - Up/Down status for VPN and FastConnect services in the Network compartment of the Landing Zone
+    - Up/Down status for VPN and FastConnect services in the Network compartment of the Landing Zone.
 
 ## <a name="script_update_2_2_0">Compliance Checking Script Runs in All Regions</a>
 The compliance checking script now runs checks on all available regions in the tenancy and has improved handling of Oracle PSM policy statements.

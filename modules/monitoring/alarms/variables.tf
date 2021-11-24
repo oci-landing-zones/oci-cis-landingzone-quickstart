@@ -15,6 +15,7 @@ variable "alarms" {
      metric_compartment_id_in_subtree = bool
      message_format = string
      pending_duration = string
+     defined_tags = map(string)
     }))
 }
    

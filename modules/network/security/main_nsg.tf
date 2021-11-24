@@ -52,6 +52,7 @@ resource "oci_core_network_security_group" "these" {
     compartment_id = var.compartment_id
     vcn_id         = each.value.vcn_id
     display_name   = each.key
+    defined_tags   = each.value.defined_tags
 }
 
 data "oci_core_network_security_groups" "these" {

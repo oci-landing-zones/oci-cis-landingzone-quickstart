@@ -51,46 +51,51 @@ data "oci_core_services" "all_services" {
 ### VCN
 resource "oci_core_vcn" "these" {
   for_each       = var.vcns
-  display_name   = each.key
-  dns_label      = each.value.dns_label
-  cidr_block     = each.value.cidr
-  compartment_id = each.value.compartment_id
+    display_name   = each.key
+    dns_label      = each.value.dns_label
+    cidr_block     = each.value.cidr
+    compartment_id = each.value.compartment_id
+    defined_tags   = each.value.defined_tags
 }
 
 ### Internet Gateway
 resource "oci_core_internet_gateway" "these" {
   for_each       = { for k, v in var.vcns : k => v if v.is_create_igw == true }
-  compartment_id = each.value.compartment_id
-  vcn_id         = oci_core_vcn.these[each.key].id
-  display_name   = "${each.key}-igw"
+    compartment_id = each.value.compartment_id
+    vcn_id         = oci_core_vcn.these[each.key].id
+    display_name   = "${each.key}-igw"
+    defined_tags   = each.value.defined_tags
 }
 
 ### NAT Gateway
 resource "oci_core_nat_gateway" "these" {
   for_each       = { for k, v in var.vcns : k => v if v.is_create_igw == true }
-  compartment_id = each.value.compartment_id
-  display_name   = "${each.key}-natgw"
-  vcn_id         = oci_core_vcn.these[each.key].id
-  block_traffic  = each.value.block_nat_traffic
+    compartment_id = each.value.compartment_id
+    display_name   = "${each.key}-natgw"
+    vcn_id         = oci_core_vcn.these[each.key].id
+    block_traffic  = each.value.block_nat_traffic
+    defined_tags   = each.value.defined_tags
 }
 
 ### Service Gateway
 resource "oci_core_service_gateway" "these" {
   for_each       = var.vcns
-  compartment_id = each.value.compartment_id
-  display_name   = "${each.key}-sgw"
-  vcn_id         = oci_core_vcn.these[each.key].id
-  services {
-    service_id = local.osn_cidrs[var.service_gateway_cidr]
-  }
+    compartment_id = each.value.compartment_id
+    display_name   = "${each.key}-sgw"
+    defined_tags   = each.value.defined_tags
+    vcn_id         = oci_core_vcn.these[each.key].id
+    services {
+      service_id = local.osn_cidrs[var.service_gateway_cidr]
+    }
 }
 
 ### DRG attachment to VCN
 resource "oci_core_drg_attachment" "these" {
   for_each     = { for k, v in var.vcns : k => v if v.is_attach_drg == true }
-  drg_id       = var.drg_id
-  vcn_id       = oci_core_vcn.these[each.key].id
-  display_name = "${each.key}-drg-attachment"
+    drg_id       = var.drg_id
+    vcn_id       = oci_core_vcn.these[each.key].id
+    display_name = "${each.key}-drg-attachment"
+    defined_tags = each.value.defined_tags
 }
 
 ### Subnets

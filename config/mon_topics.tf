@@ -7,15 +7,15 @@ module "lz_security_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.security_compartment.key].id
   notification_topic_name        = "${var.service_label}-security-topic"
   notification_topic_description = "Landing Zone topic for security related notifications."
-  subscriptions = { for e in var.security_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.security_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
     
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }
@@ -26,15 +26,15 @@ module "lz_compute_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.appdev_compartment.key].id
   notification_topic_name        = "${var.service_label}-compute-topic"
   notification_topic_description = "Landing Zone topic for compute performance related notifications."
-  subscriptions = { for e in var.compute_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.compute_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
     
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }
@@ -45,15 +45,15 @@ module "lz_database_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.database_compartment.key].id
   notification_topic_name        = "${var.service_label}-database-topic"
   notification_topic_description = "Landing Zone topic for database performance related notifications."
-  subscriptions = { for e in var.database_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.database_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
     
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }
@@ -64,15 +64,15 @@ module "lz_storage_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.appdev_compartment.key].id
   notification_topic_name        = "${var.service_label}-storage-topic"
   notification_topic_description = "Landing Zone topic for storage performance related notifications."
-  subscriptions = { for e in var.storage_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.storage_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
     
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }
@@ -83,15 +83,15 @@ module "lz_governance_topic" {
   compartment_id                 = module.lz_compartments.compartments[local.security_compartment.key].id
   notification_topic_name        = "${var.service_label}-governance-topic"
   notification_topic_description = "Landing Zone topic for governance related notifications."
-  subscriptions = { for e in var.governance_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.governance_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
     
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }
@@ -103,15 +103,15 @@ module "lz_network_topic" {
   notification_topic_name        = "${var.service_label}-network-topic"
   notification_topic_description = "Landing Zone topic for network related notifications."
 
-  subscriptions = { for e in var.network_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e}
+  subscriptions = { for e in var.network_admin_email_endpoints: e => {protocol = "EMAIL", endpoint = e, defined_tags = null}
 
     ### Examples of other subscription methods:
     /* 
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com"},
-    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com"}
-    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url"}
-    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url"}
-    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>"} 
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.oracle.com", defined_tags = null},
+    {protocol = "CUSTOM_HTTPS", endpoint = "https://www.google.com", defined_tags = null}
+    {protocol = "PAGER_DUTY", endpoint = "https://your.pagerduty.endpoint.url", defined_tags = null}
+    {protocol = "SLACK", endpoint = "https://your.slack.endpoint.url", defined_tags = null}
+    {protocol = "ORACLE_FUNCTIONS", endpoint = "<function_ocid>", defined_tags = null} 
     */
   }
 }

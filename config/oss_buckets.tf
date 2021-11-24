@@ -11,6 +11,7 @@ module "lz_buckets" {
             compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
             name = "${var.service_label}-appdev-bucket"
             namespace = data.oci_objectstorage_namespace.this.namespace
+            defined_tags = null
         }
     }
 }

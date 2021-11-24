@@ -7,4 +7,5 @@ resource "oci_identity_compartment" "these" {
     name           = each.value.name
     description    = each.value.description
     enable_delete  = each.value.enable_delete
+    defined_tags   = each.value.defined_tags
 }

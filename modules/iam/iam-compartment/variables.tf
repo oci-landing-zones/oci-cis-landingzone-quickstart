@@ -7,5 +7,6 @@ variable "compartments" {
     name          = string
     description   = string
     enable_delete = string
+    defined_tags  = map(string) 
   }))
 }  

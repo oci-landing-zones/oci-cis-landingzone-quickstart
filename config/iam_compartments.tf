@@ -13,6 +13,7 @@ module "lz_top_compartment" {
       name          = local.default_enclosing_compartment.name
       description   = "Landing Zone enclosing compartment, enclosing all Landing Zone compartments."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     }
   }
 }
@@ -24,24 +25,28 @@ locals {
       name          = local.security_compartment.name
       description   = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     },
     (local.network_compartment.key) = {
       parent_id     = local.parent_compartment_id
       name          = local.network_compartment.name
       description   = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     },
     (local.appdev_compartment.key) = {
       parent_id     = local.parent_compartment_id
       name          = local.appdev_compartment.name
       description   = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     },
     (local.database_compartment.key) = {
       parent_id     = local.parent_compartment_id
       name          = local.database_compartment.name
       description   = "Landing Zone compartment for all database related resources."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     }
   }
 
@@ -51,12 +56,14 @@ locals {
       name          = local.exainfra_compartment.name
       description   = "Landing Zone compartment for Exadata infrastructure."
       enable_delete = local.enable_cmp_delete
+      defined_tags  = null
     }
   } : {}
 
   cmps = merge(local.default_cmps, local.exainfra_cmp)
 
 }
+
 module "lz_compartments" {
   source    = "../modules/iam/iam-compartment"
   providers = { oci = oci.home }

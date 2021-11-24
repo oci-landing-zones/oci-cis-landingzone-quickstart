@@ -17,6 +17,7 @@ module "lz_keys" {
     vault_mgmt_endPoint   = module.lz_vault.vault.management_endpoint
     keys              = {
         (local.oss_key_name) = {
+            defined_tags = null
             key_shape_algorithm = "AES"
             key_shape_length    = 32
         }
@@ -32,6 +33,7 @@ module "lz_keys_policies" {
         "${local.oss_key_name}-policy" = {
             compartment_id = local.parent_compartment_id
             description = "Landing Zone policy for OCI services to access ${module.lz_keys.keys[local.oss_key_name].display_name} in the Vault service."
+            defined_tags = null
             statements = [
                 "Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment.name} where target.key.id = '${module.lz_keys.keys[local.oss_key_name].id}'",
                 "Allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.security_compartment.name} where target.key.id = '${module.lz_keys.keys[local.oss_key_name].id}'",

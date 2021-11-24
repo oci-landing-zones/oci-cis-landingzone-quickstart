@@ -12,7 +12,8 @@ variable "buckets" {
   type = map(object({
     compartment_id = string,
     name           = string,
-    namespace      = string
+    namespace      = string,
+    defined_tags   = map(string)
   }))
 }
   

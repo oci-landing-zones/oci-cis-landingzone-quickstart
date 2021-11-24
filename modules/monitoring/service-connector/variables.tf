@@ -5,6 +5,7 @@ variable "service_connector" {
     description = "Details of the Service Connector to be created"
     type = object ({
         compartment_id  = string,
+	defined_tags = map(string)
         service_connector_display_name = string,
         service_connector_source_kind  = string,
         service_connector_state = string,

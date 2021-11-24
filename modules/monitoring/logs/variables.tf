@@ -16,6 +16,12 @@ variable "log_group_description" {
   default     = ""
 }
 
+variable "defined_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of defined tags. (Optional)"
+  default     = null
+}
+
 variable "target_resources" {
     type = map(object({
         log_display_name              = string

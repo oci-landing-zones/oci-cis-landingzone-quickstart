@@ -8,4 +8,5 @@ resource "oci_identity_policy" "these" {
     description    = each.value.description
     compartment_id = each.value.compartment_id
     statements     = each.value.statements
+    defined_tags   = each.value.defined_tags
 }

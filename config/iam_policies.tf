@@ -192,31 +192,37 @@ locals {
       (local.compute_agent_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage compute agent related services."
+        defined_tags   = null
         statements = local.compute_agent_permissions
       },
        (local.network_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
+        defined_tags   = null
         statements = local.compute_agent_permissions
       },
       (local.security_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
+        defined_tags   = null
         statements     = concat(local.security_enccmp_permissions, local.security_permissions)
       },
       (local.database_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
+        defined_tags   = null
         statements = concat(local.database_permissions, local.database_permissions_on_exainfra_cmp)
       },
       (local.appdev_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
+        defined_tags   = null
         statements = local.appdev_permissions
       },
       (local.iam_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
+        defined_tags   = null
         statements     = local.iam_enccmp_permissions
       }
     }
@@ -225,6 +231,7 @@ locals {
       (local.exainfra_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."
+        defined_tags   = null
         statements  = local.exainfra_permissions
       }
     } : {}
@@ -240,31 +247,37 @@ module "lz_root_policies" {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements     = local.security_root_permissions
     },
     (local.iam_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements     = local.iam_root_permissions
     },
     (local.network_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.database_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy"]
     },
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
+      defined_tags   = null
       statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
         "Allow group ${local.auditor_group_name} to read instances in tenancy",
         "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
@@ -283,12 +296,14 @@ module "lz_root_policies" {
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
+      defined_tags   = null
       statements = ["Allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
                     "Allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
     },
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
+      defined_tags   = null
       statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
         "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
         "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",

@@ -24,3 +24,9 @@ variable "default_target" {
   type        = object({name=string, type=string, id=string})
   description = "The default Cloud Guard target."
 }
+
+variable "defined_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of defined tags. (Optional)"
+  default     = null
+}

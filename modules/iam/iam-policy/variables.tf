@@ -3,8 +3,9 @@
 
 variable "policies" {
   type = map(object({
-    description  = string
+    description    = string
     compartment_id = string
-    statements = list(string)
+    statements     = list(string)
+    defined_tags   = map(string)
   }))
 }  

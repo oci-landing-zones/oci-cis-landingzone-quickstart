@@ -19,9 +19,16 @@ variable "notification_topic_description" {
   default     = ""
 }
 
+variable "defined_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of defined tags. (Optional)"
+  default     = null
+}
+
 variable "subscriptions" {
   type = map(object({
-    protocol = string
-    endpoint = string
+    defined_tags = map(string)
+    protocol     = string
+    endpoint     = string
   }))
 }  

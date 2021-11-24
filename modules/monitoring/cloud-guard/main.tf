@@ -28,6 +28,7 @@ resource "oci_cloud_guard_target" "this" {
   display_name         = var.default_target.name
   target_resource_id   = var.default_target.id
   target_resource_type = var.default_target.type
+  defined_tags         = var.defined_tags
   dynamic "target_detector_recipes" {
     for_each = length(data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection) > 0 ? data.oci_cloud_guard_detector_recipes.compartment_detector_recipes.detector_recipe_collection[0].items : []
     iterator = recipe

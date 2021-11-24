@@ -10,6 +10,7 @@ module "lz_compute_alarms" {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            destinations = [module.lz_compute_topic.topic.id]
            display_name = "${var.service_label}-high-cpu-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            namespace = "oci_computeagent"
@@ -25,6 +26,7 @@ module "lz_compute_alarms" {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            destinations = [module.lz_compute_topic.topic.id]
            display_name = "${var.service_label}-instance-status-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            namespace = "oci_compute_infrastructure_health"
@@ -39,6 +41,7 @@ module "lz_compute_alarms" {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            destinations = [module.lz_compute_topic.topic.id] 
            display_name = "${var.service_label}-vm-maintenance-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            namespace = "oci_compute_infrastructure_health"
@@ -53,6 +56,7 @@ module "lz_compute_alarms" {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            destinations = [module.lz_compute_topic.topic.id] 
            display_name = "${var.service_label}-bare-metal-unhealthy-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            namespace = "oci_compute_infrastructure_health"
@@ -67,6 +71,7 @@ module "lz_compute_alarms" {
            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            destinations = [module.lz_compute_topic.topic.id] 
            display_name = "${var.service_label}-high-memory-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
            namespace = "oci_computeagent"
@@ -87,6 +92,7 @@ module "lz_database_alarms" {
            compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
            destinations = [module.lz_database_topic.topic.id]
            display_name = "${var.service_label}-adb-cpu-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
            namespace = "oci_autonomous_database"
@@ -101,6 +107,7 @@ module "lz_database_alarms" {
            compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
            destinations = [module.lz_database_topic.topic.id] 
            display_name = "${var.service_label}-adb-storage-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
            namespace = "oci_autonomous_database"
@@ -121,6 +128,7 @@ module "lz_network_alarms" {
            compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
            destinations = [module.lz_network_topic.topic.id]  
            display_name = "${var.service_label}-vpn-status-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
            namespace = "oci_vpn"
@@ -135,6 +143,7 @@ module "lz_network_alarms" {
            compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
            destinations = [module.lz_network_topic.topic.id] 
            display_name = "${var.service_label}-fast-connect-status-alarm"
+           defined_tags = null
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
            namespace = "oci_fastconnect"

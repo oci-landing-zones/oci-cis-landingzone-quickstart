@@ -9,7 +9,7 @@ locals  {
   compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null}
   database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: module.lz_compartments.compartments[local.database_compartment.key].id, id : null }
   storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null }
-  governance_topic  = {key: "GOVERNANCE-TOPIC", name: "${var.service_label}-governance-topic", cmp_id: module.lz_compartments.compartments[local.security_compartment.key].id, id : null}
+  budget_topic      = {key: "BUDGET-TOPIC",     name: "${var.service_label}-budget-topic",     cmp_id: var.tenancy_ocid, id : null }
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {
@@ -54,13 +54,13 @@ locals  {
         freeform_tags  = null
       } if length(var.storage_admin_email_endpoints) > 0},
 
-      {for i in [1]: (local.governance_topic.key) => {
-        compartment_id = local.governance_topic.cmp_id
-        name           = local.governance_topic.name
-        description    = "Landing Zone topic for governance related notifications."
+      {for i in [1]: (local.budget_topic.key) => {
+        compartment_id = var.tenancy_ocid
+        name           = local.budget_topic.name
+        description    = "Landing Zone topic for budget related notifications."
         defined_tags   = null
         freeform_tags  = null
-      } if length(var.governance_admin_email_endpoints) > 0}
+      } if length(var.budget_admin_email_endpoints) > 0}
   )  
 }
 
@@ -126,9 +126,9 @@ module "lz_subscriptions" {
         defined_tags  = null
         freeform_tags = null
     }},
-    { for e in var.governance_admin_email_endpoints: "${e}-${local.governance_topic.name}" => {
-        compartment_id = local.governance_topic.cmp_id
-        topic_id = local.governance_topic.id == null ? module.lz_topics.topics[local.governance_topic.key].id : local.governance_topic.id
+    { for e in var.budget_admin_email_endpoints: "${e}-${local.budget_topic.name}" => {
+        compartment_id = local.budget_topic.cmp_id
+        topic_id = local.budget_topic.id == null ? module.lz_topics.topics[local.budget_topic.key].id : local.budget_topic.id
         protocol = "EMAIL" 
         endpoint = e
         defined_tags  = null

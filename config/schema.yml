@@ -65,7 +65,7 @@ variableGroups:
       - "compute_admin_email_endpoints"
       - "database_admin_email_endpoints"
       - "storage_admin_email_endpoints"
-      - "governance_admin_email_endpoints"
+      - "budget_admin_email_endpoints"
       - "create_alarms_as_enabled"
       - "create_events_as_enabled"
       - "alarm_message_format"
@@ -504,14 +504,14 @@ variables:
     required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
 
-  governance_admin_email_endpoints:
+  budget_admin_email_endpoints:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: "Governance Admin Email Endpoints"
+    title: "Budget Admin Email Endpoints"
     required: false
-    description: "List of email addresses for all governance related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
+    description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
 
   create_alarms_as_enabled:
     type: boolean

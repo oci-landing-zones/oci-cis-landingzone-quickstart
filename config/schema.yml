@@ -63,8 +63,9 @@ variableGroups:
       - "network_admin_email_endpoints"
       - "security_admin_email_endpoints"
       - "compute_admin_email_endpoints"
-      - "database_admin_email_endpoints"
       - "storage_admin_email_endpoints"
+      - "database_admin_email_endpoints"
+      - "exainfra_admin_email_endpoints"
       - "budget_admin_email_endpoints"
       - "create_alarms_as_enabled"
       - "create_events_as_enabled"
@@ -503,6 +504,15 @@ variables:
     title: "Database Admin Email Endpoints"
     required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
+
+  exainfra_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Exdata Infrastructure Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"  
 
   budget_admin_email_endpoints:
     type: array

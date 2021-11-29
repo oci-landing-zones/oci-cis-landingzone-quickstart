@@ -10,6 +10,7 @@ locals  {
   database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: module.lz_compartments.compartments[local.database_compartment.key].id, id : null }
   storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null }
   budget_topic      = {key: "BUDGET-TOPIC",     name: "${var.service_label}-budget-topic",     cmp_id: var.tenancy_ocid, id : null }
+  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: module.lz_compartments.compartments[local.exainfra_compartment.key].id, id : null }
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {
@@ -60,7 +61,15 @@ locals  {
         description    = "Landing Zone topic for budget related notifications."
         defined_tags   = null
         freeform_tags  = null
-      } if length(var.budget_admin_email_endpoints) > 0}
+      } if length(var.budget_admin_email_endpoints) > 0},
+
+      {for i in [1]: (local.exainfra_topic.key) => {
+        compartment_id = local.exainfra_topic.cmp_id
+        name           = local.exainfra_topic.name
+        description    = "Landing Zone topic for Exadata infrastructure notifications."
+        defined_tags   = null
+        freeform_tags  = null
+      } if length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true}
   )  
 }
 
@@ -80,7 +89,7 @@ module "lz_topics" {
 module "lz_home_region_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"
   subscriptions = { 
-      for e in var.security_admin_email_endpoints: e => {
+      for e in var.security_admin_email_endpoints: "${e}-${local.security_topic.name}" => {
         compartment_id = local.security_topic.cmp_id
         topic_id       = local.security_topic.id != null ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.key].id
         protocol       = "EMAIL" # Other valid protocols: "CUSTOM_HTTPS", "PAGER_DUTY", "SLACK", "ORACLE_FUNCTIONS"
@@ -133,7 +142,15 @@ module "lz_subscriptions" {
         endpoint = e
         defined_tags  = null
         freeform_tags = null
-    }}
+    }},
+    { for e in var.exainfra_admin_email_endpoints: "${e}-${local.exainfra_topic.name}" => {
+        compartment_id = local.exainfra_topic.cmp_id
+        topic_id = local.exainfra_topic.id == null ? module.lz_topics.topics[local.exainfra_topic.key].id : local.exainfra_topic.id
+        protocol = "EMAIL" 
+        endpoint = e
+        defined_tags  = null
+        freeform_tags = null
+    } if var.deploy_exainfra_cmp == true}
   )
 }
 

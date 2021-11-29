@@ -24,6 +24,8 @@ module "lz_dynamic_groups" {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for compute agents in ${local.appdev_compartment.name} compartment."
       matching_rule  = "ALL {resource.type = 'managementagent',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment.key].id}'}"
+      defined_tags   = null
+      freeform_tags  = null
     }
     ("${var.service_label}-database-kms-dynamic-group") = {
       compartment_id = var.tenancy_ocid

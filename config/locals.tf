@@ -43,7 +43,12 @@ locals {
   auditor_group_name             = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name      = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  compute_agent_group_name       = "${var.service_label}-appdev-computeagent-dynamic-group"
+  
+  # Dynamic groups
+  compute_agent_dyn_group_name = "${var.service_label}-appdev-computeagent-dynamic-group"
+  security_fun_dyn_group_name  = "${var.service_label}-sec-fun-dynamic-group"
+  appdev_fun_dyn_group_name    = "${var.service_label}-appdev-fun-dynamic-group"
+  database_kms_dyn_group_name  = "${var.service_label}-database-kms-dynamic-group"
   
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"

@@ -6,28 +6,28 @@ module "lz_dynamic_groups" {
   source     = "../modules/iam/iam-dynamic-group"
   providers  = { oci = oci.home }
   dynamic_groups = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? {
-    ("${var.service_label}-sec-fun-dynamic-group") = {
+    (local.security_fun_dyn_group_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for functions in ${local.security_compartment.name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags   = null
       freeform_tags  = null
     },
-    ("${var.service_label}-appdev-fun-dynamic-group") = {
+    (local.appdev_fun_dyn_group_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for functions in ${local.appdev_compartment.name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.appdev_compartment_id}'}"
       defined_tags   = null
       freeform_tags  = null
     },
-     ("${var.service_label}-appdev-computeagent-dynamic-group") = {
+     (local.compute_agent_dyn_group_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for compute agents in ${local.appdev_compartment.name} compartment."
       matching_rule  = "ALL {resource.type = 'managementagent',resource.compartment.id = '${module.lz_compartments.compartments[local.appdev_compartment.key].id}'}"
       defined_tags   = null
       freeform_tags  = null
     }
-    ("${var.service_label}-database-kms-dynamic-group") = {
+    (local.database_kms_dyn_group_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone dynamic group for databases in ${local.database_compartment.name} compartment."
       matching_rule  = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"

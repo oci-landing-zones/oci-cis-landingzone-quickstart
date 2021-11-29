@@ -41,7 +41,7 @@ locals {
       actions_description = "Sends notification via ONS"
       topic_id            = local.security_topic.id != null ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.key].id
       defined_tags        = null
-    } # if var.extend_landing_zone_to_new_region == false
+    } if var.extend_landing_zone_to_new_region == false
   }
   regional_notifications =  merge (
     {for i in [1] : (local.notify_on_network_changes_rule.key) => {

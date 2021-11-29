@@ -356,6 +356,16 @@ variable "database_admin_email_endpoints" {
   }
 }
 
+variable "exainfra_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all Exadata infrastrcture related notifications. Only applicable if deploy_exainfra_cmp is true."
+  validation {
+    condition     = length([for e in var.exainfra_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.exainfra_admin_email_endpoints)
+    error_message = "Validation failed exainfra_admin_email_endpoints: invalid email address."
+  }
+}
+
 variable "create_alarms_as_enabled" {
   type        = bool
   default     = false

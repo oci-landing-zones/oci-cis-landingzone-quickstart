@@ -13,6 +13,7 @@ module "lz_tags" {
   tag_namespace_name           = local.tag_namespace_name
   tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.parent_compartment_id
+  is_create_namespace          = !var.extend_landing_zone_to_new_region
 
   tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {

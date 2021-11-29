@@ -15,6 +15,7 @@ private_key_password = ""
 ### Environment/IAM variables
 region        = "<tenancy_region>"
 service_label = "<a_label_to_prefix_resource_names_with>"
+# extend_landing_zone_to_new_region       = false
 # use_enclosing_compartment               = false
 # existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"

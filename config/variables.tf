@@ -43,11 +43,16 @@ variable "existing_enclosing_compartment_ocid" {
 variable "policies_in_root_compartment" {
   type        = string
   default     = "CREATE"
-  description = "Whether required policies at the root compartment should be created or simply used. If \"CREATE\", you must be sure the user executing this stack has permissions to create policies in the root compartment. If \"USE\", policies must have been created previously."
+  description = "Whether required grants at the root compartment should be created or simply used. Valid values: 'CREATE' and 'USE'. If 'CREATE', make sure the user executing this stack has permissions to create grants in the root compartment. If 'USE', no grants are created."
   validation {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
+}
+variable "use_existing_grants_in_enc_compartment" {
+  type        = bool
+  default     = false
+  description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
 }
 variable "use_existing_groups" {
   type        = bool
@@ -89,6 +94,37 @@ variable "existing_announcement_reader_group_name" {
 variable "existing_exainfra_admin_group_name" {
   type    = string
   default = ""
+}
+
+variable "extend_landing_zone_to_new_region" {
+  default = false
+  type    = bool
+  description = "Whether Landing Zone is being extended to another region. When set to true, compartments and resources at the root compartment are reused."
+}
+variable "existing_network_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing network compartment."
+}
+variable "existing_security_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing security compartment."
+}
+variable "existing_appdev_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing appdev compartment."
+}
+variable "existing_database_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing database compartment."
+}
+variable "existing_exainfra_cmp_ocid" {
+  default = null
+  type    = string
+  description = "OCID of an existing Exadata infrastructure compartment."
 }
 
 # Networking
@@ -279,6 +315,22 @@ variable "security_admin_email_endpoints" {
     condition     = length([for e in var.security_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.security_admin_email_endpoints)
     error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
+}
+variable "compute_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+}
+variable "storage_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+}   
+variable "database_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+}
+variable "governance_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
 }
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"

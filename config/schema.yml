@@ -13,6 +13,7 @@ variableGroups:
       - "region"
       - "service_label"
       - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
       - "policies_in_root_compartment"
@@ -130,6 +131,13 @@ variables:
     type: boolean
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
+    default: false
+    visible: env_advanced_options
+
+  extend_landing_zone_to_new_region:
+    type: boolean
+    title: "Extend Landing Zone to new region?"
+    description: "Whether Landing Zone is being extended to another region. When set to true, compartments and resources at the root compartment are reused."
     default: false
     visible: env_advanced_options
   

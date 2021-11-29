@@ -5,7 +5,7 @@ module "lz_services_policy" {
     depends_on = [module.lz_dynamic_groups]
     source = "../modules/iam/iam-policy"
     providers = { oci = oci.home }
-    policies  = local.use_existing_tenancy_policies == false ? {
+    policies  = local.use_existing_root_cmp_grants == false ? {
         (local.services_policy_name) = {
             compartment_id = var.tenancy_ocid
             description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."

@@ -6,10 +6,14 @@ locals {
     notify_on_network_changes_rule      = {key:"${var.service_label}-notify-on-network-changes-rule",       name:"${var.service_label}-notify-on-network-changes-rule"}
     notify_on_storage_changes_rule      = {key:"${var.service_label}-notify-on-storage-changes-rule",       name:"${var.service_label}-notify-on-storage-changes-rule"}
     notify_on_database_changes_rule     = {key:"${var.service_label}-notify-on-database-changes-rule",      name:"${var.service_label}-notify-on-database-changes-rule"}
-    notify_on_exadata_changes_rule      = {key:"${var.service_label}-notify-on-exadata-changes-rule",       name:"${var.service_label}-notify-on-exadata-changes-rule"}
+    notify_on_exainfra_changes_rule     = {key:"${var.service_label}-notify-on-exainfra-changes-rule",      name:"${var.service_label}-notify-on-exainfra-changes-rule"}
     notify_on_budget_changes_rule       = {key:"${var.service_label}-notify-on-budget-changes-rule",        name:"${var.service_label}-notify-on-budget-changes-rule"}
     notify_on_compute_changes_rule      = {key:"${var.service_label}-notify-on-compute-changes-rule",       name:"${var.service_label}-notify-on-compute-changes-rule"}
-  
+
+    exainfra_events = "\"com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical\", \"com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical\""
+    default_database_events = "\"com.oraclecloud.databaseservice.autonomous.database.critical\",\"com.oraclecloud.databaseservice.dbsystem.critical\""
+    database_events = var.deploy_exainfra_cmp == true ?  local.default_database_events: concat(local.exainfra_events, local.default_database_events)
+    
   home_region_notifications = {
    for i in [1] :     (local.notify_on_iam_changes_rule.key) => {
       compartment_id      = var.tenancy_ocid
@@ -128,11 +132,7 @@ locals {
       is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
-            ["com.oraclecloud.databaseservice.autonomous.database.critical",
-             "com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical",
-             "com.oraclecloud.databaseservice.dbsystem.critical",
-             "com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical"
-            ]
+            [${local.database_events}]
             }
             EOT
       actions_action_type = "ONS"
@@ -143,25 +143,21 @@ locals {
     } if length(var.database_admin_email_endpoints)  > 0},
 
      
-     {for i in [1] : (local.notify_on_exadata_changes_rule.key) => {     
-      compartment_id      = var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : var.tenancy_ocid
-      description         = "Landing Zone events rule to detect when database resources are created, updated or deleted in the Exadata compartment."
+     {for i in [1] : (local.notify_on_exainfra_changes_rule.key) => {     
+      compartment_id      = local.exainfra_topic.cmp_id
+      description         = "Landing Zone events rule to detect Exadata infrastructure events."
       is_enabled          = var.create_events_as_enabled
       condition           = <<EOT
             {"eventType": 
-            ["com.oraclecloud.databaseservice.autonomous.database.critical",
-             "com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical",
-             "com.oraclecloud.databaseservice.dbsystem.critical",
-             "com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical"
-            ]
+            [${local.exainfra_events}]
             }
             EOT
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
-      topic_id            = local.database_topic.id == null ? module.lz_topics.topics[local.database_topic.key].id : local.database_topic.id
+      topic_id            = local.exainfra_topic.id == null ? module.lz_topics.topics[local.exainfra_topic.key].id : local.exainfra_topic.id
       defined_tags        = null
-    } if length(var.database_admin_email_endpoints)  > 0 && var.deploy_exainfra_cmp == true},
+    } if length(var.exainfra_admin_email_endpoints)  > 0 && var.deploy_exainfra_cmp == true},
 
     {for i in [1] : (local.notify_on_budget_changes_rule.key) => {
       compartment_id      = var.tenancy_ocid

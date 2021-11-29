@@ -8,7 +8,7 @@ module "lz_buckets" {
     kms_key_id   = module.lz_keys.keys[local.oss_key_name].id
     buckets      = { 
         ("${var.service_label}-appdev-bucket") = {
-            compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
+            compartment_id = local.appdev_compartment_id #module.lz_compartments.compartments[local.appdev_compartment.key].id
             name = "${var.service_label}-appdev-bucket"
             namespace = data.oci_objectstorage_namespace.this.namespace
         }

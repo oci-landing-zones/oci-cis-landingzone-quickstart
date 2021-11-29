@@ -1,11 +1,12 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-module "lz_notifications" {
+module "lz_iam_notifications" {
   depends_on = [null_resource.slow_down_notifications]
   source     = "../modules/monitoring/notifications"
-  rules = {
-    ("${var.service_label}-notify-on-iam-changes-rule") = {
+  providers  = { oci = oci.home }
+  rules = var.extend_landing_zone_to_new_region == false ? {
+    (local.iam_events_rule_name) = {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to detect when IAM resources are created, updated or deleted."
       is_enabled          = true
@@ -35,10 +36,17 @@ module "lz_notifications" {
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
-      topic_id            = module.lz_security_topic.topic.id
+      topic_id            = local.security_topic.id != "" ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.name].id
       defined_tags        = null
-    },
-    ("${var.service_label}-notify-on-network-changes-rule") = {
+    }
+  } : {}  
+}   
+
+module "lz_notifications" {
+  depends_on = [null_resource.slow_down_notifications]
+  source     = "../modules/monitoring/notifications"
+  rules = {
+     (local.network_events_rule_name) = {
       compartment_id      = local.parent_compartment_id
       description         = "Landing Zone events rule to detect when networking resources are created, updated or deleted."
       is_enabled          = true
@@ -91,9 +99,9 @@ module "lz_notifications" {
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
-      topic_id            = module.lz_network_topic.topic.id
+      topic_id            = local.network_topic.id != "" ? local.network_topic.id : module.lz_topics.topics[local.network_topic.name].id
       defined_tags        = null
-    },
+    }
   }
 }
 

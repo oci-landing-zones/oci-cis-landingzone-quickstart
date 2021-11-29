@@ -21,7 +21,7 @@ locals  {
     } if local.security_topic.id == null && length(var.security_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
   }  
 
-  topics = merge(
+  regional_topics = merge(
       {for i in [1] :  (local.network_topic.key) => {
         compartment_id = local.network_topic.cmp_id
         name           = local.network_topic.name
@@ -74,15 +74,15 @@ module "lz_home_region_topics" {
 module "lz_topics" {
   source     = "../modules/monitoring/topics-v2/topics"
   depends_on = [ null_resource.slow_down_topics ]
-  topics     = local.topics
+  topics     = local.regional_topics
 }
 
 module "lz_home_region_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"
   subscriptions = { 
       for e in var.security_admin_email_endpoints: e => {
-        compartment_id = module.lz_compartments.compartments[local.security_compartment.key].id
-        topic_id       = local.security_topic.id != "" ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.name].id
+        compartment_id = local.security_topic.cmp_id
+        topic_id       = local.security_topic.id != null ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.key].id
         protocol       = "EMAIL" # Other valid protocols: "CUSTOM_HTTPS", "PAGER_DUTY", "SLACK", "ORACLE_FUNCTIONS"
         endpoint       = e       # Protocol matching endpoints: "https://www.oracle.com", "https://your.pagerduty.endpoint.url", "https://your.slack.endpoint.url", "<function_ocid>"
         defined_tags   = null
@@ -95,8 +95,8 @@ module "lz_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"
   subscriptions = merge(
     { for e in var.network_admin_email_endpoints: "${e}-${local.network_topic.name}" => {
-        compartment_id = local.security_topic.cmp_id
-        topic_id       = local.network_topic.id == null ? module.lz_topics.topics[local.network_topic.name].id : local.network_topic.id
+        compartment_id = local.network_topic.cmp_id
+        topic_id       = local.network_topic.id == null ? module.lz_topics.topics[local.network_topic.key].id : local.network_topic.id
         protocol       = "EMAIL" 
         endpoint       = e
         defined_tags   = null
@@ -104,7 +104,7 @@ module "lz_subscriptions" {
     }},
     { for e in var.compute_admin_email_endpoints: "${e}-${local.compute_topic.name}" => {
         compartment_id = local.compute_topic.cmp_id
-        topic_id = local.compute_topic.id == null ? module.lz_topics.topics[local.compute_topic.name].id : local.compute_topic.id
+        topic_id = local.compute_topic.id == null ? module.lz_topics.topics[local.compute_topic.key].id : local.compute_topic.id
         protocol = "EMAIL" 
         endpoint = e
         defined_tags  = null
@@ -112,7 +112,7 @@ module "lz_subscriptions" {
     }},
     { for e in var.database_admin_email_endpoints: "${e}-${local.database_topic.name}" => {
         compartment_id = local.database_topic.cmp_id
-        topic_id = local.database_topic.id == null ? module.lz_topics.topics[local.database_topic.name].id : local.database_topic.id
+        topic_id = local.database_topic.id == null ? module.lz_topics.topics[local.database_topic.key].id : local.database_topic.id
         protocol = "EMAIL" 
         endpoint = e
         defined_tags  = null
@@ -120,7 +120,7 @@ module "lz_subscriptions" {
     }},
     { for e in var.storage_admin_email_endpoints: "${e}-${local.storage_topic.name}" => {
         compartment_id = local.storage_topic.cmp_id
-        topic_id = local.storage_topic.id == null ? module.lz_topics.topics[local.security_topic.name].id : local.storage_topic.id
+        topic_id = local.storage_topic.id == null ? module.lz_topics.topics[local.storage_topic.key].id : local.storage_topic.id
         protocol = "EMAIL" 
         endpoint = e
         defined_tags  = null
@@ -128,7 +128,7 @@ module "lz_subscriptions" {
     }},
     { for e in var.governance_admin_email_endpoints: "${e}-${local.governance_topic.name}" => {
         compartment_id = local.governance_topic.cmp_id
-        topic_id = local.governance_topic.id == null ? module.lz_topics.topics[local.governance_topic.name].id : local.governance_topic.id
+        topic_id = local.governance_topic.id == null ? module.lz_topics.topics[local.governance_topic.key].id : local.governance_topic.id
         protocol = "EMAIL" 
         endpoint = e
         defined_tags  = null

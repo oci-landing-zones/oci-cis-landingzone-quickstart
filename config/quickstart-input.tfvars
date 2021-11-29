@@ -43,10 +43,10 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Exadata variables
-# exacs_vcn_cidrs           = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
-# exacs_client_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_backup_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_vcn_names           = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
+# exacs_vcn_cidrs           = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
+# exacs_client_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_backup_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_vcn_names           = ["<name_1>","<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
 # deploy_exainfra_cmp       = true # whether to deploy a compartment for Exadata infrastructure.
 
 
@@ -60,13 +60,21 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 
 
 ### Notifications variables
-network_admin_email_endpoints  = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all network related notifications.
-security_admin_email_endpoints = ["<email_1>","<email_2>",...,"<email_n>"] # list of email addresses for all security related notifications.
-
+network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
+database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
+storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
+governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all governance related notifications such as budget and finance.
 
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"
 
+### Alarm Configuration
+# create_alarms_as_enabled = false 
+
+### Events Configuration
+# create_events_as_enabled = false 
 
 ### Service Connector Hub variables
 # create_service_connector_audit                 = false

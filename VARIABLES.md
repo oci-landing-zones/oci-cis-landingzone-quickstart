@@ -66,11 +66,19 @@ Variable Name | Description | Required | Default Value
 **onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
 **onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 
-### <a name="notification_variables"></a>Notification Variables
+### <a name="notification_variables"></a>Notifications Alarms and Events Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
 **security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
+**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
+**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. If no email addresses are provided the topic, events and alarms associated with storage are not created. | No | None
+**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. If no email addresses are provided the topic, events and alarms associated with compute are not created.| No | None
+**governance_admin_email_endpoints** | List of email addresses for all governance related notifications. If no email addresses are provided the topic, events and alarms associated with governance are not created.| No | None
+**database_admin_email_endpoints** | List of email addresses for all database related notifications. If no email addresses are provided the topic, events and alarms associated with database are not created.| No | None
+**create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to False. | No | False
+**create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
+**alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON
+
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value

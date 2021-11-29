@@ -86,6 +86,7 @@ The Landing Zone can deploy the following services:
     - Recipe
 - Bastion
 - Events Rules
+- Alarms
 - Notifications
     - Topics
     - Subscriptions

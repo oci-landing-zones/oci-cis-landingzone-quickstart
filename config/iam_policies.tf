@@ -66,7 +66,15 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage vss-family in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to read work-requests in compartment ${local.security_compartment.name}",
     "Allow group ${local.security_admin_group_name} to manage bastion-family in compartment ${local.security_compartment.name}",
-    "Allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment.name}"] : []
+    "Allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage cloudevents-rules in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
+    "Allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"] : []
+
+  ##Compute Agent Permissions
+  compute_agent_permissions = ["Allow dynamic-group ${local.compute_agent_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "Allow dynamic-group ${local.compute_agent_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
@@ -93,6 +101,9 @@ locals {
         "Allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
+        "Allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment.name}",
         "Allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"] : [] 
 
   ## Network admin grants on Security compartment
@@ -134,7 +145,12 @@ locals {
         "Allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
         "Allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] : []       
+        "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
+        "Allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"] : []
 
   ## Database admin grants on Exainfra compartment
   database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true && var.existing_exainfra_cmp_ocid == null ? [
@@ -171,6 +187,9 @@ locals {
         "Allow group ${local.appdev_admin_group_name} to read audit-events in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
+        "Allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
         "Allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"] : []
 
   ## AppDev admin grants on Network compartment
@@ -228,10 +247,15 @@ locals {
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
 
     default_policies = { 
-      (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
+      (local.compute_agent_policy_name) = {
         compartment_id = local.parent_compartment_id
-        description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
-        statements = local.network_admin_grants
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage compute agent related services."
+        statements = local.compute_agent_permissions
+      },
+       (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
+        compartment_id = local.parent_compartment_id
+        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
+        statements = local.compute_agent_permissions
       } : null,
       (local.security_admin_policy_name) = length(local.security_admin_grants) > 0 ? {
         compartment_id = local.parent_compartment_id

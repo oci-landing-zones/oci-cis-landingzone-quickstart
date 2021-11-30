@@ -35,8 +35,10 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Vulnerability Scanning
 - Bastion
 - Events
+- Alarms
 - Notifications
 - Object Storage
+- Budget
 
  ## <a name="deliverables"></a>Deliverables
  This repository encloses two deliverables:
@@ -76,11 +78,11 @@ The above can be deployed without the creation of Internet Gateways and NAT Gate
 ### <a name="arch-diagram"></a>Diagram
 The diagram below shows services and resources that are deployed in a single VCN deployment:
 
-![Architecture_Single_VCN](images/Architecture_Single_VCN.png)
+![Architecture_Single_VCN](images/Architecture_Single_VCN.svg)
 
 The diagram below shows services and resources that are deployed in a Hub & Spoke VCN deployment:
 
-![Architecture_HS_VCN](images/Architecture_HS_VCN.png)
+![Architecture_HS_VCN](images/Architecture_HS_VCN.svg)
 
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
@@ -99,6 +101,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Logging consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
 - [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
 - [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service)
+- [Operational Monitoring and Alerting in the CIS Landing Zone](https://www.ateam-oracle.com/operational-monitoring-and-alerting-in-the-cis-landing-zone)
 
 ## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
@@ -106,7 +109,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 
 ## <a name="team"></a>The Team
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: Pulkit Sharma, [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney)
+- **Contributors**: Pulkit Sharma, [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), [Chad Russell](https://github.com/chad-russell-git)
 
 ## <a name="feedback"></a>Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

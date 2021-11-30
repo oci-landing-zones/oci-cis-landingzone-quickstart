@@ -61,10 +61,11 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 ### Notifications variables
 network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
 security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
-compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
-database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
-storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
-governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all governance related notifications such as budget and finance.
+#compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
+#storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
+#database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
+#exainfra_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all Exadata infrastrcture related notifications.
+#budget_admin_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all budget related notifications.
 
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"

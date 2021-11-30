@@ -21,7 +21,7 @@ locals {
   database_compartment    = {key:"${var.service_label}-database-cmp", name: var.existing_database_cmp_ocid == null ?  "${var.service_label}-database-cmp" : data.oci_identity_compartment.database.name}
   database_compartment_id   = var.existing_database_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-database-cmp"].id : var.existing_database_cmp_ocid
   exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: var.existing_exainfra_cmp_ocid == null ?  "${var.service_label}-exainfra-cmp" : data.oci_identity_compartment.exainfra.name}
-  exainfra_compartment_id   = var.existing_exainfra_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-exainfra-cmp"].id : var.existing_exainfra_cmp_ocid
+  exainfra_compartment_id   = var.existing_exainfra_cmp_ocid == null && length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments["${var.service_label}-exainfra-cmp"].id : var.existing_exainfra_cmp_ocid
   
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
@@ -34,15 +34,15 @@ locals {
   use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
   
   # Group names
-  security_admin_group_name      = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  network_admin_group_name       = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  database_admin_group_name      = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  appdev_admin_group_name        = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  iam_admin_group_name           = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name          = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  auditor_group_name             = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
-  exainfra_admin_group_name      = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
+  security_admin_group_name      = var.existing_security_admin_group_name       != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+  network_admin_group_name       = var.existing_network_admin_group_name        != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+  database_admin_group_name      = var.existing_database_admin_group_name       != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+  appdev_admin_group_name        = var.existing_appdev_admin_group_name         != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+  iam_admin_group_name           = var.existing_iam_admin_group_name            != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+  cred_admin_group_name          = var.existing_cred_admin_group_name           != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+  auditor_group_name             = var.existing_auditor_group_name              != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+  announcement_reader_group_name = var.existing_announcement_reader_group_name  != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+  exainfra_admin_group_name      = var.existing_exainfra_admin_group_name       != "" || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
   
   # Dynamic groups
   compute_agent_dyn_group_name = "${var.service_label}-appdev-computeagent-dynamic-group"

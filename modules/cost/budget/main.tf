@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-resource oci_budget_budget this {
+resource oci_budget_budget these {
   for_each = var.budget
   amount                                = each.value.budget_amount
   budget_processing_period_start_offset = "1"
@@ -17,9 +17,9 @@ resource oci_budget_budget this {
 
 
 
-resource oci_budget_alert_rule this {
+resource oci_budget_alert_rule these {
   for_each = var.budget
-  budget_id       = oci_budget_budget.this[each.key].id
+  budget_id       = oci_budget_budget.these[each.key].id
   display_name    = "${each.value.service_label}-alert-on-forecasted-spent"
   #message = ""
   recipients      = each.value.budget_alert_recipients

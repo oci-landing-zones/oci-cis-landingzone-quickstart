@@ -285,13 +285,13 @@ variable "security_admin_email_endpoints" {
   }
 }
 
-variable "cost_admin_email_endpoints" {
+variable "budget_alert_email_endpoints" {
   type        = list(string)
   default     = []
   description = "List of email addresses for all cost related notifications."
   validation {
-    condition     = length([for e in var.cost_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.cost_admin_email_endpoints)
-    error_message = "Validation failed cost_admin_email_endpoints: invalid email address."
+    condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
+    error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
   }
 }
 variable "cloud_guard_configuration_status" {
@@ -409,8 +409,8 @@ variable "vss_scan_day" {
 # Cost Management
 variable "budget_alert_threshold" {
   type        = number
-  default     = 75
-  description = "The threshold for triggering the alert expressed as a percentage. 75% is the default."
+  default     = 100
+  description = "The threshold for triggering the alert expressed as a percentage. 100% is the default."
   validation {
     condition     = var.budget_alert_threshold > 0 && var.budget_alert_threshold < 10000
     error_message = "Validation failed for budget_alert_threshold: The threshold percentage should be greater than 0 and less than or equal to 10,000, with no leading zeros and a maximum of 2 decimal places."

@@ -31,7 +31,9 @@ locals {
     "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
     "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
     "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
-  "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy"]
+    "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy",
+    "Allow group ${local.security_admin_group_name} to read usage-budgets in tenancy",
+    "Allow group ${local.security_admin_group_name} to read usage-reports in tenancy"]
 
   // Security admin permissions to be created always at the enclosing compartment level, which *can* be the root compartment
   security_enccmp_permissions = ["Allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
@@ -235,17 +237,23 @@ module "lz_root_policies" {
     (local.network_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy"]
+      statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
+                        "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
+                        "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
     },
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy"]
+      statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
+                        "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
+                        "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
     },
     (local.database_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy"]
+      statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
+                        "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
+                        "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
     },
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
@@ -263,7 +271,9 @@ module "lz_root_policies" {
         "Allow group ${local.auditor_group_name} to read audit-events in tenancy",
         "Allow group ${local.auditor_group_name} to read users in tenancy",
         "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
-        "Allow group ${local.auditor_group_name} to read vss-family in tenancy"]
+        "Allow group ${local.auditor_group_name} to read vss-family in tenancy",       
+        "Allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
+        "Allow group ${local.auditor_group_name} to read usage-reports in tenancy"]
     },
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid

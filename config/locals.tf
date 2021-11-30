@@ -39,7 +39,6 @@ locals {
   auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  
   cost_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
 
   # Policy names
@@ -138,10 +137,7 @@ locals {
   appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
   database_cmp_target_name = "${local.database_compartment.key}-scan-target"
 
-  ### Cost Management
-  budget_display_name = "${var.service_label}-main-budget"
-  budget_description  = var.use_enclosing_compartment == true ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
-
+  
 
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 60

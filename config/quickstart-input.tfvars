@@ -5,18 +5,18 @@
 ##### The commented variable assignments are for variables with a default value in variables.tf. For overriding them, uncomment the variable and provide an appropriate value.
 
 ### Tenancy Connectivity variables
-tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaacyzc5o6ux4brxurtvcpvum7xpjbwslgdtp7npbfegbqfyld5xvfq"
-user_ocid            = "ocid1.user.oc1..aaaaaaaac7j7y5y6gfd727n3fekpog4rnad5hfw4t22kmgixobw3qwzx3vwa"
-fingerprint          = "31:ce:07:1b:60:d8:ae:20:b7:8e:01:59:3a:7f:53:9a"
-private_key_path     = "../../../keys/tf.pem"
+tenancy_ocid         = "<tenancy_ocid>"
+user_ocid            = "<user_ocid>"
+fingerprint          = "<user_api_key_fingerprint>"
+private_key_path     = "<path_to_user_private_key_file>"
 private_key_password = ""
 
 
 ### Environment/IAM variables
-region        = "us-phoenix-1"
-service_label = "budget"
- use_enclosing_compartment               = true
- existing_enclosing_compartment_ocid     = "ocid1.compartment.oc1..aaaaaaaa5pbecwse5jpzs4cxl6xno3hv23f6ilylfc7wc5iccwcqqeqnvzda" # Compartment OCID where Landing Zone compartments are created.
+region        = "<tenancy_region>"
+service_label = "<a_label_to_prefix_resource_names_with>"
+# use_enclosing_compartment               = false
+# existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"
 # use_existing_groups                     = false
 # existing_iam_admin_group_name           = "<existing_iam_admin_group_name>"
@@ -42,10 +42,10 @@ service_label = "budget"
 
 
 ### Exadata variables
-# exacs_vcn_cidrs           = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
-# exacs_client_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_backup_subnet_cidrs = ["<cidr_1>,"<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
-# exacs_vcn_names           = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
+# exacs_vcn_cidrs           = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
+# exacs_client_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_backup_subnet_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. One subnet CIDR to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element.
+# exacs_vcn_names           = ["<name_1>","<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
 # deploy_exainfra_cmp       = true # whether to deploy a compartment for Exadata infrastructure.
 
 
@@ -59,22 +59,31 @@ service_label = "budget"
 
 
 ### Notifications variables
-network_admin_email_endpoints    = ["johannes.murmann@oracle.com"] # list of email addresses for all network related notifications.
-security_admin_email_endpoints   = ["johannes.murmann@oracle.com"] # list of email addresses for all security related notifications.
-#governance_admin_email_endpoints = ["johannes.murmann@oracle.com","jmurmann12@gmail.com"] # list of email addresses for all governance related notifications.
+network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
+security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
+database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
+storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
+governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all governance related notifications such as budget and finance.
+budget_alert_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all budget related alerts.
 
 ### Cloud Guard variables
- cloud_guard_configuration_status = "DISABLE"
+# cloud_guard_configuration_status = "ENABLED"
 
+### Alarm Configuration
+# create_alarms_as_enabled = false 
+
+### Events Configuration
+# create_events_as_enabled = false 
 
 ### Service Connector Hub variables
- create_service_connector_audit                 = false
+# create_service_connector_audit                 = false
 # service_connector_audit_target                 = "objectstorage"
 # service_connector_audit_state                  = "INACTIVE"
 # service_connector_audit_target_OCID            = ""
 # service_connector_audit_target_cmpt_OCID       = ""
 # sch_audit_objStore_objNamePrefix               = "sch-audit"
- create_service_connector_vcnFlowLogs           = false
+# create_service_connector_vcnFlowLogs           = false
 # service_connector_vcnFlowLogs_target           = "objectstorage"
 # service_connector_vcnFlowLogs_state            = "INACTIVE"
 # service_connector_vcnFlowLogs_target_OCID      = ""
@@ -83,12 +92,14 @@ security_admin_email_endpoints   = ["johannes.murmann@oracle.com"] # list of ema
 
 
 ### Vulnerability Scanning Service variables
- vss_create        = false
+# vss_create        = true
 # vss_scan_schedule = "WEEKLY"
 # vss_scan_day      = "SUNDAY"
 
-
-### Governance variables
-budget_alert_threshold  = 70
-budget_amount           = 250
-create_budget           = true
+### Cost Management variables
+## Percentage of budget amount
+#budget_alert_threshold  = 100
+## Monthly budget amount
+#budget_amount           = 250
+## Create a budget at the root or enclosing compartment level, depending on the value of "use_enclosing_compartment"
+#create_budget           = true

@@ -3,6 +3,6 @@
 
 output "budget" {
   description = "Budget information."
-  value       = length(oci_budget_budget.this) > 0 ? oci_budget_budget.this : null
+  value       = length(oci_budget_budget.these) > 0 ? oci_budget_budget.these : null
 }
 

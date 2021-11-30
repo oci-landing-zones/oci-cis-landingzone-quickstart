@@ -45,6 +45,7 @@ variable "budget" {
         budget_alert_threshold    = string
         budget_amount             = number
         defined_tags              = map(string)
+        freeform_tags             = map(string)
         budget_alert_recipients   = string
     }))
 }

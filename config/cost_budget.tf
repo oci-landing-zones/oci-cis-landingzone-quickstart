@@ -4,7 +4,11 @@
 
 locals {
   
-    budget_config  = var.create_budget == true ? {
+      ### Cost Management
+      budget_display_name = "${var.service_label}-main-budget"
+      budget_description  = var.use_enclosing_compartment == true ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
+
+      budget_config  = var.create_budget == true ? {
         (local.budget_display_name) = {
               tenancy_id                = var.tenancy_ocid
               budget_description        = local.budget_description
@@ -14,7 +18,8 @@ locals {
               budget_alert_threshold    = var.budget_alert_threshold
               budget_amount             = var.budget_amount
               defined_tags              = {} 
-              budget_alert_recipients   = join(", ", [for s in var.cost_admin_email_endpoints : s])
+              freeform_tags             = {}
+              budget_alert_recipients   = join(", ", [for s in var.budget_alert_email_endpoints : s])
               } 
           } : {}
      

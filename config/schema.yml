@@ -258,6 +258,7 @@ variables:
       and:
         - env_advanced_options
         - use_existing_groups  
+  
   existing_cost_admin_group_name:
     type: string
     title: "Existing Cost Admin group name"
@@ -539,16 +540,6 @@ variables:
     required: false
     description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
 
-  budget_alert_email_endpoints:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    title: "Budget Alert Email Endpoints"
-    required: false
-    visible: create_budget
-    description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
-
   create_alarms_as_enabled:
     type: boolean
     title: "Create alarms as enabled?"
@@ -790,8 +781,16 @@ variables:
     description: "The amount of the budget expressed as a whole number in the currency of the customer's rate card."
     required: false
     visible: create_budget
-
-    
+  
+  budget_alert_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Budget Alert Email Endpoints"
+    required: false
+    visible: create_budget
+    description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
 
 # Variables not required to display to user
   user_ocid:

@@ -34,6 +34,7 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_exainfra_admin_group_name"
+      - "existing_cost_admin_group_name"
     visible: advanced_options  
   
   - title: "Policies"
@@ -166,7 +167,13 @@ variables:
     description: "Existing group to which Exadata Cloud service infrastructure management policies will be granted to."
     visible: use_existing_groups
 
-  # Hidden variables
+  existing_cost_admin_group_name:
+    type: string
+    title: "Existing Cost Managment group name"
+    description: "Existing group to which Cost Managment policies will be granted to."
+    visible: use_existing_groups
+
+
   tenancy_ocid:
     type: string
 

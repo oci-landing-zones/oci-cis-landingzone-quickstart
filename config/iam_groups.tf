@@ -45,6 +45,11 @@ locals {
       user_ids     = []
       defined_tags = null
     },
+    (local.cost_admin_group_name) = {
+      description  = "Landing Zone group for Cost Management."
+      user_ids     = []
+      defined_tags = null
+    }
   }
   exainfra_group = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
     (local.exainfra_admin_group_name) = {

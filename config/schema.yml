@@ -26,6 +26,7 @@ variableGroups:
       - "existing_exainfra_admin_group_name"
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
+      - "existing_cost_admin_group_name"
  
   - title: "Networking"
     variables:
@@ -102,6 +103,13 @@ variableGroups:
       - "vss_create"
       - "vss_scan_schedule"
       - "vss_scan_day"
+
+  - title: "Cost Management"
+    variables:
+       - "create_budget"
+       - "budget_alert_threshold"
+       - "budget_amount"
+       - "budget_alert_email_endpoints"
 
   - title: "Hidden Variables"
     visible: false
@@ -251,6 +259,15 @@ variables:
         - env_advanced_options
         - use_existing_groups  
   
+  existing_cost_admin_group_name:
+    type: string
+    title: "Existing Cost Admin group name"
+    description: "Existing group to which Cost management policies will be granted to."
+    visible:  
+      and:
+        - env_advanced_options
+        - use_existing_groups 
+
   net_advanced_options:
     type: boolean
     title: "Advanced Options"
@@ -510,7 +527,7 @@ variables:
     items:
       type: string
     uniqueItems: true
-    title: "Exdata Infrastructure Admin Email Endpoints"
+    title: "Exadata Infrastructure Admin Email Endpoints"
     required: false
     description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"  
 
@@ -743,6 +760,37 @@ variables:
         - eq:
           - vss_scan_schedule
           - "WEEKLY"
+
+# Cost Management
+  create_budget:
+    type: boolean
+    title: "Create a default budget?"
+    description: "If checked, a budget will be created at the root or enclosing compartment and based on forecast spend."
+    default: false
+  
+  budget_alert_threshold:
+    type: integer
+    title: "Percentage of Budget"
+    description: "The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. 100% is the default."
+    required: false
+    visible: create_budget
+
+  budget_amount:
+    type: integer
+    title: "Monthly Budget Amount (in US$)"
+    description: "The amount of the budget expressed as a whole number in the currency of the customer's rate card."
+    required: false
+    visible: create_budget
+  
+  budget_alert_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Budget Alert Email Endpoints"
+    required: false
+    visible: create_budget
+    description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
 
 # Variables not required to display to user
   user_ocid:

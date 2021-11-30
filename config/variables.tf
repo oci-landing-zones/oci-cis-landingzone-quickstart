@@ -320,15 +320,6 @@ variable "security_admin_email_endpoints" {
     error_message = "Validation failed security_admin_email_endpoints: invalid email address."
   }
 }
-variable "budget_alert_email_endpoints" {
-  type        = list(string)
-  default     = []
-  description = "List of email addresses for all cost related notifications."
-  validation {
-    condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
-    error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
-  }
-}
 
 variable "storage_admin_email_endpoints" {
   type        = list(string)
@@ -535,4 +526,14 @@ variable "create_budget" {
   type        = bool
   default     = false
   description = "Create a budget."
+}
+
+variable "budget_alert_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all cost related notifications."
+  validation {
+    condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
+    error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
+  }
 }

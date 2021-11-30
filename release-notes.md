@@ -4,6 +4,7 @@
 1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
 1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
+1. [Added an optional Budget and Budget Alert Rule](#budget_2_2_0)
 
 
 ## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing deployments)</a>
@@ -30,8 +31,11 @@ Resource Manager stack can be created directly from GitHub repository through a 
 Added SVG versions of Core Architecture Files so users can modify the architectures using Draw.io.
 
 ## <a name="budget_2_2_0">Added an optional Budget and Budget Alert Rule</a>
-Customers can now choose to deploy a budget at the root or enclosing compartment level to track monthly spending and be alerted if a forcasted spending breaches a defined threshold.
+Customers can now choose to deploy a budget at the root or enclosing compartment level to track monthly spending and be alerted if a forcasted spending breaches a defined threshold. 
 
+A Cost Managment Admin group is also created that grants permission to Create,Update,Delete budgets and also review Cost Data in the UI or by downloading the detailed Cost Reports.
+Cost Data View Only permissions have been added to the policies for: Auditor, Database Admin, AppDev Admin, Network Admin and Security Admin allowing members of these groups to review spending. 
+  
 # October 13, 2021 Release Notes - Stable 2.1.1
 1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)
 1. [Bastion Service Enabled by public_src_bastion_cidrs](#bastion_service_update)

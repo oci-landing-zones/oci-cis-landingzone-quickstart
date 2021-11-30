@@ -71,10 +71,11 @@ Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
 **network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
-**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. If no email addresses are provided the topic, events and alarms associated with storage are not created. | No | None
-**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. If no email addresses are provided the topic, events and alarms associated with compute are not created.| No | None
-**governance_admin_email_endpoints** | List of email addresses for all governance related notifications. If no email addresses are provided the topic, events and alarms associated with governance are not created.| No | None
-**database_admin_email_endpoints** | List of email addresses for all database related notifications. If no email addresses are provided the topic, events and alarms associated with database are not created.| No | None
+**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. If no email addresses are provided, then the topic, events and alarms associated with storage are not created. | No | None
+**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. If no email addresses are provided, then the topic, events and alarms associated with compute are not created.| No | None
+**budget_admin_email_endpoints** | List of email addresses for all budget related notifications. If no email addresses are provided, then the topic, events and alarms associated with governance are not created.| No | None
+**database_admin_email_endpoints** | List of email addresses for all database related notifications. If no email addresses are provided, then the topic, events and alarms associated with database are not created.| No | None
+**exainfra_admin_email_endpoints** | List of email addresses for all Exadata infrastructure related notifications. If no email addresses are provided, then the topic, and alarms associated with Exadata infrastructure are not created. If deploy_exainfra_cmp is false, then Exadata events are created in the database compartment and sent to the database topic. | No | None
 **create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to False. | No | False
 **create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
 **alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON

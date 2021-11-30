@@ -33,6 +33,7 @@ Variable Name | Description | Required | Default Value
 **existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true | None
 **existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true | None
 **existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true | None
+**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true | None
 
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
@@ -112,6 +113,14 @@ Variable Name | Description | Required | Default Value
 **vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | No | true
 **vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | No | "WEEKLY"
 **vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | No | "SUNDAY"
+
+### <a name="budget_variables"></a>Budget Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_budget** | If checked, a budget will be created at the root or enclosing compartment and based on forecast spend. | No | false
+**budget_alert_threshold** | The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. | No | 100%
+**budget_amount** | The amount of the budget expressed as a whole number in the currency of the customer's rate card. | No | 1000
+**budget_alert_email_endpoints** | List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values) | No | None
 
 ## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
 Input variables used in the pre-config module are all defined in pre-config/variables.tf:

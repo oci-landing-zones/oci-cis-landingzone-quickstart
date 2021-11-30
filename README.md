@@ -77,11 +77,11 @@ The above can be deployed without the creation of Internet Gateways and NAT Gate
 ### <a name="arch-diagram"></a>Diagram
 The diagram below shows services and resources that are deployed in a single VCN deployment:
 
-![Architecture_Single_VCN](images/Architecture_Single_VCN_svg.svg)
+![Architecture_Single_VCN](images/Architecture_Single_VCN.svg)
 
 The diagram below shows services and resources that are deployed in a Hub & Spoke VCN deployment:
 
-![Architecture_HS_VCN](images/Architecture_HS_VCN_svg.svg)
+![Architecture_HS_VCN](images/Architecture_HS_VCN.svg)
 
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.

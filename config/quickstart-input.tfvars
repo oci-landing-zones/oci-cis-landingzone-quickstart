@@ -67,12 +67,6 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 #exainfra_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all Exadata infrastrcture related notifications.
 #budget_admin_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all budget related notifications.
 
-
-
-
-
-
-
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"
 

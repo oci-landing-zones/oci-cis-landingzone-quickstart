@@ -25,7 +25,7 @@ locals {
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_computeagent"
            query = "CpuUtilization[1m].mean() > 80"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -40,7 +40,7 @@ locals {
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
            query = "instance_status[1m].count() == 1"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -54,7 +54,7 @@ locals {
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
            query = "maintenance_status[1m].count() == 1"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -68,7 +68,7 @@ locals {
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
            query = "health_status[1m].count() == 1"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -82,7 +82,7 @@ locals {
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_computeagent"
            query = "MemoryUtilization[1m].mean() > 80"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -98,7 +98,7 @@ locals {
            metric_compartment_id = local.database_topic.cmp_id
            namespace = "oci_autonomous_database"
            query = "CpuUtilization[1m].mean() > 80"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -112,7 +112,7 @@ locals {
            metric_compartment_id = local.database_topic.cmp_id
            namespace = "oci_autonomous_database"
            query = "StorageUtilization[1m].mean() > 80"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -128,7 +128,7 @@ locals {
            metric_compartment_id = local.network_topic.cmp_id
            namespace = "oci_vpn"
            query = "TunnelState[1m].mean() == 0"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"
@@ -142,7 +142,7 @@ locals {
            metric_compartment_id = local.database_topic.cmp_id
            namespace = "oci_fastconnect"
            query = "ConnectionState[1m].mean() == 0"
-           severity = "critical"
+           severity = "CRITICAL"
            metric_compartment_id_in_subtree = true
            message_format = var.alarm_message_format
            pending_duration = "PT5M"

@@ -10,7 +10,7 @@ locals  {
   database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: module.lz_compartments.compartments[local.database_compartment.key].id, id : null }
   storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null }
   budget_topic      = {key: "BUDGET-TOPIC",     name: "${var.service_label}-budget-topic",     cmp_id: var.tenancy_ocid, id : null }
-  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: module.lz_compartments.compartments[local.exainfra_compartment.key].id, id : null }
+  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : null, id : null }
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {

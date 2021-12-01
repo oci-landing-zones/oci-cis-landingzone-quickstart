@@ -62,28 +62,6 @@ locals {
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
 
   services_policy_name   = "${var.service_label}-services-policy"
-  cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
-                            "Allow service cloudguard to read compartments in tenancy",
-                            "Allow service cloudguard to read tenancies in tenancy",
-                            "Allow service cloudguard to read audit-events in tenancy",
-                            "Allow service cloudguard to read compute-management-family in tenancy",
-                            "Allow service cloudguard to read instance-family in tenancy",
-                            "Allow service cloudguard to read virtual-network-family in tenancy",
-                            "Allow service cloudguard to read volume-family in tenancy",
-                            "Allow service cloudguard to read database-family in tenancy",
-                            "Allow service cloudguard to read object-family in tenancy",
-                            "Allow service cloudguard to read load-balancers in tenancy",
-                            "Allow service cloudguard to read users in tenancy",
-                            "Allow service cloudguard to read groups in tenancy",
-                            "Allow service cloudguard to read policies in tenancy",
-                            "Allow service cloudguard to read dynamic-groups in tenancy",
-                            "Allow service cloudguard to read authentication-policies in tenancy",
-                            "Allow service cloudguard to use network-security-groups in tenancy"]
-  vss_statements       = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
-                          "Allow service vulnerability-scanning-service to read compartments in tenancy",
-                          "Allow service vulnerability-scanning-service to read vnics in tenancy",
-                          "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
-  os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
   database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
         "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]

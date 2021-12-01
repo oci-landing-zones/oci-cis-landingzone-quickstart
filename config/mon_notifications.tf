@@ -12,7 +12,7 @@ locals {
 
     exainfra_events = "\"com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical\", \"com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical\""
     default_database_events = "\"com.oraclecloud.databaseservice.autonomous.database.critical\",\"com.oraclecloud.databaseservice.dbsystem.critical\""
-    database_events = var.deploy_exainfra_cmp == true ?  local.default_database_events: concat(local.exainfra_events, local.default_database_events)
+    database_events = var.deploy_exainfra_cmp == true ?  local.default_database_events: "${local.exainfra_events},${local.default_database_events}"
     
   home_region_notifications = {
    for i in [1] :     (local.notify_on_iam_changes_rule.key) => {

@@ -55,7 +55,7 @@ Variable Name | Description | Required | Default Value
 **exacs_vcn_names** | List of Exadata VCNs custom names, overriding the default Exadata VCNs names. Each provided name relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. You can provide up to nine names. | No | []
 **exacs_client_subnet_cidrs** | List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs. | No | []
 **exacs_backup_subnet_cidrs** | List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs.| No | []
-**exacs_vcn_cidrs** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | true
+**deploy_exainfra_cmp** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | false
 
 ### <a name="connectivity_variables"></a>Connectivity Variables
 Variable Name | Description | Required | Default Value

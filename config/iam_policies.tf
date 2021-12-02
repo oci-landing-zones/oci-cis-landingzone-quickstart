@@ -230,7 +230,7 @@ locals {
       }
     }
 
-    exainfra_policy = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
+    exainfra_policy = var.deploy_exainfra_cmp == true ? {
       (local.exainfra_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."

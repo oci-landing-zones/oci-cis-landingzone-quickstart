@@ -322,6 +322,6 @@ module "lz_root_policies" {
 module "lz_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
-  depends_on = [module.lz_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
+  depends_on = [module.lz_groups, module.lz_dynamic_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies = local.policies
 }

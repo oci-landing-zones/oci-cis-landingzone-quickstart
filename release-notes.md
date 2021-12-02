@@ -1,6 +1,44 @@
+# December 02, 2021 Release Notes - Stable 2.2.0
+1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)
+1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
+1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)
+1. [Click to Deploy button](#click_to_deploy_2_2_0)
+1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
+1. [Added an optional Budget and Budget Alert Rule](#budget_2_2_0)
+
+
+## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing deployments)</a>
+In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions to be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.
+
+## <a name="events_and_alarms_2_2_0">Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance</a>
+Customers can now deploy events and alarms specific to operational areas including Compute, Storage, Database and Governance as part of the default Landing Zone deployment. Operational alarms and events can be enabled by entering an email address in. This includes following alarms:
+- AppDev Compartment
+    - Instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.
+    - Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.
+- Database Compartment 
+    - Databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.
+    - Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release.
+- Network Compartment
+    - Up/Down status for VPN and FastConnect services in the Network compartment of the Landing Zone.
+
+## <a name="script_update_2_2_0">Compliance Checking Script Runs in All Regions</a>
+The compliance checking script now runs checks on all available regions in the tenancy and has improved handling of Oracle PSM policy statements.
+
+## <a name="click_to_deploy_2_2_0">Click to Deploy button</a>
+Resource Manager stack can be created directly from GitHub repository through a single button click. The zip file with the source code is passed directly to Resource Manager Create Stack API. 
+
+## <a name="svg_architecture_files">Added SVG versions of Core Architecture Files</a>
+Added SVG versions of Core Architecture Files so users can modify the architectures using Draw.io.
+
+## <a name="budget_2_2_0">Added an optional Budget and Budget Alert Rule</a>
+Customers can now choose to deploy a budget at the root or enclosing compartment level to track monthly spending and be alerted if a forcasted spending breaches a defined threshold. 
+
+A Cost Managment Admin group is also created that grants permission to Create,Update,Delete budgets and also review Cost Data in the UI or by downloading the detailed Cost Reports.
+Cost Data View Only permissions have been added to the policies for: Auditor, Database Admin, AppDev Admin, Network Admin and Security Admin allowing members of these groups to review spending. 
+  
 # October 13, 2021 Release Notes - Stable 2.1.1
-1. [CIS Compliance Checking Script Updates](##cis_script_2_1_1)
-1. [Bastion Service Enabled by public_src_bastion_cidrs](##bastion_service_update)
+1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)
+1. [Bastion Service Enabled by public_src_bastion_cidrs](#bastion_service_update)
 
 ## <a name="cis_script_2_1_1">CIS Compliance Checking Script Updates</a>
 CIS Compliance checking script will now prepend the OCI tenancy's display name to the output directory it creates if no directory is specified.  An example output directory `tenancy_display_name-20211013`.

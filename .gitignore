@@ -9,3 +9,4 @@
 **/terraform.tfvars
 **/terraform_*.tfvars
 test/**
+*.csv

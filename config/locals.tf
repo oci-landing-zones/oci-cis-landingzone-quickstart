@@ -3,11 +3,13 @@
 
 locals {
 
+
   ### Discovering the home region name and region key.
   regions_map         = { for r in data.oci_identity_regions.these.regions : r.key => r.name } # All regions indexed by region key.
   regions_map_reverse = { for r in data.oci_identity_regions.these.regions : r.name => r.key } # All regions indexed by region name.
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
+
 
   ### IAM
   # Default compartment names
@@ -37,11 +39,14 @@ locals {
   auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  
+  cost_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
+  compute_agent_group_name       = "${var.service_label}-appdev-computeagent-dynamic-group"
+
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
   security_admin_root_policy_name = "${var.service_label}-security-admin-root-policy"
   network_admin_policy_name       = "${var.service_label}-network-admin-policy"
+  compute_agent_policy_name       = "${var.service_label}-compute-agent-policy"
   network_admin_root_policy_name  = "${var.service_label}-network-admin-root-policy"
   database_admin_policy_name      = "${var.service_label}-database-admin-policy"
   database_dynamic_group_policy_name = "${var.service_label}-database-dynamic_group-policy"
@@ -54,7 +59,8 @@ locals {
   auditor_policy_name             = "${var.service_label}-auditor-policy"
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
-  
+  cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
+
   services_policy_name   = "${var.service_label}-services-policy"
   cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
                             "Allow service cloudguard to read compartments in tenancy",
@@ -135,7 +141,7 @@ locals {
   database_cmp_target_name = "${local.database_compartment.key}-scan-target"
 
   # Delay in seconds for slowing down resource creation
-  delay_in_secs = 60
+  delay_in_secs = 70
 
   # Outputs display
   display_outputs = true

@@ -38,7 +38,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Alarms
 - Notifications
 - Object Storage
-- Budget
+- Budgets
 
  ## <a name="deliverables"></a>Deliverables
  This repository encloses two deliverables:

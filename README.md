@@ -112,7 +112,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 
 ## <a name="team"></a>The Team
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: Pulkit Sharma, [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), [Chad Russell](https://github.com/chad-russell-git)
+- **Contributors**: [Chad Russell](https://github.com/chad-russell-git), [Johannes Murmman](https://github.com/jomurmann), [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), Pulkit Sharma
 
 ## <a name="feedback"></a>Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

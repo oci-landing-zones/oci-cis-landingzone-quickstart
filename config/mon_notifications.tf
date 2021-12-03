@@ -168,8 +168,7 @@ locals {
             ["com.oraclecloud.budgets.updatealertrule",
              "com.oraclecloud.budgets.deletealertrule",
              "com.oraclecloud.budgets.updatebudget",
-             "com.oraclecloud.budgets.deletebudget",
-             "com.oraclecloud.budgets.createtriggeredalert"
+             "com.oraclecloud.budgets.deletebudget"
             ]
             }
             EOT

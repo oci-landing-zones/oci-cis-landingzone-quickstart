@@ -4,6 +4,9 @@
 locals {
   all_service_policy_statements = {}
 
+  # Names
+  services_policy_name   = "${var.service_label}-services-policy"
+
   cloud_guard_statements = [
     "Allow service cloudguard to read keys in tenancy",
     "Allow service cloudguard to read compartments in tenancy",

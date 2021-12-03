@@ -2,10 +2,19 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
-module "lz_scanning" {
-  source     = "../modules/security/vss"
-  depends_on = [null_resource.slow_down_vss]
-  scan_recipes = var.vss_create == true ? {
+
+locals {
+  all_scan_recipes = {}
+  all_scan_targets = {}
+
+  # Names
+  scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
+  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
+  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
+  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
+  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
+  
+  default_scan_recipes = var.vss_create == true ? {
     (local.scan_default_recipe_name) = {
       compartment_id  = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       port_scan_level = "STANDARD"
@@ -30,7 +39,8 @@ module "lz_scanning" {
       defined_tags = null
     }
   } : {}
-  scan_targets = var.vss_create == true ? {
+
+  default_scan_targets = var.vss_create == true ? {
     (local.security_cmp_target_name) = {
       compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.security_compartment.name} compartment scanning target."
@@ -60,6 +70,13 @@ module "lz_scanning" {
       defined_tags          = null
     }
   } : {}
+}
+
+module "lz_scanning" {
+  source     = "../modules/security/vss"
+  depends_on = [null_resource.slow_down_vss]
+  scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
+  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.default_scan_targets
 }
 
 resource "null_resource" "slow_down_vss" {

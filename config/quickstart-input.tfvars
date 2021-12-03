@@ -29,7 +29,7 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # existing_auditor_group_name             = "<existing_auditor_group_name>"
 # existing_announcement_reader_group_name = "<existing_announcement_reader_group_name>"
 # existing_exainfra_admin_group_name      = "<existing_exainfra_admin_group_name>"
-
+# existing_cost_admin_group_name          = "<existing_cost_admin_group_name>"
 
 ### Networking variables
 # vcn_cidrs               = ["10.0.0.0/20","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].
@@ -62,10 +62,11 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 ### Notifications variables
 network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.
 security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
-compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
-database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
-storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
-governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all governance related notifications such as budget and finance.
+#compute_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all compute related notifications.
+#storage_admin_email_endpoints    = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all storage related notifications.
+#database_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all database related notifications.
+#exainfra_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all Exadata infrastrcture related notifications.
+#budget_admin_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all budget related notifications.
 
 ### Cloud Guard variables
 # cloud_guard_configuration_status = "ENABLED"
@@ -96,3 +97,12 @@ governance_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # vss_scan_schedule = "WEEKLY"
 # vss_scan_day      = "SUNDAY"
 
+### Cost Management variables
+## Percentage of budget amount
+#budget_alert_threshold  = 100
+## Monthly budget amount
+#budget_amount           = 250
+## Create a budget at the root or enclosing compartment level, depending on the value of "use_enclosing_compartment"
+#create_budget           = true
+## List of email addresses for budget related alerts.
+#budget_alert_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"]

@@ -58,7 +58,7 @@ locals {
     } if var.existing_database_cmp_ocid == null}
   )
 
-  exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true && var.existing_exainfra_cmp_ocid == null ? {
+  exainfra_cmp = var.deploy_exainfra_cmp == true ? {
     (local.exainfra_compartment.key) = {
       parent_id     = local.parent_compartment_id
       name          = local.exainfra_compartment.name

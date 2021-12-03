@@ -18,7 +18,8 @@ module "lz_provisioning_tenancy_group_policy" {
         "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy",                 # ability to enable Cloud Guard, which can be done only at the tenancy level
         "Allow group ${each.value.group_name} to read groups in tenancy",                               # for groups lookup 
         "Allow group ${each.value.group_name} to inspect tenancies in tenancy",                         # for home region lookup
-      "Allow group ${each.value.group_name} to inspect users in tenancy"]                               # for users lookup
+        "Allow group ${each.value.group_name} to manage usage-budgets in tenancy",                      # for budget creation   
+        "Allow group ${each.value.group_name} to inspect users in tenancy"]                               # for users lookup
     }
   }
 }
@@ -47,6 +48,8 @@ module "lz_groups_mgmt_policy" {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone groups management root policy."
       statements = [
+        # Cost Admin - Access to Cost Reports 
+        "define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
         # Security admin
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloudevents-rules in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-namespaces in tenancy",
@@ -56,7 +59,11 @@ module "lz_groups_mgmt_policy" {
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
         # IAM admin
-      "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${each.value.group_name_prefix}${local.cred_admin_group_name_suffix}'}"]
+        "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${each.value.group_name_prefix}${local.cred_admin_group_name_suffix}'}",
+        # Cost Admin
+        "Allow group ${each.value.group_name_prefix}${local.cost_admin_group_name_suffix} to manage usage-report in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.cost_admin_group_name_suffix} to manage usage-budgets in tenancy", 
+        "endorse group ${each.value.group_name_prefix}${local.cost_admin_group_name_suffix} to read objects in tenancy usage-report"]
     }
   }
 }
@@ -79,24 +86,32 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read instance-images in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to inspect buckets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to use cloud-shell in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read usage-budgets in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read usage-reports in tenancy",                
         # AppDev admin
         "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read repos in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read app-catalog-listing in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read instance-images in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to use cloud-shell in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read usage-budgets in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.appdev_admin_group_name_suffix} to read usage-reports in tenancy",                        
         # Network admin
         "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read repos in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read app-catalog-listing in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read instance-images in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to use cloud-shell in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read usage-budgets in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.network_admin_group_name_suffix} to read usage-reports in tenancy",                        
         # Database admin
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read repos in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read objectstorage-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read app-catalog-listing in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read instance-images in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to use cloud-shell in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-budgets in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-reports in tenancy",                        
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect users in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect groups in tenancy",
@@ -113,9 +128,10 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read app-catalog-listing in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read instance-images in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read users in tenancy",
-
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect buckets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to use cloud-shell in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-budgets in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-reports in tenancy",                        
         # Announcement reader
         "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
       "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy", ]

@@ -474,7 +474,7 @@ variables:
     type: boolean
     title: "Create Compartment for Exadata Infrastructure?"
     description: "Whether a compartment for Exadata infrastructure should be created. If unchecked, Exadata infrastructure should be created in the database compartment."
-    default: true
+    default: false
     visible: exa_advanced_options
     
   network_admin_email_endpoints:

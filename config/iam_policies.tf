@@ -206,7 +206,7 @@ locals {
        (local.network_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
-        statements = local.compute_agent_permissions
+        statements = local.network_permissions
       },
       (local.security_admin_policy_name) = {
         compartment_id = local.parent_compartment_id

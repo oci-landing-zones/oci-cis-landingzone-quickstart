@@ -139,7 +139,7 @@ locals {
            destinations = [module.lz_topics.topics[local.network_topic.key].id]
            display_name = local.network_fast_connect_status_alarm.name
            is_enabled = var.create_alarms_as_enabled
-           metric_compartment_id = local.database_topic.cmp_id
+           metric_compartment_id = local.network_topic.cmp_id
            namespace = "oci_fastconnect"
            query = "ConnectionState[1m].mean() == 0"
            severity = "CRITICAL"

@@ -109,13 +109,6 @@ locals {
 
   cg_target_name = "${var.service_label}-cloud-guard-root-target"
 
-  ### Scanning
-  scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
-  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
-
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 70
 

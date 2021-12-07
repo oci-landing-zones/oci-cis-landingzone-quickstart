@@ -1,4 +1,4 @@
-# November 22, 2021 Release Notes - Stable 2.2.0
+# December 02, 2021 Release Notes - Stable 2.2.0
 1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)
 1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
 1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)

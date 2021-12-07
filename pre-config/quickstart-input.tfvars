@@ -32,6 +32,7 @@ existing_database_admin_group_name      = "<existing_database_admin_group_name>"
 existing_auditor_group_name             = "<existing_auditor_group_name>"
 existing_announcement_reader_group_name = "<existing_announcement_reader_group_name>"
 existing_exainfra_admin_group_name      = "<existing_exainfra_admin_group_name>"
+existing_cost_admin_group_name          = "<existing_cost_admin_group_name>"
 */
 
 # grant_services_policies = true # whether services policies should be created. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Services policies are required by some OCI services, like Cloud Guard, Vulnerability Scanning and OS Management.

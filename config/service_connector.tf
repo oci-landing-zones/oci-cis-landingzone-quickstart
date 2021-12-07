@@ -12,6 +12,7 @@ module "lz_sch_audit_bucket" {
             name = local.sch_audit_bucket_name
             namespace = data.oci_objectstorage_namespace.this.namespace
             defined_tags = null
+	    freeform_tags = null
         }
     }
 }
@@ -28,6 +29,7 @@ module "lz_sch_vcnFlowLogs_bucket" {
             name = local.sch_vcnFlowLogs_bucket_name
             namespace = data.oci_objectstorage_namespace.this.namespace
             defined_tags = null
+	    freeform_tags = null
         }
     }
 }
@@ -43,6 +45,7 @@ module "lz_service_connector_hub_audit" {
         service_connector_source_kind = "logging"
         service_connector_state = upper(var.service_connector_audit_state)
         defined_tags = null
+	freeform_tags = null
         log_sources = [for k, v in module.lz_compartments.compartments : {
             compartment_id = v.id
             log_group_id = "_Audit"
@@ -74,6 +77,7 @@ module "lz_service_connector_hub_vcnFlowLogs" {
         service_connector_source_kind = "logging"
         service_connector_state = upper(var.service_connector_vcnFlowLogs_state)
         defined_tags = null
+	freeform_tags = null
         log_sources = [for k, v in module.lz_flow_logs.logs : {
             compartment_id = module.lz_compartments.compartments[local.security_compartment.key].id
             log_group_id = module.lz_flow_logs.log_group.id
@@ -105,6 +109,7 @@ module "lz_sch_audit_objStore_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
       defined_tags   = null
+      freeform_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to manage objects in compartment id ${module.lz_compartments.compartments[local.security_compartment.key].id} where all {
@@ -127,6 +132,7 @@ module "lz_sch_audit_streaming_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
       defined_tags   = null
+      freeform_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to use stream-push in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
@@ -149,6 +155,7 @@ module "lz_sch_audit_functions_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to use functions."
       defined_tags   = null
+      freefrom_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to use fn-function in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
@@ -176,6 +183,7 @@ module "lz_sch_vcnFlowLogs_objStore_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
       defined_tags   = null
+      freeform_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to manage objects in compartment id ${module.lz_compartments.compartments[local.security_compartment.key].id} where all {
@@ -198,6 +206,7 @@ module "lz_sch_vcnFlowLogs_streaming_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
       defined_tags   = null
+      freeform_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to use stream-push in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
@@ -220,6 +229,7 @@ module "lz_sch_vcnFlowLogs_functions_policy" {
       compartment_id = local.parent_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to use functions."
       defined_tags   = null
+      freeform_tags  = null
       statements = [
                     <<EOF
                         Allow any-user to use fn-function in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {

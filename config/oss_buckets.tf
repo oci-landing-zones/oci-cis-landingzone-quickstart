@@ -12,6 +12,7 @@ module "lz_buckets" {
             name = "${var.service_label}-appdev-bucket"
             namespace = data.oci_objectstorage_namespace.this.namespace
             defined_tags = null
+            freeform_tags = null
         }
     }
 }

@@ -21,6 +21,7 @@ locals {
   auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name_suffix      = var.use_existing_groups == false ? "exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
+  cost_admin_group_name_suffix          = var.use_existing_groups == false ? "cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
   
   grant_tenancy_level_mgmt_policies = true
   services_policy_name              = "${local.unique_prefix}-services-policy"

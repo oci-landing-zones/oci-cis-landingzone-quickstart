@@ -7,6 +7,7 @@ locals {
   bastions_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-bastion-nsg" => {
     vcn_id : v.id,
     defined_tags : null
+    freeform_tags : null
     ingress_rules : merge({
       ssh-dmz-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
@@ -116,6 +117,7 @@ locals {
   lbr_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-lbr-nsg" => {
     vcn_id : v.id,
     defined_tags : null
+    freeform_tags : null
     ingress_rules : merge({
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -211,6 +213,7 @@ locals {
   app_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-app-nsg" => {
     vcn_id : v.id,
     defined_tags : null
+    freeform_tags : null
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -304,6 +307,7 @@ locals {
   db_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-nsg" => {
     vcn_id = v.id
     defined_tags : null
+    freeform_tags : null
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -355,6 +359,7 @@ locals {
   public_dst_nsgs = length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-public-dst-nsg" => {
     vcn_id = v.id
     defined_tags : null
+    freeform_tags : null
     ingress_rules : {},
     egress_rules : merge({ for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : var.public_dst_cidrs != null && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0,

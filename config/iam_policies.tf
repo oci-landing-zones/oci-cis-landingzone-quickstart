@@ -205,8 +205,8 @@ locals {
       },
        (local.network_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
-        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage network related services."
-        statements = local.compute_agent_permissions
+        description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
+        statements = local.network_permissions
       },
       (local.security_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
@@ -230,7 +230,7 @@ locals {
       }
     }
 
-    exainfra_policy = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
+    exainfra_policy = var.deploy_exainfra_cmp == true ? {
       (local.exainfra_admin_policy_name) = {
         compartment_id = local.parent_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."
@@ -322,6 +322,6 @@ module "lz_root_policies" {
 module "lz_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
-  depends_on = [module.lz_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
+  depends_on = [module.lz_groups, module.lz_dynamic_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
   policies = local.policies
 }

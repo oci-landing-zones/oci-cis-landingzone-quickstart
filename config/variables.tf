@@ -298,7 +298,7 @@ variable "exacs_backup_subnet_cidrs" {
 
 variable "deploy_exainfra_cmp" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment."
 }
 

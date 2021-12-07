@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-output "alarms" {
+output "topics" {
   description = "The topcs, indexed by keys in var.topics."
-  value = {for k, v in var.alarms : k => oci_monitoring_alarm.these[k]}
+  value = {for k, v in var.topics : k => oci_ons_notification_topic.these[k]}
 } 

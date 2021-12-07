@@ -38,6 +38,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Alarms
 - Notifications
 - Object Storage
+- Budgets
 
  ## <a name="deliverables"></a>Deliverables
  This repository encloses two deliverables:
@@ -79,10 +80,13 @@ The diagram below shows services and resources that are deployed in a single VCN
 
 ![Architecture_Single_VCN](images/Architecture_Single_VCN.png)
 
+[Get the diagram in SVG format.](images/Architecture_Single_VCN.svg)
+
 The diagram below shows services and resources that are deployed in a Hub & Spoke VCN deployment:
 
 ![Architecture_HS_VCN](images/Architecture_HS_VCN.png)
 
+[Get the diagram in SVG format.](images/Architecture_HS_VCN.svg)
 
 The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
 
@@ -108,7 +112,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 
 ## <a name="team"></a>The Team
 - **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: Pulkit Sharma, [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), [Chad Russell](https://github.com/chad-russell-git)
+- **Contributors**: [Chad Russell](https://github.com/chad-russell-git), [Johannes Murmman](https://github.com/jomurmann), [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), Pulkit Sharma
 
 ## <a name="feedback"></a>Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	
@@ -131,11 +135,14 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 * **OCI Compartment Deletion**
     * By design, OCI compartments are not deleted upon Terraform destroy by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
+
 * **OCI Vault Deletion**
     * By design, OCI vaults and keys are not deleted immediately upon Terraform destroy, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
+
 * **Enabling no internet access on an existing deployment**
     * Enabling *no_internet_access* on currently deployed stack fails to apply due to timeout.  This is due to OCI Terraform provider not being able remove Internet Gateway(s) and and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
+
 
 * **Warning: Provider oci is undefined**
     * This issue is related to changes in Terraform 1.0. It does not impact a deployment.  

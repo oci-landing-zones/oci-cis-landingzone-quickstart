@@ -8,5 +8,6 @@ variable "compartments" {
     description   = string
     enable_delete = string
     defined_tags  = map(string) 
+    freeform_tags = map(string) 
   }))
 }  

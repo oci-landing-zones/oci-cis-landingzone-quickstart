@@ -9,5 +9,6 @@ resource  "oci_identity_policy" "these" {
       description    = each.value.description
       statements     = each.value.statements
       defined_tags   = each.value.defined_tags
+      freeform_tags  = each.value.freeform_tags
 }
 *******************************************/

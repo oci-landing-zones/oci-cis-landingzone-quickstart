@@ -6,6 +6,7 @@ resource "oci_logging_log_group" "this" {
     display_name   = var.log_group_display_name
     description    = var.log_group_description
     defined_tags   = var.defined_tags
+    freeform_tags  = var.freeform_tags
 }
 
 resource "oci_logging_log" "these" {

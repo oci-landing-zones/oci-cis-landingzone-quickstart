@@ -8,6 +8,7 @@ resource "oci_core_route_table" "these" {
     vcn_id         = each.value.vcn_id
     compartment_id = var.compartment_id
     defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
     dynamic "route_rules" {
       iterator = rule
       for_each = [for r in each.value.route_rules : {

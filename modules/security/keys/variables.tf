@@ -26,20 +26,14 @@ variable "vault_type" {
   default     = "DEFAULT"
 }
 
-
-variable "defined_tags" {
-  type        = map(string)
-  description = "Map of key-value pairs of defined tags. (Optional)"
-  default     = null
-}
-
 ***********************************************/
 
 variable "keys" {
   type = map(object({
     key_shape_algorithm = string,
     key_shape_length = string,
-    defined_tags = map(string)
+    defined_tags = map(string),
+    freeform_tags = map(string)
   }))
 }
 

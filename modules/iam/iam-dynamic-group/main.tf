@@ -10,5 +10,5 @@ resource "oci_identity_dynamic_group" "these" {
     description    = each.value.description
     matching_rule  = each.value.matching_rule
     defined_tags   = each.value.defined_tags
-    # freeform_tags = each.value.freeform_tags
+    freeform_tags  = each.value.freeform_tags
 }

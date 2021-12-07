@@ -10,4 +10,5 @@ resource "oci_bastion_bastion" "these" {
     client_cidr_block_allow_list = each.value.client_cidr_block_allow_list
     max_session_ttl_in_seconds   = each.value.max_session_ttl_in_seconds
     defined_tags                 = each.value.defined_tags
+    freeform_tags                = each.value.freeform_tags
 }

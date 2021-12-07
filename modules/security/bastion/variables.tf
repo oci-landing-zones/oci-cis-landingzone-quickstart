@@ -9,6 +9,7 @@ variable "bastions" {
       target_subnet_id = string,
       client_cidr_block_allow_list = list(string),
       max_session_ttl_in_seconds = number,
-      defined_tags = map(string)
+      defined_tags = map(string),
+      freeform_tags = map(string)
     }))
 }

@@ -15,6 +15,7 @@ resource "oci_monitoring_alarm" "these" {
       message_format        = each.value.message_format
       pending_duration      = each.value.pending_duration
       defined_tags          = each.value.defined_tags
+      freeform_tags         = each.value.freeform_tags
 }
 
 

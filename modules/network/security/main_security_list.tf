@@ -19,6 +19,7 @@ resource "oci_core_security_list" "these" {
     display_name   = each.key
     vcn_id         = each.value.vcn_id
     defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 
   #  egress, proto: TCP  - no src port, no dst port
   dynamic "egress_security_rules" {

@@ -25,6 +25,12 @@ variable "defined_tags" {
   default     = null
 }
 
+variable "freeform_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of freeform tags. (Optional)"
+  default     = null
+}
+
 variable "subscriptions" {
   type = map(object({
     defined_tags = map(string)

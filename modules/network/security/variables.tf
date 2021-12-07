@@ -21,6 +21,7 @@ variable "security_lists" {
     vcn_id          = string,
     compartment_id  = string,
     defined_tags    = map(string),
+    freeform_tags   = map(string),
     ingress_rules   = list(object({
       stateless     = bool,
       protocol      = string,
@@ -62,6 +63,7 @@ variable "nsgs" {
   type = map(object({
     vcn_id        = string,
     defined_tags  = map(string) 
+    freeform_tags = map(string) 
     ingress_rules = map(object({
       is_create    = bool
       description  = string

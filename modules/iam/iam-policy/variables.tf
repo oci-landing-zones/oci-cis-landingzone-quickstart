@@ -7,5 +7,6 @@ variable "policies" {
     compartment_id = string
     statements     = list(string)
     defined_tags   = map(string)
+    freeform_tags  = map(string)
   }))
 }  

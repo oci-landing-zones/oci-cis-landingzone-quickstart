@@ -11,6 +11,7 @@ locals {
     is_attach_drg     = var.dmz_for_firewall == true ? false : true
     block_nat_traffic = false
     defined_tags      = null
+    freeform_tags     = null
     subnets = { for s in range(var.dmz_number_of_subnets) : "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet" => {
       compartment_id  = null
       name            = "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet"
@@ -19,6 +20,7 @@ locals {
       private         = var.no_internet_access ? true : s == 0 || (local.is_mgmt_subnet_public && s == 2) ? false : true
       dhcp_options_id = null
       defined_tags    = null
+      freeform_tags   = null
       security_lists = { "security-list" : {
         compartment_id : null
         is_create : true
@@ -35,6 +37,7 @@ locals {
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
     defined_tags   = null
+    freeform_tags  = null
     route_rules = concat([{
       is_create         = var.no_internet_access
       destination       = local.valid_service_gateway_cidrs[0]

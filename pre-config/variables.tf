@@ -93,3 +93,8 @@ variable "existing_exainfra_admin_group_name" {
     type    = string
     default = ""
 }
+
+variable "existing_cost_admin_group_name" {
+  type    = string
+  default = ""
+}

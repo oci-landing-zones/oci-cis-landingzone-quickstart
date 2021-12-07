@@ -14,6 +14,7 @@ module "lz_top_compartment" {
       description   = "Landing Zone enclosing compartment, enclosing all Landing Zone compartments."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     }
   }
 }
@@ -26,6 +27,7 @@ locals {
       description   = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     },
     (local.network_compartment.key) = {
       parent_id     = local.parent_compartment_id
@@ -33,6 +35,7 @@ locals {
       description   = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     },
     (local.appdev_compartment.key) = {
       parent_id     = local.parent_compartment_id
@@ -40,6 +43,7 @@ locals {
       description   = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     },
     (local.database_compartment.key) = {
       parent_id     = local.parent_compartment_id
@@ -47,16 +51,18 @@ locals {
       description   = "Landing Zone compartment for all database related resources."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     }
   }
 
-  exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? {
+  exainfra_cmp = var.deploy_exainfra_cmp == true ? {
     (local.exainfra_compartment.key) = {
       parent_id     = local.parent_compartment_id
       name          = local.exainfra_compartment.name
       description   = "Landing Zone compartment for Exadata infrastructure."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
+      freeform_tags = null
     }
   } : {}
 

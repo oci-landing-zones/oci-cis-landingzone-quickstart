@@ -33,10 +33,8 @@ Variable Name | Description | Required | Default Value
 **existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true | None
 **existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true | None
 **existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true | None
-### <a name="alarm_variables"></a>Alarm Variables
-Variable Name | Description | Required | Default Value
---------------|-------------|----------|--------------
-**create_alarms_as_enabled** | Configures alarms to be enabled or disabled. | yes | [false]
+**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true | None
+
 ### <a name="networking_variables"></a>Networking Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
@@ -57,7 +55,7 @@ Variable Name | Description | Required | Default Value
 **exacs_vcn_names** | List of Exadata VCNs custom names, overriding the default Exadata VCNs names. Each provided name relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. You can provide up to nine names. | No | []
 **exacs_client_subnet_cidrs** | List of CIDR blocks for the client subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs. | No | []
 **exacs_backup_subnet_cidrs** | List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs.| No | []
-**exacs_vcn_cidrs** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | true
+**deploy_exainfra_cmp** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | false
 
 ### <a name="connectivity_variables"></a>Connectivity Variables
 Variable Name | Description | Required | Default Value
@@ -69,11 +67,20 @@ Variable Name | Description | Required | Default Value
 **onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
 **onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 
-### <a name="notification_variables"></a>Notification Variables
+### <a name="notification_variables"></a>Notifications Alarms and Events Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
 **security_admin_email_endpoints** | A list of email addresses to receive notifications for security related events. | Yes | None
+**network_admin_email_endpoints** | A list of email addresses to receive notifications for network related events. | Yes | None
+**storage_admin_email_endpoints** | List of email addresses for all storage related notifications. If no email addresses are provided, then the topic, events and alarms associated with storage are not created. | No | None
+**compute_admin_email_endpoints** | List of email addresses for all compute related notifications. If no email addresses are provided, then the topic, events and alarms associated with compute are not created.| No | None
+**budget_admin_email_endpoints** | List of email addresses for all budget related notifications. If no email addresses are provided, then the topic, events and alarms associated with governance are not created.| No | None
+**database_admin_email_endpoints** | List of email addresses for all database related notifications. If no email addresses are provided, then the topic, events and alarms associated with database are not created.| No | None
+**exainfra_admin_email_endpoints** | List of email addresses for all Exadata infrastructure related notifications. If no email addresses are provided, then the topic, and alarms associated with Exadata infrastructure are not created. If deploy_exainfra_cmp is false, then Exadata events are created in the database compartment and sent to the database topic. | No | None
+**create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to False. | No | False
+**create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
+**alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON
+
 
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
@@ -106,6 +113,14 @@ Variable Name | Description | Required | Default Value
 **vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | No | true
 **vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | No | "WEEKLY"
 **vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | No | "SUNDAY"
+
+### <a name="budget_variables"></a>Budget Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_budget** | If checked, a budget will be created at the root or enclosing compartment and based on forecast spend. | No | false
+**budget_alert_threshold** | The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. | No | 100%
+**budget_amount** | The amount of the budget expressed as a whole number in the currency of the customer's rate card. | No | 1000
+**budget_alert_email_endpoints** | List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values) | No | None
 
 ## <a name="pre_config_input_variables"></a>Pre-Config Module Input Variables
 Input variables used in the pre-config module are all defined in pre-config/variables.tf:

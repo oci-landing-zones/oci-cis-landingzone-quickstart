@@ -65,6 +65,11 @@ module "lz_groups" {
         description = "Landing Zone group for managing Exadata Cloud service infrastructures."
         user_ids = []
         defined_tags = null
+      },
+      "${each.value.group_name_prefix}${local.cost_admin_group_name_suffix}" = {
+        description = "Landing Zone group for Cost Management."
+        user_ids = []
+        defined_tags = null
       }
     } 
 }

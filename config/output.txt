@@ -1,0 +1,2472 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create
+ [36m<=[0m read (data resources)
+[0m
+Terraform will perform the following actions:
+
+[1m  # null_resource.slow_down_cloud_guard[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_cloud_guard" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # null_resource.slow_down_drg[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_drg" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # null_resource.slow_down_notifications[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_notifications" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # null_resource.slow_down_topics[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_topics" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # null_resource.slow_down_vcn[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_vcn" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # null_resource.slow_down_vss[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "null_resource" "slow_down_vss" {
+      [32m+[0m [0m[1m[0mid[0m[0m = (known after apply)
+    }
+
+[1m  # module.lz_app_bastion.oci_bastion_bastion.these["ebs-app-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_bastion_bastion" "these" {
+      [32m+[0m [0m[1m[0mbastion_type[0m[0m                  = "STANDARD"
+      [32m+[0m [0m[1m[0mclient_cidr_block_allow_list[0m[0m  = [
+          [32m+[0m [0m"24.193.165.150/32",
+          [32m+[0m [0m"24.193.165.151/32",
+        ]
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mlifecycle_details[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mmax_session_ttl_in_seconds[0m[0m    = 10800
+      [32m+[0m [0m[1m[0mmax_sessions_allowed[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m                          = "ebsappsubnetBastion"
+      [32m+[0m [0m[1m[0mphone_book_entry[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprivate_endpoint_ip_address[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mstatic_jump_host_ip_addresses[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_subnet_id[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_vcn_id[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                  = (known after apply)
+    }
+
+[1m  # module.lz_compartments.oci_identity_compartment.these["lz2-appdev-cmp"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_compartment" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
+      [32m+[0m [0m[1m[0menable_delete[0m[0m  = true
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mis_accessible[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-cmp"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_compartments.oci_identity_compartment.these["lz2-database-cmp"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_compartment" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone compartment for all database related resources."
+      [32m+[0m [0m[1m[0menable_delete[0m[0m  = true
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mis_accessible[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-cmp"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_compartments.oci_identity_compartment.these["lz2-network-cmp"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_compartment" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
+      [32m+[0m [0m[1m[0menable_delete[0m[0m  = true
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mis_accessible[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-network-cmp"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_compartments.oci_identity_compartment.these["lz2-security-cmp"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_compartment" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
+      [32m+[0m [0m[1m[0menable_delete[0m[0m  = true
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mis_accessible[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-security-cmp"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_compute_alarms.oci_monitoring_alarm.these["lz2-bare-metal-unhealthy-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-bare-metal-unhealthy-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_compute_infrastructure_health"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "health_status[1m].count() == 1"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_compute_alarms.oci_monitoring_alarm.these["lz2-high-cpu-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-high-cpu-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_computeagent"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "CpuUtilization[1m].mean() > 80"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_compute_alarms.oci_monitoring_alarm.these["lz2-high-memory-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-high-memory-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_computeagent"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "MemoryUtilization[1m].mean() > 80"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_compute_alarms.oci_monitoring_alarm.these["lz2-instance-status-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-instance-status-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_compute_infrastructure_health"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "instance_status[1m].count() == 1"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_compute_alarms.oci_monitoring_alarm.these["lz2-vm-maintenance-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-vm-maintenance-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_compute_infrastructure_health"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "maintenance_status[1m].count() == 1"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_database_alarms.oci_monitoring_alarm.these["lz2-adb-cpu-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-adb-cpu-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_autonomous_database"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "CpuUtilization[1m].mean() > 80"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_database_alarms.oci_monitoring_alarm.these["lz2-adb-storage-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-adb-storage-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_autonomous_database"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "StorageUtilization[1m].mean() > 80"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_dynamic_groups.oci_identity_dynamic_group.these["lz2-appdev-computeagent-dynamic-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_dynamic_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone dynamic group for compute agents in lz2-appdev-cmp compartment."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mmatching_rule[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-computeagent-dynamic-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_dynamic_groups.oci_identity_dynamic_group.these["lz2-appdev-fun-dynamic-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_dynamic_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone dynamic group for functions in lz2-appdev-cmp compartment."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mmatching_rule[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-fun-dynamic-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_dynamic_groups.oci_identity_dynamic_group.these["lz2-database-kms-dynamic-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_dynamic_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone dynamic group for databases in lz2-database-cmp compartment."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mmatching_rule[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-kms-dynamic-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_dynamic_groups.oci_identity_dynamic_group.these["lz2-sec-fun-dynamic-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_dynamic_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone dynamic group for functions in lz2-security-cmp compartment."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mmatching_rule[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-sec-fun-dynamic-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_flow_logs.oci_logging_log.these["ebs-app-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_logging_log" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m       = "ebs-app-subnet-flow-log"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m         = true
+      [32m+[0m [0m[1m[0mlog_group_id[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mlog_type[0m[0m           = "SERVICE"
+      [32m+[0m [0m[1m[0mretention_duration[0m[0m = 30
+      [32m+[0m [0m[1m[0mstate[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mtenancy_id[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mtime_last_modified[0m[0m = (known after apply)
+
+      [32m+[0m [0mconfiguration {
+          [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+
+          [32m+[0m [0msource {
+              [32m+[0m [0m[1m[0mcategory[0m[0m    = "all"
+              [32m+[0m [0m[1m[0mresource[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mservice[0m[0m     = "flowlogs"
+              [32m+[0m [0m[1m[0msource_type[0m[0m = "OCISERVICE"
+            }
+        }
+    }
+
+[1m  # module.lz_flow_logs.oci_logging_log.these["ebs-db-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_logging_log" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m       = "ebs-db-subnet-flow-log"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m         = true
+      [32m+[0m [0m[1m[0mlog_group_id[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mlog_type[0m[0m           = "SERVICE"
+      [32m+[0m [0m[1m[0mretention_duration[0m[0m = 30
+      [32m+[0m [0m[1m[0mstate[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mtenancy_id[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mtime_last_modified[0m[0m = (known after apply)
+
+      [32m+[0m [0mconfiguration {
+          [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+
+          [32m+[0m [0msource {
+              [32m+[0m [0m[1m[0mcategory[0m[0m    = "all"
+              [32m+[0m [0m[1m[0mresource[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mservice[0m[0m     = "flowlogs"
+              [32m+[0m [0m[1m[0msource_type[0m[0m = "OCISERVICE"
+            }
+        }
+    }
+
+[1m  # module.lz_flow_logs.oci_logging_log.these["ebs-web-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_logging_log" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m       = "ebs-web-subnet-flow-log"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m         = true
+      [32m+[0m [0m[1m[0mlog_group_id[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mlog_type[0m[0m           = "SERVICE"
+      [32m+[0m [0m[1m[0mretention_duration[0m[0m = 30
+      [32m+[0m [0m[1m[0mstate[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mtenancy_id[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mtime_last_modified[0m[0m = (known after apply)
+
+      [32m+[0m [0mconfiguration {
+          [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+
+          [32m+[0m [0msource {
+              [32m+[0m [0m[1m[0mcategory[0m[0m    = "all"
+              [32m+[0m [0m[1m[0mresource[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mservice[0m[0m     = "flowlogs"
+              [32m+[0m [0m[1m[0msource_type[0m[0m = "OCISERVICE"
+            }
+        }
+    }
+
+[1m  # module.lz_flow_logs.oci_logging_log_group.this[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_logging_log_group" "this" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m        = "Landing Zone lz2 flow logs group."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m       = "lz2-flow-logs-group"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mtime_last_modified[0m[0m = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-announcement-reader-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for reading Console announcements."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-announcement-reader-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-appdev-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing app development related services in compartment lz2-appdev-cmp."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-auditor-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for auditing the tenancy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-auditor-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-cred-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing users credentials in the tenancy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-cred-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-database-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing databases in compartment lz2-database-cmp."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-iam-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing IAM resources in the tenancy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-iam-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-network-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing networking in compartment lz2-network-cmp."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-network-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_groups.oci_identity_group.these["lz2-security-admin-group"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone group for managing security services in compartment lz2-security-cmp."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-security-admin-group"
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_home_region_subscriptions.oci_ons_subscription.these["admin@halimer.com"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_home_region_topics.oci_ons_notification_topic.these["SECURITY-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for security related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-security-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_network_alarms.oci_monitoring_alarm.these["lz2-fast-connect-status-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-fast-connect-status-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_fastconnect"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "ConnectionState[1m].mean() == 0"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_network_alarms.oci_monitoring_alarm.these["lz2-vpn-status-alarm"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_monitoring_alarm" "these" {
+      [32m+[0m [0m[1m[0mbody[0m[0m                             = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdestinations[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m                     = "lz2-vpn-status-alarm"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m                       = false
+      [32m+[0m [0m[1m[0mmessage_format[0m[0m                   = "PRETTY_JSON"
+      [32m+[0m [0m[1m[0mmetric_compartment_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mmetric_compartment_id_in_subtree[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mnamespace[0m[0m                        = "oci_vpn"
+      [32m+[0m [0m[1m[0mpending_duration[0m[0m                 = "PT5M"
+      [32m+[0m [0m[1m[0mquery[0m[0m                            = "TunnelState[1m].mean() == 0"
+      [32m+[0m [0m[1m[0mrepeat_notification_duration[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mresolution[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mseverity[0m[0m                         = "critical"
+      [32m+[0m [0m[1m[0mstate[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m                     = (known after apply)
+
+      [32m+[0m [0msuppression {
+          [32m+[0m [0m[1m[0mdescription[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_from[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mtime_suppress_until[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-compute-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.computeapi.terminateinstance.begin",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone events rule to detect when compute related resources are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-compute-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = false
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-database-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.databaseservice.autonomous.database.critical",
+                  [32m+[0m [0m"com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical",
+                  [32m+[0m [0m"com.oraclecloud.databaseservice.dbsystem.critical",
+                  [32m+[0m [0m"com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone events rule to detect when database resources are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-database-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = false
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-governance-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.budgets.updatealertrule",
+                  [32m+[0m [0m"com.oraclecloud.budgets.deletealertrule",
+                  [32m+[0m [0m"com.oraclecloud.budgets.updatebudget",
+                  [32m+[0m [0m"com.oraclecloud.budgets.deletebudget",
+                  [32m+[0m [0m"com.oraclecloud.budgets.createtriggeredalert",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone events rule to detect when governance resources such as budgets and financial tracking constructs are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-governance-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = false
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-iam-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.createidentityprovider",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.deleteidentityprovider",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updateidentityprovider",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.createidpgroupmapping",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.deleteidpgroupmapping",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updateidpgroupmapping",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.addusertogroup",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.creategroup",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.deletegroup",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.removeuserfromgroup",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updategroup",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.createpolicy",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.deletepolicy",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updatepolicy",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.createuser",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.deleteuser",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updateuser",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updateusercapabilities",
+                  [32m+[0m [0m"com.oraclecloud.identitycontrolplane.updateuserstate",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone CIS related events rule to detect when IAM resources are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-iam-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-network-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createvcn",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletevcn",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatevcn",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createroutetable",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deleteroutetable",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updateroutetable",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.changeroutetablecompartment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createsecuritylist",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletesecuritylist",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatesecuritylist",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.changesecuritylistcompartment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createnetworksecuritygroup",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletenetworksecuritygroup",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatenetworksecuritygroup",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatenetworksecuritygroupsecurityrules",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createdrg",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletedrg",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatedrg",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createdrgattachment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletedrgattachment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatedrgattachment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createinternetgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deleteinternetgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updateinternetgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.changeinternetgatewaycompartment",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.createlocalpeeringgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.deletelocalpeeringgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.updatelocalpeeringgateway",
+                  [32m+[0m [0m"com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment",
+                  [32m+[0m [0m"com.oraclecloud.natgateway.createnatgateway",
+                  [32m+[0m [0m"com.oraclecloud.natgateway.deletenatgateway",
+                  [32m+[0m [0m"com.oraclecloud.natgateway.updatenatgateway",
+                  [32m+[0m [0m"com.oraclecloud.natgateway.changenatgatewaycompartment",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.createservicegateway",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.deleteservicegateway.begin",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.deleteservicegateway.end",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.attachserviceid",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.detachserviceid",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.updateservicegateway",
+                  [32m+[0m [0m"com.oraclecloud.servicegateway.changeservicegatewaycompartment",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone events rule to detect when networking resources are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-network-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_notifications.oci_events_rule.these["lz2-notify-on-storage-changes-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_events_rule" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mcondition[0m[0m         = jsonencode(
+            {
+              [32m+[0m [0meventType = [
+                  [32m+[0m [0m"com.oraclecloud.objectstorage.createbucket",
+                  [32m+[0m [0m"com.oraclecloud.objectstorage.deletebucket",
+                  [32m+[0m [0m"com.oraclecloud.blockvolumes.deletevolume.begin",
+                  [32m+[0m [0m"com.oraclecloud.filestorage.deletefilesystem",
+                ]
+            }
+        )
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m       = "Landing Zone events rule to detect when storage resources are created, updated or deleted."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m      = "lz2-notify-on-storage-changes-rule"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mis_enabled[0m[0m        = false
+      [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m      = (known after apply)
+
+      [32m+[0m [0mactions {
+          [32m+[0m [0mactions {
+              [32m+[0m [0m[1m[0maction_type[0m[0m       = "ONS"
+              [32m+[0m [0m[1m[0mdescription[0m[0m       = "Sends notification via ONS"
+              [32m+[0m [0m[1m[0mfunction_id[0m[0m       = (known after apply)
+              [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mis_enabled[0m[0m        = true
+              [32m+[0m [0m[1m[0mlifecycle_message[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mstate[0m[0m             = (known after apply)
+              [32m+[0m [0m[1m[0mstream_id[0m[0m         = (known after apply)
+              [32m+[0m [0m[1m[0mtopic_id[0m[0m          = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.data.oci_core_network_security_groups.these["ebs-app-nsg"][0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_network_security_groups" "these"  {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_groups[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                  = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.data.oci_core_network_security_groups.these["ebs-bastion-nsg"][0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_network_security_groups" "these"  {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_groups[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                  = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.data.oci_core_network_security_groups.these["ebs-db-nsg"][0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_network_security_groups" "these"  {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_groups[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                  = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.data.oci_core_network_security_groups.these["ebs-lbr-nsg"][0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_network_security_groups" "these"  {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_groups[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                  = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group.these["ebs-app-nsg"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-app-nsg"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group.these["ebs-bastion-nsg"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-bastion-nsg"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group.these["ebs-db-nsg"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-db-nsg"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group.these["ebs-lbr-nsg"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-lbr-nsg"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-app-nsg.db-egress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SQLNet connections to hosts in ebs-db-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 1522
+              [32m+[0m [0m[1m[0mmin[0m[0m = 1521
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-app-nsg.osn-services-egress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTPS connections to all-iad-services-in-oracle-services-network."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = "all-iad-services-in-oracle-services-network"
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "SERVICE_CIDR_BLOCK"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 443
+              [32m+[0m [0m[1m[0mmin[0m[0m = 443
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-bastion-nsg.app-egress_rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connections to hosts in ebs-app-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-bastion-nsg.db-egress_rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connection to hosts in ebs-db-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-bastion-nsg.lbr-egress_rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connection to hosts in ebs-lbr-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-bastion-nsg.osn-services-egress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTPS connections to all-iad-services-in-oracle-services-network."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = "all-iad-services-in-oracle-services-network"
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "SERVICE_CIDR_BLOCK"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 443
+              [32m+[0m [0m[1m[0mmin[0m[0m = 443
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-db-nsg.osn-services-egress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTPS connections to all-iad-services-in-oracle-services-network."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = "all-iad-services-in-oracle-services-network"
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "SERVICE_CIDR_BLOCK"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 443
+              [32m+[0m [0m[1m[0mmin[0m[0m = 443
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-lbr-nsg.app-egress_rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTP connections to hosts in ebs-app-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 80
+              [32m+[0m [0m[1m[0mmin[0m[0m = 80
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.egress["ebs-lbr-nsg.osn-services-egress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "egress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTPS connections to all-iad-services-in-oracle-services-network."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = "all-iad-services-in-oracle-services-network"
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = "SERVICE_CIDR_BLOCK"
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "EGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 443
+              [32m+[0m [0m[1m[0mmin[0m[0m = 443
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.ingress["ebs-app-nsg.http-ingress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "ingress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows HTTP connections to hosts in ebs-lbr-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "INGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 80
+              [32m+[0m [0m[1m[0mmin[0m[0m = 80
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.ingress["ebs-app-nsg.ssh-ingress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "ingress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connections from hosts in ebs-bastion-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "INGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.ingress["ebs-db-nsg.app-ingress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "ingress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SQLNet connections from hosts in ebs-app-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "INGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 1522
+              [32m+[0m [0m[1m[0mmin[0m[0m = 1521
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.ingress["ebs-db-nsg.ssh-ingress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "ingress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connections from hosts in ebs-bastion-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "INGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_nsgs_spokes.oci_core_network_security_group_security_rule.ingress["ebs-lbr-nsg.ssh-ingress-rule"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_network_security_group_security_rule" "ingress" {
+      [32m+[0m [0m[1m[0mdescription[0m[0m               = "Allows SSH connections from hosts in ebs-bastion-nsg NSG."
+      [32m+[0m [0m[1m[0mdestination[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdestination_type[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdirection[0m[0m                 = "INGRESS"
+      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mis_valid[0m[0m                  = (known after apply)
+      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                  = "6"
+      [32m+[0m [0m[1m[0msource[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0msource_type[0m[0m               = "NETWORK_SECURITY_GROUP"
+      [32m+[0m [0m[1m[0mstateless[0m[0m                 = false
+      [32m+[0m [0m[1m[0mtime_created[0m[0m              = (known after apply)
+
+      [32m+[0m [0mtcp_options {
+          [32m+[0m [0mdestination_port_range {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-appdev-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-appdev-admin-group group to manage app development related services."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read all-resources in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage functions-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage api-gateway-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage ons-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage streams in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage cluster-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage alarms in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage metrics in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage logs in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage instance-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage volume-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage object-family in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read virtual-network-family in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use subnets in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use network-security-groups in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use vnics in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use load-balancers in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read autonomous-database-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read database-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read vaults in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to inspect keys in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read app-catalog-listing in tenancy",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage instance-images in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read instance-images in tenancy",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage repos in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read repos in tenancy",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage orm-stacks in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage orm-jobs in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage orm-config-source-providers in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read audit-events in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read vss-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read work-requests in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use bastion in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage bastion-session in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage bastion-session in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage cloudevents-rules in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage alarms in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to manage metrics in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to read instance-agent-plugins in compartment lz2-appdev-cmp",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-compute-agent-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-appdev-computeagent-dynamic-group group to manage compute agent related services."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-compute-agent-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to manage management-agents in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to use metrics in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to use tag-namespaces in compartment lz2-appdev-cmp",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-database-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-database-admin-group group to manage database related resources."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read all-resources in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage database-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage autonomous-database-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage alarms in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage metrics in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage object-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read virtual-network-family in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to use vnics in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to use subnets in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to use network-security-groups in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage orm-stacks in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage orm-jobs in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage orm-config-source-providers in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read audit-events in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read vss-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read vaults in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to inspect keys in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read work-requests in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage instance-family in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to use bastion in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage bastion-session in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage bastion-session in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage cloudevents-rules in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage alarms in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to manage metrics in compartment lz2-database-cmp",
+          [32m+[0m [0m"Allow group lz2-database-admin-group to read instance-agent-plugins in compartment lz2-database-cmp",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-iam-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-iam-admin-group group to manage IAM resources in Landing Zone enclosing compartment (tenancy)."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-iam-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage policies in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage compartments in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage tag-defaults in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage tag-namespaces in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage orm-stacks in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage orm-jobs in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage orm-config-source-providers in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-network-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-appdev-computeagent-dynamic-group group to manage network related services."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-network-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to manage management-agents in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to use metrics in compartment lz2-appdev-cmp",
+          [32m+[0m [0m"Allow dynamic-group lz2-appdev-computeagent-dynamic-group to use tag-namespaces in compartment lz2-appdev-cmp",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_policies.oci_identity_policy.these["lz2-security-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for lz2-security-admin-group group to manage security related services in Landing Zone enclosing compartment (tenancy)."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-security-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage tag-namespaces in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage tag-defaults in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage repos in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read audit-events in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read app-catalog-listing in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read instance-images in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to inspect buckets in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read all-resources in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage instance-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage vaults in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage keys in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage secret-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage logging-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage serviceconnectors in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage streams in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage ons-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage functions-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage waas-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage security-zone in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read virtual-network-family in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to use subnets in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to use network-security-groups in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to use vnics in compartment lz2-network-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage orm-stacks in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage orm-jobs in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage orm-config-source-providers in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage vss-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read work-requests in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage bastion-family in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read instance-agent-plugins in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage cloudevents-rules in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage alarms in compartment lz2-security-cmp",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage metrics in compartment lz2-security-cmp",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-announcement-reader-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-announcement-reader-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-announcement-reader-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-announcement-reader-group to read announcements in tenancy",
+          [32m+[0m [0m"Allow group lz2-announcement-reader-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-appdev-admin-root-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-appdev-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-appdev-admin-root-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-appdev-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-auditor-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-auditor-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-auditor-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-auditor-group to inspect all-resources in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read instances in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read load-balancers in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read buckets in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read nat-gateways in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read public-ips in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read file-family in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read instance-configurations in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read network-security-groups in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read resource-availability in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read audit-events in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read users in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to use cloud-shell in tenancy",
+          [32m+[0m [0m"Allow group lz2-auditor-group to read vss-family in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-credential-admin-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-cred-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-credential-admin-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-cred-admin-group to inspect users in tenancy",
+          [32m+[0m [0m"Allow group lz2-cred-admin-group to inspect groups in tenancy",
+          [32m+[0m [0m"Allow group lz2-cred-admin-group to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
+          [32m+[0m [0m"Allow group lz2-cred-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-database-admin-root-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-database-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-admin-root-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-database-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-iam-admin-root-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-iam-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-iam-admin-root-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to inspect users in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to inspect groups in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != 'lz2-cred-admin-group'}",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to inspect identity-providers in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage dynamic-groups in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage authentication-policies in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage network-sources in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to manage quota in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to read audit-events in tenancy",
+          [32m+[0m [0m"Allow group lz2-iam-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-network-admin-root-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-network-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-network-admin-root-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-network-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_root_policies.oci_identity_policy.these["lz2-security-admin-root-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone lz2-security-admin-group's root compartment policy."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-security-admin-root-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage cloudevents-rules in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to manage cloud-guard-family in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read tenancies in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to read objectstorage-namespaces in tenancy",
+          [32m+[0m [0m"Allow group lz2-security-admin-group to use cloud-shell in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table.these["ebs-app-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-app-subnet-rtable"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+
+      [32m+[0m [0mroute_rules {
+          [32m+[0m [0m[1m[0mcidr_block[0m[0m        = (known after apply)
+          [32m+[0m [0m[1m[0mdescription[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination_type[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mnetwork_entity_id[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table.these["ebs-db-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-db-subnet-rtable"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+
+      [32m+[0m [0mroute_rules {
+          [32m+[0m [0m[1m[0mcidr_block[0m[0m        = (known after apply)
+          [32m+[0m [0m[1m[0mdescription[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination_type[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mnetwork_entity_id[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table.these["ebs-web-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-web-subnet-rtable"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+
+      [32m+[0m [0mroute_rules {
+          [32m+[0m [0m[1m[0mcidr_block[0m[0m        = (known after apply)
+          [32m+[0m [0m[1m[0mdescription[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination[0m[0m       = (known after apply)
+          [32m+[0m [0m[1m[0mdestination_type[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mnetwork_entity_id[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table_attachment.these["ebs-app-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table_attachment" "these" {
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_id[0m[0m      = (known after apply)
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table_attachment.these["ebs-db-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table_attachment" "these" {
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_id[0m[0m      = (known after apply)
+    }
+
+[1m  # module.lz_route_tables_spokes.oci_core_route_table_attachment.these["ebs-web-subnet-rtable"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_route_table_attachment" "these" {
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_id[0m[0m      = (known after apply)
+    }
+
+[1m  # module.lz_scanning.oci_vulnerability_scanning_host_scan_recipe.these["lz2-default-scan-recipe"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "lz2-default-scan-recipe"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m   = (known after apply)
+
+      [32m+[0m [0magent_settings {
+          [32m+[0m [0m[1m[0mscan_level[0m[0m = "STANDARD"
+
+          [32m+[0m [0magent_configuration {
+              [32m+[0m [0m[1m[0mvendor[0m[0m = "OCI"
+
+              [32m+[0m [0mcis_benchmark_settings {
+                  [32m+[0m [0m[1m[0mscan_level[0m[0m = "MEDIUM"
+                }
+
+              [32m+[0m [0mendpoint_protection_settings {
+                  [32m+[0m [0m[1m[0mscan_level[0m[0m = (known after apply)
+                }
+            }
+        }
+
+      [32m+[0m [0mport_settings {
+          [32m+[0m [0m[1m[0mscan_level[0m[0m = "STANDARD"
+        }
+
+      [32m+[0m [0mschedule {
+          [32m+[0m [0m[1m[0mday_of_week[0m[0m = "SUNDAY"
+          [32m+[0m [0m[1m[0mtype[0m[0m        = "WEEKLY"
+        }
+    }
+
+[1m  # module.lz_scanning.oci_vulnerability_scanning_host_scan_target.these["lz2-appdev-cmp-scan-target"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_vulnerability_scanning_host_scan_target" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m           = "Landing Zone lz2-appdev-cmp compartment scanning target."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m          = "lz2-appdev-cmp-scan-target"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mhost_scan_recipe_id[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0minstance_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_compartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m          = (known after apply)
+    }
+
+[1m  # module.lz_scanning.oci_vulnerability_scanning_host_scan_target.these["lz2-database-cmp-scan-target"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_vulnerability_scanning_host_scan_target" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m           = "Landing Zone lz2-database-cmp compartment scanning target."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m          = "lz2-database-cmp-scan-target"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mhost_scan_recipe_id[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0minstance_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_compartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m          = (known after apply)
+    }
+
+[1m  # module.lz_scanning.oci_vulnerability_scanning_host_scan_target.these["lz2-network-cmp-scan-target"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_vulnerability_scanning_host_scan_target" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m           = "Landing Zone lz2-network-cmp compartment scanning target."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m          = "lz2-network-cmp-scan-target"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mhost_scan_recipe_id[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0minstance_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_compartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m          = (known after apply)
+    }
+
+[1m  # module.lz_scanning.oci_vulnerability_scanning_host_scan_target.these["lz2-security-cmp-scan-target"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_vulnerability_scanning_host_scan_target" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m           = "Landing Zone lz2-security-cmp compartment scanning target."
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m          = "lz2-security-cmp-scan-target"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mhost_scan_recipe_id[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0minstance_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0msystem_tags[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_compartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_updated[0m[0m          = (known after apply)
+    }
+
+[1m  # module.lz_services_policy.oci_identity_policy.these["lz2-services-policy"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_identity_policy" "these" {
+      [32m+[0m [0m[1m[0mETag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0minactive_state[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mlastUpdateETag[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-services-policy"
+      [32m+[0m [0m[1m[0mpolicyHash[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstatements[0m[0m     = [
+          [32m+[0m [0m"Allow service cloudguard to read keys in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read compartments in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read tenancies in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read audit-events in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read compute-management-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read instance-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read virtual-network-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read volume-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read database-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read object-family in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read load-balancers in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read users in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read groups in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read policies in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read dynamic-groups in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to read authentication-policies in tenancy",
+          [32m+[0m [0m"Allow service cloudguard to use network-security-groups in tenancy",
+          [32m+[0m [0m"Allow service vulnerability-scanning-service to manage instances in tenancy",
+          [32m+[0m [0m"Allow service vulnerability-scanning-service to read compartments in tenancy",
+          [32m+[0m [0m"Allow service vulnerability-scanning-service to read vnics in tenancy",
+          [32m+[0m [0m"Allow service vulnerability-scanning-service to read vnic-attachments in tenancy",
+          [32m+[0m [0m"Allow service osms to read instances in tenancy",
+        ]
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mversion_date[0m[0m   = (known after apply)
+    }
+
+[1m  # module.lz_subscriptions.oci_ons_subscription.these["admin@halimer.com-lz2-compute-topic"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_subscriptions.oci_ons_subscription.these["admin@halimer.com-lz2-database-topic"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_subscriptions.oci_ons_subscription.these["admin@halimer.com-lz2-governance-topic"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_subscriptions.oci_ons_subscription.these["admin@halimer.com-lz2-network-topic"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_subscriptions.oci_ons_subscription.these["admin@halimer.com-lz2-storage-topic"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_subscription" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcreated_time[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m    = (known after apply)
+      [32m+[0m [0m[1m[0mdelivery_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mendpoint[0m[0m        = "admin@halimer.com"
+      [32m+[0m [0m[1m[0metag[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m        = "EMAIL"
+      [32m+[0m [0m[1m[0mstate[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m        = (known after apply)
+    }
+
+[1m  # module.lz_topics.oci_ons_notification_topic.these["COMPUTE-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for compute performance related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-compute-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_topics.oci_ons_notification_topic.these["DATABASE-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for database performance related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-database-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_topics.oci_ons_notification_topic.these["GOVERNANCE-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for governance related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-governance-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_topics.oci_ons_notification_topic.these["NETWORK-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for network related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-network-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_topics.oci_ons_notification_topic.these["STORAGE-TOPIC"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_ons_notification_topic" "these" {
+      [32m+[0m [0m[1m[0mapi_endpoint[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m    = "Landing Zone topic for storage performance related notifications."
+      [32m+[0m [0m[1m[0metag[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m           = "lz2-storage-topic"
+      [32m+[0m [0m[1m[0mshort_topic_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mtopic_id[0m[0m       = (known after apply)
+    }
+
+[1m  # module.lz_vcn_dmz.data.oci_core_services.all_services[0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_services" "all_services"  {
+      [32m+[0m [0m[1m[0mid[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mservices[0m[0m = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.data.oci_core_services.all_services[0m will be read during apply
+  # (config refers to values not yet known)[0m[0m
+[0m [36m<=[0m[0m data "oci_core_services" "all_services"  {
+      [32m+[0m [0m[1m[0mid[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0mservices[0m[0m = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_default_security_list.these["ebs"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_default_security_list" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mmanage_default_resource_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m               = (known after apply)
+
+      [32m+[0m [0mingress_security_rules {
+          [32m+[0m [0m[1m[0mdescription[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mprotocol[0m[0m    = "1"
+          [32m+[0m [0m[1m[0msource[0m[0m      = "10.0.0.0/20"
+          [32m+[0m [0m[1m[0msource_type[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mstateless[0m[0m   = false
+
+          [32m+[0m [0micmp_options {
+              [32m+[0m [0m[1m[0mcode[0m[0m = -1
+              [32m+[0m [0m[1m[0mtype[0m[0m = 3
+            }
+        }
+      [32m+[0m [0mingress_security_rules {
+          [32m+[0m [0m[1m[0mdescription[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mprotocol[0m[0m    = "1"
+          [32m+[0m [0m[1m[0msource[0m[0m      = "0.0.0.0/0"
+          [32m+[0m [0m[1m[0msource_type[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mstateless[0m[0m   = false
+
+          [32m+[0m [0micmp_options {
+              [32m+[0m [0m[1m[0mcode[0m[0m = 4
+              [32m+[0m [0m[1m[0mtype[0m[0m = 3
+            }
+        }
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_security_list.these["ebs-app-subnet.security-list"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_security_list" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-app-subnet-security-list"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+
+      [32m+[0m [0megress_security_rules {
+          [32m+[0m [0m[1m[0mdescription[0m[0m      = "Allows SSH connections to hosts in 10.0.0.0/20 CIDR range."
+          [32m+[0m [0m[1m[0mdestination[0m[0m      = "10.0.0.0/20"
+          [32m+[0m [0m[1m[0mdestination_type[0m[0m = "CIDR_BLOCK"
+          [32m+[0m [0m[1m[0mprotocol[0m[0m         = "6"
+          [32m+[0m [0m[1m[0mstateless[0m[0m        = false
+
+          [32m+[0m [0mtcp_options {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+
+      [32m+[0m [0mingress_security_rules {
+          [32m+[0m [0m[1m[0mdescription[0m[0m = "Allows SSH connections from hosts in 10.0.0.0/20 CIDR range."
+          [32m+[0m [0m[1m[0mprotocol[0m[0m    = "6"
+          [32m+[0m [0m[1m[0msource[0m[0m      = "10.0.0.0/20"
+          [32m+[0m [0m[1m[0msource_type[0m[0m = "CIDR_BLOCK"
+          [32m+[0m [0m[1m[0mstateless[0m[0m   = false
+
+          [32m+[0m [0mtcp_options {
+              [32m+[0m [0m[1m[0mmax[0m[0m = 22
+              [32m+[0m [0m[1m[0mmin[0m[0m = 22
+            }
+        }
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_security_list.these["ebs-db-subnet.security-list"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_security_list" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-db-subnet-security-list"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_security_list.these["ebs-web-subnet.security-list"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_security_list" "these" {
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-web-subnet-security-list"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_service_gateway.these["ebs"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_service_gateway" "these" {
+      [32m+[0m [0m[1m[0mblock_traffic[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m   = "ebs-sgw"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m         = (known after apply)
+
+      [32m+[0m [0mservices {
+          [32m+[0m [0m[1m[0mservice_id[0m[0m   = (known after apply)
+          [32m+[0m [0m[1m[0mservice_name[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_subnet.these["ebs.ebs-app-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_subnet" "these" {
+      [32m+[0m [0m[1m[0mavailability_domain[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mcidr_block[0m[0m                 = "10.0.1.0/24"
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdhcp_options_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m               = "ebs-app-subnet"
+      [32m+[0m [0m[1m[0mdns_label[0m[0m                  = "app"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mipv6cidr_block[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mipv6virtual_router_ip[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_internet_ingress[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_public_ip_on_vnic[0m[0m = true
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0msecurity_list_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_domain_name[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_ip[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_mac[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_subnet.these["ebs.ebs-db-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_subnet" "these" {
+      [32m+[0m [0m[1m[0mavailability_domain[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mcidr_block[0m[0m                 = "10.0.2.0/24"
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdhcp_options_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m               = "ebs-db-subnet"
+      [32m+[0m [0m[1m[0mdns_label[0m[0m                  = "db"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mipv6cidr_block[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mipv6virtual_router_ip[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_internet_ingress[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_public_ip_on_vnic[0m[0m = true
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0msecurity_list_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_domain_name[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_ip[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_mac[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_subnet.these["ebs.ebs-web-subnet"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_subnet" "these" {
+      [32m+[0m [0m[1m[0mavailability_domain[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mcidr_block[0m[0m                 = "10.0.0.0/24"
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mdhcp_options_id[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m               = "ebs-web-subnet"
+      [32m+[0m [0m[1m[0mdns_label[0m[0m                  = "web"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mipv6cidr_block[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mipv6virtual_router_ip[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_internet_ingress[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mprohibit_public_ip_on_vnic[0m[0m = true
+      [32m+[0m [0m[1m[0mroute_table_id[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0msecurity_list_ids[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0msubnet_domain_name[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_id[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_ip[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mvirtual_router_mac[0m[0m         = (known after apply)
+    }
+
+[1m  # module.lz_vcn_spokes.oci_core_vcn.these["ebs"][0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "oci_core_vcn" "these" {
+      [32m+[0m [0m[1m[0mcidr_block[0m[0m               = "10.0.0.0/20"
+      [32m+[0m [0m[1m[0mcidr_blocks[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mcompartment_id[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mdefault_dhcp_options_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mdefault_route_table_id[0m[0m   = (known after apply)
+      [32m+[0m [0m[1m[0mdefault_security_list_id[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mdefined_tags[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mdisplay_name[0m[0m             = "ebs"
+      [32m+[0m [0m[1m[0mdns_label[0m[0m                = "ebsiad"
+      [32m+[0m [0m[1m[0mfreeform_tags[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mipv6cidr_blocks[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mis_ipv6enabled[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mstate[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mtime_created[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mvcn_domain_name[0m[0m          = (known after apply)
+    }
+
+[0m[1mPlan:[0m 107 to add, 0 to change, 0 to destroy.
+[0m[0m
+[1mChanges to Outputs:[0m[0m
+  [32m+[0m [0m[1m[0mcompartments[0m[0m  = {
+      [32m+[0m [0mlz2-appdev-cmp   = {
+          [32m+[0m [0mid           = (known after apply)
+          [32m+[0m [0mname         = "lz2-appdev-cmp"
+          [32m+[0m [0mparent_id    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+          [32m+[0m [0mtime_created = (known after apply)
+        }
+      [32m+[0m [0mlz2-database-cmp = {
+          [32m+[0m [0mid           = (known after apply)
+          [32m+[0m [0mname         = "lz2-database-cmp"
+          [32m+[0m [0mparent_id    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+          [32m+[0m [0mtime_created = (known after apply)
+        }
+      [32m+[0m [0mlz2-network-cmp  = {
+          [32m+[0m [0mid           = (known after apply)
+          [32m+[0m [0mname         = "lz2-network-cmp"
+          [32m+[0m [0mparent_id    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+          [32m+[0m [0mtime_created = (known after apply)
+        }
+      [32m+[0m [0mlz2-security-cmp = {
+          [32m+[0m [0mid           = (known after apply)
+          [32m+[0m [0mname         = "lz2-security-cmp"
+          [32m+[0m [0mparent_id    = "ocid1.tenancy.oc1..aaaaaaaabkqehju37orqb2rs6qqtte4p4elzyfjtjkjdq5bkihntaegh2taa"
+          [32m+[0m [0mtime_created = (known after apply)
+        }
+    }
+  [32m+[0m [0m[1m[0mdmz_subnets[0m[0m   = {}
+  [32m+[0m [0m[1m[0mdmz_vcn[0m[0m       = {}
+  [32m+[0m [0m[1m[0mservice_label[0m[0m = "lz2"
+  [32m+[0m [0m[1m[0msubnets[0m[0m       = {
+      [32m+[0m [0mebs-app-subnet = {
+          [32m+[0m [0mcidr_block = "10.0.1.0/24"
+          [32m+[0m [0mdns_label  = "app"
+          [32m+[0m [0mid         = (known after apply)
+          [32m+[0m [0mprivate    = true
+          [32m+[0m [0mvcn_id     = (known after apply)
+        }
+      [32m+[0m [0mebs-db-subnet  = {
+          [32m+[0m [0mcidr_block = "10.0.2.0/24"
+          [32m+[0m [0mdns_label  = "db"
+          [32m+[0m [0mid         = (known after apply)
+          [32m+[0m [0mprivate    = true
+          [32m+[0m [0mvcn_id     = (known after apply)
+        }
+      [32m+[0m [0mebs-web-subnet = {
+          [32m+[0m [0mcidr_block = "10.0.0.0/24"
+          [32m+[0m [0mdns_label  = "web"
+          [32m+[0m [0mid         = (known after apply)
+          [32m+[0m [0mprivate    = true
+          [32m+[0m [0mvcn_id     = (known after apply)
+        }
+    }
+  [32m+[0m [0m[1m[0mvcns[0m[0m          = {
+      [32m+[0m [0mebs = {
+          [32m+[0m [0mcidr_block = "10.0.0.0/20"
+          [32m+[0m [0mdns_label  = "ebsiad"
+          [32m+[0m [0mid         = (known after apply)
+        }
+    }
+[33m╷[0m[0m
+[33m│[0m [0m[1m[33mWarning: [0m[0m[1mProvider oci is undefined[0m
+[33m│[0m [0m
+[33m│[0m [0m[0m  on iam_compartments.tf line 9, in module "lz_top_compartment":
+[33m│[0m [0m   9:   providers = { [4moci[0m = oci.home }[0m
+[33m│[0m [0m
+[33m│[0m [0mModule module.lz_top_compartment does not declare a provider named oci.
+[33m│[0m [0mIf you wish to specify a provider configuration for the module, add an entry for oci in the required_providers block within the module.
+[33m│[0m [0m
+[33m│[0m [0m(and 9 more similar warnings elsewhere)
+[33m╵[0m[0m
+[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Saved the plan to: plan.out
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "plan.out"

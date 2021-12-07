@@ -36,6 +36,7 @@ resource "oci_identity_tag_namespace" "namespace" {
     name           = var.tag_namespace_name
     description    = var.tag_namespace_description
     defined_tags   = var.tag_namespace_defined_tags
+    freeform_tags  = var.tag_namespace_freeform_tags
     is_retired     = var.is_namespace_retired
 }
 

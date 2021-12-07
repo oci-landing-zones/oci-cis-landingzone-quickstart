@@ -12,6 +12,7 @@ variable "subnets_route_tables" {
     compartment_id    = string,
     vcn_id            = string,
     defined_tags      = map(string),
+    freeform_tags     = map(string),
     subnet_id         = string,
     route_rules = list(object({
       is_create         = bool

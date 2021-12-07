@@ -22,7 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| policies | n/a | <pre>map(object({<br>    description  = string<br>    compartment_id = string<br>    statements = list(string)<br>  }))</pre> | n/a | yes |
+| policies | n/a | <pre>map(object({<br>    description  = string<br>    compartment_id = string<br>    statements = list(string)<br>    defined_tags = string<br>    freeform_tags = string<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

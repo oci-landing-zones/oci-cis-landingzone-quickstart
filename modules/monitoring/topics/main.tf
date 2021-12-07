@@ -6,6 +6,7 @@ resource "oci_ons_notification_topic" "this" {
     name           = var.notification_topic_name
     description    = var.notification_topic_description
     defined_tags   = var.defined_tags
+    freeform_tags  = var.freeform_tags
 }
 
 resource "oci_ons_subscription" "these" {

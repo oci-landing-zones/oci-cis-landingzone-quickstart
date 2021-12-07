@@ -13,7 +13,8 @@ variable "buckets" {
     compartment_id = string,
     name           = string,
     namespace      = string,
-    defined_tags   = map(string)
+    defined_tags   = map(string),
+    freeform_tags   = map(string)
   }))
 }
   

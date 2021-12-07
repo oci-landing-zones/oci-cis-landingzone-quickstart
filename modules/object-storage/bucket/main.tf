@@ -9,4 +9,5 @@ resource "oci_objectstorage_bucket" "these" {
         namespace      = each.value.namespace 
         kms_key_id     = var.kms_key_id
 	defined_tags   = each.value.defined_tags
+	freeform_tags  = each.value.freeform_tags
 }

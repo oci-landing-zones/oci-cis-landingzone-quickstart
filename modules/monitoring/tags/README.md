@@ -31,7 +31,8 @@ No Modules.
 | tag\_defaults\_compartment\_id | The default compartment ocid for tag defaults. | `string` | `""` | no |
 | tag\_namespace\_compartment\_id | The default compartment ocid for tag namespace. | `string` | `""` | no |
 | tag\_namespace\_description | The tag namespace description | `string` | `""` | no |
-| tag\_namespace\_name | The tag namespace name | `string` | `""` | no |
+| tag\_namespace\_defined\_tags | Map of key-value pairs of defined tags. | `map(string)` | null | no |
+| tag\_namespace\_freeform\_tags | Map of key-value pairs of freeform tags. | `map(string)` | nul| tag\_namespace\_name | The tag namespace name | `string` | `""` | no |
 | tags | n/a | <pre>map(object({<br>    tag_description         = string,<br>    tag_is_cost_tracking    = bool,<br>    tag_is_retired          = bool,<br>    make_tag_default        = bool,<br>    tag_default_value       = string,<br>    tag_default_is_required = bool<br>  }))</pre> | n/a | yes |
 | tenancy\_ocid | The tenancy ocid. | `string` | n/a | yes |
 

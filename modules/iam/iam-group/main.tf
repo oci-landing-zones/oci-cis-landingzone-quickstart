@@ -45,6 +45,7 @@ resource "oci_identity_group" "these" {
     name           = each.key
     description    = each.value.description
     defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 }
 
 resource "oci_identity_user_group_membership" "these" {

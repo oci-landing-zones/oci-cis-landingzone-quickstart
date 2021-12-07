@@ -22,7 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| buckets | n/a | <pre>map(object({<br>    compartment_id = string,<br>    name           = string,<br>    namespace      = string<br>  }))</pre> | n/a | yes |
+| buckets | n/a | <pre>map(object({<br>    compartment_id = string,<br>    name           = string,<br>    namespace      = string,<br>    defined_tags      = (string),<br>    freeform_tags      = map(string)<br>  }))</pre> | n/a | yes |
 | kms\_key\_id | KMS Key ID | `string` | `""` | no |
 
 ## Outputs

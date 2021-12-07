@@ -24,7 +24,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| groups | Group parameters | <pre>map(object({<br>    description  = string,<br>    user_ids     = list(string),<br>    defined_tags = map(string),<br>  }))</pre> | n/a | yes |
+| groups | Group parameters | <pre>map(object({<br>    description  = string,<br>    user_ids     = list(string),<br>    defined_tags = map(string),<br>    freeform_tags = map(string),<br>  }))</pre> | n/a | yes |
 | tenancy\_ocid | The OCID of the tenancy. | `any` | n/a | yes |
 
 ## Outputs

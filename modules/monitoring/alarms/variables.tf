@@ -16,9 +16,7 @@ variable "alarms" {
      message_format = string
      pending_duration = string
      defined_tags = map(string)
+     freeform_tags = map(string)
     }))
 }
    
-/*variable "topics" {
-  type = map(string)
-}*/

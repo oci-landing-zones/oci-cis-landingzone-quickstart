@@ -36,6 +36,12 @@ variable "tag_namespace_defined_tags" {
   default     = null
 }
 
+variable "tag_namespace_freeform_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of freeform tags. (Optional)"
+  default     = null
+}
+
 variable "is_namespace_retired" {
   type        = string
   description = "Whether or not the namespace is retired"

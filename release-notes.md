@@ -1,3 +1,9 @@
+# December 16, 2021 Release Notes - Stable 2.2.1
+1. [Storage Notifications Fix](#storage_notifications_fix_2_2_1)
+
+## <a name="storage_notifications_fix_2_2_1">Storage Notifications Fix</a>
+A code bug was causing terraform plan to fail if email endpoints for storage related notifications were not provided.
+
 # December 02, 2021 Release Notes - Stable 2.2.0
 1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)
 1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
@@ -5,7 +11,6 @@
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
 1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
 1. [Added an optional Budget and Budget Alert Rule](#budget_2_2_0)
-
 
 ## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing deployments)</a>
 In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions to be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.

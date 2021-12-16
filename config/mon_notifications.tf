@@ -124,7 +124,7 @@ locals {
       actions_description = "Sends notification via ONS"
       topic_id            = local.storage_topic.id == null ? module.lz_topics.topics[local.storage_topic.key].id : local.storage_topic.id
       defined_tags        = null
-    } if length(var.compute_admin_email_endpoints) > 0},
+    } if length(var.storage_admin_email_endpoints) > 0},
     
     {for i in [1] : (local.notify_on_database_changes_rule.key) => {
       compartment_id      = local.database_topic.cmp_id       

@@ -88,6 +88,7 @@ module "lz_topics" {
 
 module "lz_home_region_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"
+  providers  = { oci = oci.home }  
   subscriptions = { 
       for e in var.security_admin_email_endpoints: "${e}-${local.security_topic.name}" => {
         compartment_id = local.security_topic.cmp_id

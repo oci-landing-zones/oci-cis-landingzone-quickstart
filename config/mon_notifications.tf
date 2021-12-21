@@ -202,7 +202,14 @@ locals {
 module "lz_notifications" {
   depends_on = [null_resource.slow_down_notifications]
   source     = "../modules/monitoring/notifications"
-  rules = merge(local.home_region_notifications, local.regional_notifications)
+  rules = local.regional_notifications
+}
+
+module "lz_home_region_notifications" {
+  depends_on = [null_resource.slow_down_notifications]
+  source     = "../modules/monitoring/notifications"
+  providers  = { oci = oci.home }
+  rules = local.home_region_notifications
 }
 
 resource "null_resource" "slow_down_notifications" {

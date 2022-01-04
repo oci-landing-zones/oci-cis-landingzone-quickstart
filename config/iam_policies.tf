@@ -73,9 +73,9 @@ locals {
     "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"] : []
 
   ## Compute Agent grants
-  compute_agent_grants = ["allow dynamic-group ${local.compute_agent_dyn_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.compute_agent_dyn_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.compute_agent_dyn_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
+  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
@@ -257,7 +257,7 @@ locals {
     default_policies = { 
       (local.compute_agent_policy_name) = {
         compartment_id = local.parent_compartment_id
-        description    = "Landing Zone policy for ${local.compute_agent_dyn_group_name} group to manage compute agent related services."
+        description    = "Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
         statements = local.compute_agent_grants
       },
        (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {

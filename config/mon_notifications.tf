@@ -124,7 +124,7 @@ locals {
       actions_description = "Sends notification via ONS"
       topic_id            = local.storage_topic.id == null ? module.lz_topics.topics[local.storage_topic.key].id : local.storage_topic.id
       defined_tags        = null
-    } if length(var.compute_admin_email_endpoints) > 0},
+    } if length(var.storage_admin_email_endpoints) > 0},
     
     {for i in [1] : (local.notify_on_database_changes_rule.key) => {
       compartment_id      = local.database_topic.cmp_id       
@@ -202,7 +202,14 @@ locals {
 module "lz_notifications" {
   depends_on = [null_resource.slow_down_notifications]
   source     = "../modules/monitoring/notifications"
-  rules = merge(local.home_region_notifications, local.regional_notifications)
+  rules = local.regional_notifications
+}
+
+module "lz_home_region_notifications" {
+  depends_on = [null_resource.slow_down_notifications]
+  source     = "../modules/monitoring/notifications"
+  providers  = { oci = oci.home }
+  rules = local.home_region_notifications
 }
 
 resource "null_resource" "slow_down_notifications" {

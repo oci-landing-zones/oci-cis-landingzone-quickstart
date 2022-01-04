@@ -57,6 +57,7 @@ locals {
       description  = "Landing Zone group for Cost Management."
       user_ids     = []
       defined_tags = null
+      freeform_tags = null
     }
   }
   exainfra_group = var.deploy_exainfra_cmp == true ? {

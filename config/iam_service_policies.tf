@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  all_service_policy_statements = {}
+  all_service_policy_statements = []
 
   # Names
   services_policy_name   = "${var.service_label}-services-policy"

@@ -9,10 +9,10 @@ module "lz_tags" {
   source                       = "../modules/monitoring/tags"
   providers                    = { oci = oci.home }
   tenancy_ocid                 = var.tenancy_ocid
-  tag_namespace_compartment_id = local.parent_compartment_id
+  tag_namespace_compartment_id = local.enclosing_compartment_id
   tag_namespace_name           = local.tag_namespace_name
   tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
-  tag_defaults_compartment_id  = local.parent_compartment_id
+  tag_defaults_compartment_id  = local.enclosing_compartment_id
   is_create_namespace          = !var.extend_landing_zone_to_new_region
 
   tags = { # the map keys are meant to be the tag names.

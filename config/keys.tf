@@ -30,7 +30,7 @@ module "lz_keys_policies" {
     providers = { oci = oci.home }
     policies  = {
         "${local.oss_key_name}-${local.region_key}-policy" = {
-            compartment_id = local.parent_compartment_id
+            compartment_id = local.enclosing_compartment_id
             description = "Landing Zone policy allowing access to ${module.lz_keys.keys[local.oss_key_name].display_name} in the Vault service."
             statements = [
                 "Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment.name} where target.key.id = '${module.lz_keys.keys[local.oss_key_name].id}'",

@@ -99,38 +99,11 @@ variable "existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
-
 variable "extend_landing_zone_to_new_region" {
   default = false
   type    = bool
-  description = "Whether Landing Zone is being extended to another region. When set to true, compartments and resources at the root compartment are reused."
+  description = "Whether Landing Zone is being extended to another region. When set to true, compartments and resources at the home region are reused."
 }
-variable "existing_network_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing network compartment."
-}
-variable "existing_security_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing security compartment."
-}
-variable "existing_appdev_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing appdev compartment."
-}
-variable "existing_database_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing database compartment."
-}
-variable "existing_exainfra_cmp_ocid" {
-  default = null
-  type    = string
-  description = "OCID of an existing Exadata infrastructure compartment."
-}
-
 # Networking
 variable "no_internet_access" {
   default     = false

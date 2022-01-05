@@ -20,44 +20,41 @@ module "lz_top_compartment" {
 }
 
 locals {
-  default_cmps = merge(
-    {for i in [1]: (local.security_compartment.key) => {
+  
+  default_cmps = {
+    (local.security_compartment.key) = {
       parent_id     = local.enclosing_compartment_id
       name          = local.security_compartment.name
       description   = "Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
       freeform_tags = null
-    }},
-
-    {for i in [1]: (local.network_compartment.key) => {
+    },
+    (local.network_compartment.key) = {
       parent_id     = local.enclosing_compartment_id
       name          = local.network_compartment.name
       description   = "Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
       freeform_tags = null
-    }},
-
-    {for i in [1]: (local.appdev_compartment.key) => {
+    },
+    (local.appdev_compartment.key) = {
       parent_id     = local.enclosing_compartment_id
       name          = local.appdev_compartment.name
       description   = "Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
       freeform_tags = null
-    }},
-
-    {for i in [1]: (local.database_compartment.key) => {
+    },
+    (local.database_compartment.key) = {
       parent_id     = local.enclosing_compartment_id
       name          = local.database_compartment.name
       description   = "Landing Zone compartment for all database related resources."
       enable_delete = local.enable_cmp_delete
       defined_tags  = null
       freeform_tags = null
-    }}
-  )
-
+    }
+  }  
   exainfra_cmp = var.deploy_exainfra_cmp == true ? {
     (local.exainfra_compartment.key) = {
       parent_id     = local.enclosing_compartment_id

@@ -10,28 +10,26 @@ locals {
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
 
-
   ### IAM
   # Default compartment names
-  default_enclosing_compartment = {key:"${var.service_label}-top-cmp", name: var.existing_enclosing_compartment_ocid == null ? "${var.service_label}-top-cmp" : data.oci_identity_compartment.existing_enclosing_compartment.name}
-  security_compartment    = {key:"${var.service_label}-security-cmp", name: var.existing_security_cmp_ocid == null ? "${var.service_label}-security-cmp" : data.oci_identity_compartment.security.name}
-  security_compartment_id = var.existing_security_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-security-cmp"].id : var.existing_security_cmp_ocid
-  network_compartment     = {key:"${var.service_label}-network-cmp", name: var.existing_network_cmp_ocid == null ?  "${var.service_label}-network-cmp" : data.oci_identity_compartment.network.name}
-  network_compartment_id  = var.existing_network_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-network-cmp"].id : var.existing_network_cmp_ocid
-  appdev_compartment      = {key:"${var.service_label}-appdev-cmp", name: var.existing_appdev_cmp_ocid == null ?  "${var.service_label}-appdev-cmp" : data.oci_identity_compartment.appdev.name}
-  appdev_compartment_id   = var.existing_appdev_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-appdev-cmp"].id : var.existing_appdev_cmp_ocid
-  database_compartment    = {key:"${var.service_label}-database-cmp", name: var.existing_database_cmp_ocid == null ?  "${var.service_label}-database-cmp" : data.oci_identity_compartment.database.name}
-  database_compartment_id   = var.existing_database_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-database-cmp"].id : var.existing_database_cmp_ocid
-  exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: var.existing_exainfra_cmp_ocid == null ?  "${var.service_label}-exainfra-cmp" : data.oci_identity_compartment.exainfra.name}
-  exainfra_compartment_id   = var.existing_exainfra_cmp_ocid == null ? module.lz_compartments.compartments["${var.service_label}-exainfra-cmp"].id : var.existing_exainfra_cmp_ocid
+  enclosing_compartment    = {key:"${var.service_label}-top-cmp", name: var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : "${var.service_label}-top-cmp") : "tenancy"}
+  enclosing_compartment_id = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.enclosing_compartment.key].id) : var.tenancy_ocid
+
+  security_compartment    = {key:"${var.service_label}-security-cmp", name: "${var.service_label}-security-cmp"}
+  security_compartment_id = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.security_compartment.key].id : data.oci_identity_compartments.security.compartments[0].id
+  network_compartment     = {key:"${var.service_label}-network-cmp", name: "${var.service_label}-network-cmp"}
+  network_compartment_id  = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.network_compartment.key].id : data.oci_identity_compartments.network.compartments[0].id
+  appdev_compartment      = {key:"${var.service_label}-appdev-cmp", name: "${var.service_label}-appdev-cmp"}
+  appdev_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.appdev_compartment.key].id : data.oci_identity_compartments.appdev.compartments[0].id
+  database_compartment    = {key:"${var.service_label}-database-cmp", name: "${var.service_label}-database-cmp"}
+  database_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.database_compartment.key].id : data.oci_identity_compartments.database.compartments[0].id
+  exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: "${var.service_label}-exainfra-cmp"}
+  exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
   
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
-  # Whether or not to create an enclosing compartment
-  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.key].id) : var.tenancy_ocid
-  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment.name) : "tenancy"
-  policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
+  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
 
   use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
   
@@ -45,7 +43,7 @@ locals {
   auditor_group_name             = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
   announcement_reader_group_name = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
   exainfra_admin_group_name      = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  cost_admin_group_name          = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ?  "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
+  cost_admin_group_name          = var.use_existing_groups == false || var.extend_landing_zone_to_new_region == false ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
   
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"

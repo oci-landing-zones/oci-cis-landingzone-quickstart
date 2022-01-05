@@ -48,7 +48,7 @@ locals {
     "allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"] : []
 
   ## Security admin grants on Security compartment
-  security_admin_grants_on_security_cmp = var.existing_security_cmp_ocid == null ? [
+  security_admin_grants_on_security_cmp = [
     "allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment.name}",
@@ -70,7 +70,7 @@ locals {
     "allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage cloudevents-rules in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
-    "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"] : []
+    "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"]
 
   ## Compute Agent grants
   compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
@@ -78,17 +78,17 @@ locals {
         "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Security admin grants on Network compartment
-  security_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
+  security_admin_grants_on_network_cmp = [
     "allow group ${local.security_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
     "allow group ${local.security_admin_group_name} to use subnets in compartment ${local.network_compartment.name}",
     "allow group ${local.security_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}",
-    "allow group ${local.security_admin_group_name} to use vnics in compartment ${local.network_compartment.name}"] : [] 
+    "allow group ${local.security_admin_group_name} to use vnics in compartment ${local.network_compartment.name}"]
 
   ## All security admin grants
   security_admin_grants = concat(local.security_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_security_cmp, local.security_admin_grants_on_network_cmp)  
 
   ## Network admin grants on Network compartment
-  network_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
+  network_admin_grants_on_network_cmp = [
         "allow group ${local.network_admin_group_name} to read all-resources in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage virtual-network-family in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage dns in compartment ${local.network_compartment.name}",
@@ -105,19 +105,19 @@ locals {
         "allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment.name}",
-        "allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"] : [] 
+        "allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment.name}"] 
 
   ## Network admin grants on Security compartment
-  network_admin_grants_on_security_cmp = var.existing_security_cmp_ocid == null ? [
+  network_admin_grants_on_security_cmp = [
         "allow group ${local.network_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "allow group ${local.network_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] : []
+        "allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
   ## All network admin grants
   network_admin_grants = concat(local.network_admin_grants_on_network_cmp, local.network_admin_grants_on_security_cmp)      
 
   ## Database admin grants on Database compartment
-  database_admin_grants_on_database_cmp = var.existing_database_cmp_ocid == null ? [
+  database_admin_grants_on_database_cmp = [
         "allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment.name}",
@@ -131,17 +131,17 @@ locals {
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"] : []
+        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
 
   ## Database admin grants on Network compartment
-  database_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
+  database_admin_grants_on_network_cmp = [
         "allow group ${local.database_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use subnets in compartment ${local.network_compartment.name}",
-        "allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}"] : []    
+        "allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}"]  
 
   ## Database admin grants on Security compartment
-  database_admin_grants_on_security_cmp = var.existing_security_cmp_ocid == null ? [
+  database_admin_grants_on_security_cmp = [
         "allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
@@ -151,10 +151,10 @@ locals {
         "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"] : []
+        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
 
   ## Database admin grants on Exainfra compartment
-  database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true && var.existing_exainfra_cmp_ocid == null ? [
+  database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
         "allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
@@ -168,7 +168,7 @@ locals {
                                  local.database_admin_grants_on_security_cmp, local.database_admin_grants_on_exainfra_cmp)
 
   ## AppDev admin grants on AppDev compartment
-  appdev_admin_grants_on_appdev_cmp = var.existing_appdev_cmp_ocid == null ? [
+  appdev_admin_grants_on_appdev_cmp = [
         "allow group ${local.appdev_admin_group_name} to read all-resources in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage functions-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage api-gateway-family in compartment ${local.appdev_compartment.name}",
@@ -191,32 +191,32 @@ locals {
         "allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"] : []
+        "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"]
 
   ## AppDev admin grants on Network compartment
-  appdev_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
+  appdev_admin_grants_on_network_cmp = [
         "allow group ${local.appdev_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to use subnets in compartment ${local.network_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to use vnics in compartment ${local.network_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to use load-balancers in compartment ${local.network_compartment.name}"] : []    
+        "allow group ${local.appdev_admin_group_name} to use load-balancers in compartment ${local.network_compartment.name}"]    
 
   ## AppDev admin grants on Security compartment
-  appdev_admin_grants_on_security_cmp = var.existing_security_cmp_ocid == null ? [
+  appdev_admin_grants_on_security_cmp = [
         "allow group ${local.appdev_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage instance-images in compartment ${local.security_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] : [] 
+        "allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
   ## AppDev admin grants on Database compartment
-  appdev_admin_grants_on_database_cmp = var.existing_database_cmp_ocid == null ? [
+  appdev_admin_grants_on_database_cmp = [
         "allow group ${local.appdev_admin_group_name} to read autonomous-database-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment.name}"] : [] 
+        "allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment.name}"] 
 
   ## AppDev admin grants on enclosing compartment
-  appdev_admin_grants_on_enclosing_cmp = var.existing_enclosing_compartment_ocid == null ? [
+  appdev_admin_grants_on_enclosing_cmp = var.use_existing_grants_in_enc_compartment == false ? [
         "allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
         "allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_scope}",
         "allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}"] : []                   
@@ -227,22 +227,22 @@ locals {
                                local.appdev_admin_grants_on_enclosing_cmp)
 
   ## Exainfra admin grants on Exinfra compartment
-  exainfra_admin_grants_on_exainfra_cmp = var.existing_exainfra_cmp_ocid == null ? [
+  exainfra_admin_grants_on_exainfra_cmp = [
         "allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}"] : []
+        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}"]
 
   ## Exainfra admin grants on Security compartment
-  exainfra_admin_grants_on_security_cmp = var.existing_security_cmp_ocid == null ? [
+  exainfra_admin_grants_on_security_cmp = [
         "allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] : []  
+        "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
   ## Exainfra admin grants on Network compartment
-  exainfra_admin_grants_on_network_cmp = var.existing_network_cmp_ocid == null ? [
-        "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"] : [] 
+  exainfra_admin_grants_on_network_cmp = [
+        "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
@@ -256,32 +256,32 @@ locals {
 
     default_policies = { 
       (local.compute_agent_policy_name) = {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
         statements = local.compute_agent_grants
       },
        (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
         statements = local.network_admin_grants
       } : null,
       (local.security_admin_policy_name) = length(local.security_admin_grants) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
         statements     = local.security_admin_grants
       } : null,
       (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
         statements = local.database_admin_grants
       } : null,
       (local.appdev_admin_policy_name) = length(local.appdev_admin_grants) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
         statements = local.appdev_admin_grants
       } : null,
       (local.iam_admin_policy_name) = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
         statements     = local.iam_admin_grants_on_enclosing_cmp
       } : null
@@ -289,7 +289,7 @@ locals {
 
     exainfra_policy = var.deploy_exainfra_cmp == true ? {
       (local.exainfra_admin_policy_name) = length(local.exainfra_admin_grants) > 0 ? {
-        compartment_id = local.parent_compartment_id
+        compartment_id = local.enclosing_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."
         statements  = local.exainfra_admin_grants
       } : null
@@ -302,7 +302,7 @@ module "lz_root_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
   depends_on = [module.lz_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
-  policies = local.use_existing_root_cmp_grants == false ? {
+  policies = local.use_existing_root_cmp_grants == false || var.extend_landing_zone_to_new_region == false ? {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
@@ -380,5 +380,5 @@ module "lz_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
   depends_on = [module.lz_groups, module.lz_dynamic_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
-  policies = local.policies
+  policies   = var.extend_landing_zone_to_new_region == false ? local.policies : {}
 }

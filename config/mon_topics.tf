@@ -4,13 +4,13 @@
 locals  {
   # Topics
   # If you have an existing topic you want to use enter the OCID(s) in the id property.
-  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: var.existing_security_cmp_ocid == null ? module.lz_compartments.compartments[local.security_compartment.key].id : var.existing_security_cmp_ocid, id: null}
-  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: var.existing_network_cmp_ocid == null ? module.lz_compartments.compartments[local.network_compartment.key].id : var.existing_network_cmp_ocid,    id: null}
-  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: var.existing_appdev_cmp_ocid == null ? module.lz_compartments.compartments[local.appdev_compartment.key].id : var.existing_appdev_cmp_ocid,       id: null}
-  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: var.existing_database_cmp_ocid == null ? module.lz_compartments.compartments[local.database_compartment.key].id : var.existing_database_cmp_ocid, id: null}
-  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: var.existing_appdev_cmp_ocid == null ? module.lz_compartments.compartments[local.appdev_compartment.key].id : var.existing_appdev_cmp_ocid,       id: null}
+  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: local.security_compartment_id, id: null}
+  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: local.network_compartment_id,  id: null}
+  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: local.appdev_compartment_id,   id: null}
+  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: local.database_compartment_id, id: null}
+  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: local.appdev_compartment_id,   id: null}
   budget_topic      = {key: "BUDGET-TOPIC",     name: "${var.service_label}-budget-topic",     cmp_id: var.tenancy_ocid, id : null }
-  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: var.existing_security_cmp_ocid == null && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : var.existing_security_cmp_ocid, id : null }
+  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: local.exainfra_compartment_id, id : null }
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {

@@ -27,7 +27,7 @@ locals {
 
 module "lz_cost_budget" {
       source      = "../modules/cost/budget"
-      budget      = local.budget_config
+      budget      = var.extend_landing_zone_to_new_region == false ? local.budget_config : {}
 }
 
 

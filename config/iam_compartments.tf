@@ -4,7 +4,7 @@
 ### This Terraform configuration provisions compartments in the tenancy.
 
 module "lz_top_compartment" {
-  count     = var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid == null ? 1 : 0
+  count     = var.extend_landing_zone_to_new_region == false || (var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid == null) ? 1 : 0
   source    = "../modules/iam/iam-compartment"
   providers = { oci = oci.home }
   compartments = {

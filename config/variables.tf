@@ -97,7 +97,7 @@ variable "existing_cost_admin_group_name" {
 variable "extend_landing_zone_to_new_region" {
   default = false
   type    = bool
-  description = "Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned."
+  description = "Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
 }
 # Networking
 variable "no_internet_access" {

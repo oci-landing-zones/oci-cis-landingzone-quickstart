@@ -19,14 +19,14 @@ locals {
     "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
-  iam_admin_grants_on_enclosing_cmp = var.use_existing_grants_in_enc_compartment == false ? [
+  iam_admin_grants_on_enclosing_cmp = [
     "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage orm-stacks in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_scope}"] : []
+    "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_scope}"]
 
   // Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
@@ -38,14 +38,14 @@ locals {
     "Allow group ${local.security_admin_group_name} to read usage-reports in tenancy"]
 
   ## Security admin grants at the enclosing compartment level, which *can* be the root compartment
-  security_admin_grants_on_enclosing_cmp = var.use_existing_grants_in_enc_compartment == false ? [
+  security_admin_grants_on_enclosing_cmp = [
     "allow group ${local.security_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
     "allow group ${local.security_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
     "allow group ${local.security_admin_group_name} to manage repos in ${local.policy_scope}",
     "allow group ${local.security_admin_group_name} to read audit-events in ${local.policy_scope}",
     "allow group ${local.security_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
     "allow group ${local.security_admin_group_name} to read instance-images in ${local.policy_scope}",
-    "allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"] : []
+    "allow group ${local.security_admin_group_name} to inspect buckets in ${local.policy_scope}"]
 
   ## Security admin grants on Security compartment
   security_admin_grants_on_security_cmp = [
@@ -216,10 +216,10 @@ locals {
         "allow group ${local.appdev_admin_group_name} to read database-family in compartment ${local.database_compartment.name}"] 
 
   ## AppDev admin grants on enclosing compartment
-  appdev_admin_grants_on_enclosing_cmp = var.use_existing_grants_in_enc_compartment == false ? [
+  appdev_admin_grants_on_enclosing_cmp = [
         "allow group ${local.appdev_admin_group_name} to read app-catalog-listing in ${local.policy_scope}",
         "allow group ${local.appdev_admin_group_name} to read instance-images in ${local.policy_scope}",
-        "allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}"] : []                   
+        "allow group ${local.appdev_admin_group_name} to read repos in ${local.policy_scope}"]                  
 
   ## All AppDev admin grants
   appdev_admin_grants = concat(local.appdev_admin_grants_on_appdev_cmp, local.appdev_admin_grants_on_network_cmp,
@@ -296,84 +296,87 @@ locals {
     } : {}
   
     policies = merge(local.default_policies, local.exainfra_policy)
+
+    root_policies = {
+      (local.security_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
+        statements     = local.security_admin_grants_on_root_cmp
+      },
+      (local.iam_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
+        statements     = local.iam_admin_grants_on_root_cmp
+      },
+      (local.network_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
+        statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
+                          "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
+      },
+      (local.appdev_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
+        statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
+                          "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
+      },
+      (local.database_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
+        statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
+                          "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
+      },
+      (local.auditor_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
+        statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
+          "Allow group ${local.auditor_group_name} to read instances in tenancy",
+          "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
+          "Allow group ${local.auditor_group_name} to read buckets in tenancy",
+          "Allow group ${local.auditor_group_name} to read nat-gateways in tenancy",
+          "Allow group ${local.auditor_group_name} to read public-ips in tenancy",
+          "Allow group ${local.auditor_group_name} to read file-family in tenancy",
+          "Allow group ${local.auditor_group_name} to read instance-configurations in tenancy",
+          "Allow group ${local.auditor_group_name} to read network-security-groups in tenancy",
+          "Allow group ${local.auditor_group_name} to read resource-availability in tenancy",
+          "Allow group ${local.auditor_group_name} to read audit-events in tenancy",
+          "Allow group ${local.auditor_group_name} to read users in tenancy",
+          "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
+          "Allow group ${local.auditor_group_name} to read vss-family in tenancy",       
+          "Allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
+          "Allow group ${local.auditor_group_name} to read usage-reports in tenancy"]
+      },
+      (local.announcement_reader_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
+        statements = ["allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
+                      "allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
+      },
+      (local.cred_admin_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
+        statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
+          "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
+          "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
+          "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
+      },
+      (local.cost_admin_root_policy_name) = {
+        compartment_id = var.tenancy_ocid
+        description    = "Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
+        statements     = local.cost_root_permissions
+      }
+    }
 }
 
 module "lz_root_policies" {
   source     = "../modules/iam/iam-policy"
   providers  = { oci = oci.home }
   depends_on = [module.lz_groups, module.lz_compartments] ### Explicitly declaring dependencies on the group and compartments modules.
-  policies = local.use_existing_root_cmp_grants == false || var.extend_landing_zone_to_new_region == false ? {
-    (local.security_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
-      statements     = local.security_admin_grants_on_root_cmp
-    },
-    (local.iam_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
-      statements     = local.iam_admin_grants_on_root_cmp
-    },
-    (local.network_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
-                        "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
-                        "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
-    },
-    (local.appdev_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
-                        "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
-                        "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
-    },
-    (local.database_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
-      statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
-                        "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
-                        "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
-    },
-    (local.auditor_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
-      statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
-        "Allow group ${local.auditor_group_name} to read instances in tenancy",
-        "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
-        "Allow group ${local.auditor_group_name} to read buckets in tenancy",
-        "Allow group ${local.auditor_group_name} to read nat-gateways in tenancy",
-        "Allow group ${local.auditor_group_name} to read public-ips in tenancy",
-        "Allow group ${local.auditor_group_name} to read file-family in tenancy",
-        "Allow group ${local.auditor_group_name} to read instance-configurations in tenancy",
-        "Allow group ${local.auditor_group_name} to read network-security-groups in tenancy",
-        "Allow group ${local.auditor_group_name} to read resource-availability in tenancy",
-        "Allow group ${local.auditor_group_name} to read audit-events in tenancy",
-        "Allow group ${local.auditor_group_name} to read users in tenancy",
-        "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
-        "Allow group ${local.auditor_group_name} to read vss-family in tenancy",       
-        "Allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
-        "Allow group ${local.auditor_group_name} to read usage-reports in tenancy"]
-    },
-    (local.announcement_reader_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
-      statements = ["allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
-                    "allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
-    },
-    (local.cred_admin_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
-      statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
-        "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
-        "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
-        "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
-    },
-    (local.cost_admin_root_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
-      statements     = local.cost_root_permissions
-    }
-  } : {}
+  policies   = var.extend_landing_zone_to_new_region == false ? (local.use_existing_root_cmp_grants == true ? {} : local.root_policies) : {}
+  #policies = local.use_existing_root_cmp_grants == false || var.extend_landing_zone_to_new_region == false ? {
 }
 
 module "lz_policies" {

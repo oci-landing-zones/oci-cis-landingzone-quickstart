@@ -49,11 +49,6 @@ variable "policies_in_root_compartment" {
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
-variable "use_existing_grants_in_enc_compartment" {
-  type        = bool
-  default     = false
-  description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
-}
 variable "use_existing_groups" {
   type        = bool
   default     = false

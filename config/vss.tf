@@ -72,7 +72,7 @@ locals {
     }
   } : {}
 
-  exainfra_scan_target = var.vss_create == true && var.deploy_exainfra_cmp == true ? {
+  exainfra_scan_target = var.vss_create == true && length(data.oci_identity_compartments.exainfra.compartments) > 0 ? {
     (local.exainfra_cmp_target_name) = {
       compartment_id        = local.security_compartment_id
       description           = "Landing Zone ${local.exainfra_compartment.name} compartment scanning target."

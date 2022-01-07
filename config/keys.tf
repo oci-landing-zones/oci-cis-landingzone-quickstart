@@ -28,6 +28,7 @@ module "lz_keys" {
 module "lz_keys_policies" {
     source    = "../modules/iam/iam-policy"
     providers = { oci = oci.home }
+    # Vault is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
     policies  = {
         "${local.oss_key_name}-${local.region_key}-policy" = {
             compartment_id = local.enclosing_compartment_id

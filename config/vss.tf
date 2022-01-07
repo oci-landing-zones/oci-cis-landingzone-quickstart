@@ -13,6 +13,7 @@ locals {
   network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
   appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
   database_cmp_target_name = "${local.database_compartment.key}-scan-target"
+  exainfra_cmp_target_name = "${local.exainfra_compartment.key}-scan-target"
   
   default_scan_recipes = var.vss_create == true ? {
     (local.scan_default_recipe_name) = {
@@ -70,13 +71,25 @@ locals {
       defined_tags          = null
     }
   } : {}
+
+  exainfra_scan_target = var.vss_create == true && var.deploy_exainfra_cmp == true ? {
+    (local.exainfra_cmp_target_name) = {
+      compartment_id        = local.security_compartment_id
+      description           = "Landing Zone ${local.exainfra_compartment.name} compartment scanning target."
+      scan_recipe_name      = local.scan_default_recipe_name
+      target_compartment_id = local.exainfra_compartment_id
+      defined_tags          = null
+    } 
+  } : {}  
+
+  scan_targets = merge(local.default_scan_targets, local.exainfra_scan_target)
 }
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
   depends_on = [null_resource.slow_down_vss]
   scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
-  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.default_scan_targets
+  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.scan_targets
   # VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 }
 

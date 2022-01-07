@@ -77,6 +77,7 @@ module "lz_scanning" {
   depends_on = [null_resource.slow_down_vss]
   scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
   scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.default_scan_targets
+  # VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 }
 
 resource "null_resource" "slow_down_vss" {

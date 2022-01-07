@@ -34,6 +34,7 @@ module "lz_sch_vcnFlowLogs_bucket" {
 module "lz_service_connector_hub_audit" {
     count = (var.create_service_connector_audit  == true ) ? 1 : 0
     source = "../modules/monitoring/service-connector"
+    # Service Connector Hub is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
     service_connector = {
         compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
         service_connector_display_name = local.sch_audit_display_name
@@ -64,6 +65,7 @@ module "lz_service_connector_hub_audit" {
 module "lz_service_connector_hub_vcnFlowLogs" {
     count = (var.create_service_connector_vcnFlowLogs  == true ) ? 1 : 0
     source = "../modules/monitoring/service-connector"
+    # Service Connector Hub is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
     service_connector = {
         compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
         service_connector_display_name = local.sch_vcnFlowLogs_display_name

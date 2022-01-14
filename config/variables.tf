@@ -49,11 +49,6 @@ variable "policies_in_root_compartment" {
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
-variable "use_existing_groups" {
-  type        = bool
-  default     = false
-  description = "Whether existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
-}
 variable "existing_iam_admin_group_name" {
   type    = string
   default = ""
@@ -93,6 +88,26 @@ variable "existing_exainfra_admin_group_name" {
 variable "existing_cost_admin_group_name" {
   type    = string
   default = ""
+}
+variable "existing_security_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing security dynamic group."
+}
+variable "existing_appdev_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing appdev dynamic group."
+}
+variable "existing_compute_agent_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing compute agent dynamic group for management agent access."
+}
+variable "existing_database_kms_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing database dynamic group for database to access keys."
 }
 variable "extend_landing_zone_to_new_region" {
   default = false

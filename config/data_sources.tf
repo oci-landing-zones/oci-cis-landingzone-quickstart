@@ -91,6 +91,37 @@ data "oci_identity_groups" "existing_cost_admin_group" {
   }
 }
 
+data "oci_identity_groups" "existing_security_fun_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_security_fun_dyn_group_name]
+  }
+}
+
+data "oci_identity_groups" "existing_appdev_fun_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_appdev_fun_dyn_group_name]
+  }
+}
+
+data "oci_identity_groups" "existing_compute_agent_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_compute_agent_dyn_group_name]
+  }
+}
+
+data "oci_identity_groups" "existing_database_kms_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_database_kms_dyn_group_name]
+  }
+}
 
 data "oci_cloud_guard_cloud_guard_configuration" "this" {
   compartment_id = var.tenancy_ocid

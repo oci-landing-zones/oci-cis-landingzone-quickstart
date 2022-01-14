@@ -17,7 +17,6 @@ variableGroups:
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
       - "policies_in_root_compartment"
-      - "use_existing_groups"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -28,6 +27,10 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_security_fun_dyn_group_name"
+      - "existing_appdev_fun_dyn_group_name"
+      - "existing_compute_agent_dyn_group_name"
+      - "existing_database_kms_dyn_group_name"
  
   - title: "Networking"
     variables:
@@ -178,104 +181,90 @@ variables:
     default: "CREATE"
     visible: env_advanced_options
 
-  use_existing_groups:
-    type: boolean
-    title: "Use existing groups?"
-    description: "Whether existing groups should be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
-    default: false
-    required: true
-    visible: env_advanced_options
-  
   existing_iam_admin_group_name:
     type: string
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
-    
+    visible: env_advanced_options 
+        
   existing_cred_admin_group_name:
     type: string
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_security_admin_group_name:
     type: string
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_network_admin_group_name:
     type: string
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_appdev_admin_group_name:
     type: string
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_database_admin_group_name:
     type: string
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
   
   existing_exainfra_admin_group_name:
     type: string
     title: "Existing admin group name for Exadata infrastructure"
     description: "Existing group to which Exadata infrastructure management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups      
+    visible: env_advanced_options      
   
   existing_auditor_group_name:
     type: string
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_announcement_reader_group_name:
     type: string
     title: "Existing announcement readers group name"
     description: "Existing group to which announcement reading policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups  
+    visible: env_advanced_options  
   
   existing_cost_admin_group_name:
     type: string
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups 
+    visible: env_advanced_options 
 
+  existing_security_fun_dyn_group_name:
+    type: string
+    title: "Existing security dynamic group name"
+    description: "Existing security dynamic group to run functions."
+    visible: env_advanced_options
+
+  existing_appdev_fun_dyn_group_name:
+    type: string
+    title: "Existing appdev dynamic group name"
+    description: "Existing appdev dynamic group."
+    visible: env_advanced_options
+
+  existing_compute_agent_dyn_group_name:
+    type: string
+    title: "Existing compute agent dynamic group name"
+    description: "Existing compute agent dynamic group for management agent access."
+    visible: env_advanced_options
+
+  existing_database_kms_dyn_group_name:
+    type: string
+    title: "Existing database dynamic group name"
+    description: "Existing database dynamic group for database to access keys."
+    visible: env_advanced_options
+ 
   net_advanced_options:
     type: boolean
     title: "Advanced Options"

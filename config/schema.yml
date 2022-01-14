@@ -34,13 +34,6 @@ variableGroups:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
-      - "is_vcn_onprem_connected"
-      - "existing_drg_id"
-      - "hub_spoke_architecture"
-      - "dmz_vcn_cidr"
-      - "dmz_for_firewall"
-      - "dmz_number_of_subnets"
-      - "dmz_subnet_size"
     
   - title: "Exadata Cloud Service"
     variables:
@@ -53,12 +46,19 @@ variableGroups:
     
   - title: "Connectivity"
     variables:
+      - "is_vcn_onprem_connected"
+      - "onprem_cidrs"
+      - "onprem_src_ssh_cidrs"
+      - "hub_spoke_architecture"
+      - "dmz_vcn_cidr"
+      - "dmz_for_firewall"
+      - "dmz_number_of_subnets"
+      - "dmz_subnet_size"
       - "no_internet_access"
+      - "existing_drg_id"
       - "public_src_bastion_cidrs"
       - "public_src_lbr_cidrs"
       - "public_dst_cidrs"
-      - "onprem_cidrs"
-      - "onprem_src_ssh_cidrs"
 
   - title: "Events and Notifications"
     variables:
@@ -310,9 +310,9 @@ variables:
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"
-    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is created and attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked in the \"Connectivity\" section."
+    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
     default: false
-    visible: net_advanced_options
+  #  visible: net_advanced_options
 
   public_src_bastion_cidrs:
     type: array
@@ -347,7 +347,8 @@ variables:
   existing_drg_id:
     type: string
     title: "Existing DRG OCID"
-    description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
+    #description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
+    description: "The OCID of an existing DRG. If provided, no DRG is created."
     default: ""
     visible: net_advanced_options
         
@@ -358,7 +359,8 @@ variables:
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. Required if 'Block Internet Access?' is checked."
+    visible: is_vcn_onprem_connected
     
   onprem_src_ssh_cidrs:
     type: array
@@ -368,6 +370,7 @@ variables:
     title: "On-premises network CIDR Blocks Allowed to Connect over SSH"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
+    visible: is_vcn_onprem_connected
     
   no_internet_access:
     type: boolean
@@ -380,48 +383,48 @@ variables:
     title: "Deploy Hub & Spoke Architecture?"
     description: "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
     required: false
-    visible: net_advanced_options
+    #visible: net_advanced_options
   
   dmz_vcn_cidr:
     type: string
     title: "DMZ VCN CIDR Block"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. Required if 'Deploy Hub & Spoke Architecture?' is checked."
+    description: "IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN."
     required: ${hub_spoke_architecture}
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: hub_spoke_architecture
+    #  and:
+    #    - net_advanced_options
+    #    - hub_spoke_architecture
 
   dmz_for_firewall:
     type: boolean
     title: "Use DMZ VCN for 3rd-Party Firewalls"
     description: "Determines if a 3rd party firewall will be deployed in the DMZ VCN."
     required: false
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: hub_spoke_architecture
+    #  and:
+    #    - net_advanced_options
+    #    - hub_spoke_architecture
         
   dmz_number_of_subnets:
     type: integer
     title: "Number of Subnets in the DMZ VCN"
     description: "The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required."
     required: false
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: hub_spoke_architecture
+    #  and:
+    #    - net_advanced_options
+    #    - hub_spoke_architecture
 
   dmz_subnet_size: 
     type: integer
     title: "Size of the DMZ Subnet CIDRs"
     description:  "The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if the prefix of 'CIDR Block for the DMZ VCN' is 20 (/20) and 'Size of the DMZ Subnets CIDRs' is 4, subnets are going to be /24."
     required: false
-    visible: 
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: hub_spoke_architecture
+    #  and:
+    #    - net_advanced_options
+    #    - hub_spoke_architecture
 
   exacs_vcn_cidrs:
     type: array

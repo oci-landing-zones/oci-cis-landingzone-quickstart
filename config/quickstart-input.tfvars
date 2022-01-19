@@ -30,6 +30,10 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # existing_announcement_reader_group_name = "<existing_announcement_reader_group_name>"
 # existing_exainfra_admin_group_name      = "<existing_exainfra_admin_group_name>"
 # existing_cost_admin_group_name          = "<existing_cost_admin_group_name>"
+# existing_security_fun_dyn_group_name    = "<existing_security_fun_dyn_group_name>"
+# existing_appdev_fun_dyn_group_name      = "<existing_appdev_fun_dyn_group_name>"
+# existing_compute_agent_dyn_group_name   = "<existing_compute_agent_dyn_group_name>"
+# existing_database_kms_dyn_group_name    = "<existing_database_kms_dyn_group_name>"
 
 ### Networking variables
 # vcn_cidrs               = ["10.0.0.0/20","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].

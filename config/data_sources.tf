@@ -91,7 +91,7 @@ data "oci_identity_groups" "existing_cost_admin_group" {
   }
 }
 
-data "oci_identity_groups" "existing_security_fun_dyn_group" {
+data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {
     name   = "name"
@@ -99,7 +99,7 @@ data "oci_identity_groups" "existing_security_fun_dyn_group" {
   }
 }
 
-data "oci_identity_groups" "existing_appdev_fun_dyn_group" {
+data "oci_identity_dynamic_groups" "existing_appdev_fun_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {
     name   = "name"
@@ -107,7 +107,7 @@ data "oci_identity_groups" "existing_appdev_fun_dyn_group" {
   }
 }
 
-data "oci_identity_groups" "existing_compute_agent_dyn_group" {
+data "oci_identity_dynamic_groups" "existing_compute_agent_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {
     name   = "name"
@@ -115,7 +115,7 @@ data "oci_identity_groups" "existing_compute_agent_dyn_group" {
   }
 }
 
-data "oci_identity_groups" "existing_database_kms_dyn_group" {
+data "oci_identity_dynamic_groups" "existing_database_kms_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {
     name   = "name"

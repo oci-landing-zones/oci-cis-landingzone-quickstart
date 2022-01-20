@@ -6,5 +6,7 @@ variable "dynamic_groups" {
     description    = string
     compartment_id = string
     matching_rule  = string
+    defined_tags   = map(string)
+    freeform_tags  = map(string)
   }))
 }  

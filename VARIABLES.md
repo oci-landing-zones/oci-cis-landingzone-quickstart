@@ -31,6 +31,7 @@ Variable Name | Description | Required | Default Value
 **existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | No | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group for Security. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group for AppDev. | No | None
+**existing_compute_agent_dyn_group_name** | The name of an existing compute agent dynamic group for management agent access. | No | None
 **existing_database_kms_dyn_group_name** | The name of an existing database dynamic group for database to access keys. | No | None
 
 

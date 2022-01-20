@@ -10,8 +10,8 @@ locals {
   appdev_bucket_name = "${var.service_label}-appdev-bucket"
 
   default_buckets = { 
-    ("${local.appdev_bucket_name}") = {
-      compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
+    (local.appdev_bucket_name) = {
+      compartment_id = local.appdev_compartment_id
       name = local.appdev_bucket_name
       namespace = data.oci_objectstorage_namespace.this.namespace
     }

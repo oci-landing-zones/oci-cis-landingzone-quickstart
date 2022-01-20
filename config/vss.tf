@@ -13,10 +13,11 @@ locals {
   network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
   appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
   database_cmp_target_name = "${local.database_compartment.key}-scan-target"
+  exainfra_cmp_target_name = "${local.exainfra_compartment.key}-scan-target"
   
   default_scan_recipes = var.vss_create == true ? {
     (local.scan_default_recipe_name) = {
-      compartment_id  = module.lz_compartments.compartments[local.security_compartment.key].id
+      compartment_id  = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       port_scan_level = "STANDARD"
       # Valid values: STANDARD, LIGHT, NONE 
       # STANDARD checks the 1000 most common port numbers.
@@ -42,41 +43,54 @@ locals {
 
   default_scan_targets = var.vss_create == true ? {
     (local.security_cmp_target_name) = {
-      compartment_id        = module.lz_compartments.compartments[local.security_compartment.key].id
+      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.security_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = module.lz_compartments.compartments[local.security_compartment.key].id
+      target_compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       defined_tags          = null
     },
     (local.network_cmp_target_name) = {
-      compartment_id        = module.lz_compartments.compartments[local.security_compartment.key].id
+      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.network_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
+      target_compartment_id = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
       defined_tags          = null
     },
     (local.appdev_cmp_target_name) = {
-      compartment_id        = module.lz_compartments.compartments[local.security_compartment.key].id
+      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.appdev_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = module.lz_compartments.compartments[local.appdev_compartment.key].id
+      target_compartment_id = local.appdev_compartment_id #module.lz_compartments.compartments[local.appdev_compartment.key].id
       defined_tags          = null
     },
     (local.database_cmp_target_name) = {
-      compartment_id        = module.lz_compartments.compartments[local.security_compartment.key].id
+      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.database_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = module.lz_compartments.compartments[local.database_compartment.key].id
+      target_compartment_id = local.database_compartment_id #module.lz_compartments.compartments[local.database_compartment.key].id
       defined_tags          = null
     }
   } : {}
+
+  exainfra_scan_target = var.vss_create == true && length(data.oci_identity_compartments.exainfra.compartments) > 0 ? {
+    (local.exainfra_cmp_target_name) = {
+      compartment_id        = local.security_compartment_id
+      description           = "Landing Zone ${local.exainfra_compartment.name} compartment scanning target."
+      scan_recipe_name      = local.scan_default_recipe_name
+      target_compartment_id = local.exainfra_compartment_id
+      defined_tags          = null
+    } 
+  } : {}  
+
+  scan_targets = merge(local.default_scan_targets, local.exainfra_scan_target)
 }
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
   depends_on = [null_resource.slow_down_vss]
   scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
-  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.default_scan_targets
+  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.scan_targets
+  # VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 }
 
 resource "null_resource" "slow_down_vss" {

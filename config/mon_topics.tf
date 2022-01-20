@@ -3,14 +3,14 @@
 
 locals  {
   # Topics
-  # id is for future use
-  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: module.lz_compartments.compartments[local.security_compartment.key].id, id : null}
-  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: module.lz_compartments.compartments[local.network_compartment.key].id, id : null}
-  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null}
-  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: module.lz_compartments.compartments[local.database_compartment.key].id, id : null }
-  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: module.lz_compartments.compartments[local.appdev_compartment.key].id, id : null }
+  # If you have an existing topic you want to use enter the OCID(s) in the id property.
+  security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: local.security_compartment_id, id: null}
+  network_topic     = {key: "NETWORK-TOPIC",    name: "${var.service_label}-network-topic",    cmp_id: local.network_compartment_id,  id: null}
+  compute_topic     = {key: "COMPUTE-TOPIC",    name: "${var.service_label}-compute-topic",    cmp_id: local.appdev_compartment_id,   id: null}
+  database_topic    = {key: "DATABASE-TOPIC",   name: "${var.service_label}-database-topic",   cmp_id: local.database_compartment_id, id: null}
+  storage_topic     = {key: "STORAGE-TOPIC",    name: "${var.service_label}-storage-topic",    cmp_id: local.appdev_compartment_id,   id: null}
   budget_topic      = {key: "BUDGET-TOPIC",     name: "${var.service_label}-budget-topic",     cmp_id: var.tenancy_ocid, id : null }
-  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : null, id : null }
+  exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: local.exainfra_compartment_id, id : null }
 
   home_region_topics = {
     for i in [1] : (local.security_topic.key) => {
@@ -19,7 +19,7 @@ locals  {
       description    = "Landing Zone topic for security related notifications."
       defined_tags   = null
       freeform_tags  = null  
-    } #if length(var.security_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
+    } if local.security_topic.id == null && length(var.security_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
   }  
 
   regional_topics = merge(
@@ -29,7 +29,7 @@ locals  {
         description    = "Landing Zone topic for network related notifications."
         defined_tags   = null
         freeform_tags  = null
-      } if length(var.network_admin_email_endpoints) > 0},
+      } if local.network_topic.id == null && length(var.network_admin_email_endpoints) > 0},
 
       {for i in [1]: (local.compute_topic.key) => {
         compartment_id = local.compute_topic.cmp_id
@@ -37,7 +37,7 @@ locals  {
         description    = "Landing Zone topic for compute performance related notifications."
         defined_tags   = null
         freeform_tags  = null 
-      } if length(var.compute_admin_email_endpoints) > 0},
+      } if local.compute_topic.id == null && length(var.compute_admin_email_endpoints) > 0},
 
       {for i in [1]: (local.database_topic.key) => {
         compartment_id = local.database_topic.cmp_id
@@ -45,7 +45,7 @@ locals  {
         description    = "Landing Zone topic for database performance related notifications."
         defined_tags   = null
         freeform_tags  = null
-      } if length(var.database_admin_email_endpoints) > 0},
+      } if local.database_topic.id == null && length(var.database_admin_email_endpoints) > 0},
     
       {for i in [1]: (local.storage_topic.key) => {
         compartment_id = local.storage_topic.cmp_id
@@ -53,7 +53,7 @@ locals  {
         description    = "Landing Zone topic for storage performance related notifications."
         defined_tags   = null
         freeform_tags  = null
-      } if length(var.storage_admin_email_endpoints) > 0},
+      } if local.storage_topic.id == null && length(var.storage_admin_email_endpoints) > 0},
 
       {for i in [1]: (local.budget_topic.key) => {
         compartment_id = var.tenancy_ocid
@@ -97,7 +97,7 @@ module "lz_home_region_subscriptions" {
         endpoint       = e       # Protocol matching endpoints: "https://www.oracle.com", "https://your.pagerduty.endpoint.url", "https://your.slack.endpoint.url", "<function_ocid>"
         defined_tags   = null
         freeform_tags  = null
-      } # if var.extend_landing_zone_to_new_region == false
+      } if var.extend_landing_zone_to_new_region == false
     }
 }
 

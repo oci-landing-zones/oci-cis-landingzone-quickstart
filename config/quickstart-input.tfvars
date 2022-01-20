@@ -19,7 +19,6 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # use_enclosing_compartment               = false
 # existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"
-# use_existing_groups                     = false
 # existing_iam_admin_group_name           = "<existing_iam_admin_group_name>"
 # existing_cred_admin_group_name          = "<existing_cred_admin_group_name>"
 # existing_security_admin_group_name      = "<existing_security_admin_group_name>"

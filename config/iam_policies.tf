@@ -266,7 +266,7 @@ locals {
     default_policies = { 
       (local.compute_agent_policy_name) = {
         compartment_id = local.enclosing_compartment_id
-        description    = "Landing Zone policy for ${local.compute_agent_group_name} group to manage compute agent related services."
+        description    = "Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = local.compute_agent_grants
@@ -297,7 +297,7 @@ locals {
         description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = local.appdev_permissions
+        statements     = local.appdev_admin_grants
       } : null,
       (local.iam_admin_policy_name) = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
         compartment_id = local.enclosing_compartment_id

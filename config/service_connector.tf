@@ -12,8 +12,6 @@ locals {
   service_connector_defined_tags = length(local.all_service_connector_defined_tags) > 0 ? local.all_service_connector_defined_tags : local.default_service_connector_defined_tags
   service_connector_freeform_tags = length(local.all_service_connector_freeform_tags) > 0 ? local.all_service_connector_freeform_tags : local.default_service_connector_freeform_tags
 }
-            defined_tags = local.service_connector_defined_tags
-            freeform_tags = local.service_connector_freeform_tags
 
 module "lz_sch_audit_bucket" {
     depends_on = [ null_resource.slow_down_buckets ]
@@ -122,7 +120,7 @@ module "lz_sch_audit_objStore_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags
@@ -145,7 +143,7 @@ module "lz_sch_audit_streaming_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags
@@ -168,7 +166,7 @@ module "lz_sch_audit_functions_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to use functions."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags
@@ -196,7 +194,7 @@ module "lz_sch_vcnFlowLogs_objStore_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags
@@ -219,7 +217,7 @@ module "lz_sch_vcnFlowLogs_streaming_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags
@@ -242,7 +240,7 @@ module "lz_sch_vcnFlowLogs_functions_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id = local.parent_compartment_id
+      compartment_id = local.enclosing_compartment_id
       description    = "Landing Zone policy for Service Connector Hub to use functions."
       defined_tags = local.service_connector_defined_tags
       freeform_tags = local.service_connector_freeform_tags

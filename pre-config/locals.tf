@@ -2,12 +2,14 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+  all_compartment_defined_tags = {}
+  all_compartment_freeform_tags = {}
 
   unique_prefix = length(var.unique_prefix) > 0 ? var.unique_prefix : "lz"
   top_compartment_parent_id = length(var.existing_enclosing_compartments_parent_ocid) > 0 ? var.existing_enclosing_compartments_parent_ocid : var.tenancy_ocid
   # Whether compartments should be deleted in terraform destroy or upon resource removal.
   enable_cmp_delete = false
-  enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : c => {parent_id: local.top_compartment_parent_id, name: length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c, description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = null}} : {"${local.unique_prefix}-top-cmp" : {parent_id: local.top_compartment_parent_id, name: "${local.unique_prefix}-top-cmp", description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = null}}
+  enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : c => {parent_id: local.top_compartment_parent_id, name: length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c, description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = local.all_compartment_defined_tags, freeform_tags = local.all_compartment_freeform_tags}} : {"${local.unique_prefix}-top-cmp" : {parent_id: local.top_compartment_parent_id, name: "${local.unique_prefix}-top-cmp", description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = local.all_compartment_defined_tags, freeform_tags = local.all_compartment_freeform_tags}}
   provisioning_group_names   = var.use_existing_provisioning_group == false ? {for k in keys(local.enclosing_compartments) : k => {group_name: "${k}-provisioning-group"}} : {(local.unique_prefix) : {group_name : var.existing_provisioning_group_name}}
   
   lz_group_names             = var.use_existing_groups == false ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: ""}}

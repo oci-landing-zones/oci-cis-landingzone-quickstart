@@ -3,7 +3,7 @@
 
 ### Policies
 resource "oci_identity_policy" "these" {
-  for_each = var.policies
+  for_each = {for k, v in var.policies : k => v if v != null}
     name           = each.key
     description    = each.value.description
     compartment_id = each.value.compartment_id

@@ -13,7 +13,7 @@ locals {
               tenancy_id                = var.tenancy_ocid
               budget_description        = local.budget_description
               budget_display_name       = local.budget_display_name
-              compartment_id            = local.parent_compartment_id
+              compartment_id            = local.enclosing_compartment_id
               service_label             = var.service_label
               budget_alert_threshold    = var.budget_alert_threshold
               budget_amount             = var.budget_amount
@@ -27,7 +27,7 @@ locals {
 
 module "lz_cost_budget" {
       source      = "../modules/cost/budget"
-      budget      = local.budget_config
+      budget      = var.extend_landing_zone_to_new_region == false ? local.budget_config : {}
 }
 
 

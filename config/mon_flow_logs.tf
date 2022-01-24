@@ -13,7 +13,7 @@ locals {
       log_config_source_category    = "all",
       log_config_source_service     = "flowlogs",
       log_config_source_source_type = "OCISERVICE",
-      log_config_compartment        = module.lz_compartments.compartments[local.security_compartment.key].id,
+      log_config_compartment        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id,
       log_is_enabled                = true,
       log_retention_duration        = 30,
       defined_tags                  = null,
@@ -24,7 +24,7 @@ locals {
 module "lz_flow_logs" {
   depends_on             = [module.lz_vcn_spokes, module.lz_vcn_dmz, module.lz_exacs_vcns]
   source                 = "../modules/monitoring/logs"
-  compartment_id         = module.lz_compartments.compartments[local.security_compartment.key].id
+  compartment_id         = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
   log_group_display_name = "${var.service_label}-flow-logs-group"
   log_group_description  = "Landing Zone ${var.service_label} flow logs group."
   target_resources       = local.flow_logs

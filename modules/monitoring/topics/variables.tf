@@ -38,3 +38,24 @@ variable "subscriptions" {
     endpoint     = string
   }))
 }  
+
+/* variable "topics" {
+  type = map(object({
+    compartment_id = string
+    name = string
+    description = string
+    defined_tags = map(string)
+    freeform_tags = map(string)
+  }))
+}
+
+variable "subscriptions" {
+  type = map(object({
+    protocol = string
+    endpoint = string
+    compartment_id = string
+    topic_key = string
+    defined_tags = map(string)
+    freeform_tags = map(string)
+  }))
+} */

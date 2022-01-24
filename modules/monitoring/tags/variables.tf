@@ -54,6 +54,12 @@ variable "oracle_default_namespace_name" {
   default     = "Oracle-Tags"
 }
 
+variable "is_create_namespace" {
+  type = bool
+  description = "Whether the namespace should be created."
+  default = true
+}
+
 variable "tags" {
   type = map(object({
     tag_description         = string,

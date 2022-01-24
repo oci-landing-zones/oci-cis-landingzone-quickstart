@@ -26,6 +26,10 @@ variable "groups" {
     description   = string,
     user_ids      = list(string),
     defined_tags  = map(string),
+<<<<<<< HEAD
     freeform_tags = map(string),
+=======
+    freeform_tags = map(string)
+>>>>>>> main
   }))
 }

@@ -9,6 +9,15 @@ resource "oci_ons_notification_topic" "this" {
     freeform_tags  = var.freeform_tags
 }
 
+/* resource "oci_ons_notification_topic" "these" {
+    for_each = var.topics
+        compartment_id = each.value.compartment_id
+        name           = each.value.name
+        description    = each.value.description
+        defined_tags   = each.value.defined_tags
+        freeform_tags  = each.value.freeform_tags
+} */
+
 resource "oci_ons_subscription" "these" {
     for_each = var.subscriptions
         compartment_id = var.compartment_id
@@ -18,3 +27,13 @@ resource "oci_ons_subscription" "these" {
         topic_id       = oci_ons_notification_topic.this.id
 }
 
+
+ /* resource "oci_ons_subscription" "these" {
+    for_each = var.subscriptions
+        compartment_id = each.value.compartment_id
+        endpoint       = each.value.endpoint
+        protocol       = each.value.protocol
+        topic_id       = oci_ons_notification_topic.these[each.value.topic_key].id
+        defined_tags   = each.value.defined_tags
+        freeform_tags  = each.value.freeform_tags
+} */

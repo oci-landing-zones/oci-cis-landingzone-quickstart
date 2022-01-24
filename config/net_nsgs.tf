@@ -383,6 +383,6 @@ locals {
 module "lz_nsgs_spokes" {
   depends_on     = [module.lz_vcn_spokes]
   source         = "../modules/network/security"
-  compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
+  compartment_id = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   nsgs           = merge(local.bastions_nsgs, local.lbr_nsgs, local.app_nsgs, local.db_nsgs, local.public_dst_nsgs)
 }

@@ -1,16 +1,19 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### This Terraform configuration creates a custom tag namespace and tags in the specified tag_namespace_compartment_id 
+### This Terraform configuration creates a custom tag namespace and tags in the
+### specified tag_namespace_compartment_id 
 ### and tag defaults in the specified tag_defaults_compartment_id. 
-### But only if there are no tag defaults for the oracle default namespace in the tag_defaults_compartment_id (checked by module).
+### But only if there are no tag defaults for the oracle default namespace in
+### the tag_defaults_compartment_id (checked by module).
 
 locals {
-  # These values cna be used in an override file.
+  # These values can be used in an override file.
   all_tags                     = {}
-  tag_namespace_name           = "${var.service_label}-namesp"
-  tag_namespace_compartment_id = local.parent_compartment_id
-  tag_defaults_compartment_id  = local.parent_compartment_id
+  tag_namespace_name           = null
+  tag_namespace_compartment_id = local.enclosing_compartment_id
+  tag_defaults_compartment_id  = local.enclosing_compartment_id
+  is_create_namespace          = !var.extend_landing_zone_to_new_region
 
   ##### DON'T TOUCH ANYTHING BELOW #####
   createdby_tag_name = "CreatedBy"
@@ -48,5 +51,6 @@ module "lz_tags" {
   tag_namespace_name           = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
   tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
   tag_defaults_compartment_id  = local.tag_defaults_compartment_id
+  is_create_namespace          = !var.extend_landing_zone_to_new_region
   tags                         = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
 } 

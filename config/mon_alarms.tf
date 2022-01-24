@@ -166,6 +166,7 @@ locals {
     )
 }
 
+# Alarms is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 module "lz_compute_alarms" {
     source    = "../modules/monitoring/alarms"
     depends_on = [ module.lz_subscriptions, module.lz_home_region_subscriptions ]

@@ -15,10 +15,10 @@ private_key_password = ""
 ### Environment/IAM variables
 region        = "<tenancy_region>"
 service_label = "<a_label_to_prefix_resource_names_with>"
+# extend_landing_zone_to_new_region       = false
 # use_enclosing_compartment               = false
 # existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 # policies_in_root_compartment            = "CREATE"
-# use_existing_groups                     = false
 # existing_iam_admin_group_name           = "<existing_iam_admin_group_name>"
 # existing_cred_admin_group_name          = "<existing_cred_admin_group_name>"
 # existing_security_admin_group_name      = "<existing_security_admin_group_name>"
@@ -29,17 +29,14 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # existing_announcement_reader_group_name = "<existing_announcement_reader_group_name>"
 # existing_exainfra_admin_group_name      = "<existing_exainfra_admin_group_name>"
 # existing_cost_admin_group_name          = "<existing_cost_admin_group_name>"
+# existing_security_fun_dyn_group_name    = "<existing_security_fun_dyn_group_name>"
+# existing_appdev_fun_dyn_group_name      = "<existing_appdev_fun_dyn_group_name>"
+# existing_compute_agent_dyn_group_name   = "<existing_compute_agent_dyn_group_name>"
+# existing_database_kms_dyn_group_name    = "<existing_database_kms_dyn_group_name>"
 
 ### Networking variables
 # vcn_cidrs               = ["10.0.0.0/20","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].
 # vcn_names               = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one CIDR, nth element to vcn_cidrs' nth element. 
-# is_vcn_onprem_connected = false # determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true.
-# existing_drg_id         = "" # the OCID of an existing DRG. If provided, no DRG is created even if is_vcn_onprem_connected is checked.
-# hub_spoke_architecture  = false # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
-# dmz_vcn_cidr            = "<dmz_vcn_cidr>" # IP range in CIDR notation for the DMZ (a.k.a Hub) VCN.
-# dmz_number_of_subnets   = 2 # number of subnets in DMZ VCN.
-# dmz_subnet_size         = 4 # number of additional bits with which to extend the DMZ VCN CIDR prefix.
-
 
 ### Exadata variables
 # exacs_vcn_cidrs           = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. 
@@ -48,15 +45,19 @@ service_label = "<a_label_to_prefix_resource_names_with>"
 # exacs_vcn_names           = ["<name_1>","<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one VCN CIDR, the nth element corresponding to exa_vcn_cidrs' nth element. 
 # deploy_exainfra_cmp       = true # whether to deploy a compartment for Exadata infrastructure.
 
-
 ### Network Connectivity variables
+# is_vcn_onprem_connected  = false # determines if the Landing Zone VCN(s) are connected to an on-premises network. This must be true if no_internet_acess is true.
+# onprem_cidrs             = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs that are routeable to Landing Zone networks.
+# onprem_src_ssh_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs allowed to connect to Landing Zone networks over SSH. They must be a subset of onprem_cidrs.
+# hub_spoke_architecture   = false # determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing.
+# dmz_vcn_cidr             = "<dmz_vcn_cidr>" # IP range in CIDR notation for the DMZ (a.k.a Hub) VCN.
+# dmz_number_of_subnets    = 2 # number of subnets in DMZ VCN.
+# dmz_subnet_size          = 4 # number of additional bits with which to extend the DMZ VCN CIDR prefix.
 # no_internet_access       = false # whether the Landing Zone VCN(s) are Internet connected.
+# existing_drg_id          = "" # the OCID of an existing DRG. If provided, no DRG is created even if is_vcn_onprem_connected is checked.
 # public_src_lbr_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make HTTPS inbound connections.
 # public_src_bastion_cidrs = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list.
 # public_dst_cidrs         = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # external IP ranges in CIDR notation for HTTPS outbound connections.
-# onprem_cidrs             = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs that are routeable to Landing Zone networks.
-# onprem_src_ssh_cidrs     = ["<cidr_1>","<cidr_2>","...","<cidr_n>"] # list of on-premises CIDRs allowed to connect to Landing Zone networks over SSH. They must be a subset of onprem_cidrs.
-
 
 ### Notifications variables
 network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network related notifications.

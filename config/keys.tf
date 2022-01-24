@@ -11,8 +11,8 @@ locals {
   default_keys_defined_tags = {}
   default_keys_freeform_tags = {}
 
-  keys_defined_tags = length(local.all_keys_defined_tags) ? local.all_keys_defined_tags : local.default_keys_defined_tags
-  keys_freeform_tags = length(local.all_keys_freeform_tags) ? local.all_keys_freeform_tags : local.default_keys_freeform_tags
+  keys_defined_tags = length(local.all_keys_defined_tags) > 0 ? local.all_keys_defined_tags : local.default_keys_defined_tags
+  keys_freeform_tags = length(local.all_keys_freeform_tags) > 0 ? local.all_keys_freeform_tags : local.default_keys_freeform_tags
 }
 
 ### Creates a vault.

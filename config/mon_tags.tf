@@ -10,7 +10,7 @@
 locals {
   # These values can be used in an override file.
   all_tags                     = {}
-  tag_namespace_name           = null
+  tag_namespace_name           = ""
   tag_namespace_compartment_id = local.enclosing_compartment_id
   tag_defaults_compartment_id  = local.enclosing_compartment_id
   is_create_namespace          = !var.extend_landing_zone_to_new_region

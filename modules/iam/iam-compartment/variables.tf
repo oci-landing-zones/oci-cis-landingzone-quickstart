@@ -7,12 +7,7 @@ variable "compartments" {
     name          = string
     description   = string
     enable_delete = string
-<<<<<<< HEAD
     defined_tags  = map(string) 
     freeform_tags = map(string) 
-=======
-    defined_tags  = map(string)
-    freeform_tags = map(string)
->>>>>>> main
   }))
 }  

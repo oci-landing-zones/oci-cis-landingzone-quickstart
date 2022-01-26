@@ -15,6 +15,15 @@ locals {
   tag_defaults_compartment_id  = local.enclosing_compartment_id
   is_create_namespace          = !var.extend_landing_zone_to_new_region
 
+  all_tags_defined_tags = {}
+  all_tags_freeform_tags = {}
+  
+  default_tags_defined_tags = {}
+  default_tags_freeform_tags = {}
+  
+  tags_defined_tags = length(local.all_tags_defined_tags) > 0 ? local.all_tags_defined_tags : local.default_tags_defined_tags
+  tags_freeform_tags = length(local.all_tags_freeform_tags) > 0 ? local.all_tags_freeform_tags : local.default_tags_freeform_tags
+  
   ##### DON'T TOUCH ANYTHING BELOW #####
   createdby_tag_name = "CreatedBy"
   createdon_tag_name = "CreatedOn"
@@ -29,7 +38,8 @@ locals {
       make_tag_default        = true
       tag_default_value       = "$${iam.principal.name}"
       tag_default_is_required = false
-      tag_defined_tags        = null
+      tag_defined_tags        = local.tags_defined_tags
+      tag_freeform_tags       = local.tags_freeform_tags
     },
     (local.createdon_tag_name) = {
       tag_description         = "Landing Zone tag that identifies when the resource was created."
@@ -38,7 +48,8 @@ locals {
       make_tag_default        = true
       tag_default_value       = "$${oci.datetime}"
       tag_default_is_required = false
-      tag_defined_tags        = null
+      tag_defined_tags        = local.tags_defined_tags
+      tag_freeform_tags       = local.tags_freeform_tags
     }
   }
 }

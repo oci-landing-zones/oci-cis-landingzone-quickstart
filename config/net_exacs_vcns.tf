@@ -2,6 +2,15 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+  all_exacs_vcns_defined_tags = {}
+  all_exacs_vcns_freeform_tags = {}
+
+  default_exacs_vcns_defined_tags = {}
+  default_exacs_vcns_freeform_tags = {}
+
+  exacs_vncs_defined_tags = length(local.all_exacs_vcns_defined_tags) > 0 ? local.all_exacs_vcns_defined_tags : local.default_exacs_vcns_defined_tags
+  exacs_vncs_freeform_tags = length(local.all_exacs_vcns_freeform_tags) > 0 ? local.all_exacs_vcns_freeform_tags : local.default_exacs_vcns_freeform_tags
+
   client_subnet_prefix = "clt"
   backup_subnet_prefix = "bkp"
   
@@ -24,11 +33,13 @@ locals {
     is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : true
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
     block_nat_traffic = false
-    defined_tags      = null
+    defined_tags      = local.exacs_vncs_defined_tags
+    freeform_tags     = local.exacs_vncs_freeform_tags
     subnets = { for s in local.exacs_subnet_names : replace("${vcn.name}-${s}-snt", "-vcn", "") => {
       compartment_id  = null
       name            = replace("${vcn.name}-${s}-snt", "-vcn", "")
-      defined_tags    = null
+      defined_tags    = local.exacs_vncs_defined_tags
+      freeform_tags   = local.exacs_vncs_freeform_tags
       cidr            = length(vcn.subnets_cidr[s]) > 0 ? vcn.subnets_cidr[s] : cidrsubnet(vcn.cidr, 4, index(local.exacs_subnet_names, s))
       dns_label       = s
       private         = true
@@ -78,8 +89,8 @@ locals {
           dst_port_min = "22"
           dst_port_max = "22"
         }]
-        defined_tags  = null
-        freeform_tags = null
+        defined_tags = local.exacs_vncs_defined_tags
+        freeform_tags = local.exacs_vncs_freeform_tags
       }}
     }}
   }}
@@ -90,7 +101,8 @@ locals {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
-    defined_tags   = null
+    defined_tags   = local.exacs_vncs_defined_tags
+    freeform_tags  = local.exacs_vncs_freeform_tags
     route_rules = concat([{
       is_create         = true
       destination       = local.valid_service_gateway_cidrs[0]
@@ -128,7 +140,8 @@ locals {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
-    defined_tags   = null
+    defined_tags   = local.exacs_vncs_defined_tags
+    freeform_tags  = local.exacs_vncs_freeform_tags
     route_rules = concat([
       {
         is_create         = true

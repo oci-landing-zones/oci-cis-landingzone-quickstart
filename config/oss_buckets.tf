@@ -7,17 +7,14 @@ locals {
   all_buckets_defined_tags = {}
   all_buckets_freeform_tags = {}
 
+  # Names
+  appdev_bucket_name = "${var.service_label}-appdev-bucket"
+
   default_buckets_defined_tags = {}
   default_buckets_freeform_tags = {}
 
   buckets_defined_tags = length(local.all_buckets_defined_tags) > 0 ? local.all_buckets_defined_tags : local.default_buckets_defined_tags
   buckets_freeform_tags = length(local.all_buckets_freeform_tags) > 0 ? local.all_buckets_freeform_tags : local.default_buckets_freeform_tags
-
-  defined_tags = local.buckets_defined_tags
-  freeform_tags = local.buckets_freeform_tags
-
-  # Names
-  appdev_bucket_name = "${var.service_label}-appdev-bucket"
 
   default_buckets = { 
     (local.appdev_bucket_name) = {

@@ -3,6 +3,15 @@
 
 ### This Terraform configuration provisions flow logs for all subnets provisioned in the cis-network configuration.
 locals {
+  all_flow_logs_defined_tags = {}
+  all_flow_logs_freeform_tags = {}
+
+  default_flow_logs_defined_tags = {}
+  default_flow_logs_freeform_tags = {}
+
+  flow_logs_defined_tags = length(local.all_flow_logs_defined_tags) > 0 ? local.all_flow_logs_defined_tags : local.default_flow_logs_defined_tags
+  flow_logs_freeform_tags = length(local.all_flow_logs_freeform_tags) > 0 ? local.all_flow_logs_freeform_tags : local.default_flow_logs_freeform_tags
+
   all_lz_subnets = merge(module.lz_vcn_spokes.subnets, module.lz_vcn_dmz.subnets, module.lz_exacs_vcns.subnets)  
 
   flow_logs = { for k, v in local.all_lz_subnets : k =>
@@ -16,8 +25,8 @@ locals {
       log_config_compartment        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id,
       log_is_enabled                = true,
       log_retention_duration        = 30,
-      defined_tags                  = null,
-      freeform_tags                 = null
+      defined_tags                  = local.flow_logs_defined_tags,
+      freeform_tags                 = local.flow_logs_freeform_tags
     }
   }
 }

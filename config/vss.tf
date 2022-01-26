@@ -7,6 +7,15 @@ locals {
   all_scan_recipes = {}
   all_scan_targets = {}
 
+  all_vss_defined_tags = {}
+  all_vss_freeform_tags = {}
+
+  default_vss_defined_tags = {}
+  default_vss_freeform_tags = {}
+  
+  vss_defined_tags = length(local.all_vss_defined_tags) > 0 ? local.all_vss_defined_tags : local.default_vss_defined_tags
+  vss_freeform_tags = length(local.all_vss_freeform_tags) > 0 ? local.all_vss_freeform_tags : local.default_vss_freeform_tags
+
   # Names
   scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
   security_cmp_target_name = "${local.security_compartment.key}-scan-target"
@@ -37,8 +46,8 @@ locals {
       # MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. 
       # LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High.
       # NONE: disables cis benchmark scanning.
-      defined_tags = null
-      freeform_tags = null
+      defined_tags = local.vss_defined_tags
+      freeform_tags = local.vss_freeform_tags
     }
   } : {}
 
@@ -48,32 +57,32 @@ locals {
       description           = "Landing Zone ${local.security_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      defined_tags          = null
-      freeform_tags         = null
+      defined_tags          = local.vss_defined_tags
+      freeform_tags         = local.vss_freeform_tags
     },
     (local.network_cmp_target_name) = {
       compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.network_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
-      defined_tags          = null
-      freeform_tags         = null
+      defined_tags          = local.vss_defined_tags
+      freeform_tags         = local.vss_freeform_tags
     },
     (local.appdev_cmp_target_name) = {
       compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.appdev_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = local.appdev_compartment_id #module.lz_compartments.compartments[local.appdev_compartment.key].id
-      defined_tags          = null
-      freeform_tags         = null
+      defined_tags          = local.vss_defined_tags
+      freeform_tags         = local.vss_freeform_tags
     },
     (local.database_cmp_target_name) = {
       compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
       description           = "Landing Zone ${local.database_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = local.database_compartment_id #module.lz_compartments.compartments[local.database_compartment.key].id
-      defined_tags          = null
-      freeform_tags         = null
+      defined_tags          = local.vss_defined_tags
+      freeform_tags         = local.vss_freeform_tags
     }
   } : {}
 
@@ -83,7 +92,8 @@ locals {
       description           = "Landing Zone ${local.exainfra_compartment.name} compartment scanning target."
       scan_recipe_name      = local.scan_default_recipe_name
       target_compartment_id = local.exainfra_compartment_id
-      defined_tags          = null
+      defined_tags          = local.vss_defined_tags
+      freeform_tags         = local.vss_freeform_tags
     } 
   } : {}  
 

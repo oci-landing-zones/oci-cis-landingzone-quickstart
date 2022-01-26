@@ -6,17 +6,18 @@ locals {
   all_dynamic_groups_defined_tags   = {}
   all_dynamic_groups_freeform_tags  = {}
 
+  # Names
+  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ?  "${var.service_label}-sec-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_security_fun_dyn_group.dynamic_groups[0].name
+  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0  ?  "${var.service_label}-appdev-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_appdev_fun_dyn_group.dynamic_groups[0].name
+  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0  ? "${var.service_label}-appdev-computeagent-dynamic-group" : data.oci_identity_dynamic_groups.existing_compute_agent_dyn_group.dynamic_groups[0].name
+  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ?  "${var.service_label}-database-kms-dynamic-group" : data.oci_identity_dynamic_groups.existing_database_kms_dyn_group.dynamic_groups[0].name
+
   default_dynamic_groups_defined_tags   = {}
   default_dynamic_groups_freeform_tags  = {}
 
   dynamic_groups_defined_tags = length(local.all_dynamic_groups_defined_tags) > 0 ? local.all_dynamic_groups_defined_tags : local.default_dynamic_groups_defined_tags
   dynamic_groups_freeform_tags = length(local.all_dynamic_groups_freeform_tags) > 0 ? local.all_dynamic_groups_freeform_tags : local.default_dynamic_groups_freeform_tags
 
-  # Names
-  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ?  "${var.service_label}-sec-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_security_fun_dyn_group.dynamic_groups[0].name
-  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0  ?  "${var.service_label}-appdev-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_appdev_fun_dyn_group.dynamic_groups[0].name
-  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0  ? "${var.service_label}-appdev-computeagent-dynamic-group" : data.oci_identity_dynamic_groups.existing_compute_agent_dyn_group.dynamic_groups[0].name
-  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ?  "${var.service_label}-database-kms-dynamic-group" : data.oci_identity_dynamic_groups.existing_database_kms_dyn_group.dynamic_groups[0].name
 
   default_dynamic_groups = merge(
     { for i in [1] : (local.security_functions_dynamic_group_name) => {

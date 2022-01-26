@@ -31,8 +31,8 @@ module "lz_keys" {
     vault_mgmt_endPoint   = module.lz_vault.vault.management_endpoint
     keys              = {
         (local.oss_key_name) = {
-            defined_tags        = null
-            freeform_tags       = null
+            defined_tags        = local.keys_defined_tags
+            freeform_tags       = local.keys_freeform_tags
             key_shape_algorithm = "AES"
             key_shape_length    = 32
         }

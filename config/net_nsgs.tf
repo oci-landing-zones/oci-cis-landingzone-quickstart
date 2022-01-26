@@ -4,10 +4,20 @@
 ### This Terraform configuration creates Landing Zone NSGs (Network Security Groups)
 
 locals {
+
+  all_nsgs_defined_tags = {}
+  all_nsgs_freeform_tags = {}
+
+  default_nsgs_defined_tags = {}
+  default_nsgs_freeform_tags = {}
+
+  nsgs_defined_tags = length(local.all_nsgs_defined_tags) > 0 ? local.all_nsgs_defined_tags : local.default_nsgs_defined_tags
+  nsgs_freeform_tags = length(local.all_nsgs_freeform_tags) > 0 ? local.all_nsgs_freeform_tags : local.default_nsgs_freeform_tags
+
   bastions_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-bastion-nsg" => {
     vcn_id : v.id,
-    defined_tags : null
-    freeform_tags : null
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : merge({
       ssh-dmz-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
@@ -116,8 +126,8 @@ locals {
 
   lbr_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-lbr-nsg" => {
     vcn_id : v.id,
-    defined_tags : null
-    freeform_tags : null
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : merge({
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -212,8 +222,8 @@ locals {
 
   app_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-app-nsg" => {
     vcn_id : v.id,
-    defined_tags : null
-    freeform_tags : null
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -306,8 +316,8 @@ locals {
 
   db_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-nsg" => {
     vcn_id = v.id
-    defined_tags : null
-    freeform_tags : null
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -358,8 +368,8 @@ locals {
 
   public_dst_nsgs = length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-public-dst-nsg" => {
     vcn_id = v.id
-    defined_tags : null
-    freeform_tags : null
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {},
     egress_rules : merge({ for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : var.public_dst_cidrs != null && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0,

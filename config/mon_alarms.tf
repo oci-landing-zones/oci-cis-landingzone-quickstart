@@ -4,6 +4,15 @@
 ### This Terraform configuration provisions alarms for the tenancy.
 
 locals {
+    all_alarms_defined_tags = {}
+    all_alarms_freeform_tags = {}
+
+    default_alarms_defined_tags = {}
+    default_alarms_freeform_tags = {}
+
+    alarms_defined_tags = length(local.all_alarms_defined_tags) > 0 ? local.all_alarms_defined_tags : local.default_alarms_defined_tags
+    alarms_freeform_tags = length(local.all_alarms_freeform_tags) > 0 ? local.all_alarms_freeform_tags : local.default_alarms_freeform_tags
+
     # Default alarms names
     compute_high_compute_alarm          = {key:"${var.service_label}-high-cpu-alarm",               name:"${var.service_label}-high-cpu-alarm"}
     compute_instance_status_alarm       = {key:"${var.service_label}-instance-status-alarm",        name:"${var.service_label}-instance-status-alarm"}
@@ -20,8 +29,8 @@ locals {
            compartment_id = local.compute_topic.cmp_id
            destinations = [module.lz_topics.topics[local.compute_topic.key].id]
            display_name = local.compute_high_compute_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_computeagent"
@@ -36,8 +45,10 @@ locals {
            compartment_id = local.compute_topic.cmp_id
            destinations = [module.lz_topics.topics[local.compute_topic.key].id]
            display_name = local.compute_instance_status_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
@@ -52,8 +63,8 @@ locals {
            compartment_id = local.compute_topic.cmp_id
            destinations = [module.lz_topics.topics[local.compute_topic.key].id]
            display_name = local.compute_vm_instance_status_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
@@ -68,8 +79,8 @@ locals {
            compartment_id = local.compute_topic.cmp_id
            destinations = [module.lz_topics.topics[local.compute_topic.key].id]
            display_name = local.compute_bare_metal_unhealthy_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"
@@ -84,8 +95,8 @@ locals {
            compartment_id = local.compute_topic.cmp_id
            destinations = [module.lz_topics.topics[local.compute_topic.key].id]
            display_name = local.compute_high_memory_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_computeagent"
@@ -102,8 +113,8 @@ locals {
            compartment_id = local.database_topic.cmp_id
            destinations = [module.lz_topics.topics[local.database_topic.key].id]
            display_name = local.database_adb_cpu_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.database_topic.cmp_id
            namespace = "oci_autonomous_database"
@@ -118,8 +129,8 @@ locals {
            compartment_id = local.database_topic.cmp_id
            destinations = [module.lz_topics.topics[local.database_topic.key].id]
            display_name = local.database_adb_storage_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.database_topic.cmp_id
            namespace = "oci_autonomous_database"
@@ -136,8 +147,8 @@ locals {
            compartment_id = local.network_topic.cmp_id
            destinations = [module.lz_topics.topics[local.network_topic.key].id]
            display_name = local.network_vpn_status_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.network_topic.cmp_id
            namespace = "oci_vpn"
@@ -152,8 +163,8 @@ locals {
            compartment_id = local.network_topic.cmp_id
            destinations = [module.lz_topics.topics[local.network_topic.key].id]
            display_name = local.network_fast_connect_status_alarm.name
-           defined_tags = null
-           freeform_tags = null
+           defined_tags = local.alarms_defined_tags
+           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.network_topic.cmp_id
            namespace = "oci_fastconnect"

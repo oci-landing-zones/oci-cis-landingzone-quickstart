@@ -6,8 +6,10 @@
 locals {
   all_groups_defined_tags = {}
   all_groups_freeform_tags = {}
+
   default_groups_defined_tags = {}
   default_groups_freeform_tags = {}
+
   groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags
   groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? local.all_groups_freeform_tags : local.default_groups_freeform_tags
 }

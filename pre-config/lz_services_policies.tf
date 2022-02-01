@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  all_service_policy_statements = {}
+  all_service_policy_statements = []
 
   # Names
   services_policy_name = "${local.unique_prefix}-services-policy"
@@ -37,7 +37,7 @@ locals {
     "Allow service osms to read instances in tenancy"
   ]
 
-  default_services_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
+  default_service_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
 }
 
 module "lz_services_policy" {

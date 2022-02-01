@@ -184,22 +184,22 @@ variables:
   existing_security_fun_dyn_group_name:
     type: string
     title: "Existing security dynamic group name"
-    description: "Existing security dynamic group to run functions."
+    description: "Existing dynamic group to be used by security functions."
 
   existing_appdev_fun_dyn_group_name:
     type: string
     title: "Existing appdev dynamic group name"
-    description: "Existing appdev dynamic group."
+    description: "Existing dynamic group to be used by application related functions."
 
   existing_compute_agent_dyn_group_name:
     type: string
     title: "Existing compute agent dynamic group name"
-    description: "Existing compute agent dynamic group for management agent access."
+    description: "Existing dynamic group to be used by Compute's management agent."
 
   existing_database_kms_dyn_group_name:
     type: string
     title: "Existing database dynamic group name"
-    description: "Existing database dynamic group for database to access keys."
+    description: "Existing dynamic group to be used by databases to manage vaults and keys."
 
   tenancy_ocid:
     type: string

@@ -130,10 +130,10 @@ Variable Name | Description | Required | Default Value
 **unique_prefix** | A label that gets prefixed to all default resource names created by the module. | No | None
 **enclosing_compartment_names** | A list of compartment names that will hold the Landing Zone compartments. If no compartment name is given, the module creates one compartment with a default name ending in *-top-cmp*. | No | "*unique_prefix*-top-cmp" or "lz-top-cmp"
 **existing_enclosing_compartments_parent_ocid** | the parent compartment ocid of the top compartment, indicating where to insert the enclosing compartment in the hierarchy. Remember that OCI has a max six level compartment hierarchy. If you create the enclosing compartment at level five, the Landing Zone compartments will be at level six and adding sub-compartments to Landing Zone compartments will not be possible. | No | *tenancy_ocid*	
-**use_existing_provisioning_group** | A boolean flag indicating whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by *enclosing_compartment_names* variable. | Yes | false
+**use_existing_provisioning_group** | A boolean flag indicating whether or not an existing group will be used for Landing Zone provisioning. If false, one group is created for each compartment defined by *enclosing_compartment_names* variable. | No | false
 **existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false. | No | None
-**grant_services_policies** | Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Useful if the module is reused across distinct stacks or configurations. | Yes | true
-**use_existing_groups** | A boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all those compartments. | Yes | false 
+**grant_services_policies** | Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Useful if the module is reused across distinct stacks or configurations. | No | true
+**use_existing_groups** | A boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all enclosing compartments. It does not apply to dynamic groups.| No | false 
 **existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true. | None
 **existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_groups* is true. | None
 **existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_groups* is true. | None
@@ -142,5 +142,10 @@ Variable Name | Description | Required | Default Value
 **existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true. | None
 **existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true. | None
 **existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true. | None
+**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
+**existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
+**existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None
+**existing_database_kms_dyn_group_name** | The name of an existing dynamic group to be used by databases in the Database compartment to access OCI KMS Keys. | No | None
 
 (*) A user with an API key must be assigned to the provisioning group. The module does not create or assign the user.

@@ -13,10 +13,10 @@ variableGroups:
       - "region"
       - "service_label"
       - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
       - "policies_in_root_compartment"
-      - "use_existing_groups"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -27,19 +27,16 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_security_fun_dyn_group_name"
+      - "existing_appdev_fun_dyn_group_name"
+      - "existing_compute_agent_dyn_group_name"
+      - "existing_database_kms_dyn_group_name"
  
   - title: "Networking"
     variables:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
-      - "is_vcn_onprem_connected"
-      - "existing_drg_id"
-      - "hub_spoke_architecture"
-      - "dmz_vcn_cidr"
-      - "dmz_for_firewall"
-      - "dmz_number_of_subnets"
-      - "dmz_subnet_size"
     
   - title: "Exadata Cloud Service"
     variables:
@@ -52,12 +49,20 @@ variableGroups:
     
   - title: "Connectivity"
     variables:
+      - "is_vcn_onprem_connected"
+      - "onprem_cidrs"
+      - "onprem_src_ssh_cidrs"
+      - "hub_spoke_architecture"
+      - "connectivity_advanced_options"
+      - "dmz_vcn_cidr"
+      - "dmz_for_firewall"
+      - "dmz_number_of_subnets"
+      - "dmz_subnet_size"
       - "no_internet_access"
+      - "existing_drg_id"
       - "public_src_bastion_cidrs"
       - "public_src_lbr_cidrs"
       - "public_dst_cidrs"
-      - "onprem_cidrs"
-      - "onprem_src_ssh_cidrs"
 
   - title: "Events and Notifications"
     variables:
@@ -148,6 +153,13 @@ variables:
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
     visible: env_advanced_options
+
+  extend_landing_zone_to_new_region:
+    type: boolean
+    title: "Extend Landing Zone to new region?"
+    description: "Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
+    default: false
+    visible: env_advanced_options
   
   existing_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
@@ -170,105 +182,97 @@ variables:
     default: "CREATE"
     visible: env_advanced_options
 
-  use_existing_groups:
-    type: boolean
-    title: "Use existing groups?"
-    description: "Whether existing groups should be reused for this Landing Zone. If unchecked, one set of groups is created. If checked, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
-    default: false
-    required: true
-    visible: env_advanced_options
-  
   existing_iam_admin_group_name:
     type: string
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
-    
+    visible: env_advanced_options 
+        
   existing_cred_admin_group_name:
     type: string
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_security_admin_group_name:
     type: string
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_network_admin_group_name:
     type: string
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_appdev_admin_group_name:
     type: string
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_database_admin_group_name:
     type: string
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
   
   existing_exainfra_admin_group_name:
     type: string
     title: "Existing admin group name for Exadata infrastructure"
     description: "Existing group to which Exadata infrastructure management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups      
+    visible: env_advanced_options      
   
   existing_auditor_group_name:
     type: string
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups
+    visible: env_advanced_options
       
   existing_announcement_reader_group_name:
     type: string
     title: "Existing announcement readers group name"
     description: "Existing group to which announcement reading policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups  
+    visible: env_advanced_options  
   
   existing_cost_admin_group_name:
     type: string
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
-    visible:  
-      and:
-        - env_advanced_options
-        - use_existing_groups 
+    visible: env_advanced_options 
 
+  existing_security_fun_dyn_group_name:
+    type: string
+    title: "Existing security dynamic group name"
+    description: "Existing security dynamic group to run functions."
+    visible: env_advanced_options
+
+  existing_appdev_fun_dyn_group_name:
+    type: string
+    title: "Existing appdev dynamic group name"
+    description: "Existing appdev dynamic group."
+    visible: env_advanced_options
+
+  existing_compute_agent_dyn_group_name:
+    type: string
+    title: "Existing compute agent dynamic group name"
+    description: "Existing compute agent dynamic group for management agent access."
+    visible: env_advanced_options
+
+  existing_database_kms_dyn_group_name:
+    type: string
+    title: "Existing database dynamic group name"
+    description: "Existing database dynamic group for database to access keys."
+    visible: env_advanced_options
+ 
   net_advanced_options:
+    type: boolean
+    title: "Advanced Options"
+    description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
+    default: false
+  
+  connectivity_advanced_options:
     type: boolean
     title: "Advanced Options"
     description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
@@ -302,9 +306,9 @@ variables:
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"
-    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is created and attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked in the \"Connectivity\" section."
+    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
     default: false
-    visible: net_advanced_options
+  #  visible: net_advanced_options
 
   public_src_bastion_cidrs:
     type: array
@@ -339,9 +343,13 @@ variables:
   existing_drg_id:
     type: string
     title: "Existing DRG OCID"
-    description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
+    #description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
+    description: "The OCID of an existing DRG. If provided, no DRG is created."
     default: ""
-    visible: net_advanced_options
+    visible: 
+      or:
+        - is_vcn_onprem_connected
+        - hub_spoke_architecture
         
   onprem_cidrs:
     type: array
@@ -350,7 +358,8 @@ variables:
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. If provided, a DRG is provisioned along with the necessary route rules and NSGs. Required if 'No Internet Access?' is checked."
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. Required if 'Block Internet Access?' is checked."
+    visible: is_vcn_onprem_connected
     
   onprem_src_ssh_cidrs:
     type: array
@@ -360,6 +369,7 @@ variables:
     title: "On-premises network CIDR Blocks Allowed to Connect over SSH"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
+    visible: is_vcn_onprem_connected
     
   no_internet_access:
     type: boolean
@@ -372,38 +382,38 @@ variables:
     title: "Deploy Hub & Spoke Architecture?"
     description: "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
     required: false
-    visible: net_advanced_options
+    #visible: net_advanced_options
   
   dmz_vcn_cidr:
     type: string
     title: "DMZ VCN CIDR Block"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. Required if 'Deploy Hub & Spoke Architecture?' is checked."
+    description: "IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN."
     required: ${hub_spoke_architecture}
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: 
+     and:
+       - connectivity_advanced_options
+       - hub_spoke_architecture
 
   dmz_for_firewall:
     type: boolean
     title: "Use DMZ VCN for 3rd-Party Firewalls"
     description: "Determines if a 3rd party firewall will be deployed in the DMZ VCN."
     required: false
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: 
+     and:
+       - connectivity_advanced_options
+       - hub_spoke_architecture
         
   dmz_number_of_subnets:
     type: integer
     title: "Number of Subnets in the DMZ VCN"
     description: "The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required."
     required: false
-    visible:
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+    visible: 
+     and:
+       - connectivity_advanced_options
+       - hub_spoke_architecture
 
   dmz_subnet_size: 
     type: integer
@@ -411,9 +421,9 @@ variables:
     description:  "The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if the prefix of 'CIDR Block for the DMZ VCN' is 20 (/20) and 'Size of the DMZ Subnets CIDRs' is 4, subnets are going to be /24."
     required: false
     visible: 
-      and:
-        - net_advanced_options
-        - hub_spoke_architecture
+     and:
+       - connectivity_advanced_options
+       - hub_spoke_architecture
 
   exacs_vcn_cidrs:
     type: array

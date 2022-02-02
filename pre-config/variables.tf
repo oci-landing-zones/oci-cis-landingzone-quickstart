@@ -98,3 +98,27 @@ variable "existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
+
+variable "existing_security_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing dynamic group to be used by security functions."
+}
+
+variable "existing_appdev_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing dynamic group to be used by application related functions."
+}
+
+variable "existing_compute_agent_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing dynamic group to be used by Compute's management agent."
+}
+
+variable "existing_database_kms_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing dynamic group to be used by databases to manage vaults and keys."
+}  

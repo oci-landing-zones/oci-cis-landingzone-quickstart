@@ -4,7 +4,7 @@
 locals {
 
   dmz_vcn = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) > 0 ? { (local.dmz_vcn_name.name) = {
-    compartment_id    = module.lz_compartments.compartments[local.network_compartment.key].id
+    compartment_id    = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
     cidr              = var.dmz_vcn_cidr
     dns_label         = "dmz"
     is_create_igw     = !var.no_internet_access
@@ -89,7 +89,7 @@ locals {
 module "lz_vcn_dmz" {
   depends_on           = [module.lz_vcn_spokes]
   source               = "../modules/network/vcn-basic"
-  compartment_id       = module.lz_compartments.compartments[local.network_compartment.key].id
+  compartment_id       = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]
   drg_id               = var.existing_drg_id != "" ? var.existing_drg_id : (module.lz_drg.drg != null ? module.lz_drg.drg.id : null)
@@ -99,6 +99,6 @@ module "lz_vcn_dmz" {
 module "lz_route_tables_dmz" {
   depends_on           = [module.lz_vcn_dmz]
   source               = "../modules/network/vcn-routing"
-  compartment_id       = module.lz_compartments.compartments[local.network_compartment.key].id
+  compartment_id       = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   subnets_route_tables = local.dmz_route_tables
 }

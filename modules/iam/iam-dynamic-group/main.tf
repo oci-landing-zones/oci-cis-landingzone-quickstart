@@ -9,8 +9,6 @@ resource "oci_identity_dynamic_group" "these" {
     compartment_id = each.value.compartment_id
     description    = each.value.description
     matching_rule  = each.value.matching_rule
-
-  #Optional
-  # defined_tags = each.defined_tags
-  # freeform_tags = each.freeform_tags
+    defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 }

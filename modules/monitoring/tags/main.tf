@@ -6,14 +6,22 @@
 
 locals {
     actual_tags = {for k, v in var.tags : k => v 
-                            if !contains(data.oci_identity_tag_defaults.these.tag_defaults[*].tag_definition_name,k)} 
+                            if !contains(data.oci_identity_tag_defaults.default.tag_defaults[*].tag_definition_name,k)} 
 
     actual_tag_defaults = {for k, v in var.tags : k => v 
-                            if v.make_tag_default == true && !contains(data.oci_identity_tag_defaults.these.tag_defaults[*].tag_definition_name,k)}                          
+                            if v.make_tag_default == true && !contains(data.oci_identity_tag_defaults.default.tag_defaults[*].tag_definition_name,k)}                          
+}
+
+data "oci_identity_tag_namespaces" "this" {
+    compartment_id = var.tag_namespace_compartment_id
+    filter {
+        name  = "name"
+        values = [var.tag_namespace_name]
+    }    
 }
 
 ## Looking for the oracle default tag namespace
-data "oci_identity_tag_namespaces" "this" {
+data "oci_identity_tag_namespaces" "oracle_default" {
     compartment_id = var.tenancy_ocid
     filter {
         name  = "name"
@@ -21,17 +29,17 @@ data "oci_identity_tag_namespaces" "this" {
     }    
 }
 
-data "oci_identity_tag_defaults" "these" {
+data "oci_identity_tag_defaults" "default" {
     ## Looking for tag defaults for tags in the oracle default tag namespace
     compartment_id = var.tenancy_ocid
     filter {
         name = "tag_namespace_id"
-        values = [length(data.oci_identity_tag_namespaces.this.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.this.tag_namespaces[0].id : "null"]
+        values = [length(data.oci_identity_tag_namespaces.oracle_default.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.oracle_default.tag_namespaces[0].id : "null"]
     }
 }
 
 resource "oci_identity_tag_namespace" "namespace" {
-    count = length(local.actual_tags) > 0 ? 1 : 0
+    count = var.is_create_namespace == true && length(local.actual_tags) > 0 ? 1 : 0
     compartment_id = var.tag_namespace_compartment_id
     name           = var.tag_namespace_name
     description    = var.tag_namespace_description
@@ -39,7 +47,7 @@ resource "oci_identity_tag_namespace" "namespace" {
 }
 
 resource "oci_identity_tag" "these" {
-    for_each = length(local.actual_tags) > 0 ? local.actual_tags : {}
+    for_each = var.is_create_namespace == true && length(local.actual_tags) > 0 ? local.actual_tags : {}
         tag_namespace_id = oci_identity_tag_namespace.namespace[0].id 
         name             = each.key
         description      = each.value.tag_description
@@ -48,7 +56,7 @@ resource "oci_identity_tag" "these" {
 }
 
 resource "oci_identity_tag_default" "these" {
-    for_each = length(local.actual_tag_defaults) > 0 ? toset(keys(local.actual_tag_defaults)) : []
+    for_each = var.is_create_namespace == true && length(local.actual_tag_defaults) > 0 ? toset(keys(local.actual_tag_defaults)) : []
         compartment_id    = var.tag_defaults_compartment_id
         tag_definition_id = oci_identity_tag.these[each.value].id                         # the tag id that has been just created
         value             = local.actual_tag_defaults[each.value].tag_default_value       # the tag default value

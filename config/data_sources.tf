@@ -8,7 +8,7 @@ data "oci_identity_tenancy" "this" {
 }
 
 data "oci_identity_compartment" "existing_enclosing_compartment" {
-  id = var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : local.parent_compartment_id
+  id = var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : var.tenancy_ocid
 }
 
 data "oci_identity_groups" "existing_iam_admin_group" {
@@ -91,11 +91,98 @@ data "oci_identity_groups" "existing_cost_admin_group" {
   }
 }
 
+data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_security_fun_dyn_group_name]
+  }
+}
+
+data "oci_identity_dynamic_groups" "existing_appdev_fun_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_appdev_fun_dyn_group_name]
+  }
+}
+
+data "oci_identity_dynamic_groups" "existing_compute_agent_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_compute_agent_dyn_group_name]
+  }
+}
+
+data "oci_identity_dynamic_groups" "existing_database_kms_dyn_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_database_kms_dyn_group_name]
+  }
+}
 
 data "oci_cloud_guard_cloud_guard_configuration" "this" {
   compartment_id = var.tenancy_ocid
 }
 
 data "oci_objectstorage_namespace" "this" {
-    compartment_id = var.tenancy_ocid
+  compartment_id = var.tenancy_ocid
 }
+
+data "oci_identity_compartments" "network" {
+  compartment_id = local.enclosing_compartment_id
+  filter {
+    name = "name"
+    values = [local.network_compartment.name]
+  }
+}
+
+data "oci_identity_compartments" "security" {
+  compartment_id = local.enclosing_compartment_id
+  filter {
+    name = "name"
+    values = [local.security_compartment.name]
+  }
+}
+
+data "oci_identity_compartments" "appdev" {
+  compartment_id = local.enclosing_compartment_id
+  filter {
+    name = "name"
+    values = [local.appdev_compartment.name]
+  }
+}
+
+data "oci_identity_compartments" "database" {
+  compartment_id = local.enclosing_compartment_id
+  filter {
+    name = "name"
+    values = [local.database_compartment.name]
+  }
+}
+
+data "oci_identity_compartments" "exainfra" {
+  compartment_id = local.enclosing_compartment_id
+  filter {
+    name = "name"
+    values = [local.exainfra_compartment.name]
+  }
+}
+
+data "oci_identity_tag_namespaces" "this" {
+  compartment_id = var.tenancy_ocid
+}
+
+/*
+data "oci_ons_notification_topics" "iam" {
+  compartment_id = local.security_compartment_id
+  name = local.iam_topic_name
+}
+
+data "oci_events_rules" "iam" {
+  compartment_id  = var.tenancy_ocid
+  display_name = local.iam_events_rule_name
+}
+*/

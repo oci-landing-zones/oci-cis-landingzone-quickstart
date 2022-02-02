@@ -10,38 +10,41 @@ locals {
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
 
-
   ### IAM
   # Default compartment names
-  default_enclosing_compartment = {key:"${var.service_label}-top-cmp",          name:"${var.service_label}-top-cmp"}
-  security_compartment          = {key:"${var.service_label}-security-cmp",     name:"${var.service_label}-security-cmp"}
-  network_compartment           = {key:"${var.service_label}-network-cmp",      name:"${var.service_label}-network-cmp"}
-  database_compartment          = {key:"${var.service_label}-database-cmp",     name:"${var.service_label}-database-cmp"}
-  appdev_compartment            = {key:"${var.service_label}-appdev-cmp",       name:"${var.service_label}-appdev-cmp"}
-  exainfra_compartment          = {key:"${var.service_label}-exainfra-cmp",     name:"${var.service_label}-exainfra-cmp"}
+  enclosing_compartment    = {key:"${var.service_label}-top-cmp", name: var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : "${var.service_label}-top-cmp") : "tenancy"}
+  enclosing_compartment_id = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.enclosing_compartment.key].id) : var.tenancy_ocid
+
+  security_compartment    = {key:"${var.service_label}-security-cmp", name: "${var.service_label}-security-cmp"}
+  security_compartment_id = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.security_compartment.key].id : data.oci_identity_compartments.security.compartments[0].id
+  network_compartment     = {key:"${var.service_label}-network-cmp", name: "${var.service_label}-network-cmp"}
+  network_compartment_id  = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.network_compartment.key].id : data.oci_identity_compartments.network.compartments[0].id
+  appdev_compartment      = {key:"${var.service_label}-appdev-cmp", name: "${var.service_label}-appdev-cmp"}
+  appdev_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.appdev_compartment.key].id : data.oci_identity_compartments.appdev.compartments[0].id
+  database_compartment    = {key:"${var.service_label}-database-cmp", name: "${var.service_label}-database-cmp"}
+  database_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.database_compartment.key].id : data.oci_identity_compartments.database.compartments[0].id
+  exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: "${var.service_label}-exainfra-cmp"}
+  exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
   
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
-  # Whether or not to create an enclosing compartment
-  parent_compartment_id         = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.default_enclosing_compartment.key].id) : var.tenancy_ocid
-  parent_compartment_name       = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.default_enclosing_compartment.name) : "tenancy"
-  policy_scope                  = local.parent_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.parent_compartment_name}"
-  use_existing_tenancy_policies = var.policies_in_root_compartment == "CREATE" ? false : true
+  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
 
+  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
+  
   # Group names
-  security_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  network_admin_group_name       = var.use_existing_groups == false ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  database_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  appdev_admin_group_name        = var.use_existing_groups == false ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  iam_admin_group_name           = var.use_existing_groups == false ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  auditor_group_name             = var.use_existing_groups == false ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name = var.use_existing_groups == false ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
-  exainfra_admin_group_name      = var.use_existing_groups == false ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  cost_admin_group_name          = var.use_existing_groups == false ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
-  compute_agent_group_name       = "${var.service_label}-appdev-computeagent-dynamic-group"
-
+  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0 ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
+  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0 ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
+  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0 ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
+  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0 ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
+  iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
+  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0 ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
+  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0 ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
+  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
+  exainfra_admin_group_name      = length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
+  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0 ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
+  
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
   security_admin_root_policy_name = "${var.service_label}-security-admin-root-policy"
@@ -60,30 +63,6 @@ locals {
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
-
-  services_policy_name   = "${var.service_label}-services-policy"
-  cloud_guard_statements = ["Allow service cloudguard to read keys in tenancy",
-                            "Allow service cloudguard to read compartments in tenancy",
-                            "Allow service cloudguard to read tenancies in tenancy",
-                            "Allow service cloudguard to read audit-events in tenancy",
-                            "Allow service cloudguard to read compute-management-family in tenancy",
-                            "Allow service cloudguard to read instance-family in tenancy",
-                            "Allow service cloudguard to read virtual-network-family in tenancy",
-                            "Allow service cloudguard to read volume-family in tenancy",
-                            "Allow service cloudguard to read database-family in tenancy",
-                            "Allow service cloudguard to read object-family in tenancy",
-                            "Allow service cloudguard to read load-balancers in tenancy",
-                            "Allow service cloudguard to read users in tenancy",
-                            "Allow service cloudguard to read groups in tenancy",
-                            "Allow service cloudguard to read policies in tenancy",
-                            "Allow service cloudguard to read dynamic-groups in tenancy",
-                            "Allow service cloudguard to read authentication-policies in tenancy",
-                            "Allow service cloudguard to use network-security-groups in tenancy"]
-  vss_statements       = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
-                          "Allow service vulnerability-scanning-service to read compartments in tenancy",
-                          "Allow service vulnerability-scanning-service to read vnics in tenancy",
-                          "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
-  os_mgmt_statements     = ["Allow service osms to read instances in tenancy"]
 
   database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
         "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
@@ -133,19 +112,17 @@ locals {
 
   cg_target_name = "${var.service_label}-cloud-guard-root-target"
 
-  ### Scanning
-  scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
-  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
-
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 70
 
   # Outputs display
   display_outputs = true
 
+  # Bastion
   bastion_name = "${var.service_label}-bastion"
   bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
+
+  # Notifications
+  iam_events_rule_name     = "${var.service_label}-notify-on-iam-changes-rule"
+  network_events_rule_name = "${var.service_label}-notify-on-network-changes-rule"
 }

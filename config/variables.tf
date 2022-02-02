@@ -49,16 +49,6 @@ variable "policies_in_root_compartment" {
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
-# variable "use_existing_grants_in_enc_compartment" {
-#   type        = bool
-#   default     = false
-#   description = "Whether required grants in the enclosing compartment should be created or used. If false, grants are created. If true, no grants are created."
-# }
-variable "use_existing_groups" {
-  type        = bool
-  default     = false
-  description = "Whether existing groups are to be reused for this Landing Zone. If false, one set of groups is created. If true, existing group names must be provided and this set will be able to manage resources in this Landing Zone."
-}
 variable "existing_iam_admin_group_name" {
   type    = string
   default = ""
@@ -99,38 +89,31 @@ variable "existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
-
-# variable "extend_landing_zone_to_new_region" {
-#   default = false
-#   type    = bool
-#   description = "Whether Landing Zone is being extended to another region. When set to true, IAM resources are reused."
-# }
-# variable "existing_network_cmp_ocid" {
-#   default = null
-#   type    = string
-#   description = "OCID of an existing network compartment."
-# }
-# variable "existing_security_cmp_ocid" {
-#   default = null
-#   type    = string
-#   description = "OCID of an existing security compartment."
-# }
-# variable "existing_appdev_cmp_ocid" {
-#   default = null
-#   type    = string
-#   description = "OCID of an existing appdev compartment."
-# }
-# variable "existing_database_cmp_ocid" {
-#   default = null
-#   type    = string
-#   description = "OCID of an existing database compartment."
-# }
-# variable "existing_exainfra_cmp_ocid" {
-#   default = null
-#   type    = string
-#   description = "OCID of an existing Exadata infrastructure compartment."
-# }
-
+variable "existing_security_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing security dynamic group."
+}
+variable "existing_appdev_fun_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing appdev dynamic group."
+}
+variable "existing_compute_agent_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing compute agent dynamic group for management agent access."
+}
+variable "existing_database_kms_dyn_group_name" {
+  type    = string
+  default = ""
+  description = "Existing database dynamic group for database to access keys."
+}
+variable "extend_landing_zone_to_new_region" {
+  default = false
+  type    = bool
+  description = "Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
+}
 # Networking
 variable "no_internet_access" {
   default     = false

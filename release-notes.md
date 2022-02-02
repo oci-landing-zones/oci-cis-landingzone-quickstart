@@ -12,7 +12,7 @@ Some customers want to extend their Landing Zone to more than one region of choi
 ## <a name="byodg_2_3_0">Bring Existing Dynamic Groups</a>
 As with groups, Landing Zone now supports reusing existing *dynamic* groups. These dynamic groups are thought to be used by OCI Functions, Compute's management agent and databases for calling out other services. 
 
-## <a name="script_2_3_0">
+## <a name="script_2_3_0">CCCS Guard Rails</a>
 The Compliance Checking script's summary report now includes a column for CCCS Guard Rails.
 
 ## <a name="lz_logo_2_3_0">Landing Zone Logo</a>

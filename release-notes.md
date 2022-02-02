@@ -2,6 +2,7 @@
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)
 1. [Bring Existing Dynamic Groups](#byodg_2_3_0)
 1. [Landing Zone Logo](#lz_logo_2_3_0)
+1. [Landing Zone Logo](#script_2_3_0)
 
 ## <a name="cross_region_lz_2_3_0">Cross Region Landing Zone</a>
 When you run Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
@@ -10,8 +11,12 @@ Some customers want to extend their Landing Zone to more than one region of choi
 
 ## <a name="byodg_2_3_0">Bring Existing Dynamic Groups</a>
 As with groups, Landing Zone now supports reusing existing *dynamic* groups. These dynamic groups are thought to be used by OCI Functions, Compute's management agent and databases for calling out other services. 
+
 ## <a name="lz_logo_2_3_0">Landing Zone Logo</a>
 Landing Zone has been gifted with a logo. A courtesy from our colleague [Chris Johnson](https://github.com/therealcmj).
+
+## <a name="script_2_3_0">
+The compliance checking script's summary report now includes a column for CCCS Guard Rails.   
 
 # December 02, 2021 Release Notes - Stable 2.2.0
 1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)

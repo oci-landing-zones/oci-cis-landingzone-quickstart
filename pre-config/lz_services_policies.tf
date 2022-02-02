@@ -5,7 +5,7 @@ locals {
   all_service_policy_statements = []
 
   # Names
-  services_policy_name   = "${var.service_label}-services-policy"
+  services_policy_name = "${local.unique_prefix}-services-policy"
 
   cloud_guard_statements = [
     "Allow service cloudguard to read keys in tenancy",
@@ -24,8 +24,7 @@ locals {
     "Allow service cloudguard to read policies in tenancy",
     "Allow service cloudguard to read dynamic-groups in tenancy",
     "Allow service cloudguard to read authentication-policies in tenancy",
-    "Allow service cloudguard to use network-security-groups in tenancy"
-  ]
+    "Allow service cloudguard to use network-security-groups in tenancy"]
 
   vss_statements = [
     "Allow service vulnerability-scanning-service to manage instances in tenancy",
@@ -39,19 +38,15 @@ locals {
   ]
 
   default_service_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
+}
 
-  service_policies = {
+module "lz_services_policy" {
+  source = "../modules/iam/iam-policy"
+  policies = var.grant_services_policies == true ? {
     (local.services_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
       statements     = length(local.all_service_policy_statements) > 0 ? local.all_service_policy_statements : local.default_service_policy_statements
     }
-  }
-}
-
-module "lz_services_policy" {
-  depends_on = [module.lz_dynamic_groups]
-  source = "../modules/iam/iam-policy"
-  providers = { oci = oci.home }
-  policies   = var.extend_landing_zone_to_new_region == false ? (local.use_existing_root_cmp_grants == true ? {} : local.service_policies) : {}
+  } : {}
 }

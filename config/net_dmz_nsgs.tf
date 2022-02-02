@@ -108,7 +108,7 @@ module "lz_nsgs_dmz" {
   depends_on     = [module.lz_vcn_dmz]
   count          = length(var.dmz_vcn_cidr) > 0 && var.hub_spoke_architecture ? 1 : 0
   source         = "../modules/network/security"
-  compartment_id = module.lz_compartments.compartments[local.network_compartment.key].id
+  compartment_id = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   nsgs = merge(local.public_dst_cidrs_nsg, {
     (local.dmz_bastions_nsg_name) : {
       vcn_id = module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].id

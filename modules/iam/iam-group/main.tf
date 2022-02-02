@@ -41,9 +41,11 @@ data "oci_identity_users" "these" {
 
 resource "oci_identity_group" "these" {
   for_each       = var.groups
-  compartment_id = var.tenancy_ocid
-  name           = each.key
-  description    = each.value.description
+    compartment_id = var.tenancy_ocid
+    name           = each.key
+    description    = each.value.description
+    defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 }
 
 resource "oci_identity_user_group_membership" "these" {

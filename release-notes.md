@@ -1,4 +1,4 @@
-# February 01, 2022 Release Notes - Stable 2.3.0
+# February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)
 1. [Bring Existing Dynamic Groups](#byodg_2_3_0)
 1. [Landing Zone Logo](#lz_logo_2_3_0)

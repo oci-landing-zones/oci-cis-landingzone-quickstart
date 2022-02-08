@@ -1,6 +1,7 @@
-# February 01, 2022 Release Notes - Stable 2.3.0
+# February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)
 1. [Bring Existing Dynamic Groups](#byodg_2_3_0)
+1. [CCCS Guard Rails](#script_2_3_0)
 1. [Landing Zone Logo](#lz_logo_2_3_0)
 
 ## <a name="cross_region_lz_2_3_0">Cross Region Landing Zone</a>
@@ -10,8 +11,12 @@ Some customers want to extend their Landing Zone to more than one region of choi
 
 ## <a name="byodg_2_3_0">Bring Existing Dynamic Groups</a>
 As with groups, Landing Zone now supports reusing existing *dynamic* groups. These dynamic groups are thought to be used by OCI Functions, Compute's management agent and databases for calling out other services. 
+
+## <a name="script_2_3_0">CCCS Guard Rails</a>
+The Compliance Checking script's summary report now includes a column for CCCS Guard Rails.
+
 ## <a name="lz_logo_2_3_0">Landing Zone Logo</a>
-Landing Zone has been gifted with a logo. A courtesy from our colleague [Chris Johnson](https://github.com/therealcmj).
+Landing Zone has been gifted with a logo. A courtesy from our colleague [Chris Johnson](https://github.com/therealcmj).   
 
 # December 02, 2021 Release Notes - Stable 2.2.0
 1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)

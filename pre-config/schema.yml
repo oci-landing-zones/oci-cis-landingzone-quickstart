@@ -37,6 +37,14 @@ variableGroups:
       - "existing_cost_admin_group_name"
     visible: advanced_options  
   
+  - title: "Dynamic Groups"
+    variables:
+      - "existing_security_fun_dyn_group_name"
+      - "existing_appdev_fun_dyn_group_name"
+      - "existing_compute_agent_dyn_group_name"
+      - "existing_database_kms_dyn_group_name"
+    visible: advanced_options
+
   - title: "Policies"
     variables:
       - "grant_services_policies"
@@ -69,7 +77,7 @@ variables:
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the folowing is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
+    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
     default: false
 
   enclosing_compartment_names:
@@ -173,6 +181,25 @@ variables:
     description: "Existing group to which Cost Managment policies will be granted to."
     visible: use_existing_groups
 
+  existing_security_fun_dyn_group_name:
+    type: string
+    title: "Existing security dynamic group name"
+    description: "Existing dynamic group to be used by security functions."
+
+  existing_appdev_fun_dyn_group_name:
+    type: string
+    title: "Existing appdev dynamic group name"
+    description: "Existing dynamic group to be used by application related functions."
+
+  existing_compute_agent_dyn_group_name:
+    type: string
+    title: "Existing compute agent dynamic group name"
+    description: "Existing dynamic group to be used by Compute's management agent."
+
+  existing_database_kms_dyn_group_name:
+    type: string
+    title: "Existing database dynamic group name"
+    description: "Existing dynamic group to be used by databases to manage vaults and keys."
 
   tenancy_ocid:
     type: string

@@ -1,9 +1,8 @@
 [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
 
 *If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
-
 # CIS OCI Landing Zone Quick Start Template
-
+![Landing_Zone_Logo](images/landing%20zone_300.png)
 ## Table of Contents
 1. [Overview](#overview)
 1. [Deliverables](#deliverables)
@@ -105,14 +104,16 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
 - [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service)
 - [Operational Monitoring and Alerting in the CIS Landing Zone](https://www.ateam-oracle.com/operational-monitoring-and-alerting-in-the-cis-landing-zone)
+- [How to Deploy Landing Zone for a Security Partner Network Appliance](https://www.ateam-oracle.com/post/how-to-deploy-landing-zone-for-a-security-partner-network-appliance)
+- [Adding Our Security Partners to a CIS OCI Landing Zone](https://blogs.oracle.com/cloud-infrastructure/post/adding-our-security-partners-to-a-cis-oci-landing-zone)
 
 ## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
 - The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
 
 ## <a name="team"></a>The Team
-- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer)
-- **Contributors**: [Chad Russell](https://github.com/chad-russell-git), [Johannes Murmman](https://github.com/jomurmann), [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), Pulkit Sharma
+- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer).
+- **Contributors**: [Chad Russell](https://github.com/chad-russell-git), [Johannes Murmman](https://github.com/jomurmann), [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), [Olaf Heimburger](https://github.com/oheimburger), Pulkit Sharma.
 
 ## <a name="feedback"></a>Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

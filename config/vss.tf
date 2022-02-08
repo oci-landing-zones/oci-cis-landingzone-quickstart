@@ -10,8 +10,8 @@ locals {
   all_vss_defined_tags = {}
   all_vss_freeform_tags = {}
 
-  default_vss_defined_tags = {}
-  default_vss_freeform_tags = {}
+  default_vss_defined_tags = null
+  default_vss_freeform_tags = null
   
   vss_defined_tags = length(local.all_vss_defined_tags) > 0 ? local.all_vss_defined_tags : local.default_vss_defined_tags
   vss_freeform_tags = length(local.all_vss_freeform_tags) > 0 ? local.all_vss_freeform_tags : local.default_vss_freeform_tags

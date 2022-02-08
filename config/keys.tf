@@ -3,16 +3,29 @@
 
 locals {
 
+  vault_name   = "${var.service_label}-vault"
+  vault_type   = "DEFAULT"
+
+  oss_key_name = "${var.service_label}-oss-key"
   oss_key_policy_name = "${local.oss_key_name}-${local.region_key}-policy"
 
   all_keys_defined_tags = {}
   all_keys_freeform_tags = {}
+  all_vault_defined_tags = {}
+  all_vault_freeform_tags = {}
 
-  default_keys_defined_tags = {}
-  default_keys_freeform_tags = {}
+  ### DON'T TOUCH THESE ###
+
+  default_keys_defined_tags = null
+  default_keys_freeform_tags = null
+  default_vault_defined_tags = null
+  default_vault_freeform_tags = null
 
   keys_defined_tags = length(local.all_keys_defined_tags) > 0 ? local.all_keys_defined_tags : local.default_keys_defined_tags
   keys_freeform_tags = length(local.all_keys_freeform_tags) > 0 ? local.all_keys_freeform_tags : local.default_keys_freeform_tags
+
+  vault_defined_tags = length(local.all_vault_defined_tags) > 0 ? local.all_vault_defined_tags : local.default_vault_defined_tags
+  vault_freeform_tags = length(local.all_vault_freeform_tags) > 0 ? local.all_vault_freeform_tags : local.default_vault_freeform_tags
 }
 
 ### Creates a vault.
@@ -21,6 +34,8 @@ module "lz_vault" {
     compartment_id    = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
     vault_name        = local.vault_name
     vault_type        = local.vault_type
+    defined_tags      = local.vault_defined_tags
+    freeform_tags     = local.vault_freeform_tags
 }
 
 

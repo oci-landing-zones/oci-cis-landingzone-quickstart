@@ -6,8 +6,8 @@ locals {
   all_dmz_defined_tags = {}
   all_dmz_freeform_tags = {}
   
-  default_dmz_defined_tags = {}
-  default_dmz_freeform_tags = {}
+  default_dmz_defined_tags = null
+  default_dmz_freeform_tags = null
   
   dmz_defined_tags = length(local.all_dmz_defined_tags) > 0 ? local.all_dmz_defined_tags : local.default_dmz_defined_tags
   dmz_freeform_tags = length(local.all_dmz_freeform_tags) > 0 ? local.all_dmz_freeform_tags : local.default_dmz_freeform_tags

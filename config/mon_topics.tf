@@ -6,8 +6,8 @@ locals  {
   all_topics_defined_tags = {}
   all_topics_freeform_tags = {}
 
-  default_topics_defined_tags = {}
-  default_topics_freeform_tags = {}
+  default_topics_defined_tags = null
+  default_topics_freeform_tags = null
 
   topics_defined_tags = length(local.all_topics_defined_tags) > 0 ? local.all_topics_defined_tags : local.default_topics_defined_tags
   topics_freeform_tags = length(local.all_topics_freeform_tags) > 0 ? local.all_topics_freeform_tags : local.default_topics_freeform_tags

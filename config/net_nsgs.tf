@@ -8,8 +8,8 @@ locals {
   all_nsgs_defined_tags = {}
   all_nsgs_freeform_tags = {}
 
-  default_nsgs_defined_tags = {}
-  default_nsgs_freeform_tags = {}
+  default_nsgs_defined_tags = null
+  default_nsgs_freeform_tags = null
 
   nsgs_defined_tags = length(local.all_nsgs_defined_tags) > 0 ? local.all_nsgs_defined_tags : local.default_nsgs_defined_tags
   nsgs_freeform_tags = length(local.all_nsgs_freeform_tags) > 0 ? local.all_nsgs_freeform_tags : local.default_nsgs_freeform_tags

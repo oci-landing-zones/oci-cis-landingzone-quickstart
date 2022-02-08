@@ -4,6 +4,15 @@
 ### This Terraform configuration creates Landing Zone NSGs (Network Security Groups) for the DMZ VCN
 
 locals {
+  all_dmz_nsgs_defined_tags = {}
+  all_dmz_nsgs_freeform_tags = {}
+  
+  default_dmz_nsgs_defined_tags = null
+  default_dmz_nsgs_freeform_tags = null
+  
+  dmz_nsgs_defined_tags = length(local.all_dmz_nsgs_defined_tags) > 0 ? local.all_dmz_nsgs_defined_tags : local.default_dmz_nsgs_defined_tags
+  dmz_nsgs_freeform_tags = length(local.all_dmz_nsgs_freeform_tags) > 0 ? local.all_dmz_nsgs_freeform_tags : local.default_dmz_nsgs_freeform_tags
+  
   dmz_bastions_nsg_name   = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-bastion-nsg" : null
   dmz_services_nsg_name   = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-services-nsg" : null
   dmz_public_dst_nsg_name = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-public-dst-nsg" : null
@@ -85,6 +94,8 @@ locals {
 
   public_dst_cidrs_nsg = length(var.public_dst_cidrs) > 0 && length(var.dmz_vcn_cidr) > 0 ? { (local.dmz_public_dst_nsg_name) : {
     vcn_id = module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].id
+    defined_tags = local.dmz_nsgs_defined_tags
+    freeform_tags = local.dmz_nsgs_freeform_tags
     ingress_rules : {},
     egress_rules : { for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) > 0,
@@ -112,6 +123,8 @@ module "lz_nsgs_dmz" {
   nsgs = merge(local.public_dst_cidrs_nsg, {
     (local.dmz_bastions_nsg_name) : {
       vcn_id = module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].id
+      defined_tags = local.dmz_nsgs_defined_tags
+      freeform_tags = local.dmz_nsgs_freeform_tags
       ingress_rules : merge(
         { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
           is_create : (!var.no_internet_access && length(var.onprem_cidrs) == 0 && length(var.public_src_bastion_cidrs) > 0),

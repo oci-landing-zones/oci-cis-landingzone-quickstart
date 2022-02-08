@@ -41,8 +41,8 @@ locals {
     "Allow service osms to read instances in tenancy"
   ]
 
-  default_service_policy_defined_tags = {}
-  default_service_policy_freeform_tags = {}
+  default_service_policy_defined_tags = null
+  default_service_policy_freeform_tags = null
 
   service_policy_defined_tags = length(local.all_service_policy_defined_tags) > 0 ? local.all_service_policy_defined_tags : local.default_service_policy_defined_tags
   service_policy_freeform_tags = length(local.all_service_policy_freeform_tags) > 0 ? local.all_service_policy_freeform_tags : local.default_service_policy_freeform_tags

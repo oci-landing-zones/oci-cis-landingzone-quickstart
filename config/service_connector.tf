@@ -2,13 +2,26 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+  sch_audit_display_name        = "${var.service_label}-audit-sch"
+  sch_audit_bucket_name         = "${var.service_label}-audit-sch-bucket"
+  sch_audit_target_rollover_MBs = 100
+  sch_audit_target_rollover_MSs = 420000
+
+  sch_vcnFlowLogs_display_name        = "${var.service_label}-vcn-flow-logs-sch"
+  sch_vcnFlowLogs_bucket_name         = "${var.service_label}-vcn-flow-logs-sch-bucket"
+  sch_vcnFlowLogs_target_rollover_MBs = 100
+  sch_vcnFlowLogs_target_rollover_MSs = 420000
+
+  sch_audit_policy_name       = "${var.service_label}-audit-sch-policy"
+  sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
+
   all_service_connector_defined_tags = {}
   all_service_connector_freeform_tags = {}
 
-  default_service_connector_defined_tags = {}
-  default_service_connector_freeform_tags = {}
-
   # DO NOT TOUCH
+  default_service_connector_defined_tags = null
+  default_service_connector_freeform_tags = null
+
   service_connector_defined_tags = length(local.all_service_connector_defined_tags) > 0 ? local.all_service_connector_defined_tags : local.default_service_connector_defined_tags
   service_connector_freeform_tags = length(local.all_service_connector_freeform_tags) > 0 ? local.all_service_connector_freeform_tags : local.default_service_connector_freeform_tags
 }

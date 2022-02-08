@@ -7,8 +7,8 @@ locals {
   all_policies_defined_tags = {}
   all_policies_freeform_tags = {}
   
-  default_policies_defined_tags = {}
-  default_policies_freeform_tags = {}
+  default_policies_defined_tags = null
+  default_policies_freeform_tags = null
 
   policies_defined_tags = length(local.all_policies_defined_tags) > 0 ? local.all_policies_defined_tags : local.default_policies_defined_tags
   policies_freeform_tags = length(local.all_policies_freeform_tags) > 0 ? local.all_policies_freeform_tags : local.default_policies_freeform_tags

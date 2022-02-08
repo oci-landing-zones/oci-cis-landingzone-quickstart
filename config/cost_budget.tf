@@ -7,8 +7,8 @@ locals {
       all_cost_management_defined_tags = {}
       all_cost_management_freeform_tags = {}
 
-      default_cost_management_defined_tags = {}
-      default_cost_management_freeform_tags = {}
+      default_cost_management_defined_tags = null
+      default_cost_management_freeform_tags = null
 
       cost_management_defined_tags = length(local.all_cost_management_defined_tags) > 0 ? local.all_cost_management_defined_tags : local.default_cost_management_defined_tags
       cost_management_freeform_tags = length(local.all_cost_management_freeform_tags) > 0 ? local.all_cost_management_freeform_tags : local.default_cost_management_freeform_tags

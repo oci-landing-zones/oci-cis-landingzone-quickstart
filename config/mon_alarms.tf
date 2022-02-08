@@ -7,8 +7,8 @@ locals {
     all_alarms_defined_tags = {}
     all_alarms_freeform_tags = {}
 
-    default_alarms_defined_tags = {}
-    default_alarms_freeform_tags = {}
+    default_alarms_defined_tags = null
+    default_alarms_freeform_tags = null
 
     alarms_defined_tags = length(local.all_alarms_defined_tags) > 0 ? local.all_alarms_defined_tags : local.default_alarms_defined_tags
     alarms_freeform_tags = length(local.all_alarms_freeform_tags) > 0 ? local.all_alarms_freeform_tags : local.default_alarms_freeform_tags

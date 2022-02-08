@@ -78,8 +78,10 @@ locals {
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
 
   # Subnet names
-  # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
+  # Subnet Names used, can be used to change, add, or remove subnets first subnet will be Public if var.no_internet_access is false
   spoke_subnet_names = ["web", "app", "db"]
+  # Subnet Size used to adjust the size of the subnet created
+  spoke_subnet_size  = [4,4,4] 
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   dmz_subnet_names = ["outdoor", "indoor", "mgmt", "ha", "diag"]
   # Mgmg subnet is public by default.

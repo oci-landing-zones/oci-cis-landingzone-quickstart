@@ -80,7 +80,7 @@ locals {
   # Subnet names
   # Subnet Names used, can be used to change, add, or remove subnets first subnet will be Public if var.no_internet_access is false
   spoke_subnet_names = ["web", "app", "db"]
-  # Subnet Size used to adjust the size of the subnet created
+  # Subnets bit size used to adjust the size of the subnets created above, the number of items in this list must align to the subnets 
   spoke_subnet_size  = [4,4,4] 
   # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   dmz_subnet_names = ["outdoor", "indoor", "mgmt", "ha", "diag"]

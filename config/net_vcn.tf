@@ -24,13 +24,13 @@ locals {
   #     name = "my_vcn" # VCN Name
   #     cidr = "192.168.0.0/16" # VCN CIDR range
   #     subnet_names = ["web", "app"] # Names of subnets 
-  #     subnet_cidrs = ["192.168.0.0/24","192.168.3.0/24"] # Subnet #CIDR Ranges for the subnets in subnet_names
+  #     subnet_cidrs = ["192.168.0.0/24","192.168.3.0/24"] # Subnet CIDR Ranges for the subnets in subnet_names
   #   },
   #   "my_vcn1" = {
   #     name = "my_vcn1" # VCN Name
   #     cidr = "172.16.0.0/16" # VCN CIDR range
   #     subnet_names = ["lb", "front", "middle", "back"] # Names of subnets
-  #     subnet_cidrs = ["172.16.0.0/24","172.16.1.0/24","172.16.2.0/24","172.16.3.0/24"] # Subnet #CIDR Ranges for the subnets in subnet_names
+  #     subnet_cidrs = ["172.16.0.0/24","172.16.1.0/24","172.16.2.0/24","172.16.3.0/24"] # Subnet CIDR Ranges for the subnets in subnet_names
   #   }
   # }
 

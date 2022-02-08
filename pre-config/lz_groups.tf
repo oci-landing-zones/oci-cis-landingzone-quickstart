@@ -16,14 +16,15 @@ locals {
 
 module "lz_provisioning_groups" {
   for_each     = var.use_existing_provisioning_group == false ? local.provisioning_group_names : tomap({})
-  source       = "../modules/iam/iam-group"
-  tenancy_ocid = var.tenancy_ocid
-  groups = {
-    (each.value.group_name) = {
-      description   = "Landing Zone group for resource provisioning."
-      user_ids      = []
-      defined_tags   = local.groups_defined_tags
-      freeform_tags  = local.groups_freeform_tags
+    source       = "../modules/iam/iam-group"
+    tenancy_ocid = var.tenancy_ocid
+    groups = {
+      (each.value.group_name) = {
+        description   = "Landing Zone group for resource provisioning."
+        user_ids      = []
+        defined_tags   = local.groups_defined_tags
+        freeform_tags  = local.groups_freeform_tags
+      }
     }
 }
 

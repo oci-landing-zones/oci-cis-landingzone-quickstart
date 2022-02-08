@@ -303,7 +303,7 @@ class CIS_Report:
             if report_directory:
                 self.__report_directory = self.__current_region + report_directory 
             else:
-                self.__report_directory = self.__current_region + "-" + self.__tenancy.description + "-" + self.start_date 
+                self.__report_directory = self.__current_region + "-" + self.__tenancy.name + "-" + self.start_date 
 
         except Exception as e:
             raise RuntimeError(

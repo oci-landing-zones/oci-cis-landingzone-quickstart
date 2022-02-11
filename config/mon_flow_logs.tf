@@ -7,7 +7,7 @@ locals {
   all_flow_logs_freeform_tags = {}
 
   default_flow_logs_defined_tags = null
-  default_flow_logs_freeform_tags = null
+  default_flow_logs_freeform_tags = local.landing_zone_tags
 
   flow_logs_defined_tags = length(local.all_flow_logs_defined_tags) > 0 ? local.all_flow_logs_defined_tags : local.default_flow_logs_defined_tags
   flow_logs_freeform_tags = length(local.all_flow_logs_freeform_tags) > 0 ? local.all_flow_logs_freeform_tags : local.default_flow_logs_freeform_tags

@@ -6,7 +6,7 @@ locals {
     all_notifications_freeform_tags = {}
 
     default_notifications_defined_tags = null
-    default_notifications_freeform_tags = null
+    default_notifications_freeform_tags = local.landing_zone_tags
 
     notifications_defined_tags = length(local.all_notifications_defined_tags) > 0 ? local.all_notifications_defined_tags : local.default_notifications_defined_tags
     notifications_freeform_tags = length(local.all_notifications_freeform_tags) > 0 ? local.all_notifications_freeform_tags : local.default_notifications_freeform_tags

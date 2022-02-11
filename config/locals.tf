@@ -26,13 +26,6 @@ locals {
   exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: "${var.service_label}-exainfra-cmp"}
   exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
   
-  # Whether compartments should be deleted upon resource destruction.
-  enable_cmp_delete = false
-
-  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
-
-  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
-  
   # Group names
   security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0 ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
   network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0 ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
@@ -87,12 +80,6 @@ locals {
   ### Object Storage
   bucket_name  = "${var.service_label}-bucket"
 
-  # Delay in seconds for slowing down resource creation
-  delay_in_secs = 70
-
-  # Outputs display
-  display_outputs = true
-
   # Bastion
   bastion_name = "${var.service_label}-bastion"
   bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
@@ -100,4 +87,19 @@ locals {
   # Notifications
   iam_events_rule_name     = "${var.service_label}-notify-on-iam-changes-rule"
   network_events_rule_name = "${var.service_label}-notify-on-network-changes-rule"
+  # Whether compartments should be deleted upon resource destruction.
+  enable_cmp_delete = false
+
+  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
+
+  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
+  
+  # Delay in seconds for slowing down resource creation
+  delay_in_secs = 70
+
+  # Outputs display
+  display_outputs = true
+
+  # Tags
+  landing_zone_tags = {"landing-zone" : "${var.service_label}-quickstart"}
 }

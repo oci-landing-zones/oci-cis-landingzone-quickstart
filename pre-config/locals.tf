@@ -6,7 +6,7 @@ locals {
   all_compartment_freeform_tags = {}
 
   default_compartment_defined_tags = null
-  default_compartment_freeform_tags = null
+  default_compartment_freeform_tags = local.landing_zone_tags
 
   compartment_defined_tags = length(local.all_compartment_defined_tags) > 0 ? local.all_compartment_defined_tags : local.default_compartment_defined_tags
   compartment_freeform_tags = length(local.all_compartment_freeform_tags) > 0 ? local.all_compartment_freeform_tags : local.default_compartment_freeform_tags
@@ -32,4 +32,7 @@ locals {
   cost_admin_group_name_suffix          = var.use_existing_groups == false ? "cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
   
   grant_tenancy_level_mgmt_policies = true
+
+  # Tags
+  landing_zone_tags = {"landing-zone" : "${var.unique_prefix}-quickstart"}
 }

@@ -7,7 +7,7 @@ locals {
   all_bastion_freeform_tags = {}
 
   default_bastion_defined_tags = null
-  default_bastion_freeform_tags = null
+  default_bastion_freeform_tags = local.landing_zone_tags
 
   bastion_defined_tags = length(local.all_bastion_defined_tags) > 0 ? local.all_bastion_defined_tags : local.default_bastion_defined_tags
   bastion_freeform_tags = length(local.all_bastion_freeform_tags) > 0 ? local.all_bastion_freeform_tags : local.default_bastion_freeform_tags

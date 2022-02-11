@@ -8,7 +8,7 @@ locals {
   all_groups_freeform_tags = {}
 
   default_groups_defined_tags = null
-  default_groups_freeform_tags = null
+  default_groups_freeform_tags = local.landing_zone_tags
 
   # DO NOT TOUCH
   groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags

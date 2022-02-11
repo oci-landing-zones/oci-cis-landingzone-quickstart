@@ -20,7 +20,7 @@ locals {
 
   ##### DON'T TOUCH ANYTHING BELOW #####
   default_tags_defined_tags = null
-  default_tags_freeform_tags = null
+  default_tags_freeform_tags = local.landing_zone_tags
   
   tags_defined_tags = length(local.all_tags_defined_tags) > 0 ? local.all_tags_defined_tags : local.default_tags_defined_tags
   tags_freeform_tags = length(local.all_tags_freeform_tags) > 0 ? local.all_tags_freeform_tags : local.default_tags_freeform_tags

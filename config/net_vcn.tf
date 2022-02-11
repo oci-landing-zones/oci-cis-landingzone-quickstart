@@ -6,7 +6,7 @@ locals {
   all_vcn_freeform_tags = {}
   
   default_vcn_defined_tags = null
-  default_vcn_freeform_tags = null
+  default_vcn_freeform_tags = local.landing_zone_tags
   
   vcn_defined_tags = length(local.all_vcn_defined_tags) > 0 ? local.all_vcn_defined_tags : local.default_vcn_defined_tags
   vcn_freeform_tags = length(local.all_vcn_freeform_tags) > 0 ? local.all_vcn_freeform_tags : local.default_vcn_freeform_tags
@@ -72,8 +72,8 @@ locals {
           dst_port_min : "22"
           dst_port_max : "22"
         }]
-        defined_tags  = null
-        freeform_tags = null
+        defined_tags  = local.vcn_defined_tags
+        freeform_tags = local.vcn_freeform_tags
         }
       }
       }

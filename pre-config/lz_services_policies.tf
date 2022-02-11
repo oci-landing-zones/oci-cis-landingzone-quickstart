@@ -41,7 +41,7 @@ locals {
   all_services_policy_freeform_tags = {}
 
   default_services_policy_defined_tags = null
-  default_services_policy_freeform_tags = null
+  default_services_policy_freeform_tags = local.landing_zone_tags
 
   services_policy_defined_tags = length(local.all_services_policy_defined_tags) > 0 ? local.all_services_policy_defined_tags : local.default_services_policy_defined_tags
   services_policy_freeform_tags  = length(local.all_services_policy_freeform_tags) > 0 ? local.all_services_policy_freeform_tags : local.default_services_policy_freeform_tags

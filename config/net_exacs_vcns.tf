@@ -6,7 +6,7 @@ locals {
   all_exacs_vcns_freeform_tags = {}
 
   default_exacs_vcns_defined_tags = null
-  default_exacs_vcns_freeform_tags = null
+  default_exacs_vcns_freeform_tags = local.landing_zone_tags
 
   exacs_vncs_defined_tags = length(local.all_exacs_vcns_defined_tags) > 0 ? local.all_exacs_vcns_defined_tags : local.default_exacs_vcns_defined_tags
   exacs_vncs_freeform_tags = length(local.all_exacs_vcns_freeform_tags) > 0 ? local.all_exacs_vcns_freeform_tags : local.default_exacs_vcns_freeform_tags

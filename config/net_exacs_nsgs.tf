@@ -8,7 +8,7 @@ locals {
   all_exacs_nsgs_freeform_tags = {}
   
   default_exacs_nsgs_defined_tags = null
-  default_exacs_nsgs_freeform_tags = null
+  default_exacs_nsgs_freeform_tags = local.landing_zone_tags
   
   exacs_nsgs_defined_tags = length(local.all_exacs_nsgs_defined_tags) > 0 ? local.all_exacs_nsgs_defined_tags : local.default_exacs_nsgs_defined_tags
   exacs_nsgs_freeform_tags = length(local.all_exacs_nsgs_freeform_tags) > 0 ? local.all_exacs_nsgs_freeform_tags : local.default_exacs_nsgs_freeform_tags

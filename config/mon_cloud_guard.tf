@@ -9,7 +9,7 @@ locals {
 
   #### DON'T THOUCH THE LINES BELOW ####
   default_cloud_guard_target_defined_tags = null
-  default_cloud_guard_target_freeform_tags = null
+  default_cloud_guard_target_freeform_tags = local.landing_zone_tags
   
   cloud_guard_target_defined_tags = length(local.all_cloud_guard_target_defined_tags) > 0 ? local.all_cloud_guard_target_defined_tags : local.default_cloud_guard_target_defined_tags
   cloud_guard_target_freeform_tags = length(local.all_cloud_guard_target_freeform_tags) > 0 ? local.all_cloud_guard_target_freeform_tags : local.default_cloud_guard_target_freeform_tags

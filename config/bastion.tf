@@ -6,12 +6,6 @@ locals {
   all_bastion_defined_tags = {}
   all_bastion_freeform_tags = {}
 
-  default_bastion_defined_tags = null
-  default_bastion_freeform_tags = local.landing_zone_tags
-
-  bastion_defined_tags = length(local.all_bastion_defined_tags) > 0 ? local.all_bastion_defined_tags : local.default_bastion_defined_tags
-  bastion_freeform_tags = length(local.all_bastion_freeform_tags) > 0 ? local.all_bastion_freeform_tags : local.default_bastion_freeform_tags
-
   spoke_bastion = {for subnet in module.lz_vcn_spokes.subnets : subnet.display_name => {
       name = "${var.service_label}${upper(local.region_key)}${replace(subnet.display_name,"/[^a-zA-Z0-9]/","")}Bastion"
       compartment_id = local.security_compartment_id
@@ -33,6 +27,13 @@ locals {
     } if (length(var.public_src_bastion_cidrs) > 0) && length(var.exacs_vcn_cidrs) == 1 && !var.is_vcn_onprem_connected && var.hub_spoke_architecture == false && (length(regexall(".*${local.client_subnet_prefix}*", subnet.display_name)) > 0)}
   
   all_bastions = merge(local.exacs_bastion,local.spoke_bastion)
+
+  ### DON'T TOUCH THESE ###
+  default_bastion_defined_tags = null
+  default_bastion_freeform_tags = local.landing_zone_tags
+
+  bastion_defined_tags = length(local.all_bastion_defined_tags) > 0 ? local.all_bastion_defined_tags : local.default_bastion_defined_tags
+  bastion_freeform_tags = length(local.all_bastion_freeform_tags) > 0 ? merge(local.all_bastion_freeform_tags, local.default_bastion_freeform_tags) : local.default_bastion_freeform_tags
   
 }
 

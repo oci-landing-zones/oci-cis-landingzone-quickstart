@@ -7,12 +7,6 @@ locals {
     all_alarms_defined_tags = {}
     all_alarms_freeform_tags = {}
 
-    default_alarms_defined_tags = null
-    default_alarms_freeform_tags = local.landing_zone_tags
-
-    alarms_defined_tags = length(local.all_alarms_defined_tags) > 0 ? local.all_alarms_defined_tags : local.default_alarms_defined_tags
-    alarms_freeform_tags = length(local.all_alarms_freeform_tags) > 0 ? local.all_alarms_freeform_tags : local.default_alarms_freeform_tags
-
     # Default alarms names
     compute_high_compute_alarm          = {key:"${var.service_label}-high-cpu-alarm",               name:"${var.service_label}-high-cpu-alarm"}
     compute_instance_status_alarm       = {key:"${var.service_label}-instance-status-alarm",        name:"${var.service_label}-instance-status-alarm"}
@@ -175,6 +169,14 @@ locals {
            pending_duration = "PT5M"
         } if length(var.network_admin_email_endpoints) > 0}
     )
+
+    ### DON'T TOUCH THESE ###
+    default_alarms_defined_tags = null
+    default_alarms_freeform_tags = local.landing_zone_tags
+
+    alarms_defined_tags = length(local.all_alarms_defined_tags) > 0 ? local.all_alarms_defined_tags : local.default_alarms_defined_tags
+    alarms_freeform_tags = length(local.all_alarms_freeform_tags) > 0 ? merge(local.all_alarms_freeform_tags, local.default_alarms_freeform_tags) : local.default_alarms_freeform_tags
+
 }
 
 # Alarms is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.

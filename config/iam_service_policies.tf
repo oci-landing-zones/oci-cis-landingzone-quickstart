@@ -45,7 +45,7 @@ locals {
   default_service_policy_freeform_tags = local.landing_zone_tags
 
   service_policy_defined_tags = length(local.all_service_policy_defined_tags) > 0 ? local.all_service_policy_defined_tags : local.default_service_policy_defined_tags
-  service_policy_freeform_tags = length(local.all_service_policy_freeform_tags) > 0 ? local.all_service_policy_freeform_tags : local.default_service_policy_freeform_tags
+  service_policy_freeform_tags = length(local.all_service_policy_freeform_tags) > 0 ? merge(local.all_service_policy_freeform_tags, local.default_service_policy_freeform_tags) : local.default_service_policy_freeform_tags
 
   default_service_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
 

@@ -6,12 +6,6 @@ locals {
   all_dmz_defined_tags = {}
   all_dmz_freeform_tags = {}
   
-  default_dmz_defined_tags = null
-  default_dmz_freeform_tags = local.landing_zone_tags
-  
-  dmz_defined_tags = length(local.all_dmz_defined_tags) > 0 ? local.all_dmz_defined_tags : local.default_dmz_defined_tags
-  dmz_freeform_tags = length(local.all_dmz_freeform_tags) > 0 ? local.all_dmz_freeform_tags : local.default_dmz_freeform_tags
-
   dmz_vcn = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) > 0 ? { (local.dmz_vcn_name.name) = {
     compartment_id    = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
     cidr              = var.dmz_vcn_cidr
@@ -95,6 +89,14 @@ locals {
         }
       ])
   }}
+
+  ### DON'T TOUCH THESE ###
+  default_dmz_defined_tags = null
+  default_dmz_freeform_tags = local.landing_zone_tags
+  
+  dmz_defined_tags = length(local.all_dmz_defined_tags) > 0 ? local.all_dmz_defined_tags : local.default_dmz_defined_tags
+  dmz_freeform_tags = length(local.all_dmz_freeform_tags) > 0 ? merge(local.all_dmz_freeform_tags, local.default_dmz_freeform_tags) : local.default_dmz_freeform_tags
+
 }
 
 

@@ -7,12 +7,6 @@ locals {
   all_compartments_defined_tags = {}
   all_compartments_freeform_tags = {}
   
-  default_compartments_defined_tags = null
-  default_compartments_freeform_tags = local.landing_zone_tags
-
-  compartments_defined_tags = length(local.all_compartments_defined_tags) > 0 ? local.all_compartments_defined_tags : local.default_compartments_defined_tags
-  compartments_freeform_tags = length(local.all_compartments_freeform_tags) > 0 ? local.all_compartments_freeform_tags : local.default_compartments_freeform_tags
-
   default_cmps = {
     (local.security_compartment.key) = {
       parent_id     = local.enclosing_compartment_id
@@ -59,6 +53,13 @@ locals {
   } : {}
 
   cmps = merge(local.default_cmps, local.exainfra_cmp)
+
+  ### DON'T TOUCH THESE ###
+  default_compartments_defined_tags = null
+  default_compartments_freeform_tags = local.landing_zone_tags
+
+  compartments_defined_tags = length(local.all_compartments_defined_tags) > 0 ? local.all_compartments_defined_tags : local.default_compartments_defined_tags
+  compartments_freeform_tags = length(local.all_compartments_freeform_tags) > 0 ? merge(local.all_compartments_freeform_tags, local.default_compartments_freeform_tags) : local.default_compartments_freeform_tags
 
 }
 

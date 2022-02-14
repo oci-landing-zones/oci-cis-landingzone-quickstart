@@ -5,12 +5,6 @@ locals {
     all_notifications_defined_tags = {}
     all_notifications_freeform_tags = {}
 
-    default_notifications_defined_tags = null
-    default_notifications_freeform_tags = local.landing_zone_tags
-
-    notifications_defined_tags = length(local.all_notifications_defined_tags) > 0 ? local.all_notifications_defined_tags : local.default_notifications_defined_tags
-    notifications_freeform_tags = length(local.all_notifications_freeform_tags) > 0 ? local.all_notifications_freeform_tags : local.default_notifications_freeform_tags
-
     notify_on_iam_changes_rule          = {key:"${var.service_label}-notify-on-iam-changes-rule",           name:"${var.service_label}-notify-on-iam-changes-rule" }
     notify_on_network_changes_rule      = {key:"${var.service_label}-notify-on-network-changes-rule",       name:"${var.service_label}-notify-on-network-changes-rule"}
     notify_on_storage_changes_rule      = {key:"${var.service_label}-notify-on-storage-changes-rule",       name:"${var.service_label}-notify-on-storage-changes-rule"}
@@ -212,6 +206,14 @@ locals {
       freeform_tags       = local.notifications_freeform_tags
     } if length(var.compute_admin_email_endpoints) > 0 }
   )
+
+  ### DON'T TOUCH THESE ###
+  default_notifications_defined_tags = null
+  default_notifications_freeform_tags = local.landing_zone_tags
+
+  notifications_defined_tags = length(local.all_notifications_defined_tags) > 0 ? local.all_notifications_defined_tags : local.default_notifications_defined_tags
+  notifications_freeform_tags = length(local.all_notifications_freeform_tags) > 0 ? merge(local.all_notifications_freeform_tags, local.default_notifications_freeform_tags) : local.default_notifications_freeform_tags
+
 }
 
 

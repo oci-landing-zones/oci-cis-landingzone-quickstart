@@ -5,12 +5,6 @@ locals {
     all_oss_defined_tags = {}
     all_oss_freeform_tags = {}
     
-    default_oss_defined_tags = null
-    default_oss_freeform_tags = local.landing_zone_tags
-
-    oss_defined_tags = length(local.all_oss_defined_tags) > 0 ? local.all_oss_defined_tags : local.default_oss_defined_tags
-    oss_freeform_tags = length(local.all_oss_freeform_tags) > 0 ? local.all_oss_freeform_tags : local.default_oss_freeform_tags
-
     oss_bucket_logs = {for bkt in module.lz_buckets.oci_objectstorage_buckets : bkt.name => {
             log_display_name              = "${bkt.name}-object-storage-log",
             log_type                      = "SERVICE",
@@ -25,6 +19,14 @@ locals {
             freeform_tags                 = local.oss_freeform_tags
         }
     }
+
+    ### DON'T TOUCH THESE ###
+    default_oss_defined_tags = null
+    default_oss_freeform_tags = local.landing_zone_tags
+
+    oss_defined_tags = length(local.all_oss_defined_tags) > 0 ? local.all_oss_defined_tags : local.default_oss_defined_tags
+    oss_freeform_tags = length(local.all_oss_freeform_tags) > 0 ? merge(local.all_oss_freeform_tags, local.default_oss_freeform_tags) : local.default_oss_freeform_tags
+
 }
 
 module "lz_oss_logs" {

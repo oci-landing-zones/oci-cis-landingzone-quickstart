@@ -7,12 +7,6 @@ locals {
   all_policies_defined_tags = {}
   all_policies_freeform_tags = {}
   
-  default_policies_defined_tags = null
-  default_policies_freeform_tags = local.landing_zone_tags
-
-  policies_defined_tags = length(local.all_policies_defined_tags) > 0 ? local.all_policies_defined_tags : local.default_policies_defined_tags
-  policies_freeform_tags = length(local.all_policies_freeform_tags) > 0 ? local.all_policies_freeform_tags : local.default_policies_freeform_tags
-
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
@@ -410,6 +404,14 @@ locals {
         statements     = local.cost_root_permissions
       }
     }
+
+  ### DON'T TOUCH THESE ###
+  default_policies_defined_tags = null
+  default_policies_freeform_tags = local.landing_zone_tags
+
+  policies_defined_tags = length(local.all_policies_defined_tags) > 0 ? local.all_policies_defined_tags : local.default_policies_defined_tags
+  policies_freeform_tags = length(local.all_policies_freeform_tags) > 0 ? merge(local.all_policies_freeform_tags, local.default_policies_freeform_tags) : local.default_policies_freeform_tags
+
 }
 
 module "lz_root_policies" {

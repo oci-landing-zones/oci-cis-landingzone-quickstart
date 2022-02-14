@@ -7,12 +7,6 @@ locals {
   all_dmz_nsgs_defined_tags = {}
   all_dmz_nsgs_freeform_tags = {}
   
-  default_dmz_nsgs_defined_tags = null
-  default_dmz_nsgs_freeform_tags = local.landing_zone_tags
-  
-  dmz_nsgs_defined_tags = length(local.all_dmz_nsgs_defined_tags) > 0 ? local.all_dmz_nsgs_defined_tags : local.default_dmz_nsgs_defined_tags
-  dmz_nsgs_freeform_tags = length(local.all_dmz_nsgs_freeform_tags) > 0 ? local.all_dmz_nsgs_freeform_tags : local.default_dmz_nsgs_freeform_tags
-  
   dmz_bastions_nsg_name   = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-bastion-nsg" : null
   dmz_services_nsg_name   = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-services-nsg" : null
   dmz_public_dst_nsg_name = length(var.dmz_vcn_cidr) > 0 ? "${local.dmz_vcn_name.name}-public-dst-nsg" : null
@@ -113,6 +107,13 @@ locals {
     } }
   } } : {}
 
+  ### DON'T TOUCH THESE ###
+  default_dmz_nsgs_defined_tags = null
+  default_dmz_nsgs_freeform_tags = local.landing_zone_tags
+  
+  dmz_nsgs_defined_tags = length(local.all_dmz_nsgs_defined_tags) > 0 ? local.all_dmz_nsgs_defined_tags : local.default_dmz_nsgs_defined_tags
+  dmz_nsgs_freeform_tags = length(local.all_dmz_nsgs_freeform_tags) > 0 ? merge(local.all_dmz_nsgs_freeform_tags, local.default_dmz_nsgs_freeform_tags) : local.default_dmz_nsgs_freeform_tags
+  
 }
 
 module "lz_nsgs_dmz" {

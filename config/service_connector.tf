@@ -18,12 +18,12 @@ locals {
   all_service_connector_defined_tags = {}
   all_service_connector_freeform_tags = {}
 
-  # DO NOT TOUCH
+  ### DON'T TOUCH THESE ###
   default_service_connector_defined_tags = null
   default_service_connector_freeform_tags = local.landing_zone_tags
 
   service_connector_defined_tags = length(local.all_service_connector_defined_tags) > 0 ? local.all_service_connector_defined_tags : local.default_service_connector_defined_tags
-  service_connector_freeform_tags = length(local.all_service_connector_freeform_tags) > 0 ? local.all_service_connector_freeform_tags : local.default_service_connector_freeform_tags
+  service_connector_freeform_tags = length(local.all_service_connector_freeform_tags) > 0 ? merge(local.all_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
 }
 
 module "lz_sch_audit_bucket" {

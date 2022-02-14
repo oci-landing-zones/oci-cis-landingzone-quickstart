@@ -11,7 +11,7 @@ locals {
   default_groups_freeform_tags = local.landing_zone_tags
 
   groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags
-  groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? local.all_groups_freeform_tags : local.default_groups_freeform_tags
+  groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? merge(local.all_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
 }
 
 module "lz_provisioning_groups" {

@@ -9,7 +9,7 @@ locals {
   default_compartment_freeform_tags = local.landing_zone_tags
 
   compartment_defined_tags = length(local.all_compartment_defined_tags) > 0 ? local.all_compartment_defined_tags : local.default_compartment_defined_tags
-  compartment_freeform_tags = length(local.all_compartment_freeform_tags) > 0 ? local.all_compartment_freeform_tags : local.default_compartment_freeform_tags
+  compartment_freeform_tags = length(local.all_compartment_freeform_tags) > 0 ? merge(local.all_compartment_freeform_tags, local.default_compartment_freeform_tags) : local.default_compartment_freeform_tags
 
   unique_prefix = length(var.unique_prefix) > 0 ? var.unique_prefix : "lz"
   top_compartment_parent_id = length(var.existing_enclosing_compartments_parent_ocid) > 0 ? var.existing_enclosing_compartments_parent_ocid : var.tenancy_ocid

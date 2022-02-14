@@ -7,13 +7,6 @@ locals {
   all_groups_defined_tags = {}
   all_groups_freeform_tags = {}
 
-  default_groups_defined_tags = null
-  default_groups_freeform_tags = local.landing_zone_tags
-
-  # DO NOT TOUCH
-  groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags
-  groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? local.all_groups_freeform_tags : local.default_groups_freeform_tags
-
   default_groups = merge(
     { for i in [1] : (local.network_admin_group_name) => {
       description   = "Landing Zone group for managing networking in compartment ${local.network_compartment.name}."
@@ -80,6 +73,13 @@ locals {
   } : {}
   
   groups = merge(local.default_groups,local.exainfra_group)
+
+  ### DON'T TOUCH THESE ###
+  default_groups_defined_tags = null
+  default_groups_freeform_tags = local.landing_zone_tags
+
+  groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags
+  groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? merge(local.all_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
 
 }
 

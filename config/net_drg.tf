@@ -4,12 +4,13 @@
 locals {
   all_drg_defined_tags = {}
   all_drg_freeform_tags = {}
-  
+
+  ### DON'T TOUCH THESE ###
   default_drg_defined_tags = null
   default_drg_freeform_tags = local.landing_zone_tags
   
   drg_defined_tags = length(local.all_drg_defined_tags) > 0 ? local.all_drg_defined_tags : local.default_drg_defined_tags
-  drg_freeform_tags = length(local.all_drg_freeform_tags) > 0 ? local.all_drg_freeform_tags : local.default_drg_freeform_tags
+  drg_freeform_tags = length(local.all_drg_freeform_tags) > 0 ? merge(local.all_drg_freeform_tags, local.default_drg_freeform_tags) : local.default_drg_freeform_tags
 
 }
 

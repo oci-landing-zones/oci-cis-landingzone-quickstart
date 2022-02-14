@@ -6,12 +6,6 @@ locals  {
   all_topics_defined_tags = {}
   all_topics_freeform_tags = {}
 
-  default_topics_defined_tags = null
-  default_topics_freeform_tags = local.landing_zone_tags
-
-  topics_defined_tags = length(local.all_topics_defined_tags) > 0 ? local.all_topics_defined_tags : local.default_topics_defined_tags
-  topics_freeform_tags = length(local.all_topics_freeform_tags) > 0 ? local.all_topics_freeform_tags : local.default_topics_freeform_tags
-
   # Topics
   # If you have an existing topic you want to use enter the OCID(s) in the id property.
   security_topic    = {key: "SECURITY-TOPIC",   name: "${var.service_label}-security-topic",   cmp_id: local.security_compartment_id, id: null}
@@ -81,6 +75,14 @@ locals  {
         freeform_tags  = local.topics_freeform_tags
       } if length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true}
   )  
+
+  ### DON'T TOUCH THESE ###
+  default_topics_defined_tags = null
+  default_topics_freeform_tags = local.landing_zone_tags
+
+  topics_defined_tags = length(local.all_topics_defined_tags) > 0 ? local.all_topics_defined_tags : local.default_topics_defined_tags
+  topics_freeform_tags = length(local.all_topics_freeform_tags) > 0 ? merge(local.all_topics_freeform_tags, local.default_topics_freeform_tags) : local.default_topics_freeform_tags
+
 }
 
 module "lz_home_region_topics" {

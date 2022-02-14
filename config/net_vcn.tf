@@ -5,12 +5,6 @@ locals {
   all_vcn_defined_tags = {}
   all_vcn_freeform_tags = {}
   
-  default_vcn_defined_tags = null
-  default_vcn_freeform_tags = local.landing_zone_tags
-  
-  vcn_defined_tags = length(local.all_vcn_defined_tags) > 0 ? local.all_vcn_defined_tags : local.default_vcn_defined_tags
-  vcn_freeform_tags = length(local.all_vcn_freeform_tags) > 0 ? local.all_vcn_freeform_tags : local.default_vcn_freeform_tags
-  
   # # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
   # spoke_subnet_names = ["web", "app", "db"]
   # # Subnet Names used can be changed first subnet will be Public if var.no_internet_access is false
@@ -244,6 +238,14 @@ locals {
   } if length(regexall(".*-${local.spoke_subnet_names[2]}-*", key)) > 0 }
 
   lz_subnets_route_tables = merge(local.web_route_tables, local.app_route_tables, local.db_route_tables)
+
+  ### DON'T TOUCH THESE ###
+  default_vcn_defined_tags = null
+  default_vcn_freeform_tags = local.landing_zone_tags
+  
+  vcn_defined_tags = length(local.all_vcn_defined_tags) > 0 ? local.all_vcn_defined_tags : local.default_vcn_defined_tags
+  vcn_freeform_tags = length(local.all_vcn_freeform_tags) > 0 ? merge(local.all_vcn_freeform_tags, local.default_vcn_freeform_tags) : local.default_vcn_freeform_tags
+  
 
 }
 

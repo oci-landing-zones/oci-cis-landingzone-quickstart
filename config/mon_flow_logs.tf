@@ -6,12 +6,6 @@ locals {
   all_flow_logs_defined_tags = {}
   all_flow_logs_freeform_tags = {}
 
-  default_flow_logs_defined_tags = null
-  default_flow_logs_freeform_tags = local.landing_zone_tags
-
-  flow_logs_defined_tags = length(local.all_flow_logs_defined_tags) > 0 ? local.all_flow_logs_defined_tags : local.default_flow_logs_defined_tags
-  flow_logs_freeform_tags = length(local.all_flow_logs_freeform_tags) > 0 ? local.all_flow_logs_freeform_tags : local.default_flow_logs_freeform_tags
-
   all_lz_subnets = merge(module.lz_vcn_spokes.subnets, module.lz_vcn_dmz.subnets, module.lz_exacs_vcns.subnets)  
 
   flow_logs = { for k, v in local.all_lz_subnets : k =>
@@ -29,7 +23,16 @@ locals {
       freeform_tags                 = local.flow_logs_freeform_tags
     }
   }
+
+  ### DON'T TOUCH THESE ###
+  default_flow_logs_defined_tags = null
+  default_flow_logs_freeform_tags = local.landing_zone_tags
+
+  flow_logs_defined_tags = length(local.all_flow_logs_defined_tags) > 0 ? local.all_flow_logs_defined_tags : local.default_flow_logs_defined_tags
+  flow_logs_freeform_tags = length(local.all_flow_logs_freeform_tags) > 0 ? merge(local.all_flow_logs_freeform_tags, local.default_flow_logs_freeform_tags) : local.default_flow_logs_freeform_tags
+
 }
+
 module "lz_flow_logs" {
   depends_on             = [module.lz_vcn_spokes, module.lz_vcn_dmz, module.lz_exacs_vcns]
   source                 = "../modules/monitoring/logs"

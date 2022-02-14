@@ -134,7 +134,7 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
     This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
 * **OCI Tags**
-    * The OCI Tag Defaults may not be applied to OCI Keys during creation.
+    * The OCI Tag Defaults may not be applied to OCI Keys during creation. This issue is currently under investigation.
     * The CIS OCI Landing Zone Quick Start sets a freeform tag as an indicator for resources created by the Terraform scripts. When using this approach, OCI Tag Defaults will be created, too.
 
 * **OCI Compartment Deletion**

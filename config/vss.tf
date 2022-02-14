@@ -10,12 +10,6 @@ locals {
   all_vss_defined_tags = {}
   all_vss_freeform_tags = {}
 
-  default_vss_defined_tags = null
-  default_vss_freeform_tags = local.landing_zone_tags
-  
-  vss_defined_tags = length(local.all_vss_defined_tags) > 0 ? local.all_vss_defined_tags : local.default_vss_defined_tags
-  vss_freeform_tags = length(local.all_vss_freeform_tags) > 0 ? local.all_vss_freeform_tags : local.default_vss_freeform_tags
-
   # Names
   scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
   security_cmp_target_name = "${local.security_compartment.key}-scan-target"
@@ -98,6 +92,14 @@ locals {
   } : {}  
 
   scan_targets = merge(local.default_scan_targets, local.exainfra_scan_target)
+
+  ### DON'T TOUCH THESE ###
+  default_vss_defined_tags = null
+  default_vss_freeform_tags = local.landing_zone_tags
+  
+  vss_defined_tags = length(local.all_vss_defined_tags) > 0 ? local.all_vss_defined_tags : local.default_vss_defined_tags
+  vss_freeform_tags = length(local.all_vss_freeform_tags) > 0 ? merge(local.all_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
+
 }
 
 module "lz_scanning" {

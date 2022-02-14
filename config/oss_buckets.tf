@@ -10,12 +10,6 @@ locals {
   # Names
   appdev_bucket_name = "${var.service_label}-appdev-bucket"
 
-  default_buckets_defined_tags = null
-  default_buckets_freeform_tags = local.landing_zone_tags
-
-  buckets_defined_tags = length(local.all_buckets_defined_tags) > 0 ? local.all_buckets_defined_tags : local.default_buckets_defined_tags
-  buckets_freeform_tags = length(local.all_buckets_freeform_tags) > 0 ? local.all_buckets_freeform_tags : local.default_buckets_freeform_tags
-
   default_buckets = { 
     (local.appdev_bucket_name) = {
       compartment_id = local.appdev_compartment_id
@@ -25,6 +19,14 @@ locals {
       freeform_tags = local.buckets_freeform_tags
     }
   }
+
+  ### DON'T TOUCH THESE ###
+  default_buckets_defined_tags = null
+  default_buckets_freeform_tags = local.landing_zone_tags
+
+  buckets_defined_tags = length(local.all_buckets_defined_tags) > 0 ? local.all_buckets_defined_tags : local.default_buckets_defined_tags
+  buckets_freeform_tags = length(local.all_buckets_freeform_tags) > 0 ? merge(local.all_buckets_freeform_tags, local.default_buckets_freeform_tags) : local.default_buckets_freeform_tags
+
 }
 
 module "lz_buckets" {

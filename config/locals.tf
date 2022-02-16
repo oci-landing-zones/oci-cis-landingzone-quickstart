@@ -101,5 +101,5 @@ locals {
   display_outputs = true
 
   # Tags
-  landing_zone_tags = {"landing-zone" : "${var.service_label}-quickstart"}
+  landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
 }

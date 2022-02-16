@@ -34,5 +34,5 @@ locals {
   grant_tenancy_level_mgmt_policies = true
 
   # Tags
-  landing_zone_tags = {"landing-zone" : "${var.unique_prefix}-quickstart"}
+  landing_zone_tags = {"cis-landing-zone" : "${var.unique_prefix}-quickstart"}
 }

@@ -39,5 +39,7 @@ module "lz_flow_logs" {
   compartment_id         = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
   log_group_display_name = "${var.service_label}-flow-logs-group"
   log_group_description  = "Landing Zone ${var.service_label} flow logs group."
+  defined_tags           = local.flow_logs_defined_tags
+  freeform_tags          = local.flow_logs_freeform_tags
   target_resources       = local.flow_logs
 }  

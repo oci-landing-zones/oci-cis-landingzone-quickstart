@@ -172,6 +172,18 @@ variable "vcn_names" {
   }
 }
 
+variable "subnets_names" {
+  type = list(string)
+  default = []
+  description = "List of subnet names to be used in each of the spoke VCNs, each subnet name must have a bit size below, the first subnet will be public if var.no_internet_access is false."
+}
+
+variable "subnets_sizes" {
+  type = list(string)
+  default = []
+  description = "List of subnet sizes in bit to be used in each of the spoke VCNs, each subnet bit must have a subnet name above."
+}
+
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false

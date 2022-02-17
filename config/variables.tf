@@ -172,6 +172,18 @@ variable "vcn_names" {
   }
 }
 
+variable "subnets_names" {
+  type = list(string)
+  default = []
+  description = "List of subnet names to be used in each of the spoke(s) subnet names, each subnet name must have a bit size below, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match subnets_sizes."
+}
+
+variable "subnets_sizes" {
+  type = list(string)
+  default = []
+  description = "List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of /4. The list length and elements order must match subnets_names"
+}
+
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false

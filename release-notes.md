@@ -1,56 +1,86 @@
-# November 17, 2021 Release Notes - Stable 2.2.0
-1. [Enablement of events and alarms specific to compute, storage, database and governance](#events_and_alarms_2_2_0)
-1. [Addition of e-mail distribution endpoint personas for storage, compute and governance](#operational_personas_2_2_0)
-1. [Configurability of general alarm and event enablement](#alarm_configurability_2_2_0)
-1. [Events moved from root to respective LZ compartments](#events_moved_to_respective_lz_compartments_2_2_0)
-1. [Resource Manager interface updated](#resource_manager_interface_updated_2_2_0)
+# February 18, 2022 Release Notes - Stable 2.3.1
+1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
+1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)
+1. [Fixed Internet Gateway Creation in ExaCS VCN](#exacs_fix)
+1. [Updated Bastion NSG to include RDP](#rdp_update)
+
+## <a name="spoke_config">Configurable Spoke Subnet Names and Subnet Sizes</a>
+The names and the size of subnets created in spoke VCN(s) can now be configured using the variables: **subnets_names** and **subnets_sizes**. Ex. `["front", "middle", "back"]` and `["12","8","10"]`.  Additional customization of spoke VCNs can be done in net_vcn.tf or with a net_vcn_override.tf.
+
+## <a name="dg_osms">Updated Compute Dynamic Group to support OS Management</a>
+Added IAM policy statements to the compute agent dynamic group policy to include support for OS Management.
+
+## <a name="exacs_fix">Fixed Internet Gateway Creation in ExaCS VCN</a>
+Disabled creation of Internet Gateway in ExaCS VCNs.
+
+## <a name="rdp_update">Fixed Internet Gateway Creation in ExaCS VCN</a>
+Added port 3389 to the Bastion Network Security Group (NSG) to support Remote Desktop Protocol (RDP) for Windows based instances.
+
+# February 02, 2022 Release Notes - Stable 2.3.0
+1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)
+1. [Bring Existing Dynamic Groups](#byodg_2_3_0)
+1. [CCCS Guard Rails](#script_2_3_0)
+1. [Landing Zone Logo](#lz_logo_2_3_0)
+1. [Customized VCN and Subnet deployment option](#lz_vcn_2_3_0)
+
+## <a name="cross_region_lz_2_3_0">Cross Region Landing Zone</a>
+When you run Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
+
+Some customers want to extend their Landing Zone to more than one region of choice, while reusing the home region resources. One typical use case is setting up a second region of choice for disaster recovery, reusing the same home region Landing Zone resources. A more broad use case is implementing a single global Landing Zone across all subscribed regions. These use cases are now supported via the newly introduced *extend_landing_zone_to_new_region*. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned, but reused instead.
+
+## <a name="byodg_2_3_0">Bring Existing Dynamic Groups</a>
+As with groups, Landing Zone now supports reusing existing *dynamic* groups. These dynamic groups are thought to be used by OCI Functions, Compute's management agent and databases for calling out other services. 
+
+## <a name="script_2_3_0">CCCS Guard Rails</a>
+The Compliance Checking script's summary report now includes a column for CCCS Guard Rails.
+
+## <a name="lz_logo_2_3_0">Landing Zone Logo</a>
+Landing Zone has been gifted with a logo. A courtesy from our colleague [Chris Johnson](https://github.com/therealcmj).   
+
+## <a name="lz_vcn_2_3_0">Customized VCN and Subnet deployment option</a>
+This release provides the option to easily customize your VCNs and Subnets in terms of cidr ranges and naming using a map resource called custom_vcns_map.
+Please note as part of this release we have also updated the default Database subnet to include a routing rule for sending traffic destined for 0.0.0.0/0 to the NAT Gateway.
+However the default Network Security Group will still prevent any egress to the internet until it is changed by you.
+
+
+# December 02, 2021 Release Notes - Stable 2.2.0
+1. [Updated Topics and Subscription Module (Impacts existing deployments)](#topics_2_2_0)
+1. [Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance](#events_and_alarms_2_2_0)
+1. [Compliance Checking Script Runs in All Regions](#script_update_2_2_0)
 1. [Click to Deploy button](#click_to_deploy_2_2_0)
-1. [Compliance Checking Script Update](#script_update_2_2_0)
-1. [Compliance Checking Script multi-region support](#multi-region-support-script_update_2_2_0)
-1. [Bastion NSG rule support for RDP](#bastion-nsg-rule-support-for-rdp_2_2_0)
+1. [Added SVG versions of Core Architecture Files](#svg_architecture_files)
+1. [Added an optional Budget and Budget Alert Rule](#budget_2_2_0)
 
 
-## <a name="events_and_alarms_2_2_0">Enablement of Events and Alarms Specific to Compute, Storage, Database and Governance</a>
-Customers can now deploy events and alarms specific to operational areas including compute, storage, database and governance as part of the default Landing Zone deployment.  This includes compute instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.   Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.  
+## <a name="topics_2_2_0">Updated Topics and Subscription Module (Impacts existing deployments)</a>
+In previous versions of the Landing Zone Topics and Subscriptions were a single module.  Going forward there will be a [Topics Module](modules/topics-v2/toopics/README.md) and a [Subscription Module](modules/topics-v2/subscriptions/README.md). **Due to this change upgrading an existing Landing Zone deployment will cause the Security Topic and Subscriptions as well as the Network Topic and Subscriptions to be deleted and recreated.** This will require users receiving these email notifications to re-accept their subscriptions.
 
-For databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.  Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release. 
+## <a name="events_and_alarms_2_2_0">Enablement of Operational Events and Alarms Specific to Compute, Storage, Database and Governance</a>
+Customers can now deploy events and alarms specific to operational areas including Compute, Storage, Database and Governance as part of the default Landing Zone deployment. Operational alarms and events can be enabled by entering an email address in. This includes following alarms:
+- AppDev Compartment
+    - Instance based monitoring and alerting of high cpu and high memory usage for instances deployed in the AppDev compartment.
+    - Bare metal unhealthy and VM maintenance alarms are also part of the new core compute alarm set.
+- Database Compartment 
+    - Databases deployed in the Database compartment operational events and alerts have been enabled for for high ADB CPU and high ADB Storage usage.
+    - Autonomous Database Critical Events and ExaData CS Infrastructure events are now tracked in this release.
+- Network Compartment
+    - Up/Down status for VPN and FastConnect services in the Network compartment of the Landing Zone.
 
-There are also new alarms that monitor Up/Down status for VPN and FastConnect services deployed in the Network compartment of the Landing Zone.  
-
-## <a name="operational_personas_2_2_0">Addition of E-mail Distribution Personas for Storage, Compute and Governance</a>
-New operational personas can be notified including new e-mail endpoints for compute admins, database admins, storage admins and governance administrators.  
-
-## <a name="alarm_configurability_2_2_0">Configurability of General Alarm and Event Enablement</a>
-Alarms and events are configurable and enabled by default to meet OCI CIS Benchmark security standards.  The core tfvars configuration file has two new configurable fields including "create_alarms_as_enabled = true" and "create_events_as_enabled = true".   By changing either of these to false all events and alarms specific to the Landing Zone deployment can be disabled respectively.   
-
-## <a name="events_moved_to_respective_lz_compartments_2_2_0">Events Moved from Root to Respective LZ Compartments</a>
-Events have been moved to their respective compartments.   For instance, network event rules have been moved to the network compartment so network administrators can managed their own rules without needing access to the Root compartment of the Landing Zone. 
-
-Additionally event rules for compute and database reside respectively in the compute and database compartments.  
-
-New governance event rules have been placed in the security compartment.  
-
-## <a name="resource_manager_interface_updated_2_2_0">Resource Manager Interface Updated</a>
-The Resource Manager interface has been updated to account for the 
-two new configurable "event" and "alarm" fields which are:
-
- "create_alarms_as_enabled = true" 
-
- "create_events_as_enabled = true"
+## <a name="script_update_2_2_0">Compliance Checking Script Runs in All Regions</a>
+The compliance checking script now runs checks on all available regions in the tenancy and has improved handling of Oracle PSM policy statements.
 
 ## <a name="click_to_deploy_2_2_0">Click to Deploy button</a>
 Resource Manager stack can be created directly from GitHub repository through a single button click. The zip file with the source code is passed directly to Resource Manager Create Stack API. 
 
-## <a name="script_update_2_2_0">Compliance Checking Script Update</a>
-Updated the compliance checking script to improve handling of Oracle PSM policy statements.
+## <a name="svg_architecture_files">Added SVG versions of Core Architecture Files</a>
+Added SVG versions of Core Architecture Files so users can modify the architectures using Draw.io.
 
-## <a name="multi-region-support-script_update_2_2_0">Compliance Checking Script Multi-Region Support</a>
-Updated the compliance checking script to support reports for all subscribed regions for a given tenancy.  IAM related report content only executed on home region. 
+## <a name="budget_2_2_0">Added an optional Budget and Budget Alert Rule</a>
+Customers can now choose to deploy a budget at the root or enclosing compartment level to track monthly spending and be alerted if a forcasted spending breaches a defined threshold. 
 
-## <a name="bastion-nsg-rule-support-for-rdp_2_2_0">RDP Enablement for Bastion Access</a>
-Bastion NSG rules support RDP in addition to existing SSH ingress rule. Enabled as part of onprem_src_ssh_cidrs variable in variables.tf  .   Description for bastion nsg rule update for RDP added to Resource Manager interface as well. 
-
-
+A Cost Managment Admin group is also created that grants permission to Create,Update,Delete budgets and also review Cost Data in the UI or by downloading the detailed Cost Reports.
+Cost Data View Only permissions have been added to the policies for: Auditor, Database Admin, AppDev Admin, Network Admin and Security Admin allowing members of these groups to review spending. 
+  
 # October 13, 2021 Release Notes - Stable 2.1.1
 1. [CIS Compliance Checking Script Updates](#cis_script_2_1_1)
 1. [Bastion Service Enabled by public_src_bastion_cidrs](#bastion_service_update)

@@ -21,7 +21,7 @@ locals {
     compartment_id    = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
     cidr              = vcn.cidr
     dns_label         = length(regexall("[a-zA-Z0-9]+", vcn.name)) > 0 ? "${substr(join("", regexall("[a-zA-Z0-9]+", vcn.name)), 0, 11)}${local.region_key}" : "${substr(vcn.name, 0, 11)}${local.region_key}"
-    is_create_igw     = length(var.dmz_vcn_cidr) > 0 ? false : true
+    is_create_igw     = false 
     is_attach_drg     = var.is_vcn_onprem_connected == true || var.hub_spoke_architecture == true ? (var.dmz_for_firewall == true ? false : true) : false
     block_nat_traffic = false
     defined_tags      = null

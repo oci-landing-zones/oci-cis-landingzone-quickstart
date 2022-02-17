@@ -301,7 +301,7 @@ class CIS_Report:
             
             # By Default it is today's date
             if report_directory:
-                self.__report_directory = self.__current_region + report_directory 
+                self.__report_directory = report_directory + "/" + self.__current_region 
             else:
                 self.__report_directory = self.__current_region + "-" + self.__tenancy.name + "-" + self.start_date 
 

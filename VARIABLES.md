@@ -57,7 +57,7 @@ Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. | No | false
 **onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
-**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH inbound connections. It must be a subset of *onprem_cidrs*. | No | []
+**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH and RDP inbound connections. It must be a subset of *onprem_cidrs*. | No | []
 **hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | No | false
 **dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. | Yes, if *hub_spoke_architecture* is true | ""
 **dmz_for_firewall** | Determines if the DMZ VCN will be used for deploying 3rd party firewalls via terraform. DRG attachments will not be created. | No | false
@@ -65,7 +65,7 @@ Variable Name | Description | Required | Default Value
 **dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if *dmz_vcn_cidr*'s prefix is 20 (/20) and *dmz_subnet_size* is 4, subnets are going to be /24. | Yes, if *dmz_vcn_cidr* is provided  | 4
 **no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to set *is_vcn_onprem_connected* to true. | No | false
 **existing_drg_id** | The OCID of an existing DRG. If provided, no DRG is created (even if *is_vc_onprem_connected* is set to true).  | No | ""
-**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
+**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
 **public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
 **public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. | No | []
 

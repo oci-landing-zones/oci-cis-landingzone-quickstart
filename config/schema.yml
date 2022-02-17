@@ -37,6 +37,9 @@ variableGroups:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
+      - "subnets_names"
+      - "subnets_sizes"
+
     
   - title: "Exadata Cloud Service"
     variables:
@@ -302,7 +305,29 @@ variables:
     required: false
     visible: net_advanced_options
     default: []  
-
+  
+  subnets_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Subnets custom names"
+    description: "List of subnet sizes in bit to be used in each of the spoke VCNs, each subnet bit must have a subnet name above."
+    required: false
+    visible: net_advanced_options
+    default: []  
+  
+  subnets_sizes:
+    type: array
+    items:
+      type: string
+    uniqueItems: false
+    title: "Subnets sizes"
+    description: "List of subnet sizes in bit to be used in each of the spoke VCNs, each subnet bit must have a subnet name above."
+    required: false
+    visible: net_advanced_options
+    default: []  
+  
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"

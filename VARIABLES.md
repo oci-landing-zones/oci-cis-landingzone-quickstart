@@ -41,7 +41,8 @@ Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | []
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
-
+**subnets_names** | List of custom names to be used in each of the spoke(s) subnet names, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match *subnets_sizes*. | No | []
+**subnets_sizes** | List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of VCN CIDR + 4. The list length and elements order must match *subnets_names*. | No | []
 ### <a name="exadata_variables"></a>Exadata Cloud Service Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------

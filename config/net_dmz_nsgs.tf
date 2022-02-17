@@ -88,7 +88,7 @@ locals {
     ingress_rules : {},
     egress_rules : { for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) > 0,
-      description : "Allos HTTPS connections to hosts in ${cidr} CIDR range.",
+      description : "Allows HTTPS connections to hosts in ${cidr} CIDR range.",
       stateless : false,
       protocol : "6",
       dst      = cidr,
@@ -127,6 +127,20 @@ module "lz_nsgs_dmz" {
           icmp_type : null,
           icmp_code : null
         } },
+         { for cidr in var.public_src_bastion_cidrs : "rdp-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
+          is_create : (!var.no_internet_access && length(var.onprem_cidrs) == 0 && length(var.public_src_bastion_cidrs) > 0),
+          description : "Allows RDP connections from hosts in ${cidr} CIDR range.",
+          protocol : "6",
+          stateless : false,
+          src : cidr,
+          src_type : "CIDR_BLOCK",
+          dst_port_min : 3389,
+          dst_port_max : 3389,
+          src_port_min : null,
+          src_port_max : null,
+          icmp_type : null,
+          icmp_code : null
+        } },
         { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
           is_create : length(var.onprem_src_ssh_cidrs) > 0,
           description : "Allows SSH connections from hosts in on-premises ${cidr} CIDR range.",
@@ -142,7 +156,24 @@ module "lz_nsgs_dmz" {
           icmp_code : null
 
           }
-      }),
+      },
+      { for cidr in var.onprem_src_ssh_cidrs : "rdp-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+          is_create : length(var.onprem_src_ssh_cidrs) > 0,
+          description : "Allows RDP connections from hosts in on-premises ${cidr} CIDR range.",
+          protocol : "6",
+          stateless : false,
+          src : cidr,
+          src_type : "CIDR_BLOCK",
+          dst_port_min : 3389,
+          dst_port_max : 3389,
+          src_port_min : null,
+          src_port_max : null,
+          icmp_type : null,
+          icmp_code : null
+
+          }
+      }
+      ),
       egress_rules : merge(local.ssh_dmz_to_spokes_nsg_egress_rules, local.ssh_dmz_to_exacs_nsg_egress_rules,
         { dmz-services-egress-rule : {
           is_create : true,

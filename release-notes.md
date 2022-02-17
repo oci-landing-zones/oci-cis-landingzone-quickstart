@@ -2,7 +2,7 @@
 1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)
 1. [Fixed Internet Gateway Creation in ExaCS VCN](#exacs_fix)
-
+1. [Updated Bastion NSG to include RDP](#rdp_update)
 
 ## <a name="spoke_config">Configurable Spoke Subnet Names and Subnet Sizes</a>
 The names and the size of subnets created in spoke VCN(s) can now be configured using the variables: **subnets_names** and **subnets_sizes**. Ex. `["front", "middle", "back"]` and `["12","8","10"]`.  Additional customization of spoke VCNs can be done in net_vcn.tf or with a net_vcn_override.tf.
@@ -12,6 +12,9 @@ Added IAM policy statements to the compute agent dynamic group policy to include
 
 ## <a name="exacs_fix">Fixed Internet Gateway Creation in ExaCS VCN</a>
 Disabled creation of Internet Gateway in ExaCS VCNs.
+
+## <a name="rdp_update">Updated Bastion NSG to include RDP</a>
+Added port 3389 to the Bastion Network Security Group (NSG) to support Remote Desktop Protocol (RDP) for Windows based instances.
 
 # February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)

@@ -1,3 +1,18 @@
+# February 18, 2022 Release Notes - Stable 2.3.x
+1. [Tagging Support](#tagging_2_3_x)
+
+## <a name="tagging_2_3_x">Tagging Support</a>
+The Landing Zone fully supports definition and usage of defined_tags and freeform_tags for all resources. In this release there is no additional variable to be set in the quickstart-input.tfvars. Tag definition and usage can be set using [Terraform Override Files](https://www.terraform.io/language/files/override).
+
+Usage Overview:
+- Defined tags - At the moment, using Defined Tags is a two step process.
+  1. Create the defined tags.
+  1. Use the defined tags.
+- Freeform tags - Freeform tags can be used at any time. You simply assign a map of freeform tags, to a predefined local variable in an override file, for example ```all_keys_freeform_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}```.
+
+Please note that space characters (' ') in the tag names are not supported by OCI.
+For more information see the Landing Zone Deployment Guide chapter on Customization.
+
 # February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)
 1. [Bring Existing Dynamic Groups](#byodg_2_3_0)

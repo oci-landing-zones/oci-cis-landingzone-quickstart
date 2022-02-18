@@ -144,7 +144,7 @@ variable "onprem_cidrs" {
 
 variable "onprem_src_ssh_cidrs" {
   type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. They must be a subset of onprem_cidrs."
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH and RDP. They must be a subset of onprem_cidrs."
   default     = []
   validation {
     condition     = length([for c in var.onprem_src_ssh_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_src_ssh_cidrs)

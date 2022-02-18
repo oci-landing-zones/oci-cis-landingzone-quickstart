@@ -26,6 +26,20 @@ locals {
         src_port_max : null,
         icmp_type : null,
         icmp_code : null
+      },
+      rdp-dmz-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) > 0,
+        description : "Allows RDP connections from hosts in DMZ VCN (${var.dmz_vcn_cidr} CIDR range).",
+        stateless : false,
+        protocol : "6",
+        src : length(var.dmz_vcn_cidr) > 0 ? module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block : null,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
       }
       }, { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
         is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_src_ssh_cidrs) > 0),
@@ -42,6 +56,21 @@ locals {
         icmp_code : null
       }
       },
+      { for cidr in var.onprem_src_ssh_cidrs : "rdp-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+        is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_src_ssh_cidrs) > 0),
+        description : "Allows RDP connections from hosts in on-premises ${cidr} CIDR range.",
+        stateless : false,
+        protocol : "6",
+        src : cidr,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+        }
+      },
       { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
         is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
         description : "Allows SSH connections from hosts in ${cidr} CIDR range.",
@@ -57,7 +86,24 @@ locals {
         icmp_code : null
         }
 
-    }),
+      },
+      { for cidr in var.public_src_bastion_cidrs : "rdp-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
+        is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
+        description : "Allows RDP connections from hosts in ${cidr} CIDR range.",
+        protocol : "6",
+        stateless : false,
+        src : cidr,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+        }
+
+      }
+    ),
     egress_rules : {
       app-egress_rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -233,6 +279,20 @@ locals {
         icmp_type : null,
         icmp_code : null
       },
+      rdp-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) == 0,
+        description : "Allows RDP connections from hosts in ${k}-bastion-nsg NSG.",
+        stateless : false,
+        protocol : "6",
+        src : "${k}-bastion-nsg",
+        src_type : "NSG_NAME",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
       http-ingress-rule : {
         is_create : true,
         description : "Allows HTTP connections to hosts in ${k}-lbr-nsg NSG.",
@@ -276,8 +336,8 @@ locals {
         dst_port_max : 443,
         icmp_code : null,
         icmp_type : null
-      }},
-      { for c in var.exacs_vcn_cidrs : "sqlnet-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+      } },
+      { for c in var.exacs_vcn_cidrs : "sqlnet-exacs-egress-rule-${index(var.exacs_vcn_cidrs, c)}" => {
         is_create : var.hub_spoke_architecture == true,
         description : "Allows SQLNet connections to Exadata Database service in ${c} CIDR range.",
         stateless : false,
@@ -290,8 +350,8 @@ locals {
         dst_port_max : 1522,
         icmp_code : null,
         icmp_type : null
-      }},
-      { for c in var.exacs_vcn_cidrs : "ons-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+      } },
+      { for c in var.exacs_vcn_cidrs : "ons-exacs-egress-rule-${index(var.exacs_vcn_cidrs, c)}" => {
         is_create : var.hub_spoke_architecture == true,
         description : "Allows Oracle Notification Services (ONS) communication to hosts in ${c} CIDR range for Fast Application Notifications (FAN).",
         stateless : false,
@@ -304,8 +364,8 @@ locals {
         dst_port_max : 6200,
         icmp_code : null,
         icmp_type : null
-      }})
-    } 
+    } })
+    }
   }
 
   db_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-nsg" => {

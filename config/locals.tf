@@ -64,8 +64,8 @@ locals {
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
 
-  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
-        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
+  database_kms_statements = ["Allow dynamic-group ${local.database_kms_dynamic_group_name} to manage vaults in compartment ${local.security_compartment.name}",
+        "Allow dynamic-group ${local.database_kms_dynamic_group_name} to manage vaults in compartment ${local.security_compartment.name}"]
 
 
   # Tags

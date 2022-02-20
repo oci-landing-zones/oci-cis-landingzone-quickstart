@@ -41,8 +41,6 @@ locals {
            display_name = local.compute_instance_status_alarm.name
            defined_tags = local.alarms_defined_tags
            freeform_tags = local.alarms_freeform_tags
-           defined_tags = local.alarms_defined_tags
-           freeform_tags = local.alarms_freeform_tags
            is_enabled = var.create_alarms_as_enabled
            metric_compartment_id = local.compute_topic.cmp_id
            namespace = "oci_compute_infrastructure_health"

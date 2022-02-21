@@ -23,8 +23,8 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| scan\_recipes | n/a | <pre>map(object({<br>    compartment_id                                = string,<br>    agent_scan_level                              = string,<br>    agent_configuration_vendor                    = string,<br>    agent_cis_benchmark_settings_scan_level       = string,<br>    port_scan_level                               = string,<br>    schedule_type                                 = string,<br>    schedule_day_of_week                          = string,<br>    defined_tags                                  = map(string)<br>  }))</pre> | n/a | yes |
-| scan\_targets | n/a | <pre>map(object({<br>    compartment_id        = string,<br>    description           = string,<br>    scan_recipe_name      = string,<br>    target_compartment_id = string,<br>    defined_tags          = map(string)<br>  }))</pre> | n/a | yes |
+| scan\_recipes | n/a | <pre>map(object({<br>    compartment_id                                = string,<br>    agent_scan_level                              = string,<br>    agent_configuration_vendor                    = string,<br>    agent_cis_benchmark_settings_scan_level       = string,<br>    port_scan_level                               = string,<br>    schedule_type                                 = string,<br>    schedule_day_of_week                          = string,<br>    defined_tags                                  = map(string),<br>    freeform_tags                                 = map(string)<br>  }))</pre> | n/a | yes |
+| scan\_targets | n/a | <pre>map(object({<br>    compartment_id        = string,<br>    description           = string,<br>    scan_recipe_name      = string,<br>    target_compartment_id = string,<br>    defined_tags          = map(string),<br>    freeform_tags         = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

@@ -2,6 +2,9 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+    all_notifications_defined_tags = {}
+    all_notifications_freeform_tags = {}
+
     notify_on_iam_changes_rule          = {key:"${var.service_label}-notify-on-iam-changes-rule",           name:"${var.service_label}-notify-on-iam-changes-rule" }
     notify_on_network_changes_rule      = {key:"${var.service_label}-notify-on-network-changes-rule",       name:"${var.service_label}-notify-on-network-changes-rule"}
     notify_on_storage_changes_rule      = {key:"${var.service_label}-notify-on-storage-changes-rule",       name:"${var.service_label}-notify-on-storage-changes-rule"}
@@ -46,7 +49,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.security_topic.id != null ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.key].id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if var.extend_landing_zone_to_new_region == false
   }
   regional_notifications =  merge (
@@ -104,7 +108,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.network_topic.id == null ? module.lz_topics.topics[local.network_topic.key].id : local.network_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     }},
     {for i in [1] : (local.notify_on_storage_changes_rule.key) => {
       compartment_id      = local.storage_topic.cmp_id
@@ -123,7 +128,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.storage_topic.id == null ? module.lz_topics.topics[local.storage_topic.key].id : local.storage_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if length(var.storage_admin_email_endpoints) > 0},
     
     {for i in [1] : (local.notify_on_database_changes_rule.key) => {
@@ -139,7 +145,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.database_topic.id == null ? module.lz_topics.topics[local.database_topic.key].id : local.database_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if length(var.database_admin_email_endpoints)  > 0},
 
      
@@ -156,7 +163,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.exainfra_topic.id == null ? module.lz_topics.topics[local.exainfra_topic.key].id : local.exainfra_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if length(var.exainfra_admin_email_endpoints)  > 0 && var.deploy_exainfra_cmp == true},
 
     {for i in [1] : (local.notify_on_budget_changes_rule.key) => {
@@ -176,7 +184,8 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.budget_topic.id == null ? module.lz_topics.topics[local.budget_topic.key].id : local.budget_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if length(var.budget_admin_email_endpoints) > 0},
 
     {for i in [1] : (local.notify_on_compute_changes_rule.key) => {
@@ -193,9 +202,18 @@ locals {
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.compute_topic.id == null ? module.lz_topics.topics[local.compute_topic.key].id : local.compute_topic.id
-      defined_tags        = null
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
     } if length(var.compute_admin_email_endpoints) > 0 }
   )
+
+  ### DON'T TOUCH THESE ###
+  default_notifications_defined_tags = null
+  default_notifications_freeform_tags = local.landing_zone_tags
+
+  notifications_defined_tags = length(local.all_notifications_defined_tags) > 0 ? local.all_notifications_defined_tags : local.default_notifications_defined_tags
+  notifications_freeform_tags = length(local.all_notifications_freeform_tags) > 0 ? merge(local.all_notifications_freeform_tags, local.default_notifications_freeform_tags) : local.default_notifications_freeform_tags
+
 }
 
 

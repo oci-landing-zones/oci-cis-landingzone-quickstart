@@ -4,6 +4,8 @@
 resource "oci_sch_service_connector" "this" {
     compartment_id = var.service_connector.compartment_id
     display_name   = var.service_connector.service_connector_display_name
+    defined_tags   = var.service_connector.defined_tags
+    freeform_tags  = var.service_connector.freeform_tags
     source {
         kind = var.service_connector.service_connector_source_kind
         dynamic "log_sources" {

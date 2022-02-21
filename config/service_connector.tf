@@ -1,6 +1,31 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+locals {
+  sch_audit_display_name        = "${var.service_label}-audit-sch"
+  sch_audit_bucket_name         = "${var.service_label}-audit-sch-bucket"
+  sch_audit_target_rollover_MBs = 100
+  sch_audit_target_rollover_MSs = 420000
+
+  sch_vcnFlowLogs_display_name        = "${var.service_label}-vcn-flow-logs-sch"
+  sch_vcnFlowLogs_bucket_name         = "${var.service_label}-vcn-flow-logs-sch-bucket"
+  sch_vcnFlowLogs_target_rollover_MBs = 100
+  sch_vcnFlowLogs_target_rollover_MSs = 420000
+
+  sch_audit_policy_name       = "${var.service_label}-audit-sch-policy"
+  sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
+
+  all_service_connector_defined_tags = {}
+  all_service_connector_freeform_tags = {}
+
+  ### DON'T TOUCH THESE ###
+  default_service_connector_defined_tags = null
+  default_service_connector_freeform_tags = local.landing_zone_tags
+
+  service_connector_defined_tags = length(local.all_service_connector_defined_tags) > 0 ? local.all_service_connector_defined_tags : local.default_service_connector_defined_tags
+  service_connector_freeform_tags = length(local.all_service_connector_freeform_tags) > 0 ? merge(local.all_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
+}
+
 module "lz_sch_audit_bucket" {
     depends_on = [ null_resource.slow_down_buckets ]
     count = (var.create_service_connector_audit  == true && lower(var.service_connector_audit_target) == "objectstorage") ? 1 : 0
@@ -11,6 +36,8 @@ module "lz_sch_audit_bucket" {
             compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
             name = local.sch_audit_bucket_name
             namespace = data.oci_objectstorage_namespace.this.namespace
+            defined_tags = local.service_connector_defined_tags
+            freeform_tags = local.service_connector_freeform_tags
         }
     }
 }
@@ -26,6 +53,8 @@ module "lz_sch_vcnFlowLogs_bucket" {
             compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
             name = local.sch_vcnFlowLogs_bucket_name
             namespace = data.oci_objectstorage_namespace.this.namespace
+            defined_tags = local.service_connector_defined_tags
+            freeform_tags = local.service_connector_freeform_tags
         }
     }
 }
@@ -41,6 +70,8 @@ module "lz_service_connector_hub_audit" {
         #service_connector_source_kind = var.service_connector_audit_target
         service_connector_source_kind = "logging"
         service_connector_state = upper(var.service_connector_audit_state)
+        defined_tags = local.service_connector_defined_tags
+        freeform_tags = local.service_connector_freeform_tags
         log_sources = !var.extend_landing_zone_to_new_region ? [for k, v in module.lz_compartments.compartments : {
             compartment_id = v.id
             log_group_id = "_Audit"
@@ -72,6 +103,8 @@ module "lz_service_connector_hub_vcnFlowLogs" {
         #service_connector_source_kind = var.service_connector_vcnFlowLogs_target
         service_connector_source_kind = "logging"
         service_connector_state = upper(var.service_connector_vcnFlowLogs_state)
+        defined_tags = local.service_connector_defined_tags
+        freeform_tags = local.service_connector_freeform_tags
         log_sources = [for k, v in module.lz_flow_logs.logs : {
             compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
             log_group_id = module.lz_flow_logs.log_group.id
@@ -100,8 +133,10 @@ module "lz_sch_audit_objStore_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to manage objects in compartment id ${local.security_compartment_id} where all {
@@ -121,8 +156,10 @@ module "lz_sch_audit_streaming_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to manage messages in stream."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to use stream-push in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
@@ -142,8 +179,10 @@ module "lz_sch_audit_functions_policy" {
   depends_on            = [module.lz_service_connector_hub_audit]
   policies = {
     (local.sch_audit_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to use functions."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to use functions."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to use fn-function in compartment id ${var.service_connector_audit_target_cmpt_OCID} where all {
@@ -168,8 +207,10 @@ module "lz_sch_vcnFlowLogs_objStore_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to manage objects in compartment id ${local.security_compartment_id} where all {
@@ -189,8 +230,10 @@ module "lz_sch_vcnFlowLogs_streaming_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to manage messages in stream."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to manage messages in stream."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to use stream-push in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {
@@ -210,8 +253,10 @@ module "lz_sch_vcnFlowLogs_functions_policy" {
   depends_on            = [module.lz_service_connector_hub_vcnFlowLogs]
   policies = {
     (local.sch_vcnFlowLogs_policy_name) = {
-      compartment_id         = local.enclosing_compartment_id
-      description            = "Landing Zone policy for Service Connector Hub to use functions."
+      compartment_id = local.enclosing_compartment_id
+      description    = "Landing Zone policy for Service Connector Hub to use functions."
+      defined_tags = local.service_connector_defined_tags
+      freeform_tags = local.service_connector_freeform_tags
       statements = [
                     <<EOF
                         Allow any-user to use fn-function in compartment id ${var.service_connector_vcnFlowLogs_target_cmpt_OCID} where all {

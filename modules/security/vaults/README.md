@@ -25,6 +25,8 @@ No Modules.
 | compartment\_id | The default compartment OCID to use for resources (unless otherwise specified). | `string` | `""` | no |
 | vault\_name | Vault Name | `string` | `""` | no |
 | vault\_type | Vault Type - DEFAULT (Shared) | `string` | `"DEFAULT"` | no |
+| defined\_tags | Map of key-value pairs of defined tags. | `map(string)` | null | no |
+| freeform\_tags | Map of key-value pairs of freeform tags. | `map(string)` | null | no |
 
 ## Outputs
 

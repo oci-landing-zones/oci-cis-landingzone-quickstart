@@ -8,6 +8,7 @@ variable "scan_recipes" {
     schedule_type                                 = string,
     schedule_day_of_week                          = string,
     defined_tags                                  = map(string)
+    freeform_tags                                 = map(string)
   }))
 }
 
@@ -17,6 +18,7 @@ variable "scan_targets" {
     description           = string,
     scan_recipe_name      = string,
     target_compartment_id = string,
-    defined_tags          = map(string)
+    defined_tags          = map(string),
+    freeform_tags         = map(string)
   }))
 }

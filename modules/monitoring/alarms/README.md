@@ -22,7 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| Alarms | Alarms | <pre>map(object({<br>    compartment_id      = string,<br>    destinations         = list(string),<br>    display_name           = string,<br>    is_enabled          = bool,<br>    metric_compartment_id = string,<br>    namespace  = string,<br>    query = string,<br>    severity            = string<br>  }))</pre> | n/a | yes |
+| Alarms | Alarms | <pre>map(object({<br>    compartment_id      = string,<br>    destinations         = list(string),<br>    display_name           = string,<br>    is_enabled          = bool,<br>    metric_compartment_id = string,<br>    namespace  = string,<br>    query = string,<br>    severity            = string<br>,    defined_tags            = map(string)<br>,    freeform_tags          = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

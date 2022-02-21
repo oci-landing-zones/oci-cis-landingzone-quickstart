@@ -36,4 +36,5 @@ resource "oci_events_rule" "these" {
     is_enabled     = each.value.is_enabled
     description    = each.value.description
     defined_tags   = each.value.defined_tags
+    freeform_tags  = each.value.freeform_tags
 }

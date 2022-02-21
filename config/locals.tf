@@ -26,13 +26,6 @@ locals {
   exainfra_compartment    = {key:"${var.service_label}-exainfra-cmp", name: "${var.service_label}-exainfra-cmp"}
   exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
   
-  # Whether compartments should be deleted upon resource destruction.
-  enable_cmp_delete = false
-
-  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
-
-  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
-  
   # Group names
   security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0 ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
   network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0 ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
@@ -67,12 +60,6 @@ locals {
   database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
         "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
 
-
-  # Tags
-  tag_namespace_name = "${var.service_label}-namesp"
-  createdby_tag_name = "CreatedBy"
-  createdon_tag_name = "CreatedOn"
-
   ### Network
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
@@ -93,32 +80,7 @@ locals {
   } : {}
 
   ### Object Storage
-  oss_key_name = "${var.service_label}-oss-key"
   bucket_name  = "${var.service_label}-bucket"
-  vault_name   = "${var.service_label}-vault"
-  vault_type   = "DEFAULT"
-
-  ### Service Connector Hub
-  sch_audit_display_name        = "${var.service_label}-audit-sch"
-  sch_audit_bucket_name         = "${var.service_label}-audit-sch-bucket"
-  sch_audit_target_rollover_MBs = 100
-  sch_audit_target_rollover_MSs = 420000
-
-  sch_vcnFlowLogs_display_name        = "${var.service_label}-vcn-flow-logs-sch"
-  sch_vcnFlowLogs_bucket_name         = "${var.service_label}-vcn-flow-logs-sch-bucket"
-  sch_vcnFlowLogs_target_rollover_MBs = 100
-  sch_vcnFlowLogs_target_rollover_MSs = 420000
-
-  sch_audit_policy_name       = "${var.service_label}-audit-sch-policy"
-  sch_vcnFlowLogs_policy_name = "${var.service_label}-vcn-flow-logs-sch-policy"
-
-  cg_target_name = "${var.service_label}-cloud-guard-root-target"
-
-  # Delay in seconds for slowing down resource creation
-  delay_in_secs = 70
-
-  # Outputs display
-  display_outputs = true
 
   # Bastion
   bastion_name = "${var.service_label}-bastion"
@@ -127,4 +89,19 @@ locals {
   # Notifications
   iam_events_rule_name     = "${var.service_label}-notify-on-iam-changes-rule"
   network_events_rule_name = "${var.service_label}-notify-on-network-changes-rule"
+  # Whether compartments should be deleted upon resource destruction.
+  enable_cmp_delete = false
+
+  policy_scope = local.enclosing_compartment.name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment.name}"
+
+  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
+  
+  # Delay in seconds for slowing down resource creation
+  delay_in_secs = 70
+
+  # Outputs display
+  display_outputs = true
+
+  # Tags
+  landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
 }

@@ -23,7 +23,7 @@ No Modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | compartment\_id | The default compartment OCID to use for resources (unless otherwise specified). | `string` | `""` | no |
-| keys | n/a | <pre>map(object({<br>    key_shape_algorithm = string,<br>    key_shape_length = string<br>  }))</pre> | n/a | yes |
+| keys | n/a | <pre>map(object({<br>    defined_tags = map(string),<br>    freeform_tags = map(string),<br>    key_shape_algorithm = string,<br>    key_shape_length = string<br>  }))</pre> | n/a | yes |
 | vault\_mgmt\_endPoint | KMS vault management end point | `string` | `""` | no |
 
 ## Outputs

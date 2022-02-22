@@ -4,8 +4,13 @@
 ### This Terraform configuration creates NSGs (Network Security Groups) for Exadata Cloud Service networking.
 
 locals {
+  all_exacs_nsgs_defined_tags = {}
+  all_exacs_nsgs_freeform_tags = {}
+  
   exacs_clt_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-clt-nsg" => {
     vcn_id : v.id,
+    defined_tags = local.exacs_nsgs_defined_tags
+    freeform_tags = local.exacs_nsgs_freeform_tags
     ingress_rules : merge({
       ssh-dmz-vcn-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
@@ -224,6 +229,8 @@ locals {
 
   exacs_bkp_nsgs = { for k, v in module.lz_exacs_vcns.vcns : "${k}-bkp-nsg" => {
     vcn_id = v.id
+    defined_tags = local.exacs_nsgs_defined_tags
+    freeform_tags = local.exacs_nsgs_freeform_tags
     ingress_rules : {},
     egress_rules : {
       osn-services-egress-rule : {
@@ -242,6 +249,14 @@ locals {
       }
     }
   }}
+
+  ### DON'T TOUCH THESE ###
+  default_exacs_nsgs_defined_tags = null
+  default_exacs_nsgs_freeform_tags = local.landing_zone_tags
+  
+  exacs_nsgs_defined_tags = length(local.all_exacs_nsgs_defined_tags) > 0 ? local.all_exacs_nsgs_defined_tags : local.default_exacs_nsgs_defined_tags
+  exacs_nsgs_freeform_tags = length(local.all_exacs_nsgs_freeform_tags) > 0 ? merge(local.all_exacs_nsgs_freeform_tags, local.default_exacs_nsgs_freeform_tags) : local.default_exacs_nsgs_freeform_tags
+
 }
 
 module "lz_exacs_nsgs" {

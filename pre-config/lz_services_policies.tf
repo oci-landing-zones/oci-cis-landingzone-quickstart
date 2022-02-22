@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  all_service_policy_statements = []
+  all_services_policy_statements = []
 
   # Names
   services_policy_name = "${local.unique_prefix}-services-policy"
@@ -37,7 +37,15 @@ locals {
     "Allow service osms to read instances in tenancy"
   ]
 
-  default_service_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
+  all_services_policy_defined_tags = {}
+  all_services_policy_freeform_tags = {}
+
+  default_services_policy_defined_tags = null
+  default_services_policy_freeform_tags = local.landing_zone_tags
+
+  services_policy_defined_tags = length(local.all_services_policy_defined_tags) > 0 ? local.all_services_policy_defined_tags : local.default_services_policy_defined_tags
+  services_policy_freeform_tags  = length(local.all_services_policy_freeform_tags) > 0 ? merge(local.all_services_policy_freeform_tags, local.default_services_policy_freeform_tags) : local.default_services_policy_freeform_tags
+  default_services_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
 }
 
 module "lz_services_policy" {
@@ -46,7 +54,9 @@ module "lz_services_policy" {
     (local.services_policy_name) = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
-      statements     = length(local.all_service_policy_statements) > 0 ? local.all_service_policy_statements : local.default_service_policy_statements
+      defined_tags   = local.services_policy_defined_tags
+      freeform_tags  = local.services_policy_freeform_tags
+      statements     = length(local.all_services_policy_statements) > 0 ? local.all_services_policy_statements : local.default_services_policy_statements
     }
   } : {}
 }

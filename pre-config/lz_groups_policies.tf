@@ -2,6 +2,18 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### Landing Zone tenancy level provisioning policy
+
+locals {
+  all_groups_policies_defined_tags = {}
+  all_groups_policies_freeform_tags = {}
+
+  default_groups_policies_defined_tags = null
+  default_groups_policies_freeform_tags = local.landing_zone_tags
+
+  groups_policies_defined_tags = length(local.all_groups_policies_defined_tags) > 0 ? local.all_groups_policies_defined_tags : local.default_groups_policies_defined_tags
+  groups_policies_freeform_tags  = length(local.all_groups_policies_freeform_tags) > 0 ? merge(local.all_groups_policies_freeform_tags, local.default_groups_policies_freeform_tags) : local.default_groups_policies_freeform_tags
+}
+
 module "lz_provisioning_tenancy_group_policy" {
   for_each   = local.provisioning_group_names
   depends_on = [null_resource.slow_down_groups]
@@ -10,6 +22,8 @@ module "lz_provisioning_tenancy_group_policy" {
     "${each.key}-provisioning-root-policy" = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone provisioning policy."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
       statements = ["Allow group ${each.value.group_name} to read objectstorage-namespaces in tenancy", # ability to query for object store namespace for creating buckets
         "Allow group ${each.value.group_name} to use tag-namespaces in tenancy",                        # ability to check the tag-namespaces at the tenancy level and to apply tag defaults
         "Allow group ${each.value.group_name} to read tag-defaults in tenancy",                         # ability to check for tag-defaults at the tenancy level
@@ -34,6 +48,8 @@ module "lz_provisioning_topcmp_group_policy" {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
       description    = "Landing Zone provisioning policy for ${each.value.name} compartment."
       statements     = var.use_existing_provisioning_group == true ? ["Allow group ${var.existing_provisioning_group_name} to manage all-resources in compartment ${each.value.name}"] : ["Allow group ${each.key}-provisioning-group to manage all-resources in compartment ${each.value.name}"]
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
     }
   }
 }
@@ -47,6 +63,8 @@ module "lz_groups_mgmt_policy" {
     "${each.key}-mgmt-root-policy" = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone groups management root policy."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
       statements = [
         # Cost Admin - Access to Cost Reports 
         "define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
@@ -77,6 +95,8 @@ module "lz_groups_read_only_policy" {
     "${each.key}-read-only-root-policy" = {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone groups read-only root policy."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
       statements = [
         # Security admin
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read audit-events in tenancy",
@@ -148,6 +168,8 @@ module "lz_provisioning_topcmp_dynamic_group_policy" {
     "${each.value.name}-adb-kms-policy" = {
       compartment_id = module.lz_top_compartments.compartments[each.key].id
       description    = "Landing Zone provisioning policy for managing vaults and keys in ${each.value.name} compartment."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
       statements     = length(trimspace(var.existing_database_kms_dyn_group_name)) > 0 ? ["Allow dynamic-group ${var.existing_database_kms_dyn_group_name} to manage vaults in compartment ${each.value.name}","Allow dynamic-group ${var.existing_database_kms_dyn_group_name} to manage keys in compartment ${each.value.name}"] : ["Allow dynamic-group ${each.key}-database-kms-dynamic-group to manage vaults in compartment ${each.value.name}", "Allow dynamic-group ${each.key}-database-kms-dynamic-group to manage keys in compartment ${each.value.name}"]
     }
   }

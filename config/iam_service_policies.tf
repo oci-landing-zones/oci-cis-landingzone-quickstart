@@ -4,6 +4,9 @@
 locals {
   all_service_policy_statements = []
 
+  all_service_policy_defined_tags = {}
+  all_service_policy_freeform_tags = {}
+
   # Names
   services_policy_name   = "${var.service_label}-services-policy"
 
@@ -38,6 +41,12 @@ locals {
     "Allow service osms to read instances in tenancy"
   ]
 
+  default_service_policy_defined_tags = null
+  default_service_policy_freeform_tags = local.landing_zone_tags
+
+  service_policy_defined_tags = length(local.all_service_policy_defined_tags) > 0 ? local.all_service_policy_defined_tags : local.default_service_policy_defined_tags
+  service_policy_freeform_tags = length(local.all_service_policy_freeform_tags) > 0 ? merge(local.all_service_policy_freeform_tags, local.default_service_policy_freeform_tags) : local.default_service_policy_freeform_tags
+
   default_service_policy_statements = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
 
   service_policies = {
@@ -45,6 +54,8 @@ locals {
       compartment_id = var.tenancy_ocid
       description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
       statements     = length(local.all_service_policy_statements) > 0 ? local.all_service_policy_statements : local.default_service_policy_statements
+      defined_tags = local.service_policy_defined_tags
+      freeform_tags = local.service_policy_freeform_tags
     }
   }
 }

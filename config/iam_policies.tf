@@ -4,6 +4,9 @@
 ### This Terraform configuration provisions Landing Zone policies.
 
 locals {
+  all_policies_defined_tags = {}
+  all_policies_freeform_tags = {}
+  
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
@@ -247,7 +250,7 @@ locals {
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
 
-// Cost admin permissions to be created always at the root compartment
+  // Cost admin permissions to be created always at the root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
                            "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
                            "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
@@ -258,31 +261,43 @@ locals {
       (local.compute_agent_policy_name) = {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements = local.compute_agent_grants
       },
        (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.network_admin_group_name} group to manage network related services."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements = local.network_admin_grants
       } : null,
       (local.security_admin_policy_name) = length(local.security_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.security_admin_group_name} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = local.security_admin_grants
       } : null,
       (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.database_admin_group_name} group to manage database related resources."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements = local.database_admin_grants
       } : null,
       (local.appdev_admin_policy_name) = length(local.appdev_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.appdev_admin_group_name} group to manage app development related services."
-        statements = local.appdev_admin_grants
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
+        statements     = local.appdev_admin_grants
       } : null,
       (local.iam_admin_policy_name) = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description    = "Landing Zone policy for ${local.iam_admin_group_name} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_enclosing_cmp
       } : null
     }
@@ -291,6 +306,8 @@ locals {
       (local.exainfra_admin_policy_name) = length(local.exainfra_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id
         description = "Landing Zone policy for ${local.exainfra_admin_group_name} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment.name}."
+        defined_tags = local.policies_defined_tags
+        freeform_tags = local.policies_freeform_tags
         statements  = local.exainfra_admin_grants
       } : null
     } : {}
@@ -301,16 +318,22 @@ locals {
       (local.security_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = local.security_admin_grants_on_root_cmp
       },
       (local.iam_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_root_cmp
       },
       (local.network_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
                           "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
                           "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
@@ -318,6 +341,8 @@ locals {
       (local.appdev_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
                           "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
                           "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
@@ -325,6 +350,8 @@ locals {
       (local.database_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
                           "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
                           "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
@@ -332,6 +359,8 @@ locals {
       (local.auditor_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
+        defined_tags = local.policies_defined_tags
+        freeform_tags = local.policies_freeform_tags
         statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
           "Allow group ${local.auditor_group_name} to read instances in tenancy",
           "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
@@ -352,12 +381,16 @@ locals {
       (local.announcement_reader_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements = ["allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
                       "allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
       },
       (local.cred_admin_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
           "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
           "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
@@ -366,9 +399,19 @@ locals {
       (local.cost_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
         statements     = local.cost_root_permissions
       }
     }
+
+  ### DON'T TOUCH THESE ###
+  default_policies_defined_tags = null
+  default_policies_freeform_tags = local.landing_zone_tags
+
+  policies_defined_tags = length(local.all_policies_defined_tags) > 0 ? local.all_policies_defined_tags : local.default_policies_defined_tags
+  policies_freeform_tags = length(local.all_policies_freeform_tags) > 0 ? merge(local.all_policies_freeform_tags, local.default_policies_freeform_tags) : local.default_policies_freeform_tags
+
 }
 
 module "lz_root_policies" {

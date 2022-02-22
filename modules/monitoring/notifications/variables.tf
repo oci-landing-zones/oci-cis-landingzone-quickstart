@@ -13,6 +13,7 @@ variable "rules" {
     actions_description = string,
     topic_id            = string,
     defined_tags        = map(string)
+    freeform_tags       = map(string)
   }))
 }
 /*

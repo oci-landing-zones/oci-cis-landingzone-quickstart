@@ -30,6 +30,7 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
     }
     #Optional
     defined_tags = each.value.defined_tags
+    freeform_tags = each.value.freeform_tags
 }
 
 resource "oci_vulnerability_scanning_host_scan_target" "these" {
@@ -39,7 +40,8 @@ resource "oci_vulnerability_scanning_host_scan_target" "these" {
     description           = each.value.description
     host_scan_recipe_id   = oci_vulnerability_scanning_host_scan_recipe.these[each.value.scan_recipe_name].id
     target_compartment_id = each.value.target_compartment_id
-    defined_tags = each.value.defined_tags
+    defined_tags          = each.value.defined_tags
+    freeform_tags         = each.value.freeform_tags
     
     
  }

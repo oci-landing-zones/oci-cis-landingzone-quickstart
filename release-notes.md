@@ -3,9 +3,10 @@
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)
 1. [Fixed Internet Gateway Creation in ExaCS VCN](#exacs_fix)
 1. [Updated Bastion NSG to include RDP](#rdp_update)
+1. [Tagging Support](#tagging)
 
 ## <a name="spoke_config">Configurable Spoke Subnet Names and Subnet Sizes</a>
-The names and the size of subnets created in spoke VCN(s) can now be configured using the variables: **subnets_names** and **subnets_sizes**. Ex. `["front", "middle", "back"]` and `["12","8","10"]`.  Additional customization of spoke VCNs can be done in net_vcn.tf or with a net_vcn_override.tf.
+The names and the size of subnets created in spoke VCN(s) can now be configured using the variables: **subnets_names** and **subnets_sizes**. Ex. `["front", "middle", "back"]` and `["12","8","10"]`.  Additional customization of spoke VCNs can be done in net_vcn.tf or with  using [Terraform Override Files](https://www.terraform.io/language/files/override).
 
 ## <a name="dg_osms">Updated Compute Dynamic Group to support OS Management</a>
 Added IAM policy statements to the compute agent dynamic group policy to include support for OS Management.
@@ -15,6 +16,18 @@ Disabled creation of Internet Gateway in ExaCS VCNs.
 
 ## <a name="rdp_update">Updated Bastion NSG to include RDP</a>
 Added port 3389 to the Bastion Network Security Group (NSG) to support Remote Desktop Protocol (RDP) for Windows based instances.
+
+## <a name="tagging">Tagging Support</a>
+The Landing Zone fully supports definition and usage of defined_tags and freeform_tags for all resources. In this release there is no additional variable to be set in the quickstart-input.tfvars. Tag definition and usage can be set using [Terraform Override Files](https://www.terraform.io/language/files/override).
+
+Usage Overview:
+- Defined tags - At the moment, using Defined Tags is a two step process.
+  1. Create the defined tags.
+  1. Use the defined tags.
+- Freeform tags - Freeform tags can be used at any time. You simply assign a map of freeform tags, to a predefined local variable in an override file, for example ```all_keys_freeform_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}```.
+
+Please note that space characters (' ') in the tag names are not supported by OCI.
+For more information see the Landing Zone Deployment Guide chapter on Customization.
 
 # February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)

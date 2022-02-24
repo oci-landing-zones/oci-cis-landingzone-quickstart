@@ -57,9 +57,6 @@ locals {
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
 
-  database_kms_statements = ["Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}",
-        "Allow dynamic-group ${var.service_label}-database-kms-dynamic-group to manage vaults in compartment ${local.security_compartment.name}"]
-
   ### Network
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]

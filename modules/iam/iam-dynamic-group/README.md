@@ -22,7 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| dynamic\_groups | n/a | <pre>map(object({<br>    description    = string<br>    compartment_id = string<br>    matching_rule  = string<br>  }))</pre> | n/a | yes |
+| dynamic\_groups | n/a | <pre>map(object({<br>    description    = string<br>    compartment_id = string<br>    matching_rule  = string<br>    defined_tags = map(string)<br>    freeform_tags = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

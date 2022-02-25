@@ -22,7 +22,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| compartments | n/a | <pre>map(object({<br>    parent_id     = string<br>    name          = string<br>    description   = string<br>    enable_delete = string<br>  }))</pre> | n/a | yes |
+| compartments | n/a | <pre>map(object({<br>    parent_id     = string<br>    name          = string<br>    description   = string<br>    enable_delete = string<br>    defined_tags = map(string)<br>    freeform_tags = map(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

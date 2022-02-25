@@ -18,3 +18,15 @@ variable "vault_type" {
   description = "Vault Type - DEFAULT (Shared)"
   default     = "DEFAULT"
 }
+
+variable "defined_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of defined tags. (Optional)"
+  default     = null
+}
+
+variable "freeform_tags" {
+  type        = map(string)
+  description = "Map of key-value pairs of freeform tags. (Optional)"
+  default     = null
+}

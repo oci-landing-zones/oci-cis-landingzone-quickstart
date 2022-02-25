@@ -27,9 +27,12 @@ No Modules.
 |------|-------------|------|---------|:--------:|
 | compartment\_id | The default compartment OCID where Cloud Guard is enabled. | `string` | n/a | yes |
 | default\_target | The default Cloud Guard target. | `object({name=string, type=string, id=string})` | n/a | yes |
+| defined\_tags | Specific map of defined_tags. | `map(string)` | null | no |
 | reporting\_region | Cloud Guard reporting region. | `string` | n/a | yes |
 | self\_manage\_resources | Whether or not to self manage resources. | `bool` | `false` | no |
 | status | Cloud Guard status. | `string` | `"ENABLED"` | no |
+| defined\_tags | Map of key-value pairs of defined tags. | `map(string)` | null | no |
+| freeform\_tags | Map of key-value pairs of freeform tags. | `map(string)` | null | no |
 
 ## Outputs
 

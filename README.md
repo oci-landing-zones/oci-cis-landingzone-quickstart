@@ -11,8 +11,8 @@
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
 1. [Executing Instructions](#instructions)
-    1. [Terraform Configuration](terraform.md)
-    1. [Compliance Checking](compliance-script.md)
+    1. [Terraform Configuration](TERRAFORM.md)
+    1. [Compliance Checking](COMPLIANCE-SCRIPT.md)
 1. [Blog Posts](#documentation)
 1. [Acknowledgements](#acknowledgements)
 1. [The Team](#team)
@@ -169,3 +169,8 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
     │ 
     │ (and 15 more similar warnings elsewhere)
     ```
+
+* **Resource Manager does not allow elements with same value in array type** 
+    * This impacts the ability to deploy custom subnets with the same size, as subnets_sizes is an array of strings. If you need custom subnets sizes, do not use Resource Manager UI. Deploy with either Terraform CLI or Resource Manager APIs.
+
+    ![ORM Array Issue](images/orm_array_issue.png)

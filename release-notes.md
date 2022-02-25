@@ -1,4 +1,4 @@
-# February 18, 2022 Release Notes - Stable 2.3.1
+# February 25, 2022 Release Notes - Stable 2.3.1
 1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)
 1. [Fixed Internet Gateway Creation in ExaCS VCN](#exacs_fix)
@@ -7,6 +7,7 @@
 
 ## <a name="spoke_config">Configurable Spoke Subnet Names and Subnet Sizes</a>
 The names and the size of subnets created in spoke VCN(s) can now be configured using the variables: **subnets_names** and **subnets_sizes**. Ex. `["front", "middle", "back"]` and `["12","8","10"]`.  Additional customization of spoke VCNs can be done in net_vcn.tf or with  using [Terraform Override Files](https://www.terraform.io/language/files/override).
+Check [Known Issues](README.md#know-issues) section for an issue affecting custom subnets sizes in Resource Manager UI.
 
 ## <a name="dg_osms">Updated Compute Dynamic Group to support OS Management</a>
 Added IAM policy statements to the compute agent dynamic group policy to include support for OS Management.
@@ -27,7 +28,6 @@ Usage Overview:
 - Freeform tags - Freeform tags can be used at any time. You simply assign a map of freeform tags, to a predefined local variable in an override file, for example ```all_keys_freeform_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}```.
 
 Please note that space characters (' ') in the tag names are not supported by OCI.
-For more information see the Landing Zone Deployment Guide chapter on Customization.
 
 # February 02, 2022 Release Notes - Stable 2.3.0
 1. [Cross Region Landing Zone](#cross_region_lz_2_3_0)

@@ -134,8 +134,14 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
     This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
 * **OCI Tags**
+    * By design, the CIS OCI Landing Zone Quick Start sets a freeform tag as an indicator for resources created by its Terraform scripts.
     * The OCI Tag Defaults may not be applied to OCI Keys during creation. This issue is currently under investigation.
-    * The CIS OCI Landing Zone Quick Start sets a freeform tag as an indicator for resources created by the Terraform scripts. When using this approach, OCI Tag Defaults will be created, too.
+    * Creating and using Defined Tags requires a two step process:
+      1. Create the tag namespace and the tags.
+      2. Assign the ```defined_tags```. 
+    * Assigning an empty map (```{}```) to ```defined_tags``` or ```freeform_tags``` deletes all prevouisly set values and also prevents tag defaults to be applied.
+    * Tag defaults are applied when providing a ```null``` value ```defined_tags = null```. 
+
 
 * **OCI Compartment Deletion**
     * By design, OCI compartments are not deleted upon Terraform destroy by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).

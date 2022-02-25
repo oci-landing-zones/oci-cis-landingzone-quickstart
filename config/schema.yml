@@ -311,8 +311,8 @@ variables:
     items:
       type: string
     uniqueItems: true
-    title: "Subnets custom names"
-    description: "List of subnet sizes in bit to be used in each of the spoke VCNs, each subnet bit must have a subnet name above."
+    title: "Subnets Custom Names"
+    description: "List of subnets custom names to be used in each of the spoke VCNs. (Type the name and hit enter to enter multiple values). "  
     required: false
     visible: net_advanced_options
     default: []  
@@ -321,9 +321,8 @@ variables:
     type: array
     items:
       type: string
-    uniqueItems: false
-    title: "Subnets sizes"
-    description: "List of subnet sizes in bit to be used in each of the spoke VCNs, each subnet bit must have a subnet name above."
+    title: "Subnets Sizes"
+    description: "List of subnet sizes in bits to be used in each of the spoke VCNs. The entered values are added to the VCN prefix to get the actual subnet size. The 'nth' value corresponds to the 'nth' subnet name in Subnets Custom Names. (Type the value and hit enter to enter multiple values)." 
     required: false
     visible: net_advanced_options
     default: []  

@@ -220,6 +220,8 @@ module "lz_nsgs_dmz" {
     },
     (local.dmz_services_nsg_name) : {
       vcn_id = module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].id
+      defined_tags = local.dmz_nsgs_defined_tags
+      freeform_tags = local.dmz_nsgs_freeform_tags
       ingress_rules : merge({
         ssh-ingress-rule : {
           is_create : true,

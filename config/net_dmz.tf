@@ -3,6 +3,9 @@
 
 locals {
 
+  all_dmz_defined_tags = {}
+  all_dmz_freeform_tags = {}
+  
   dmz_vcn = var.hub_spoke_architecture && length(var.dmz_vcn_cidr) > 0 ? { (local.dmz_vcn_name.name) = {
     compartment_id    = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
     cidr              = var.dmz_vcn_cidr
@@ -10,7 +13,8 @@ locals {
     is_create_igw     = !var.no_internet_access
     is_attach_drg     = var.dmz_for_firewall == true ? false : true
     block_nat_traffic = false
-    defined_tags      = null
+    defined_tags      = local.dmz_defined_tags
+    freeform_tags     = local.dmz_freeform_tags
     subnets = { for s in range(var.dmz_number_of_subnets) : "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet" => {
       compartment_id  = null
       name            = "${local.dmz_vcn_name.name}-${local.dmz_subnet_names[s]}-subnet"
@@ -18,14 +22,15 @@ locals {
       dns_label       = local.dmz_subnet_names[s]
       private         = var.no_internet_access ? true : s == 0 || (local.is_mgmt_subnet_public && s == 2) ? false : true
       dhcp_options_id = null
-      defined_tags    = null
+      defined_tags    = local.dmz_defined_tags
+      freeform_tags   = local.dmz_freeform_tags
       security_lists = { "security-list" : {
         compartment_id : null
         is_create : true
         ingress_rules : []
         egress_rules : []
-        defined_tags  = null
-        freeform_tags = null
+        defined_tags : local.dmz_defined_tags
+        freeform_tags : local.dmz_freeform_tags
       }}
     }}
   }} : {}
@@ -34,7 +39,8 @@ locals {
     compartment_id = subnet.compartment_id
     vcn_id         = subnet.vcn_id
     subnet_id      = subnet.id
-    defined_tags   = null
+    defined_tags   = local.dmz_defined_tags
+    freeform_tags  = local.dmz_freeform_tags
     route_rules = concat([{
       is_create         = var.no_internet_access
       destination       = local.valid_service_gateway_cidrs[0]
@@ -83,6 +89,14 @@ locals {
         }
       ])
   }}
+
+  ### DON'T TOUCH THESE ###
+  default_dmz_defined_tags = null
+  default_dmz_freeform_tags = local.landing_zone_tags
+  
+  dmz_defined_tags = length(local.all_dmz_defined_tags) > 0 ? local.all_dmz_defined_tags : local.default_dmz_defined_tags
+  dmz_freeform_tags = length(local.all_dmz_freeform_tags) > 0 ? merge(local.all_dmz_freeform_tags, local.default_dmz_freeform_tags) : local.default_dmz_freeform_tags
+
 }
 
 

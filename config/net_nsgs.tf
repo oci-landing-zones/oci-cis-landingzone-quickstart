@@ -4,8 +4,14 @@
 ### This Terraform configuration creates Landing Zone NSGs (Network Security Groups)
 
 locals {
+
+  all_nsgs_defined_tags = {}
+  all_nsgs_freeform_tags = {}
+
   bastions_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-bastion-nsg" => {
     vcn_id : v.id,
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : merge({
       ssh-dmz-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) > 0,
@@ -16,6 +22,20 @@ locals {
         src_type : "CIDR_BLOCK",
         dst_port_min : 22,
         dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
+      rdp-dmz-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) > 0,
+        description : "Allows RDP connections from hosts in DMZ VCN (${var.dmz_vcn_cidr} CIDR range).",
+        stateless : false,
+        protocol : "6",
+        src : length(var.dmz_vcn_cidr) > 0 ? module.lz_vcn_dmz.vcns[local.dmz_vcn_name.name].cidr_block : null,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
         src_port_min : null,
         src_port_max : null,
         icmp_type : null,
@@ -36,6 +56,21 @@ locals {
         icmp_code : null
       }
       },
+      { for cidr in var.onprem_src_ssh_cidrs : "rdp-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
+        is_create : (length(var.dmz_vcn_cidr) == 0 && length(var.onprem_src_ssh_cidrs) > 0),
+        description : "Allows RDP connections from hosts in on-premises ${cidr} CIDR range.",
+        stateless : false,
+        protocol : "6",
+        src : cidr,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+        }
+      },
       { for cidr in var.public_src_bastion_cidrs : "ssh-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
         is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
         description : "Allows SSH connections from hosts in ${cidr} CIDR range.",
@@ -51,7 +86,24 @@ locals {
         icmp_code : null
         }
 
-    }),
+      },
+      { for cidr in var.public_src_bastion_cidrs : "rdp-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
+        is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
+        description : "Allows RDP connections from hosts in ${cidr} CIDR range.",
+        protocol : "6",
+        stateless : false,
+        src : cidr,
+        src_type : "CIDR_BLOCK",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+        }
+
+      }
+    ),
     egress_rules : {
       app-egress_rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -114,6 +166,8 @@ locals {
 
   lbr_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-lbr-nsg" => {
     vcn_id : v.id,
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : merge({
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -208,6 +262,8 @@ locals {
 
   app_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-app-nsg" => {
     vcn_id : v.id,
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -218,6 +274,20 @@ locals {
         src_type : "NSG_NAME",
         dst_port_min : 22,
         dst_port_max : 22,
+        src_port_min : null,
+        src_port_max : null,
+        icmp_type : null,
+        icmp_code : null
+      },
+      rdp-ingress-rule : {
+        is_create : length(var.dmz_vcn_cidr) == 0,
+        description : "Allows RDP connections from hosts in ${k}-bastion-nsg NSG.",
+        stateless : false,
+        protocol : "6",
+        src : "${k}-bastion-nsg",
+        src_type : "NSG_NAME",
+        dst_port_min : 3389,
+        dst_port_max : 3389,
         src_port_min : null,
         src_port_max : null,
         icmp_type : null,
@@ -266,8 +336,8 @@ locals {
         dst_port_max : 443,
         icmp_code : null,
         icmp_type : null
-      }},
-      { for c in var.exacs_vcn_cidrs : "sqlnet-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+      } },
+      { for c in var.exacs_vcn_cidrs : "sqlnet-exacs-egress-rule-${index(var.exacs_vcn_cidrs, c)}" => {
         is_create : var.hub_spoke_architecture == true,
         description : "Allows SQLNet connections to Exadata Database service in ${c} CIDR range.",
         stateless : false,
@@ -280,8 +350,8 @@ locals {
         dst_port_max : 1522,
         icmp_code : null,
         icmp_type : null
-      }},
-      { for c in var.exacs_vcn_cidrs : "ons-exacs-egress-rule-${index(var.exacs_vcn_cidrs,c)}" => {
+      } },
+      { for c in var.exacs_vcn_cidrs : "ons-exacs-egress-rule-${index(var.exacs_vcn_cidrs, c)}" => {
         is_create : var.hub_spoke_architecture == true,
         description : "Allows Oracle Notification Services (ONS) communication to hosts in ${c} CIDR range for Fast Application Notifications (FAN).",
         stateless : false,
@@ -294,12 +364,14 @@ locals {
         dst_port_max : 6200,
         icmp_code : null,
         icmp_type : null
-      }})
-    } 
+    } })
+    }
   }
 
   db_nsgs = { for k, v in module.lz_vcn_spokes.vcns : "${k}-db-nsg" => {
     vcn_id = v.id
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {
       ssh-ingress-rule : {
         is_create : length(var.dmz_vcn_cidr) == 0,
@@ -350,6 +422,8 @@ locals {
 
   public_dst_nsgs = length(var.public_dst_cidrs) > 0 && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0 ? { for k, v in module.lz_vcn_spokes.vcns : "${k}-public-dst-nsg" => {
     vcn_id = v.id
+    defined_tags : local.nsgs_defined_tags
+    freeform_tags : local.nsgs_freeform_tags
     ingress_rules : {},
     egress_rules : merge({ for cidr in var.public_dst_cidrs : "https-public-dst-egress-rule-${index(var.public_dst_cidrs, cidr)}" => {
       is_create : var.public_dst_cidrs != null && !var.no_internet_access && length(var.dmz_vcn_cidr) == 0,
@@ -368,6 +442,14 @@ locals {
 
     }
   } : {}
+
+  ### DON'T TOUCH THESE ###
+  default_nsgs_defined_tags = null
+  default_nsgs_freeform_tags = local.landing_zone_tags
+
+  nsgs_defined_tags = length(local.all_nsgs_defined_tags) > 0 ? local.all_nsgs_defined_tags : local.default_nsgs_defined_tags
+  nsgs_freeform_tags = length(local.all_nsgs_freeform_tags) > 0 ? merge(local.all_nsgs_freeform_tags, local.default_nsgs_freeform_tags) : local.default_nsgs_freeform_tags
+
 }
 
 module "lz_nsgs_spokes" {

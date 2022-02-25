@@ -144,7 +144,7 @@ variable "onprem_cidrs" {
 
 variable "onprem_src_ssh_cidrs" {
   type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH. They must be a subset of onprem_cidrs."
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network over SSH and RDP. They must be a subset of onprem_cidrs."
   default     = []
   validation {
     condition     = length([for c in var.onprem_src_ssh_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_src_ssh_cidrs)
@@ -170,6 +170,18 @@ variable "vcn_names" {
     condition     = length(var.vcn_names) < 10
     error_message = "Validation failed for vcn_names: maximum of nine allowed."
   }
+}
+
+variable "subnets_names" {
+  type = list(string)
+  default = []
+  description = "List of subnet names to be used in each of the spoke(s) subnet names, each subnet name must have a bit size below, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match subnets_sizes."
+}
+
+variable "subnets_sizes" {
+  type = list(string)
+  default = []
+  description = "List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of /4. The list length and elements order must match subnets_names"
 }
 
 variable "hub_spoke_architecture" {

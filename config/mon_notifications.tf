@@ -218,21 +218,14 @@ locals {
 
 
 module "lz_notifications" {
-  depends_on = [null_resource.slow_down_notifications]
+  depends_on = [null_resource.wait_on_compartments]
   source     = "../modules/monitoring/notifications"
   rules = local.regional_notifications
 }
 
 module "lz_home_region_notifications" {
-  depends_on = [null_resource.slow_down_notifications]
+  depends_on = [null_resource.wait_on_compartments]
   source     = "../modules/monitoring/notifications"
   providers  = { oci = oci.home }
   rules = local.home_region_notifications
-}
-
-resource "null_resource" "slow_down_notifications" {
-  depends_on = [module.lz_compartments]
-  provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-  }
 }

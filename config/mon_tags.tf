@@ -33,7 +33,7 @@ locals {
   default_tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {
       tag_description         = "Landing Zone tag that identifies who created the resource."
-      tag_is_cost_tracking    = true
+      tag_is_cost_tracking    = false #true
       tag_is_retired          = false
       make_tag_default        = true
       tag_default_value       = "$${iam.principal.name}"

@@ -104,15 +104,8 @@ locals {
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
-  depends_on = [null_resource.slow_down_vss]
+  depends_on = [null_resource.wait_on_services_policy]
   scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
   scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.scan_targets
   # VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
-}
-
-resource "null_resource" "slow_down_vss" {
-  depends_on = [module.lz_services_policy]
-  provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait 30 seconds for policies to be available.
-  }
 }

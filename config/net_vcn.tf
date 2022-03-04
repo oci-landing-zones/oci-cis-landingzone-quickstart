@@ -235,7 +235,7 @@ locals {
 
 module "lz_vcn_spokes" {
   source               = "../modules/network/vcn-basic"
-  depends_on           = [null_resource.slow_down_vcn]
+  depends_on           = [null_resource.wait_on_compartments]
   compartment_id       = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   service_label        = var.service_label
   service_gateway_cidr = local.valid_service_gateway_cidrs[0]

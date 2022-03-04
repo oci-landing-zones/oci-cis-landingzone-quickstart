@@ -87,14 +87,14 @@ locals  {
 
 module "lz_home_region_topics" {
   source     = "../modules/monitoring/topics-v2/topics"
-  depends_on = [ null_resource.slow_down_topics ]
+  depends_on = [ null_resource.wait_on_compartments ]
   providers  = { oci = oci.home }
   topics     = local.home_region_topics
 }
 
 module "lz_topics" {
   source     = "../modules/monitoring/topics-v2/topics"
-  depends_on = [ null_resource.slow_down_topics ]
+  depends_on = [ null_resource.wait_on_compartments ]
   topics     = local.regional_topics
 }
 
@@ -165,11 +165,4 @@ module "lz_subscriptions" {
         freeform_tags = local.topics_freeform_tags
     } if var.deploy_exainfra_cmp == true}
   )
-}
-
-resource "null_resource" "slow_down_topics" {
-   depends_on = [ module.lz_compartments ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-   }
 }

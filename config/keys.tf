@@ -30,6 +30,7 @@ locals {
 
 ### Creates a vault.
 module "lz_vault" {
+    depends_on        = [null_resource.wait_on_compartments]
     source            = "../modules/security/vaults"
     compartment_id    = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
     vault_name        = local.vault_name
@@ -53,7 +54,6 @@ module "lz_keys" {
         }
     }
 }
-
 
 ### Creates policies for the keys
 module "lz_keys_policies" {

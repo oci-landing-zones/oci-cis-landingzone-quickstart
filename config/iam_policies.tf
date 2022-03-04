@@ -23,7 +23,8 @@ locals {
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
   iam_admin_grants_on_enclosing_cmp = [
-    "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
+    "allow group ${local.iam_admin_group_name} to read policies in ${local.policy_scope}",
+    "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope} where target.policy.name != 'Tenant Admin Policy'",
     "allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
     "allow group ${local.iam_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",

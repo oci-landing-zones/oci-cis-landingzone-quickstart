@@ -29,6 +29,7 @@ locals {
   vss_statements = [
     "Allow service vulnerability-scanning-service to manage instances in tenancy",
     "Allow service vulnerability-scanning-service to read compartments in tenancy",
+    "Allow service vulnerability-scanning-service to read repos in tenancy",
     "Allow service vulnerability-scanning-service to read vnics in tenancy",
     "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"
   ]

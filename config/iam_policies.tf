@@ -31,8 +31,8 @@ locals {
 
   ## IAM admin grants at the enclosing compartment level. Policies and compartments are not granted at the Root comparment.
   iam_admin_grants_on_enclosing_cmp = var.existing_enclosing_compartment_ocid != null ? [
-    "allow group ${local.iam_admin_group_name} to manage policies in ${local.enclosing_compartment.name}", 
-    "allow group ${local.iam_admin_group_name} to manage compartments in ${local.enclosing_compartment.name}"
+    "allow group ${local.iam_admin_group_name} to manage policies in compartment ${local.enclosing_compartment.name}", 
+    "allow group ${local.iam_admin_group_name} to manage compartments in compartment ${local.enclosing_compartment.name}"
   ] : []
 
   // Security admin permissions to be created always at the root compartment

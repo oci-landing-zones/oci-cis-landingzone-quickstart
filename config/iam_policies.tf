@@ -7,6 +7,7 @@ locals {
   all_policies_defined_tags = {}
   all_policies_freeform_tags = {}
   
+  ### User Group Policies ###
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
@@ -80,11 +81,6 @@ locals {
     "allow group ${local.security_admin_group_name} to manage cloudevents-rules in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"]
-
-  ## Compute Agent grants
-  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = [
@@ -261,6 +257,13 @@ locals {
                            "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
                            "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
+
+
+  ### Dynamic Group Policies ###
+  ## Compute Agent grants
+  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
 
     default_policies = { 

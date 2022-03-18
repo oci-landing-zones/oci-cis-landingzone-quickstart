@@ -20,6 +20,7 @@
 1. [Known Issues](#known-issues)
 1. [Contribute](#CONTRIBUTING.md)
 1. [Frequently Asked Questions](FAQ.md)
+1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 
 ## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.1](https://www.cisecurity.org/benchmark/oracle_cloud/).    

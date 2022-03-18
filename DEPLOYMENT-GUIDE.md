@@ -1,3 +1,5 @@
+# Table of Contents
+
 1. [Introduction](#introduction)
 1. [Considerations](#considerations)
 1. [Architecture](#architecture)
@@ -89,7 +91,7 @@ There are a few crucial aspects to consider when managing state:
     You have two options:
     -	Via Terraform CLI, use [Terraform workspaces](https://www.terraform.io/language/state/workspaces). 
     -	Via OCI Resource Manager, create a separate Stack for each Landing Zone environment.
-    
+
 
 - **Terraform may overwrite changes made via other means to its managed resources**: when you provision infrastructure resources with Terraform, it is expected that those resources are going to be managed via Terraform. However, there are situations where quick changes are made outside Terraform, like via the OCI Console. If you resume using Terraform later, those changes will be detected and Terraform will inform you that those changes will be overwritten. You can either accept that or import those resource changes into the state file. Terraform can import existing resources into the state, but it does not generate configuration. Therefore, before importing existing resources, it is necessary to manually add the imported resources into the configuration files. This approach is recommended for advanced users only and is out of the scope of this document.
 

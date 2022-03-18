@@ -3,7 +3,7 @@
 1. [Reviewed IAM Admin Policies](#iam_policies_review)
 
 ## <a name="deployment_guide">Deployment Guide</a>
-A [compreehensive deployment](DEPLOYMENT-GUIDE.md) guide for CIS Landing Zone is now available. It covers key deployment considerations, the architecture, major deployment scenarios, customization guidance, detailed steps how to deploy using Terraform CLI and with Resource Manager UI/CLI as well as various deployment configuration samples.
+A compreehensive [deployment guide](DEPLOYMENT-GUIDE.md) for CIS Landing Zone is now available. It covers key deployment considerations, the architecture, major deployment scenarios, customization guidance, detailed steps how to deploy using Terraform CLI and with Resource Manager UI/CLI as well as various deployment configuration samples.
 
 ## <a name="iam_policies_review">Reviewed IAM Admin Policies</a>
 IAM admin policy has been updated to not allow IAM administrators to manage compartments and policies at the Root compartment, thus avoiding privilege escalation.

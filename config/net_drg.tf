@@ -23,10 +23,3 @@ module "lz_drg" {
   defined_tags   = local.drg_defined_tags
   freeform_tags  = local.drg_freeform_tags
 }
-
-resource "null_resource" "slow_down_drg" {
-   depends_on = [ module.lz_compartments ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-   }
-}

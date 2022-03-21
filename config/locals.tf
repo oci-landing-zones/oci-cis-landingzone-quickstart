@@ -102,3 +102,24 @@ locals {
   # Tags
   landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
 }
+
+resource "null_resource" "wait_on_compartments" {
+  depends_on = [module.lz_compartments]
+  provisioner "local-exec" {
+    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
+  }
+}
+
+resource "null_resource" "wait_on_services_policy" {
+  depends_on = [module.lz_services_policy]
+  provisioner "local-exec" {
+    command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
+  }
+}
+
+resource "null_resource" "wait_on_keys_policy" {
+   depends_on = [ module.lz_keys_policies ]
+   provisioner "local-exec" {
+     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
+   }
+}

@@ -30,16 +30,9 @@ locals {
 }
 
 module "lz_buckets" {
-  depends_on = [ null_resource.slow_down_oss ]
+  depends_on = [ null_resource.wait_on_keys_policy ]
   source     = "../modules/object-storage/bucket"
   kms_key_id = module.lz_keys.keys[local.oss_key_name].id
   buckets    = length(local.all_buckets) > 0 ? local.all_buckets : local.default_buckets
-}
-
-resource "null_resource" "slow_down_oss" {
-   depends_on = [ module.lz_keys_policies ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
-   }
 }
 

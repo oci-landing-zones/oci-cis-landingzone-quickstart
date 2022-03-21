@@ -10,7 +10,9 @@ locals {
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
+    # Users should be manage users and groups permissions via IDP
     "allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
+    "allow group ${local.iam_admin_group_name} to read policies in tenancy",
     "allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${local.cred_admin_group_name}'}",
     "allow group ${local.iam_admin_group_name} to inspect identity-providers in tenancy",
     "allow group ${local.iam_admin_group_name} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
@@ -19,17 +21,19 @@ locals {
     "allow group ${local.iam_admin_group_name} to manage network-sources in tenancy",
     "allow group ${local.iam_admin_group_name} to manage quota in tenancy",
     "allow group ${local.iam_admin_group_name} to read audit-events in tenancy",
-    "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy"]
+    "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy",
+    "allow group ${local.iam_admin_group_name} to manage tag-defaults in tenancy",
+    "allow group ${local.iam_admin_group_name} to manage tag-namespaces in tenancy",
+    # Statements to allow an IAM admin to deploy IAM resources via ORM
+    "allow group ${local.iam_admin_group_name} to manage orm-stacks in tenancy",
+    "allow group ${local.iam_admin_group_name} to manage orm-jobs in tenancy",
+    "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in tenancy"]
 
-  ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
-  iam_admin_grants_on_enclosing_cmp = [
-    "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage tag-defaults in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage tag-namespaces in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage orm-stacks in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage orm-jobs in ${local.policy_scope}",
-    "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in ${local.policy_scope}"]
+  ## IAM admin grants at the enclosing compartment level. Policies and compartments are not granted at the Root comparment.
+  iam_admin_grants_on_enclosing_cmp = var.existing_enclosing_compartment_ocid != null ? [
+    "allow group ${local.iam_admin_group_name} to manage policies in compartment ${local.enclosing_compartment.name}", 
+    "allow group ${local.iam_admin_group_name} to manage compartments in compartment ${local.enclosing_compartment.name}"
+  ] : []
 
   // Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",

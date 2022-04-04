@@ -1125,8 +1125,8 @@ vcn_cidrs = ["192.168.0.0/16"]
 
 exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 deploy_exainfra_cmp       = true
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1155,8 +1155,8 @@ vcn_cidrs = ["192.168.0.0/16"]
 
 exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
@@ -1186,12 +1186,12 @@ vcn_cidrs = ["192.168.0.0/16"]
 
 exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1225,7 +1225,7 @@ exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1255,13 +1255,13 @@ vcn_cidrs = ["192.168.0.0/16"]
 
 exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["10.0.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28" , "10.1.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1292,15 +1292,15 @@ vcn_cidrs = ["192.168.0.0/16"]
 
 exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["10.0.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28" , "10.1.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
 existing_drg_id = ocid1.drg.oc1.iad.aaa...7rv6xa
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1432,8 +1432,8 @@ subnets_sizes = ["4","3","3"]
 
 exacs_vcn_cidrs           = ["10.2.0.0/20"]
 exacs_vcn_names           = ["exavcn-dr"]
-exacs_client_subnet_cidrs = ["10.2.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.2.2.0/28"]
+exacs_client_subnet_cidrs = ["10.2.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.2.1.0/28"]
 
 network_admin_email_endpoints  = ["john.doe@myorg.com"]
 security_admin_email_endpoints = ["john.doe@myorg.com"]

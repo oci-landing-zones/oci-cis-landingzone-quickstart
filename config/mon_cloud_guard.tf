@@ -17,7 +17,7 @@ locals {
 }
 
 module "lz_cloud_guard" {
-  count                 = var.cloud_guard_configuration_status == "ENABLE" ? (data.oci_cloud_guard_cloud_guard_configuration.this != null ? (data.oci_cloud_guard_cloud_guard_configuration.this.status != "ENABLED" ? 1 : 0) :  1) : 0
+  count                 = var.cloud_guard_configuration_status == "ENABLE" ? 1 : 0
   depends_on            = [null_resource.wait_on_services_policy]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }

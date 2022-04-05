@@ -281,7 +281,7 @@ Some customers want to extend their Landing Zone to more than one region of choi
 
 - **extend_landing_zone_to_new_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
 
-> **_NOTE:_** when extending the Landing Zone, the Terraform code has to deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways_to_deploy) section for more details. 
+> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways_to_deploy) section for more details. 
 
 ## 4.2 Networking
 ### Standard Three-tier Web Application VCNs
@@ -543,7 +543,7 @@ By default, Terraform CLI manages state locally and does not provide state locki
 
 Sometimes you may want to manage multiple Landing Zones in same or different regions without managing multiple copies of the Terraform configuration files. All you need to do is making sure the state files do not get overwriten across subsequent runs. When working with Terraform CLI, use Terraform workspaces along with distinct .tfvars file, one to each Landing Zone. Terraform workspaces keep Terraform state files separate from each other. You only need to make sure to switch between workspaces and the respective .tfvars file.
 
-For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say prd-ash and dev-phx. Also prepare two .tfvars file with proper variables assignments, terraform_ash.tfvars and terraform_phx.tfvars. The you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
+For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say prd-ash and dev-phx. Also prepare two .tfvars file with proper variables assignments, terraform_ash.tfvars and terraform_phx.tfvars. Then you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
 
     > terraform workspace new prd-ash (creates workspace and switches to it)
     > terraform workspace new dev-phx (creates workspace and switches to it)
@@ -564,7 +564,7 @@ There are a few different ways to run Terraform code using OCI Resource Manager 
 
 A stack is the ORM term for a Terraform configuration and provide an isolated scope for Terraform state. A Stack manages one and only Terraform configuration. Therefore, for managing multiple Landing Zone configurations, use multiple stacks, one for each configuration.
 
-Regardless of the chosen method (zip file or GitLab) **an ORM Stack must not be contain any state file or *.terraform* folder in Terraform working folder.
+Regardless of the chosen method (zip file or GitLab) **an ORM Stack must not contain any state file or *.terraform* folder in Terraform working folder.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
@@ -1123,10 +1123,10 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 deploy_exainfra_cmp       = true
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1153,10 +1153,10 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
@@ -1184,14 +1184,14 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1218,14 +1218,14 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.1.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1253,15 +1253,15 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"   , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["14.15.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28" , "10.1.2.0/28"]
+exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
+exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1290,17 +1290,17 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"   , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["14.15.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28" , "10.1.2.0/28"]
+exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
+exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
 existing_drg_id = ocid1.drg.oc1.iad.aaa...7rv6xa
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1430,10 +1430,10 @@ vcn_names = ["myvcn-dr"]
 subnets_names = ["front","mid","back"]
 subnets_sizes = ["4","3","3"]
 
-exacs_vcn_cidrs           = ["12.13.0.0/20"]
+exacs_vcn_cidrs           = ["10.2.0.0/20"]
 exacs_vcn_names           = ["exavcn-dr"]
-exacs_client_subnet_cidrs = ["12.13.1.0/24"]
-exacs_backup_subnet_cidrs = ["12.13.2.0/28"]
+exacs_client_subnet_cidrs = ["10.2.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.2.1.0/28"]
 
 network_admin_email_endpoints  = ["john.doe@myorg.com"]
 security_admin_email_endpoints = ["john.doe@myorg.com"]

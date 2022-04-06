@@ -877,7 +877,7 @@ When you're about to run the usual Terraform steps of init, plan, and apply, you
 By default the Landing Zone prohibits the deletion of compartments. This is great for production but bad for testing. We create a small file called ```vision_test_override.tf``` with the following content.
 
     locals {
-      enable_cmp_delete = false
+      enable_cmp_delete = true
     }
 
 After placing this file into the ```config``` directory you are much better prepared for your testing.
@@ -1046,7 +1046,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 vcn_cidrs = ["192.168.0.0/16"]
@@ -1064,7 +1064,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1088,7 +1088,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1115,7 +1115,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1145,7 +1145,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1176,7 +1176,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1210,7 +1210,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1245,7 +1245,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1282,7 +1282,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1321,7 +1321,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1346,7 +1346,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1370,7 +1370,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1398,7 +1398,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1408,7 +1408,7 @@ region        = "us-ashburn-1"
 vss_scan_schedule = "DAILY"
 ```
 
-### Example 14: Extendind Landing Zone to a New Region With Single Three-Tier VCN (Custom Name, Subnets Names and Sizes), Single ExaCS VCN
+### Example 14: Extending Landing Zone to a New Region With Single Three-Tier VCN (Custom Name, Subnets Names and Sizes), Single ExaCS VCN
 
 ```
 tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
@@ -1417,7 +1417,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-phoenix-1"
 
 use_enclosing_compartment = true
@@ -1459,7 +1459,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-unique_prefix = "xyz"
+unique_prefix = "vision"
 home_region   = "us-ashburn-1"
 
 enclosing_compartment_names = ["cis_landing_zone"]
@@ -1476,7 +1476,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-unique_prefix = "xyz"
+unique_prefix = "vision"
 home_region   = "us-ashburn-1"
 
 enclosing_compartment_names = ["cis_lz_dev","cis_lz_prd"]
@@ -1494,21 +1494,21 @@ fingerprint          = "g1:77:53:...:12:23:45:18"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
 existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...xxft3b" # cis_lz_dev compartment OCID
 policies_in_root_compartment = "USE"
-existing_iam_admin_group_name      = "xyz-iam-admin-group"
-existing_cred_admin_group_name     = "xyz-cred-admin-group"
-existing_security_admin_group_name = "xyz-security-admin-group"
-existing_network_admin_group_name  = "xyz-network-admin-group"
-existing_appdev_admin_group_name   = "xyz-appdev-admin-group"
-existing_database_admin_group_name = "xyz-database-admin-group"
-existing_exinfra_admin_group_name  = "xyz-exainfra-admin-group"
-existing_auditor_group_name        = "xyz-auditor-group"
-existing_announcement_reader_group_name = "xyz-announcement-reader-group"
+existing_iam_admin_group_name      = "vision-iam-admin-group"
+existing_cred_admin_group_name     = "vision-cred-admin-group"
+existing_security_admin_group_name = "vision-security-admin-group"
+existing_network_admin_group_name  = "vision-network-admin-group"
+existing_appdev_admin_group_name   = "vision-appdev-admin-group"
+existing_database_admin_group_name = "vision-database-admin-group"
+existing_exinfra_admin_group_name  = "vision-exainfra-admin-group"
+existing_auditor_group_name        = "vision-auditor-group"
+existing_announcement_reader_group_name = "vision-announcement-reader-group"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
 

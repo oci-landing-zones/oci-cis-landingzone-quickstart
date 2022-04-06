@@ -1,3 +1,18 @@
+# April 6, 2022 Release Notes - Stable 2.3.3
+1. [Cloud Guard Updates](#cg_updates)
+1. [VSS Policy Update](#vss_update)
+1. [Code Examples Aligned with Deployment Guide](#code_examples)
+
+## <a name="cg_updates">Cloud Guard Updates</a>
+- [Cloud Guard policy](./config/iam_service_policies.tf) has been simplified with *Allow service cloudguard to read all-resources in tenancy*. This way no policy changes are needed as new services are integrated with Cloud Guard.
+- [Cloud Guard enablement](./config/mon_cloud_guard.tf) and [target creation logic](./modules/monitoring/cloud-guard/main.tf) have been updated, but still based on *cloud_guard_configuration_status* variable. When the variable is set to 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Customers need to make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail**. If there is a **pre-existing** Cloud Guard target for the Root compartment, set the variable to 'DISABLE'. In this case, any **pre-existing** Cloud Guard configuration is left intact. However, keep in mind that once you set the variable to 'ENABLE', Cloud Guard configuration and Root target are managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard gets DISABLED and the Root target is deleted.
+
+## <a name="vss_update">VSS Policy Update</a>
+[Policy update](./config/iam_service_policies.tf) allowing Vulnerability Scanning Service (VSS) to scan containers in OCI Registry: *Allow service vulnerability-scanning-service to read repos in tenancy*.
+
+## <a name="code_examples">Code Examples Aligned with Deployment Guide</a>
+An [examples](./examples/) folder has been added showcasing input variables for the various deployment samples provided in the [deployment guide](DEPLOYMENT-GUIDE.md). The examples follow Oracle documentation guidelines for acceptable company name.
+
 # March 18, 2022 Release Notes - Stable 2.3.2
 1. [Deployment Guide](#deployment_guide)
 1. [Reviewed IAM Admin Policies](#iam_policies_review)

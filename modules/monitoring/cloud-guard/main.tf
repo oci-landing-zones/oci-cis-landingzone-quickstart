@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # CloudGuard enabling and disabling is a tenant-level operation 
@@ -23,7 +23,7 @@ resource "oci_cloud_guard_cloud_guard_configuration" "this" {
 
 resource "oci_cloud_guard_target" "this" {
   depends_on = [ oci_cloud_guard_cloud_guard_configuration.this ]
-  count = oci_cloud_guard_cloud_guard_configuration.this.status == "ENABLED" ? 1 : 0
+  count                = 1
   compartment_id       = var.compartment_id
   display_name         = var.default_target.name
   target_resource_id   = var.default_target.id
@@ -45,4 +45,5 @@ resource "oci_cloud_guard_target" "this" {
     }  
   }
 }
+
 

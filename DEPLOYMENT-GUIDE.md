@@ -281,7 +281,7 @@ Some customers want to extend their Landing Zone to more than one region of choi
 
 - **extend_landing_zone_to_new_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
 
-> **_NOTE:_** when extending the Landing Zone, the Terraform code has to deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways_to_deploy) section for more details. 
+> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways_to_deploy) section for more details. 
 
 ## 4.2 Networking
 ### Standard Three-tier Web Application VCNs
@@ -543,7 +543,7 @@ By default, Terraform CLI manages state locally and does not provide state locki
 
 Sometimes you may want to manage multiple Landing Zones in same or different regions without managing multiple copies of the Terraform configuration files. All you need to do is making sure the state files do not get overwriten across subsequent runs. When working with Terraform CLI, use Terraform workspaces along with distinct .tfvars file, one to each Landing Zone. Terraform workspaces keep Terraform state files separate from each other. You only need to make sure to switch between workspaces and the respective .tfvars file.
 
-For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say prd-ash and dev-phx. Also prepare two .tfvars file with proper variables assignments, terraform_ash.tfvars and terraform_phx.tfvars. The you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
+For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say prd-ash and dev-phx. Also prepare two .tfvars file with proper variables assignments, terraform_ash.tfvars and terraform_phx.tfvars. Then you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
 
     > terraform workspace new prd-ash (creates workspace and switches to it)
     > terraform workspace new dev-phx (creates workspace and switches to it)
@@ -564,7 +564,7 @@ There are a few different ways to run Terraform code using OCI Resource Manager 
 
 A stack is the ORM term for a Terraform configuration and provide an isolated scope for Terraform state. A Stack manages one and only Terraform configuration. Therefore, for managing multiple Landing Zone configurations, use multiple stacks, one for each configuration.
 
-Regardless of the chosen method (zip file or GitLab) **an ORM Stack must not be contain any state file or *.terraform* folder in Terraform working folder.
+Regardless of the chosen method (zip file or GitLab) **an ORM Stack must not contain any state file or *.terraform* folder in Terraform working folder.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 
@@ -877,7 +877,7 @@ When you're about to run the usual Terraform steps of init, plan, and apply, you
 By default the Landing Zone prohibits the deletion of compartments. This is great for production but bad for testing. We create a small file called ```vision_test_override.tf``` with the following content.
 
     locals {
-      enable_cmp_delete = false
+      enable_cmp_delete = true
     }
 
 After placing this file into the ```config``` directory you are much better prepared for your testing.
@@ -1046,7 +1046,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 vcn_cidrs = ["192.168.0.0/16"]
@@ -1064,7 +1064,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1088,7 +1088,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1115,7 +1115,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1123,10 +1123,10 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 deploy_exainfra_cmp       = true
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1145,7 +1145,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1153,10 +1153,10 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
@@ -1176,7 +1176,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1184,14 +1184,14 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 
 public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
@@ -1210,7 +1210,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1218,14 +1218,14 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20"]
+exacs_vcn_cidrs           = ["10.0.0.0/20"]
 exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["14.15.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28"]
+exacs_client_subnet_cidrs = ["10.0.1.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1245,7 +1245,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1253,15 +1253,15 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"   , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["14.15.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28" , "10.1.2.0/28"]
+exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
+exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1282,7 +1282,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
@@ -1290,17 +1290,17 @@ existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
 
 vcn_cidrs = ["192.168.0.0/16"]
 
-exacs_vcn_cidrs           = ["14.15.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"   , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["14.15.1.0/24" , "10.1.1.0/24"]
-exacs_backup_subnet_cidrs = ["14.15.2.0/28" , "10.1.2.0/28"]
+exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
+exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
+exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
 deploy_exainfra_cmp       = true
 
 hub_spoke_architecture = true
 
 existing_drg_id = ocid1.drg.oc1.iad.aaa...7rv6xa
 
-dmz_vcn_cidr = "11.12.13.0/24"
+dmz_vcn_cidr = "172.16.0.0/24"
 dmz_number_of_subnets = 3
 dmz_for_firewall = true
 
@@ -1321,7 +1321,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1346,7 +1346,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1370,7 +1370,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1398,7 +1398,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
@@ -1408,7 +1408,7 @@ region        = "us-ashburn-1"
 vss_scan_schedule = "DAILY"
 ```
 
-### Example 14: Extendind Landing Zone to a New Region With Single Three-Tier VCN (Custom Name, Subnets Names and Sizes), Single ExaCS VCN
+### Example 14: Extending Landing Zone to a New Region With Single Three-Tier VCN (Custom Name, Subnets Names and Sizes), Single ExaCS VCN
 
 ```
 tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
@@ -1417,7 +1417,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-phoenix-1"
 
 use_enclosing_compartment = true
@@ -1430,10 +1430,10 @@ vcn_names = ["myvcn-dr"]
 subnets_names = ["front","mid","back"]
 subnets_sizes = ["4","3","3"]
 
-exacs_vcn_cidrs           = ["12.13.0.0/20"]
+exacs_vcn_cidrs           = ["10.2.0.0/20"]
 exacs_vcn_names           = ["exavcn-dr"]
-exacs_client_subnet_cidrs = ["12.13.1.0/24"]
-exacs_backup_subnet_cidrs = ["12.13.2.0/28"]
+exacs_client_subnet_cidrs = ["10.2.0.0/24"]
+exacs_backup_subnet_cidrs = ["10.2.1.0/28"]
 
 network_admin_email_endpoints  = ["john.doe@myorg.com"]
 security_admin_email_endpoints = ["john.doe@myorg.com"]
@@ -1459,7 +1459,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-unique_prefix = "xyz"
+unique_prefix = "vision"
 home_region   = "us-ashburn-1"
 
 enclosing_compartment_names = ["cis_landing_zone"]
@@ -1476,7 +1476,7 @@ fingerprint          = "c1:91:41:...:36:76:54:39"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-unique_prefix = "xyz"
+unique_prefix = "vision"
 home_region   = "us-ashburn-1"
 
 enclosing_compartment_names = ["cis_lz_dev","cis_lz_prd"]
@@ -1494,21 +1494,21 @@ fingerprint          = "g1:77:53:...:12:23:45:18"
 private_key_path     = "../private_key.pem"
 private_key_password = ""
 
-service_label = "xyz"
+service_label = "vision"
 region        = "us-ashburn-1"
 
 use_enclosing_compartment = true
 existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...xxft3b" # cis_lz_dev compartment OCID
 policies_in_root_compartment = "USE"
-existing_iam_admin_group_name      = "xyz-iam-admin-group"
-existing_cred_admin_group_name     = "xyz-cred-admin-group"
-existing_security_admin_group_name = "xyz-security-admin-group"
-existing_network_admin_group_name  = "xyz-network-admin-group"
-existing_appdev_admin_group_name   = "xyz-appdev-admin-group"
-existing_database_admin_group_name = "xyz-database-admin-group"
-existing_exinfra_admin_group_name  = "xyz-exainfra-admin-group"
-existing_auditor_group_name        = "xyz-auditor-group"
-existing_announcement_reader_group_name = "xyz-announcement-reader-group"
+existing_iam_admin_group_name      = "vision-iam-admin-group"
+existing_cred_admin_group_name     = "vision-cred-admin-group"
+existing_security_admin_group_name = "vision-security-admin-group"
+existing_network_admin_group_name  = "vision-network-admin-group"
+existing_appdev_admin_group_name   = "vision-appdev-admin-group"
+existing_database_admin_group_name = "vision-database-admin-group"
+existing_exinfra_admin_group_name  = "vision-exainfra-admin-group"
+existing_auditor_group_name        = "vision-auditor-group"
+existing_announcement_reader_group_name = "vision-announcement-reader-group"
 
 # (...) Variable assignments according to your particular network topology requirements. See previous examples.
 

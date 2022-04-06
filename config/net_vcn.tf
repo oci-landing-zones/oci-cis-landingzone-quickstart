@@ -249,10 +249,3 @@ module "lz_route_tables_spokes" {
   compartment_id       = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
   subnets_route_tables = local.lz_subnets_route_tables
 }
-
-resource "null_resource" "slow_down_vcn" {
-  depends_on = [module.lz_compartments]
-  provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-  }
-}

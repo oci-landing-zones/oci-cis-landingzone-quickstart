@@ -1,3 +1,20 @@
+# April 6, 2022 Release Notes - Stable 2.3.2 Updates
+1. [Cloud Guard Updates](#cg_updates)
+
+## <a name="cg_updates">Cloud Guard Updates</a>
+- Cloud Guard policy has been simplified with *Allow service cloudguard to read all-resources in tenancy*. This way no policy changes are needed as new services are integrated with Cloud Guard.
+- Cloud Guard enablement and target creation logic have been updated, but still based on *cloud_guard_configuration_status* variable. When the variable is set to 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Customers need to make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail**. If there is a **pre-existing** Cloud Guard target for the Root compartment, set the variable to 'DISABLE'. In this case, any **pre-existing** Cloud Guard configuration is left intact. However, keep in mind that once you set the variable to 'ENABLE', Cloud Guard configuration and Root target are managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard gets DISABLED and the Root target is deleted.
+
+# March 18, 2022 Release Notes - Stable 2.3.2
+1. [Deployment Guide](#deployment_guide)
+1. [Reviewed IAM Admin Policies](#iam_policies_review)
+
+## <a name="deployment_guide">Deployment Guide</a>
+A compreehensive [deployment guide](DEPLOYMENT-GUIDE.md) for CIS Landing Zone is now available. It covers key deployment considerations, the architecture, major deployment scenarios, customization guidance, detailed steps how to deploy using Terraform CLI and with Resource Manager UI/CLI as well as various deployment configuration samples.
+
+## <a name="iam_policies_review">Reviewed IAM Admin Policies</a>
+IAM admin policy has been updated to not allow IAM administrators to manage compartments and policies at the Root compartment, thus avoiding privilege escalation.
+
 # February 25, 2022 Release Notes - Stable 2.3.1
 1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)

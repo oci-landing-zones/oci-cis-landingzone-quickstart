@@ -29,7 +29,7 @@ There are a few different ways of running Terraform code in OCI Resource Manager
 - creating an ORM stack by uploading a zip file to ORM;
 - creating an ORM stack by integrating with GitLab. 
 
-A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not be contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
+A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 

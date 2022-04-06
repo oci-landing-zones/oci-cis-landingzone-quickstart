@@ -1,4 +1,4 @@
-# April 6, 2022 Release Notes - Stable 2.3.2 Updates
+# April 6, 2022 Release Notes - Stable 2.3.3
 1. [Cloud Guard Updates](#cg_updates)
 
 ## <a name="cg_updates">Cloud Guard Updates</a>

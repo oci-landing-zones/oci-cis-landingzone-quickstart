@@ -73,6 +73,7 @@ module "lz_groups_mgmt_policy" {
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-defaults in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloud-guard-family in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read threat-intel-family in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage repos in tenancy",
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",

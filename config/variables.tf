@@ -390,7 +390,7 @@ variable "alarm_message_format" {
 
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
-  description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard configuration is left intact. However, keep in mind that once you use 'ENABLE', Cloud Guard configuration and Root target are managed by Landing Zone. If later on you switch to 'DISABLE',  Cloud Guard gets DISABLED and the Root target is deleted."
+  description = "Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted."
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))
     error_message = "Validation failed for cloud_guard_configuration_status: valid values (case insensitive) are ENABLE or DISABLE."

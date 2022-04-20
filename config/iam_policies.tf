@@ -100,6 +100,7 @@ locals {
         "allow group ${local.network_admin_group_name} to manage load-balancers in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment.name}",
+        "allow group ${local.network_admin_group_name} to manage ons-family in compartment ${local.network_compartment.name}", 
         "allow group ${local.network_admin_group_name} to manage orm-stacks in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage orm-jobs in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment.name}",

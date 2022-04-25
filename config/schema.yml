@@ -186,65 +186,85 @@ variables:
     visible: env_advanced_options
 
   existing_iam_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
     visible: env_advanced_options 
         
   existing_cred_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
     visible: env_advanced_options
       
   existing_security_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
     visible: env_advanced_options
       
   existing_network_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
     visible: env_advanced_options
       
   existing_appdev_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
     visible: env_advanced_options
       
   existing_database_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
     visible: env_advanced_options
   
   existing_exainfra_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing admin group name for Exadata infrastructure"
     description: "Existing group to which Exadata infrastructure management policies will be granted to."
     visible: env_advanced_options      
   
   existing_auditor_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
     visible: env_advanced_options
       
   existing_announcement_reader_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing announcement readers group name"
     description: "Existing group to which announcement reading policies will be granted to."
     visible: env_advanced_options  
   
   existing_cost_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
-    visible: env_advanced_options 
-
+    visible: env_advanced_options
+ 
   existing_security_fun_dyn_group_name:
     type: string
     title: "Existing security dynamic group name"

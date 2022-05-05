@@ -25,7 +25,7 @@ locals {
     "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-defaults in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-namespaces in tenancy",
-    # Statements scoped to allow an IAM admin to deploy IAM resources via ORM
+    # Statementcomms scoped to allow an IAM admin to deploy IAM resources via ORM
     "allow group ${local.iam_admin_group_name} to manage orm-stacks in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-jobs in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in tenancy"]
@@ -129,10 +129,14 @@ locals {
         "allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2 
+        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
         "allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage ons-family in compartment ${local.database_compartment.name}", 
+        "allow group ${local.database_admin_group_name} to manage logging-family in compartment ${local.database_compartment.name}", 
         "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
@@ -152,12 +156,7 @@ locals {
         "allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
+        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
   ## Database admin grants on Exainfra compartment
   database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
@@ -183,10 +182,12 @@ locals {
         "allow group ${local.appdev_admin_group_name} to manage cluster-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage logs in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.appdev_admin_group_name} to manage logging-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage instance-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2 
+        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE' }",
         "allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment.name}",
@@ -195,8 +196,6 @@ locals {
         "allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"]
 
   ## AppDev admin grants on Network compartment

@@ -552,7 +552,7 @@ variables:
 
   notifications_advanced_options:
     type: boolean
-    title: "Advanced Options"
+    title: "Additional Notification Endpoints"
     description: "Allows for notifications that are not required by CIS Benchmark."
     default: false
   

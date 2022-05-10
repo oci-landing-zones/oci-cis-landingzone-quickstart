@@ -27,6 +27,12 @@ variable "unique_prefix" {
     error_message = "Validation failed for unique_prefix: if provided, value must contain alphanumeric characters only, start with a letter and 16 character max."
   }
 }
+#Advanced options check box used in schema.yml
+variable "advanced_options" {
+  type        = bool
+  default     = false
+}
+
 variable "use_existing_provisioning_group" {
   type        = bool
   default     = false

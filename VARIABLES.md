@@ -19,15 +19,16 @@ Variable Name | Description | Required | Default Value
 **use_enclosing_compartment** | A boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**. | Yes | false
 **existing_enclosing_compartment_ocid** | The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. | No | None
 **policies_in_root_compartment** | The Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permissions. | Yes | "CREATE"
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | No | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | No | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators. | No | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators. | No | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | No | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators. | No | None
-**existing_auditor_group_name** | The name of an existing group for auditors. | No | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | No | None
-**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | No | None
+**existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | No | None
+**existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | No | None
+**existing_security_admin_group_name** | The name or OCID of an existing group for security administrators. | No | None
+**existing_network_admin_group_name** | The name or OCID of an existing group for network administrators. | No | None
+**existing_appdev_admin_group_name** | The name or OCID of an existing group for application development administrators. | No | None
+**existing_database_admin_group_name** | The name or OCID of an existing group for database administrators. | No | None
+**existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
+**existing_auditor_group_name** | The name or OCID of an existing group for auditors. | No | None
+**existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | No | None
+**existing_cost_admin_group_name** | The name or OCID of an existing group for cost management administrators. | No | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None
@@ -135,15 +136,16 @@ Variable Name | Description | Required | Default Value
 **existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false. | No | None
 **grant_services_policies** | Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Useful if the module is reused across distinct stacks or configurations. | No | true
 **use_existing_groups** | A boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all enclosing compartments. It does not apply to dynamic groups.| No | false 
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true. | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true. | None
-**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_security_admin_group_name** | The name or OCID of an existing group for security administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_network_admin_group_name** | The name or OCID of an existing group for network administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_appdev_admin_group_name** | The name or OCID of an existing group for application development administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_database_admin_group_name** | The name or OCID of an existing group for database administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
+**existing_auditor_group_name** | The name or OCID of an existing group for auditors. | Yes, if *use_existing_groups* is true. | None
+**existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | Yes, if *use_existing_groups* is true. | None
+**existing_cost_admin_group_name** | The name or OCID of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true. | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None

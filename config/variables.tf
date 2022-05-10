@@ -46,6 +46,10 @@ variable "connectivity_advanced_options" {
   type = bool
   default = false
 }
+variable "notifications_advanced_options" {
+  type = bool
+  default = false
+}
 
 #Enclosing Compartment
 variable "use_enclosing_compartment" {

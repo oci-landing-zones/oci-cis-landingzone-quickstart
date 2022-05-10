@@ -71,6 +71,7 @@ variableGroups:
     variables:
       - "network_admin_email_endpoints"
       - "security_admin_email_endpoints"
+      - "notifications_advanced_options"
       - "compute_admin_email_endpoints"
       - "storage_admin_email_endpoints"
       - "database_admin_email_endpoints"
@@ -549,6 +550,12 @@ variables:
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
+  notifications_advanced_options:
+    type: boolean
+    title: "Additional Notification Endpoints"
+    description: "Allows for notifications that are not required by CIS Benchmark."
+    default: false
+  
   compute_admin_email_endpoints:
     type: array
     items:
@@ -557,6 +564,7 @@ variables:
     title: "Compute Admin Email Endpoints"
     required: false
     description: "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   storage_admin_email_endpoints:
     type: array
@@ -566,6 +574,7 @@ variables:
     title: "Storage Admin Email Endpoints"
     required: false
     description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   database_admin_email_endpoints:
     type: array
@@ -575,6 +584,7 @@ variables:
     title: "Database Admin Email Endpoints"
     required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   exainfra_admin_email_endpoints:
     type: array
@@ -583,7 +593,8 @@ variables:
     uniqueItems: true
     title: "Exadata Infrastructure Admin Email Endpoints"
     required: false
-    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"  
+    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options  
 
   budget_admin_email_endpoints:
     type: array
@@ -593,18 +604,21 @@ variables:
     title: "Budget Admin Email Endpoints"
     required: false
     description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   create_alarms_as_enabled:
     type: boolean
     title: "Create alarms as enabled?"
     description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
     default: false
+    visible: notifications_advanced_options
     
   create_events_as_enabled:
     type: boolean
     title: "Create events as enabled?"
     description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
     default: false
+    visible: notifications_advanced_options
 
   alarm_message_format:
     type: enum
@@ -615,6 +629,7 @@ variables:
       - PRETTY_JSON
       - ONS_OPTIMIZED
       - RAW
+    visible: notifications_advanced_options  
       
   cloud_guard_configuration_status:
     type: enum

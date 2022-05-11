@@ -38,6 +38,7 @@ locals {
   // Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
     "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
+    "Allow group ${local.security_admin_group_name} to read threat-intel-family in tenancy",
     "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
     "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
     "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy",

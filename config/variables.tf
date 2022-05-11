@@ -29,6 +29,28 @@ variable "region" {
   }
 }
 
+#Advanced options check boxes used in schema.yml
+variable "env_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "net_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "exa_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "connectivity_advanced_options" {
+  type = bool
+  default = false
+}
+variable "notifications_advanced_options" {
+  type = bool
+  default = false
+}
+
 #Enclosing Compartment
 variable "use_enclosing_compartment" {
   type        = bool

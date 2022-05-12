@@ -25,16 +25,18 @@ locals {
     "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-defaults in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-namespaces in tenancy",
-    # Statements to allow an IAM admin to deploy IAM resources via ORM
+    # Statementcomms scoped to allow an IAM admin to deploy IAM resources via ORM
     "allow group ${local.iam_admin_group_name} to manage orm-stacks in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-jobs in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in tenancy"]
 
-  ## IAM admin grants at the enclosing compartment level. Policies and compartments are not granted at the Root comparment.
-  iam_admin_grants_on_enclosing_cmp = var.existing_enclosing_compartment_ocid != null ? [
-    "allow group ${local.iam_admin_group_name} to manage policies in ${local.enclosing_compartment.name}", 
-    "allow group ${local.iam_admin_group_name} to manage compartments in ${local.enclosing_compartment.name}"
-  ] : []
+  ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
+  ### only if enclosing compartment
+  iam_admin_grants_on_enclosing_cmp = [
+
+    "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}", 
+    "allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}"
+    ]
 
   // Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
@@ -157,7 +159,7 @@ locals {
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
   ## Database admin grants on Exainfra compartment
-  database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
+  database_admin_grants_on_exainfra_cmp = var.deploy_exainfra_cmp == true ? [
         "allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
@@ -236,7 +238,10 @@ locals {
         "allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}"]
+        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage ons-family in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage alarms in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}"]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [

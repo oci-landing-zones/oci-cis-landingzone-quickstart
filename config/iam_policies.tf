@@ -245,12 +245,12 @@ locals {
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
-        "allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
+          "allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+          "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
-  ## Exainfra admin grants on Network compartment
-  exainfra_admin_grants_on_network_cmp = [
-        "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
+    ## Exainfra admin grants on Network compartment
+    exainfra_admin_grants_on_network_cmp = [
+          "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
@@ -268,6 +268,8 @@ locals {
         "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
         "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
+  autonomous_database_grants = ["allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
 
     default_policies = { 
       (local.compute_agent_policy_name) = {
@@ -276,6 +278,13 @@ locals {
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = local.compute_agent_grants
+      },
+      (local.database_dynamic_group_policy_name) = {
+        compartment_id = local.enclosing_compartment_id
+        description    = "Landing Zone policy for ${local.database_kms_dynamic_group_name} group to use keys in compartment ${local.security_compartment.name}."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
+        statements = local.autonomous_database_grants
       },
        (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id

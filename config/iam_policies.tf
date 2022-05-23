@@ -60,7 +60,8 @@ locals {
   ## Security admin grants on Security compartment
   security_admin_grants_on_security_cmp = [
     "allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment.name}",
-    "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name}",
+    "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name} where any{request.permission != 'VOLUME_DELETE', request.permission != 'VOLUME_BACKUP_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
     "allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage keys in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage secret-family in compartment ${local.security_compartment.name}",

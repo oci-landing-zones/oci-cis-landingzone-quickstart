@@ -107,7 +107,9 @@ locals {
         "allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}",
-        "allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2
+        "allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name} where any{request.permission != 'VOLUME_DELETE', request.permission != 'VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
         "allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",

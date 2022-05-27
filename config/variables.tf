@@ -111,6 +111,10 @@ variable "existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
+variable "existing_storage_admin_group_name" {
+  type    = string
+  default = ""
+}
 variable "existing_security_fun_dyn_group_name" {
   type    = string
   default = ""

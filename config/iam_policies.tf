@@ -261,7 +261,23 @@ locals {
                            "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
-
+  ## Storage admin grants
+  storage_admin_grants = [
+        # Grants in appdev compartment
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any{request.permission == 'OBJECT_DELETE', request.permission == 'BUCKET_DELETE'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any{request.permission == 'VOLUME_DELETE', request.permission == 'VOLUME_BACKUP_DELETE', request.permission == 'BOOT_VOLUME_BACKUP_DELETE}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any{request.permission == 'FILE_SYSTEM_DELETE', request.permission == 'MOUNT_TARGET_DELETE', request.permission == 'EXPORT_SET_DELETE'}",
+        # Grants in database compartment
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any{request.permission == 'OBJECT_DELETE', request.permission == 'BUCKET_DELETE'}",
+        # Grants in security compartment
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any{request.permission == 'OBJECT_DELETE', request.permission == 'BUCKET_DELETE'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where any{request.permission == 'VOLUME_DELETE', request.permission == 'VOLUME_BACKUP_DELETE', request.permission == 'BOOT_VOLUME_BACKUP_DELETE}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where any{request.permission == 'FILE_SYSTEM_DELETE', request.permission == 'MOUNT_TARGET_DELETE', request.permission == 'EXPORT_SET_DELETE'}",
+        # Grants in network compartment
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any{request.permission == 'OBJECT_DELETE', request.permission == 'BUCKET_DELETE'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where any{request.permission == 'VOLUME_DELETE', request.permission == 'VOLUME_BACKUP_DELETE', request.permission == 'BOOT_VOLUME_BACKUP_DELETE}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where any{request.permission == 'FILE_SYSTEM_DELETE', request.permission == 'MOUNT_TARGET_DELETE', request.permission == 'EXPORT_SET_DELETE'}",
+  ]
     default_policies = { 
       (local.compute_agent_policy_name) = {
         compartment_id = local.enclosing_compartment_id
@@ -304,7 +320,14 @@ locals {
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_enclosing_cmp
-      } : null
+      } : null,
+      (local.storage_admin_policy_name) = length(local.storage_admin_grants) > 0 ? {
+        compartment_id = local.enclosing_compartment_id
+        description    = "Landing Zone policy for ${local.storage_admin_group_name} group to manage storage resources."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
+        statements     = local.storage_admin_grants
+      } : null,
     }
 
     exainfra_policy = var.deploy_exainfra_cmp == true ? {

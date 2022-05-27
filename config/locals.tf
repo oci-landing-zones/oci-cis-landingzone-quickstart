@@ -61,6 +61,7 @@ locals {
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
+  storage_admin_policy_name       = "${var.service_label}-storage-admin-policy"
 
   ### Network
   anywhere                    = "0.0.0.0/0"

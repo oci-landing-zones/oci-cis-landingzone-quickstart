@@ -27,6 +27,7 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_storage_admin_group_name"
       - "existing_security_fun_dyn_group_name"
       - "existing_appdev_fun_dyn_group_name"
       - "existing_compute_agent_dyn_group_name"
@@ -265,6 +266,14 @@ variables:
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
     visible: env_advanced_options
+
+  existing_storage_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Storage Admin group name"
+    description: "Existing group to which Storage management policies will be granted to."
+    visible: env_advanced_options  
  
   existing_security_fun_dyn_group_name:
     type: string

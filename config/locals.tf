@@ -41,8 +41,7 @@ locals {
   announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? "${var.service_label}-announcement-reader-group" : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name)
   exainfra_admin_group_name      = length(trimspace(var.existing_exainfra_admin_group_name)) == 0      ? "${var.service_label}-exainfra-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0      ? data.oci_identity_group.existing_exainfra_admin_group.name      : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name)
   cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? "${var.service_label}-cost-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : data.oci_identity_groups.existing_cost_admin_group.groups[0].name)
-  
-
+  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? "${var.service_label}-storage-admin-group"       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : data.oci_identity_groups.existing_storage_admin_group.groups[0].name)
   
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"

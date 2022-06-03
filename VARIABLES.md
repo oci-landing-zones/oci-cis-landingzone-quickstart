@@ -28,7 +28,8 @@ Variable Name | Description | Required | Default Value
 **existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
 **existing_auditor_group_name** | The name or OCID of an existing group for auditors. | No | None
 **existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | No | None
-**existing_cost_admin_group_name** | The name or OCID of an existing group for cost management administrators. | No | None
+**existing_cost_admin_group_name** | The name or OCID of an existing group for cost administrators. | No | None
+**existing_storage_admin_group_name** | The name or OCID of an existing group for storage administrators. | No | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None

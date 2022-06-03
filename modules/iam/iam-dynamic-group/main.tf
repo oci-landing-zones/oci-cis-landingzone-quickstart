@@ -1,7 +1,13 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### Dynamic Group policy
+terraform {
+  required_providers {
+    oci = {
+      source = "hashicorp/oci"
+    }
+  }
+}
 
 resource "oci_identity_dynamic_group" "these" {
   for_each = var.dynamic_groups

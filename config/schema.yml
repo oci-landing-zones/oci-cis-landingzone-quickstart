@@ -429,7 +429,7 @@ variables:
   no_internet_access:
     type: boolean
     title: "Block Internet Access?"
-    description: "Determines if the VCNs are directly connected to the Internet. If left unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to check 'Connect Landing Zone VCN(s) to on-premises network?' in the 'Networking - Connectivity to On-Premises' section below."
+    description: "Determines if the VCNs are directly connected to the Internet. If left unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to check 'Connect Landing Zone VCN(s) to on-premises network?' and provide values to 'On-premises Network CIDR Blocks' in the 'Networking - Connectivity to On-Premises' section below, or your OCI network will not have any entry points."
     default: false
 
   hub_spoke_architecture:

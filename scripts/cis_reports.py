@@ -48,51 +48,62 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, current_region):
 
-        # CIS Foundation benchmark 1.1
-        self.cis_foundations_benchmark_1_1 = {
-            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3'},
-            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '1,2,3'},
-            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3'},
-            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3'},
-            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3'},
-            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3'},
-            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '1,2,3,4'},
-            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '6,7'},
-            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '6,7'},
-            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '6,7'},
-            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '6,7'},
-            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '1,2,3'},
+        # CIS Foundation benchmark 1.2
+        self.cis_foundations_benchmark_1_2 = {
+            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3'},
+            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3'},
+            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3'},
+            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3'},
+            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3'},
+            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3'},
+            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4'},
+            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7'},
+            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7'},
+            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7'},
+            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7'},
+            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3'},
+            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7'},
+            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3'},
 
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
 
-            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : ''},
-            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for  changes to route tables', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for  security list changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for  network security group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for  changes to network gateways', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '11'},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets', 'Status': True, 'Level': 2, 'Findings': [], 'CCCS Guard Rail' : ''},
-            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '1,2,3'},
-            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '6,7'},
-            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CCCS Guard Rail' : ''},
+            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11'},
+            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : ''},
+            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11'},
+            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for  changes to route tables', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for  security list changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for  network security group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for  changes to network gateways', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
+            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2,''8.5','13.6'], 'CCCS Guard Rail' : ''},
+            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3'},
+            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7'},
+            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : ''},
 
-            '4.1': {'section': 'Object Storage', 'recommendation_#': '4.1', 'Title': 'Ensure no Object Storage buckets are publicly visible', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : ''},
-            '4.2': {'section': 'Object Storage', 'recommendation_#': '4.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CCCS Guard Rail' : ''},
+            '4.1.1': {'section': 'Storage: Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : ''},
+            '4.1.2': {'section': 'Storage: Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.1.3': {'section': 'Storage: Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.2.1': {'section': 'Storage: Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.2.2': {'section': 'Storage: Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure boot volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.3.1': {'section': 'Storage: File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
 
-            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '2,3,8,12'},
-            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CCCS Guard Rail' : '1,2,3'}
+
+            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12'},
+            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3'}
         }
+
         # CIS monitoring notifications check
         self.cis_monitoring_checks = {
             "3.4": [
@@ -175,6 +186,25 @@ class CIS_Report:
             ]
         }
         
+        # CIS IAM  check
+        self.cis_iam_checks = {
+            "1.3": {"targets": ["target.group.name!=Administrators"]},
+            "1.13": {"resources": ["fnfunc", "instance", "autonomousdatabase", "resource.compartment.id"]},
+            "1.14": {"all-resources": ["request.permission!=BUCKET_DELETE", "request.permission!=OBJECT_DELETE", "request.permission!=EXPORT_SET_DELETE", 
+                                "request.permission!=MOUNT_TARGET_DELETE", "request.permission!=FILE_SYSTEM_DELETE", "request.permission!=VOLUME_BACKUP_DELETE", 
+                                "request.permission!=VOLUME_DELETE", "request.permission!=FILE_SYSTEM_DELETE_SNAPSHOT"], 
+                    "file-family": ["request.permission!=EXPORT_SET_DELETE", "request.permission!=MOUNT_TARGET_DELETE", 
+                        "request.permission!=FILE_SYSTEM_DELETE", "request.permission!=FILE_SYSTEM_DELETE_SNAPSHOT"],
+                    "file-systems" : ["request.permission!=FILE_SYSTEM_DELETE", "request.permission!=FILE_SYSTEM_DELETE_SNAPSHOT"],
+                    "mount-targets": ["request.permission!=MOUNT_TARGET_DELETE"],
+                    "object-family": ["request.permission!=BUCKET_DELETE", "request.permission!=OBJECT_DELETE"],
+                    "buckets": ["request.permission!=BUCKET_DELETE"],
+                    "objects": ["request.permission!=OBJECT_DELETE"],
+                    "volume-family": ["request.permission!=VOLUME_BACKUP_DELETE", "request.permission!=VOLUME_DELETE", "request.permission!=BOOT_VOLUME_BACKUP_DELETE"],
+                    "volumes": ["request.permission!=VOLUME_DELETE"],
+                    "volume-backups": ["request.permission!=VOLUME_BACKUP_DELETE"],
+                    "boot-volume-backups": ["request.permission!=BOOT_VOLUME_BACKUP_DELETE"]}}
+
         # Tenancy Data
         self.__tenancy = None
         self.__cloud_guard_config = None
@@ -186,19 +216,33 @@ class CIS_Report:
         self.__users = []
         self.__groups_to_users = []
         self.__tag_defaults = []
-        self.__buckets = []
-    
+        self.__dynamic_groups = []
+
         # For Networking checks
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
+        
+        # For Autonomous Database Checks
+        self.__autonomous_databases = []
 
-        self.__event_rules = []
+        # For Oracle Analytics Cloud Checks
+        self.__analytics_instances = []
 
-        self.__logging_list = []
+        # For Oracle Integration Cloud Checks
+        self.__integration_instances = []
+
         # For Logging & Monitoring checks
+        self.__event_rules = []
+        self.__logging_list = []
         self.__subnet_logs = []
         self.__write_bucket_logs = []
+
+        # For Storage Checks
+        self.__buckets = []
+        self.__boot_volumes = []
+        self.__block_volumes = []
+        self.__file_storage_system = []
 
         # For Vaults and Keys checks
         self.__vaults = []
@@ -216,8 +260,8 @@ class CIS_Report:
         # Start print time info
         self.__current_region = current_region
         self.__print_header("Running CIS Reports...")
-        print("Updated November 8, 2021.")
-        print("oci-python-sdk version 2.47.0")
+        print("Updated May 11, 2022.")
+        print("oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         print("Current region is " + current_region )
         self.__config = config
@@ -233,6 +277,7 @@ class CIS_Report:
             self.__print_to_screen = False
 
         try:
+          
             self.__identity = oci.identity.IdentityClient(
                 self.__config, signer=self.__signer)
             if proxy:
@@ -284,6 +329,31 @@ class CIS_Report:
             if proxy:
                 self.__ons_subs.session.proxies = {'https': proxy}
 
+            self.__adb = oci.database.DatabaseClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__adb.base_client.session.proxies = {'https': proxy}
+            
+            self.__oac = oci.analytics.AnalyticsClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__oac.base_client.session.proxies = {'https': proxy}
+
+            self.__oic = oci.integration.IntegrationInstanceClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__oic.base_client.session.proxies = {'https': proxy}
+
+            self.__bv = oci.core.BlockstorageClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__bv.base_client.session.proxies = {'https': proxy}
+             
+            self.__fss = oci.file_storage.FileStorageClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__fss.base_client.session.proxies = {'https': proxy}
+
             # Getting Tenancy Data and Region data
             self.__tenancy = self.__identity.get_tenancy(
                 config["tenancy"]).data
@@ -293,10 +363,8 @@ class CIS_Report:
 
             for i in self.__regions:
                 if i._is_home_region:
-                    
-                    
                     self.__home_region = i.region_name
-                    print(  "Home region for tenancy is " + self.__home_region)
+                    print("Home region for tenancy is " + self.__home_region)
 
             
             # By Default it is today's date
@@ -324,12 +392,14 @@ class CIS_Report:
             self.__compartments = oci.pagination.list_call_get_all_results(
                 self.__identity.list_compartments,
                 self.__tenancy.id,
-                compartment_id_in_subtree=True
+                compartment_id_in_subtree=True,
+                lifecycle_state = "ACTIVE"
             ).data
 
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
 
+            print("Processed " + str(len(self.__compartments)) + " Compartments")                        
             return self.__compartments
 
         except Exception as e:
@@ -340,7 +410,6 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
-        self.__groups_to_users = []
         print("Processing User Groups and Group Memberships...")
         try:
             # Getting all Groups in the Tenancy
@@ -476,6 +545,7 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in identity_read_user_auth_token: " + str(e.args))
 
+
     ##########################################################################
     # Load user customer secret key
     ##########################################################################
@@ -510,51 +580,114 @@ class CIS_Report:
     # Tenancy IAM Policies
     ##########################################################################
     def __identity_read_tenancy_policies(self):
-        self.__policies = []
-        print("Processing IAM Policies in root...")
-        # Get all policy at the tenacy level
+        print("Processing IAM Policies...")
+        # Get all policy at the tenancy level
         try:
             for compartment in self.__compartments:
-                policies_data = oci.pagination.list_call_get_all_results(
-                    self.__identity.list_policies,
-                    compartment.id
-                ).data
-                for policy in policies_data:
-                    record = {
-                        "id": policy.id,
-                        "name": policy.name,
-                        "compartment_id": policy.compartment_id,
-                        "description": policy.description,
-                        "lifecycle_state": policy.lifecycle_state,
-                        "statements": policy.statements
-                    }
-                    self.__policies.append(record)
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    policies_data = oci.pagination.list_call_get_all_results(
+                        self.__identity.list_policies,
+                        compartment.id
+                    ).data
+                    for policy in policies_data:
+                        record = {
+                            "id": policy.id,
+                            "name": policy.name,
+                            "compartment_id": policy.compartment_id,
+                            "description": policy.description,
+                            "lifecycle_state": policy.lifecycle_state,
+                            "statements": policy.statements
+                        }
+                        self.__policies.append(record)
             
+            print("Processed " + str(len(self.__policies)) + " IAM Policies")                        
             return self.__policies
             
+        except Exception as e:
+            raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
+
+    ############################################
+    # Load Identity Dynamic Groups
+    ############################################
+    def __identity_read_dynamic_groups(self):
+        print("Processing IAM Dynamic Groups...")
+        try:
+            dynamic_groups_data = oci.pagination.list_call_get_all_results(
+                self.__identity.list_dynamic_groups,
+                self.__tenancy.id
+                ).data
+            for dynamic_group in dynamic_groups_data:
+                try:
+                    record = {
+                        "id": dynamic_group.id,
+                        "name": dynamic_group.name,
+                        "description": dynamic_group.description,
+                        "matching_rule": dynamic_group.matching_rule,
+                        "time_created": dynamic_group.time_created,
+                        "inactive_status": dynamic_group.inactive_status,
+                        "lifecycle_state": dynamic_group.lifecycle_state,
+                        "defined_tags": dynamic_group.defined_tags,
+                        "freeform_tags": dynamic_group.freeform_tags,
+                        "compartment_id": dynamic_group.compartment_id,
+                        "notes": ""
+                    }
+                except Exception as e:
+                    record = {
+                        "id": "",
+                        "name": "",
+                        "description": "",
+                        "matching_rule": "",
+                        "time_created": "",
+                        "inactive_status": "",
+                        "lifecycle_state": "",
+                        "defined_tags": "",
+                        "freeform_tags": "",
+                        "compartment_id": "",
+                        "notes": str(e)
+                    }
+                self.__dynamic_groups.append(record)
             
+            print("Processed " + str(len(self.__dynamic_groups)) + "  Dynamic Groups")                        
+            return self.__dynamic_groups
+        except Exception as e:
+            raise RuntimeError("Error in __identity_read_dynamic_groups: " + str(e.args))
+        pass
+    
+    ############################################
+    # Load Availlability Domains
+    ############################################
+    def __identity_read_availability_domains(self):
+        print("Processing Availability Domains...")
+        try:
+            self.__availability_domains = oci.pagination.list_call_get_all_results(
+                self.__identity.list_availability_domains,
+                self.__tenancy.id
+            ).data
+            print("Processed " + str(len(self.__availability_domains)) + " Availability Domains")                        
+            return self.__availability_domains
+
         except Exception as e:
             raise RuntimeError(
-                "Error in __identity_read_tenancy_policies: " + str(e.args))
-
+                "Error in __identity_read_availability_domains: " + str(e.args))
+    
     ##########################################################################
     # Get Objects Store Buckets
     ##########################################################################
     def __os_read_buckets(self):
         
-        print("Processing Object Store Buckets...")
         # Getting OS Namespace
         try:
             self.__os_namespace = self.__os_client.get_namespace().data
         except Exception as e:
             raise RuntimeError(
                 "Error in __os_read_buckets could not load namespace " + str(e.args))
+        print("Processing Object Store Buckets...")
 
         try:
             # Collecting buckets from each compartment
             
             for compartment in self.__compartments:
-                # Skipping the managed pass compartment
+                # Skipping the managed paas compartment
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     buckets_data = oci.pagination.list_call_get_all_results(
                         self.__os_client.list_buckets,
@@ -580,7 +713,7 @@ class CIS_Report:
                                 "storage_tier": bucket_info.storage_tier,
                                 "time_created": bucket_info.time_created,
                                 "versioning": bucket_info.versioning,
-                                "notes": ''
+                                "notes": ""
                             }
                             self.__buckets.append(record)
                         except Exception as e:
@@ -601,10 +734,205 @@ class CIS_Report:
                             }
                             self.__buckets.append(record)
             # Returning Buckets
+            print("Processed " + str(len(self.__buckets)) + " Buckets")            
             return self.__buckets
         except Exception as e:
             raise RuntimeError("Error in __os_read_buckets " + str(e.args))
-        
+
+    ############################################
+    # Load Block Volumes
+    ############################################
+    def __block_volume_read_block_volumes(self):
+        print("Processing Block Volumes...")
+
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    volumes_data = oci.pagination.list_call_get_all_results(
+                        self.__bv.list_volumes,
+                        compartment.id
+                    ).data
+                # Getting Block Volume inf
+                for volume in volumes_data:
+                    try:
+                        record = {
+                            "id":volume.id,
+                            "display_name": volume.display_name,
+                            "kms_key_id": volume.kms_key_id,
+                            "lifecycle_state": volume.lifecycle_state,
+                            "compartment_id": volume.compartment_id,
+                            "size_in_gbs": volume.size_in_gbs,
+                            "size_in_mbs": volume.size_in_mbs,
+                            "source_details": volume.source_details,
+                            "time_created": volume.time_created,
+                            "volume_group_id": volume.volume_group_id,
+                            "vpus_per_gb": volume.vpus_per_gb,
+                            "auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
+                            "availability_domain" : volume.availability_domain,
+                            "block_volume_replicas": volume.block_volume_replicas,
+                            "is_auto_tune_enabled": volume.is_auto_tune_enabled,
+                            "is_hydrated": volume.is_hydrated,
+                            "defined_tags": volume.defined_tags,
+                            "freeform_tags": volume.freeform_tags,
+                            "system_tags": volume.system_tags,
+                            "notes": ""
+                        }
+                    except Exception as e:
+                        record = {
+                            "id":"",
+                            "display_name": "",
+                            "kms_key_id": "",
+                            "lifecycle_state": "",
+                            "compartment_id": "",
+                            "size_in_gbs": "",
+                            "size_in_mbs": "",
+                            "source_details": "",
+                            "time_created":"",
+                            "volume_group_id": "",
+                            "vpus_per_gb": "",
+                            "auto_tuned_vpus_per_gb": "",
+                            "availability_domain" : "",
+                            "block_volume_replicas": "",
+                            "is_auto_tune_enabled": "",
+                            "is_hydrated": "",
+                            "defined_tags": "",
+                            "freeform_tags": "",
+                            "system_tags": "",
+                            "notes": str(e)
+                            }
+                    self.__block_volumes.append(record)
+            print("Processed " + str(len(self.__block_volumes)) + " Block Volumes")
+            return self.__block_volumes
+        except Exception as e:
+            raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))            
+
+    ############################################
+    # Load Boot Volumes
+    ############################################
+    def __boot_volume_read_boot_volumes(self):
+        print("Processing Boot Volumes...")
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    # Iterating through ADs in region
+                    for ad in self.__availability_domains:
+                        boot_volumes_data = oci.pagination.list_call_get_all_results(
+                                self.__bv.list_boot_volumes,
+                                ad.name,
+                                compartment.id
+                            ).data
+                        for boot_volume in boot_volumes_data:
+                            try:
+                                record = {
+                                    "id": boot_volume.id,
+                                    "display_name": boot_volume.display_name,
+                                    "image_id": boot_volume.image_id,
+                                    "kms_key_id": boot_volume.kms_key_id,
+                                    "lifecycle_state": boot_volume.lifecycle_state,
+                                    "size_in_gbs": boot_volume.size_in_gbs,
+                                    "size_in_mbs": boot_volume.size_in_mbs,
+                                    "availability_domain": boot_volume.availability_domain,
+                                    "time_created": boot_volume.time_created,
+                                    "compartment_id": boot_volume.compartment_id,
+                                    "auto_tuned_vpus_per_gb": boot_volume.auto_tuned_vpus_per_gb,
+                                    "boot_volume_replicas": boot_volume.boot_volume_replicas,
+                                    "is_auto_tune_enabled": boot_volume.is_auto_tune_enabled,
+                                    "is_hydrated": boot_volume.is_hydrated,
+                                    "source_details": boot_volume.source_details,
+                                    "vpus_per_gb": boot_volume.vpus_per_gb,
+                                    "system_tags": boot_volume.system_tags,
+                                    "defined_tags": boot_volume.defined_tags,
+                                    "freeform_tags": boot_volume.freeform_tags,
+                                    "notes": ""
+                                }
+                            except Exception as e:
+                                record = {
+                                    "id": "",
+                                    "display_name": "",
+                                    "image_id": "",
+                                    "kms_key_id": "",
+                                    "lifecycle_state": "",
+                                    "size_in_gbs": "",
+                                    "size_in_mbs": "",
+                                    "availability_domain": "",
+                                    "time_created": "",
+                                    "compartment_id": "",
+                                    "auto_tuned_vpus_per_gb": "",
+                                    "boot_volume_replicas": "",
+                                    "is_auto_tune_enabled": "",
+                                    "is_hydrated": "",
+                                    "source_details": "",
+                                    "vpus_per_gb": "",
+                                    "system_tags": "",
+                                    "defined_tags": "",
+                                    "freeform_tags": "",
+                                    "notes": str(e)
+                                }
+                            self.__boot_volumes.append(record)
+            print("Processed " + str(len(self.__boot_volumes)) + " boot volumes")
+            return(self.__boot_volumes)
+        except Exception as e:
+            raise RuntimeError("Error in __boot_volume_read_boot_volumes " + str(e.args))            
+
+    ############################################
+    # Load FSS
+    ############################################
+    def __fss_read_fsss(self):
+        print("Processing File Storage service...")
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    # Iterating through ADs in region
+                    for ad in self.__availability_domains:
+                        fss_data = oci.pagination.list_call_get_all_results(
+                                self.__fss.list_file_systems,
+                                compartment.id,
+                                ad.name
+                            ).data
+                        for fss in fss_data:
+                            try:
+                                record = {
+                                    "id": fss.id,
+                                    "display_name": fss.display_name,
+                                    "kms_key_id": fss.kms_key_id,
+                                    "lifecycle_state": fss.lifecycle_state,
+                                    "lifecycle_details": fss.lifecycle_details,
+                                    "availability_domain": fss.availability_domain,
+                                    "time_created": fss.time_created,
+                                    "compartment_id": fss.compartment_id,
+                                    "is_clone_parent": fss.is_clone_parent,
+                                    "is_hydrated": fss.is_hydrated,
+                                    "metered_bytes": fss.metered_bytes,
+                                    "source_details": fss.source_details,
+                                    "defined_tags": fss.defined_tags,
+                                    "freeform_tags": fss.freeform_tags,
+                                    "notes": ""
+                                }
+                            except Exception as e:
+                                record = {
+                                    "id": "",
+                                    "display_name": "",
+                                    "kms_key_id": "",
+                                    "lifecycle_state": "",
+                                    "lifecycle_details": "",
+                                    "availability_domain": "",
+                                    "time_created": "",
+                                    "compartment_id": "",
+                                    "is_clone_parent": "",
+                                    "is_hydrated": "",
+                                    "metered_bytes": "",
+                                    "source_details": "",
+                                    "defined_tags": "",
+                                    "freeform_tags": "",
+                                    "notes": str(e)
+                                }
+                            self.__file_storage_system.append(record)
+            print("Processed " + str(len(self.__file_storage_system)) + " File Storage service")
+            return(self.__file_storage_system)
+        except Exception as e:
+            raise RuntimeError("Error in __fss_read_fsss " + str(e.args)) 
+           
+
     ##########################################################################
     # Network Security Groups
     ##########################################################################
@@ -658,7 +986,7 @@ class CIS_Report:
                             record['rules'].append(rule_record)
                         # Append NSG to list of NSGs
                         self.__network_security_groups.append(record)
-
+            print("Processed " + str(len(self.__network_security_groups)) + " Network Security Groups")
             return self.__network_security_groups
         except Exception as e:
             raise RuntimeError(
@@ -718,7 +1046,8 @@ class CIS_Report:
 
                         # Append Security List to list of NSGs
                         self.__network_security_lists.append(record)
-
+            
+            print("Processed " + str(len(self.__network_security_lists)) + " Security Lists")                        
             return self.__network_security_lists
         except Exception as e:
             raise RuntimeError(
@@ -759,7 +1088,8 @@ class CIS_Report:
                                 "time_created": subnet.time_created,
                                 "vcn_id": subnet.vcn_id,
                                 "virtual_router_ip": subnet.virtual_router_ip,
-                                "virtual_router_mac": subnet.virtual_router_mac
+                                "virtual_router_mac": subnet.virtual_router_mac,
+                                "notes":""
 
                             }
                             # Adding subnet to subnet list
@@ -783,16 +1113,401 @@ class CIS_Report:
                             "time_created": subnet.time_created,
                             "vcn_id": subnet.vcn_id,
                             "virtual_router_ip": subnet.virtual_router_ip,
-                            "virtual_router_mac": subnet.virtual_router_mac
+                            "virtual_router_mac": subnet.virtual_router_mac,
+                            "notes": str(e)
 
                         }
                         self.__network_subnets.append(record)
 
+            print("Processed " + str(len(self.__network_subnets)) + " Network Subnets")                        
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_network_subnets " + str(e.args))
 
+
+     ############################################
+     # Load Autonomous Databases
+     ############################################
+    def __adb_read_adbs(self):
+        print("Processing Autonomous Databases...")
+        try: 
+            for compartment in self.__compartments: 
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    autonomous_databases = oci.pagination.list_call_get_all_results(
+                    self.__adb.list_autonomous_databases, 
+                            compartment.id
+                        ).data
+                    for adb in autonomous_databases:
+                        try: 
+                            if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
+                                adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
+                                record = {
+                                            "id": adb.id,
+                                            "display_name": adb.display_name,
+                                            "apex_details": adb.apex_details,
+                                            "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
+                                            "autonomous_container_database_id": adb.autonomous_container_database_id,
+                                            "autonomous_maintenance_schedule_type": adb.autonomous_maintenance_schedule_type,
+                                            "available_upgrade_versions": adb.available_upgrade_versions,
+                                            "backup_config": adb.backup_config,
+                                            "compartment_id": adb.compartment_id,
+                                            "connection_strings": adb.connection_strings,
+                                            "connection_urls": adb.connection_urls,
+                                            "cpu_core_count": adb.cpu_core_count,
+                                            "customer_contacts": adb.cpu_core_count,
+                                            "data_safe_status": adb.data_safe_status,
+                                            "data_storage_size_in_gbs": adb.data_storage_size_in_gbs,
+                                            "data_storage_size_in_tbs": adb.data_storage_size_in_tbs,
+                                            "database_management_status": adb.database_management_status,
+                                            "dataguard_region_type": adb.dataguard_region_type,
+                                            "db_name": adb.db_name,
+                                            "db_version": adb.db_version,
+                                            "db_workload": adb.db_workload,
+                                            "defined_tags": adb.defined_tags,
+                                            "failed_data_recovery_in_seconds": adb.failed_data_recovery_in_seconds,
+                                            "freeform_tags": adb.freeform_tags,
+                                            "infrastructure_type": adb.infrastructure_type,
+                                            "is_access_control_enabled": adb.is_access_control_enabled,
+                                            "is_auto_scaling_enabled": adb.is_auto_scaling_enabled,
+                                            "is_data_guard_enabled": adb.is_data_guard_enabled,
+                                            "is_dedicated": adb.is_dedicated,
+                                            "is_free_tier": adb.is_free_tier,
+                                            "is_mtls_connection_required": adb.is_mtls_connection_required,
+                                            "is_preview": adb.is_preview,
+                                            "is_reconnect_clone_enabled": adb.is_reconnect_clone_enabled,
+                                            "is_refreshable_clone": adb.is_refreshable_clone,
+                                            "key_history_entry": adb.key_history_entry,
+                                            "key_store_id": adb.key_store_id,
+                                            "key_store_wallet_name": adb.key_store_wallet_name,
+                                            "kms_key_id": adb.kms_key_id,
+                                            "kms_key_lifecycle_details": adb.kms_key_lifecycle_details,
+                                            "kms_key_version_id": adb.kms_key_version_id,
+                                            "license_model": adb.license_model,
+                                            "lifecycle_details": adb.lifecycle_details,
+                                            "lifecycle_state": adb.lifecycle_state,
+                                            "nsg_ids": adb.nsg_ids,
+                                            "ocpu_count": adb.ocpu_count,
+                                            "open_mode": adb.open_mode,
+                                            "operations_insights_status": adb.operations_insights_status,
+                                            "peer_db_ids": adb.peer_db_ids,
+                                            "permission_level": adb.permission_level,
+                                            "private_endpoint": adb.private_endpoint,
+                                            "private_endpoint_ip": adb.private_endpoint_ip,
+                                            "private_endpoint_label": adb.private_endpoint_label,
+                                            "refreshable_mode": adb.refreshable_mode,
+                                            "refreshable_status": adb.refreshable_status,
+                                            "role": adb.role,
+                                            "scheduled_operations": adb.scheduled_operations,
+                                            "service_console_url": adb.service_console_url,
+                                            "source_id": adb.source_id,
+                                            "source_id": adb.source_id,
+                                            "standby_whitelisted_ips": adb.standby_whitelisted_ips,
+                                            "subnet_id": adb.subnet_id,
+                                            "supported_regions_to_clone_to": adb.supported_regions_to_clone_to,
+                                            "system_tags": adb.system_tags,
+                                            "time_created": adb.time_created,
+                                            "time_data_guard_role_changed": adb.time_data_guard_role_changed,
+                                            "time_deletion_of_free_autonomous_database": adb.time_deletion_of_free_autonomous_database,
+                                            "time_local_data_guard_enabled": adb.time_local_data_guard_enabled,
+                                            "time_maintenance_begin": adb.time_maintenance_begin,
+                                            "time_maintenance_end": adb.time_maintenance_end,
+                                            "time_of_last_failover": adb.time_of_last_failover,
+                                            "time_of_last_refresh": adb.time_of_last_refresh,
+                                            "time_of_last_refresh_point": adb.time_of_last_refresh_point,
+                                            "time_of_last_switchover": adb.time_of_last_switchover,
+                                            "time_of_next_refresh": adb.time_of_next_refresh,
+                                            "time_reclamation_of_free_autonomous_database": adb.time_reclamation_of_free_autonomous_database,
+                                            "time_until_reconnect_clone_enabled": adb.time_until_reconnect_clone_enabled,
+                                            "used_data_storage_size_in_tbs": adb.used_data_storage_size_in_tbs,
+                                            "vault_id": adb.vault_id,
+                                            "whitelisted_ips": adb.whitelisted_ips
+                                        }
+                            else:
+                                record = {
+                                            "id": adb.id,
+                                            "display_name": adb.display_name,
+                                            "apex_details": "",
+                                            "are_primary_whitelisted_ips_used": "",
+                                            "autonomous_container_database_id": "",
+                                            "autonomous_maintenance_schedule_type": "",
+                                            "available_upgrade_versions": "",
+                                            "backup_config": "",
+                                            "compartment_id": adb.compartment_id,
+                                            "connection_strings": "",
+                                            "connection_urls": "",
+                                            "cpu_core_count": "",
+                                            "customer_contacts": "",
+                                            "data_safe_status": "",
+                                            "data_storage_size_in_gbs": "",
+                                            "data_storage_size_in_tbs": "",
+                                            "database_management_status": "",
+                                            "dataguard_region_type": "",
+                                            "db_name": "",
+                                            "db_version": "",
+                                            "db_workload": "",
+                                            "defined_tags": "",
+                                            "failed_data_recovery_in_seconds": "",
+                                            "freeform_tags": "",
+                                            "infrastructure_type": "",
+                                            "is_access_control_enabled": "",
+                                            "is_auto_scaling_enabled": "",
+                                            "is_data_guard_enabled": "",
+                                            "is_dedicated": "",
+                                            "is_free_tier": "",
+                                            "is_mtls_connection_required": "",
+                                            "is_preview": "",
+                                            "is_reconnect_clone_enabled": "",
+                                            "is_refreshable_clone": "",
+                                            "key_history_entry": "",
+                                            "key_store_id": "",
+                                            "key_store_wallet_name": "",
+                                            "kms_key_id": "",
+                                            "kms_key_lifecycle_details": "",
+                                            "kms_key_version_id": "",
+                                            "license_model": "",
+                                            "lifecycle_details": "",
+                                            "lifecycle_state": adb.lifecycle_state,
+                                            "nsg_ids": "",
+                                            "ocpu_count": "",
+                                            "open_mode": "",
+                                            "operations_insights_status": "",
+                                            "peer_db_ids": "",
+                                            "permission_level": "",
+                                            "private_endpoint": "",
+                                            "private_endpoint_ip":"",
+                                            "private_endpoint_label": "",
+                                            "refreshable_mode": "",
+                                            "refreshable_status": "",
+                                            "role": "",
+                                            "scheduled_operations": "",
+                                            "service_console_url": "",
+                                            "source_id": "",
+                                            "source_id": "",
+                                            "standby_whitelisted_ips": "",
+                                            "subnet_id": "",
+                                            "supported_regions_to_clone_to": "",
+                                            "system_tags": "",
+                                            "time_created": "",
+                                            "time_data_guard_role_changed": "",
+                                            "time_deletion_of_free_autonomous_database": "",
+                                            "time_local_data_guard_enabled": "",
+                                            "time_maintenance_begin": "",
+                                            "time_maintenance_end": "",
+                                            "time_of_last_failover": "",
+                                            "time_of_last_refresh": "",
+                                            "time_of_last_refresh_point": "",
+                                            "time_of_last_switchover": "",
+                                            "time_of_next_refresh": "",
+                                            "time_reclamation_of_free_autonomous_database": "",
+                                            "time_until_reconnect_clone_enabled": "",
+                                            "used_data_storage_size_in_tbs": "",
+                                            "vault_id": "",
+                                            "whitelisted_ips": "",
+                                            "notes": ""
+                                        }
+                        except Exception as e:
+                            record = {
+                                        "id":"",
+                                        "display_name": "",
+                                        "apex_details": "",
+                                        "are_primary_whitelisted_ips_used": "",
+                                        "autonomous_container_database_id": "",
+                                        "autonomous_maintenance_schedule_type": "",
+                                        "available_upgrade_versions": "",
+                                        "backup_config": "",
+                                        "compartment_id": "",
+                                        "connection_strings": "",
+                                        "connection_urls": "",
+                                        "cpu_core_count": "",
+                                        "customer_contacts": "",
+                                        "data_safe_status": "",
+                                        "data_storage_size_in_gbs": "",
+                                        "data_storage_size_in_tbs": "",
+                                        "database_management_status": "",
+                                        "dataguard_region_type": "",
+                                        "db_name": "",
+                                        "db_version": "",
+                                        "db_workload": "",
+                                        "defined_tags": "",
+                                        "failed_data_recovery_in_seconds": "",
+                                        "freeform_tags": "",
+                                        "infrastructure_type": "",
+                                        "is_access_control_enabled": "",
+                                        "is_auto_scaling_enabled": "",
+                                        "is_data_guard_enabled": "",
+                                        "is_dedicated": "",
+                                        "is_free_tier": "",
+                                        "is_mtls_connection_required": "",
+                                        "is_preview": "",
+                                        "is_reconnect_clone_enabled": "",
+                                        "is_refreshable_clone": "",
+                                        "key_history_entry": "",
+                                        "key_store_id": "",
+                                        "key_store_wallet_name": "",
+                                        "kms_key_id": "",
+                                        "kms_key_lifecycle_details": "",
+                                        "kms_key_version_id": "",
+                                        "license_model": "",
+                                        "lifecycle_details": "",
+                                        "lifecycle_state": "",
+                                        "nsg_ids": "",
+                                        "ocpu_count": "",
+                                        "open_mode": "",
+                                        "operations_insights_status": "",
+                                        "peer_db_ids": "",
+                                        "permission_level": "",
+                                        "private_endpoint": "",
+                                        "private_endpoint_ip":"",
+                                        "private_endpoint_label": "",
+                                        "refreshable_mode": "",
+                                        "refreshable_status": "",
+                                        "role": "",
+                                        "scheduled_operations": "",
+                                        "service_console_url": "",
+                                        "source_id": "",
+                                        "source_id": "",
+                                        "standby_whitelisted_ips": "",
+                                        "subnet_id": "",
+                                        "supported_regions_to_clone_to": "",
+                                        "system_tags": "",
+                                        "time_created": "",
+                                        "time_data_guard_role_changed": "",
+                                        "time_deletion_of_free_autonomous_database": "",
+                                        "time_local_data_guard_enabled": "",
+                                        "time_maintenance_begin": "",
+                                        "time_maintenance_end": "",
+                                        "time_of_last_failover": "",
+                                        "time_of_last_refresh": "",
+                                        "time_of_last_refresh_point": "",
+                                        "time_of_last_switchover": "",
+                                        "time_of_next_refresh": "",
+                                        "time_reclamation_of_free_autonomous_database": "",
+                                        "time_until_reconnect_clone_enabled": "",
+                                        "used_data_storage_size_in_tbs": "",
+                                        "vault_id": "",
+                                        "whitelisted_ips": "",
+                                        "notes": str(e)
+                            }
+                        self.__autonomous_databases.append(record)
+            
+            print("Processed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")                        
+            return self.__autonomous_databases
+        except Exception as e:
+            raise RuntimeError (
+                "Error in __adb_read_adbs " + str(e.args))
+    ############################################
+    # Load Oracle Integration Cloud
+    ############################################
+    def __oic_read_oics(self):
+        print("Processing Oracle Integration Instances...")
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    oic_instances = oci.pagination.list_call_get_all_results(
+                        self.__oic.list_integration_instances,
+                        compartment.id
+                    ).data
+                    for oic_instance in oic_instances:
+                        if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
+                            try:
+                                record = {
+                                    "id": oic_instance.id,
+                                    "display_name": oic_instance.display_name,
+                                    "network_endpoint_details": oic_instance.network_endpoint_details,
+                                    "compartment_id": oic_instance.compartment_id,
+                                    "alternate_custom_endpoints": oic_instance.alternate_custom_endpoints,
+                                    "consumption_model": oic_instance.consumption_model,
+                                    "custom_endpoint": oic_instance.custom_endpoint,
+                                    "instance_url": oic_instance.instance_url,
+                                    "integration_instance_type": oic_instance.integration_instance_type,
+                                    "is_byol": oic_instance.is_byol,
+                                    "is_file_server_enabled": oic_instance.is_file_server_enabled,
+                                    "is_visual_builder_enabled": oic_instance.is_visual_builder_enabled,
+                                    "lifecycle_state": oic_instance.lifecycle_state,
+                                    "message_packs": oic_instance.message_packs,
+                                    "state_message": oic_instance.state_message,
+                                    "time_created": oic_instance.time_created,
+                                    "time_updated": oic_instance.time_updated,
+                                    "notes": ""
+                                }
+                            except Exception as e:
+                                record = {
+                                    "id": "",
+                                    "display_name": "",
+                                    "network_endpoint_details": "",
+                                    "compartment_id": "",
+                                    "alternate_custom_endpoints": "",
+                                    "consumption_model": "",
+                                    "custom_endpoint": "",
+                                    "instance_url": "",
+                                    "integration_instance_type": "",
+                                    "is_byol": "",
+                                    "is_file_server_enabled": "",
+                                    "is_visual_builder_enabled": "",
+                                    "lifecycle_state": "",
+                                    "message_packs": "",
+                                    "state_message": "",
+                                    "time_created":"",
+                                    "time_updated":"",
+                                    "notes": str(e)
+                                }
+                            self.__integration_instances.append(record)
+            return self.__integration_instances
+        except Exception as e:
+            raise RuntimeError("Error in __oic_read_oics " + str(e.args))
+    ############################################
+    # Load Oracle Analytics Cloud
+    ############################################
+    def __oac_read_oacs(self):
+        print("Processing Oracle Analytics Instances...")
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    oac_instances = oci.pagination.list_call_get_all_results(
+                        self.__oac.list_analytics_instances,
+                        compartment.id
+                    ).data
+                    for oac_instance in oac_instances:
+                        try:  
+                            record = {
+                                "id": oac_instance.id,
+                                "name": oac_instance.name,
+                                "description": oac_instance.description,
+                                "network_endpoint_details": oac_instance.network_endpoint_details,
+                                "compartment_id": oac_instance.compartment_id,
+                                "lifecycle_state": oac_instance.lifecycle_state,
+                                "email_notification": oac_instance.email_notification,
+                                "feature_set": oac_instance.feature_set,
+                                "service_url": oac_instance.service_url,
+                                "capacity": oac_instance.capacity,
+                                "license_type": oac_instance.license_type,
+                                "time_created": oac_instance.time_created,
+                                "time_updated": oac_instance.time_updated,
+                                "notes":""
+                            }
+                        except Exception as e:
+                            record = {
+                                "name": "",
+                                "description": "",
+                                "network_endpoint_details": "",
+                                "compartment_id": "",
+                                "lifecycle_state": "",
+                                "email_notification": "",
+                                "feature_set": "",
+                                "service_url": "",
+                                "capacity": "",
+                                "license_type": "",
+                                "time_created": "",
+                                "time_updated": "",
+                                "notes":str(e)
+                            }
+                        self.__analytics_instances.append(record)
+            
+            print("Processed " + str(len(self.__analytics_instances)) + " Analytics Instances")                        
+            return self.__analytics_instances
+        except Exception as e:
+            raise RuntimeError("Error in __oac_read_oacs " + str(e.args))
     ##########################################################################
     # Events
     ##########################################################################
@@ -819,7 +1534,8 @@ class CIS_Report:
                             "time_created": event_rule.time_created
                         }
                         self.__event_rules.append(record)
-
+            
+            print("Processed " + str(len(self.__event_rules)) + " Event Rules")                        
             return self.__event_rules
         except Exception as e:
             raise RuntimeError("Error in events_read_rules " + str(e.args))
@@ -891,11 +1607,12 @@ class CIS_Report:
                             # Append Log to log List
                             record['logs'].append(log_record)
                         self.__logging_list.append(record)
-
+            
+            print("Processed " + str(len(self.__logging_list)) + " Log Group Logs")                        
             return self.__logging_list
         except Exception as e:
             raise RuntimeError(
-                "Error in __network_read_network_security_groups_rules " + str(e.args))
+                "Error in __logging_read_log_groups_and_logs " + str(e.args))
 
     ##########################################################################
     # Vault Keys
@@ -903,58 +1620,68 @@ class CIS_Report:
     def __vault_read_vaults(self):
         self.__vaults = []
         print("Processing Vaults and Keys...")
-        # Iterating through compartments
-        for compartment in self.__compartments:
-            if self.__if_not_managed_paas_compartment(compartment.name):
-                vaults_data = oci.pagination.list_call_get_all_results(
-                    self.__vault.list_vaults,
-                    compartment.id
-                ).data
-                # Get all Vaults in a compartment
-                for vlt in vaults_data:
-                    vault_record = {
-                        "compartment_id": vlt.compartment_id,
-                        "crypto_endpoint": vlt.crypto_endpoint,
-                        "display_name": vlt.display_name,
-                        "id": vlt.id,
-                        "lifecycle_state": vlt.lifecycle_state,
-                        "management_endpoint": vlt.management_endpoint,
-                        "time_created": vlt.time_created,
-                        "vault_type": vlt.time_created,
-                        "keys": []
-                    }
-                    # Checking for active Vaults only
-                    if vlt.lifecycle_state == 'ACTIVE':
-                        cur_key_client = oci.key_management.KmsManagementClient(
-                            self.__config, vlt.management_endpoint)
-                        keys = oci.pagination.list_call_get_all_results(
-                            cur_key_client.list_keys,
-                            compartment.id
-                        ).data
-                        # Iterrating through Keys in Vaults
-                        for key in keys:
-                            key_record = {
-                                "compartment_id": key.compartment_id,
-                                "display_name": key.display_name,
-                                "id": key.id,
-                                "lifecycle_state": key.lifecycle_state,
-                                # .strftime('%Y-%m-%d %H:%M:%S'),
-                                "time_created": key.time_created,
-                            }
-                            # Getting Key Versions - Most current one is the first one in the list
-                            key_versions = oci.pagination.list_call_get_all_results(
-                                cur_key_client.list_key_versions,
-                                key.id
-                            ).data
+        try:
+            # Iterating through compartments
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    vaults_data = oci.pagination.list_call_get_all_results(
+                        self.__vault.list_vaults,
+                        compartment.id
+                    ).data
+                    # Get all Vaults in a compartment
+                    for vlt in vaults_data:
+                        vault_record = {
+                            "compartment_id": vlt.compartment_id,
+                            "crypto_endpoint": vlt.crypto_endpoint,
+                            "display_name": vlt.display_name,
+                            "id": vlt.id,
+                            "lifecycle_state": vlt.lifecycle_state,
+                            "management_endpoint": vlt.management_endpoint,
+                            "time_created": vlt.time_created,
+                            "vault_type": vlt.time_created,
+                            "keys": []
+                        }
+                        # Checking for active Vaults only
+                        if vlt.lifecycle_state == 'ACTIVE':
+                            try:
+                                cur_key_client = oci.key_management.KmsManagementClient(
+                                    self.__config, vlt.management_endpoint)
+                                keys = oci.pagination.list_call_get_all_results(
+                                    cur_key_client.list_keys,
+                                    compartment.id
+                                ).data
+                                # Iterrating through Keys in Vaults
+                                for key in keys:
+                                    key_record = {
+                                        "compartment_id": key.compartment_id,
+                                        "display_name": key.display_name,
+                                        "id": key.id,
+                                        "lifecycle_state": key.lifecycle_state,
+                                        # .strftime('%Y-%m-%d %H:%M:%S'),
+                                        "time_created": key.time_created,
+                                    }
+                                    # Getting Key Versions - Most current one is the first one in the list
+                                    key_versions = oci.pagination.list_call_get_all_results(
+                                        cur_key_client.list_key_versions,
+                                        key.id
+                                    ).data
 
-                            # Adding current key version to key_record
-                            key_record['current_key_version_date'] = key_versions[0].time_created
-                            # Adding key to vault
-                            vault_record['keys'].append(key_record)
+                                    # Adding current key version to key_record
+                                    key_record['current_key_version_date'] = key_versions[0].time_created
+                                    # Adding key to vault
+                                    vault_record['keys'].append(key_record)
+                            
+                            except Exception as e:
+                                self.__vaults.append(vault_record)
 
-                    self.__vaults.append(vault_record)
 
-        return self.__vaults
+                        self.__vaults.append(vault_record)
+            
+            print("Processed " + str(len(self.__vaults)) + " Vaults")                        
+            return self.__vaults
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __vault_read_vaults " + str(e.args))
 
     ##########################################################################
     # Audit Configuration
@@ -1024,6 +1751,8 @@ class CIS_Report:
 
                         }
                         self.__subscriptions.append(record)
+            
+            print("Processed " + str(len(self.__subscriptions)) + " Subscriptions")                        
             return self.__subscriptions
 
         except Exception as e:
@@ -1053,6 +1782,8 @@ class CIS_Report:
 
                 }
                 self.__tag_defaults.append(record)
+            
+            print("Processed " + str(len(self.__tag_defaults)) + " Tag Defaults")                        
             return self.__tag_defaults
 
         except Exception as e:
@@ -1113,8 +1844,8 @@ class CIS_Report:
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
                     policy_counter += 1
             if policy_counter < 3:
-                self.cis_foundations_benchmark_1_1['1.1']['Status'] = False
-                self.cis_foundations_benchmark_1_1['1.1']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
+                self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(
                     policy)
 
         # 1.2 Check
@@ -1124,32 +1855,44 @@ class CIS_Report:
                         and "to manage all-resources in tenancy".upper() in statement.upper() \
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
 
-                    self.cis_foundations_benchmark_1_1['1.2']['Status'] = False
-                    self.cis_foundations_benchmark_1_1['1.2']['Findings'].append(
+                    self.cis_foundations_benchmark_1_2['1.2']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['1.2']['Findings'].append(
                         policy)
-
+        
         # 1.3 Check - May want to add a service check
         for policy in self.__policies:
-            for statement in policy['statements']:
-                if ("to use groups in tenancy".upper() in statement.upper() or
-                    "to use users in tenancy".upper() in statement.upper() or
-                        "to manage groups in tenancy".upper() in statement.upper() or
-                        "to manage users in tenancy".upper() in statement.upper()):
-                    self.cis_foundations_benchmark_1_1['1.3']['Status'] = False
-                    self.cis_foundations_benchmark_1_1['1.3']['Findings'].append(
-                        policy)
-                    # Moving to the next policy
-                    break
+          if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
+                for statement in policy['statements']:
+                    if ("allow group".upper() in statement.upper() and "tenancy".upper() in statement.upper() and \
+                         ("to manage ".upper() in statement.upper() or "to use".upper() in statement.upper()) and \
+                             ("all-resources".upper() in statement.upper() or (" groups ".upper() in statement.upper() and " users ".upper() in statement.upper()))):
+                        split_statement = statement.split("where")
+                        # Checking if there is a where clause
+                        if len(split_statement) == 2:
+                            # If there is a where clause remove whitespace and quotes
+                            clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
+                            if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.3']["targets"]): 
+                                pass
+                            else:
+                                self.cis_foundations_benchmark_1_2['1.3']['Findings'].append(policy)
+                                self.cis_foundations_benchmark_1_2['1.3']['Status'] = False
 
-        # 1.4 Check - Password Policy
-        if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
-            self.cis_foundations_benchmark_1_1['1.4']['Status'] = True
+                        else:
+                            self.cis_foundations_benchmark_1_2['1.3']['Findings'].append(policy)
+                            self.cis_foundations_benchmark_1_2['1.3']['Status'] = False
+
+
+
+        # 1.4 Check - Password Policy - Only in home region
+        if self.__home_region == self.__current_region:
+            if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
+                self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
             if user['external_identifier'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
-                self.cis_foundations_benchmark_1_1['1.7']['Status'] = False
-                self.cis_foundations_benchmark_1_1['1.7']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
+                self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
                     user)
 
         # 1.8 Check - API Keys over 90
@@ -1157,7 +1900,7 @@ class CIS_Report:
             if user['api_keys']:
                 for key in user['api_keys']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_1['1.8']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['1.8']['Status'] = False
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
@@ -1168,7 +1911,7 @@ class CIS_Report:
                             'time_created': key['time_created']
                         }
 
-                        self.cis_foundations_benchmark_1_1['1.8']['Findings'].append(
+                        self.cis_foundations_benchmark_1_2['1.8']['Findings'].append(
                             finding)
 
         # CIS 1.9 Check - Old Customer Secrets
@@ -1176,7 +1919,7 @@ class CIS_Report:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_1['1.9']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['1.9']['Status'] = False
 
                         finding = {
                             "user_name": user['name'],
@@ -1189,7 +1932,7 @@ class CIS_Report:
                             'time_expires': key['time_expires'],
                         }
 
-                        self.cis_foundations_benchmark_1_1['1.9']['Findings'].append(
+                        self.cis_foundations_benchmark_1_2['1.9']['Findings'].append(
                             finding)
 
         # CIS 1.10 Check - Old Auth Tokens
@@ -1197,7 +1940,7 @@ class CIS_Report:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
                     if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_1['1.10']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['1.10']['Status'] = False
 
                         finding = {
                             "user_name": user['name'],
@@ -1211,24 +1954,53 @@ class CIS_Report:
                             "token": key['token']
                         }
 
-                        self.cis_foundations_benchmark_1_1['1.10']['Findings'].append(
+                        self.cis_foundations_benchmark_1_2['1.10']['Findings'].append(
                             finding)
 
         # CIS 1.11 Active Admins with API keys
-        # Iterrating through all users to see if they have API Keys and if they are active users
+        # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
-                self.cis_foundations_benchmark_1_1['1.11']['Status'] = False
-                self.cis_foundations_benchmark_1_1['1.11']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['1.11']['Status'] = False
+                self.cis_foundations_benchmark_1_2['1.11']['Findings'].append(
                     user)
 
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if user['external_identifier'] is None and user['lifecycle_state'] == 'ACTIVE' and not(user['email_verified']):
-                self.cis_foundations_benchmark_1_1['1.12']['Status'] = False
-                self.cis_foundations_benchmark_1_1['1.12']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['1.12']['Status'] = False
+                self.cis_foundations_benchmark_1_2['1.12']['Findings'].append(
                     user)
+        
+        # CIS 1.13 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
+        # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
+        for dynamic_group in self.__dynamic_groups:
+            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.13']['resources']):
+                self.cis_foundations_benchmark_1_2['1.13']['Status'] = True
+            else:
+                self.cis_foundations_benchmark_1_2['1.13']['Findings'].append(
+                    dynamic_group)
+        # Clearing finding
+        if self.cis_foundations_benchmark_1_2['1.13']['Status']:
+            self.cis_foundations_benchmark_1_2['1.13']['Findings'] = []
+
+        # CIS 1.14 Check - Ensure storage service-level admins cannot delete resources they manage. 
+        # Iterating through all policies
+        for policy in self.__policies:
+            if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
+                for statement in policy['statements']:
+                    for resource in self.cis_iam_checks['1.14']:
+                        if  "allow group".upper() in statement.upper() and "manage".upper() in statement.upper() and resource.upper() in statement.upper():
+                            split_statement = statement.split("where")
+                            if len(split_statement) == 2:
+                                clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
+                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource]):
+                                    pass
+                                else:
+                                    self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+                            else:
+                                self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
 
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
@@ -1238,23 +2010,23 @@ class CIS_Report:
                     if irule['tcp_options']:
                         try:
                             if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
-                                self.cis_foundations_benchmark_1_1['2.1']['Status'] = False
-                                self.cis_foundations_benchmark_1_1['2.1']['Findings'].append(
+                                self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
+                                self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(
                                     sl)
                             elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
-                                self.cis_foundations_benchmark_1_1['2.2']['Status'] = False
-                                self.cis_foundations_benchmark_1_1['2.2']['Findings'].append(
+                                self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
+                                self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(
                                     sl)
                         except (AttributeError):
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
-                            self.cis_foundations_benchmark_1_1['2.5']['Status'] = False
-                            self.cis_foundations_benchmark_1_1['2.5']['Findings'].append(
+                            self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
                                 sl)
 
                 # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
-                    self.cis_foundations_benchmark_1_1['2.5']['Status'] = False
-                    self.cis_foundations_benchmark_1_1['2.5']['Findings'].append(
+                    self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
                         sl)
 
         # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on ports 22, 3389
@@ -1264,32 +2036,75 @@ class CIS_Report:
                     if rule['tcp_options']:
                         try:
                             if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
-                                self.cis_foundations_benchmark_1_1['2.3']['Status'] = False
-                                self.cis_foundations_benchmark_1_1['2.3']['Findings'].append(
+                                self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
+                                self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
                                     nsg)
                             elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-                                self.cis_foundations_benchmark_1_1['2.4']['Status'] = False
-                                self.cis_foundations_benchmark_1_1['2.4']['Findings'].append(
+                                self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
+                                self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(
                                     nsg)
                         except (AttributeError):
                             # Temporarily adding unfettered access to rule 2.3. Move this once a proper rule is available.
-                            self.cis_foundations_benchmark_1_1['2.3']['Status'] = False
-                            self.cis_foundations_benchmark_1_1['2.3']['Findings'].append(
+                            self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
                                 nsg)
 
-        # CIS 3.1 Check - Ensure Audit log retention == 365
-        if self.__audit_retention_period >= 365:
-            self.cis_foundations_benchmark_1_1['3.1']['Status'] = True
+        # CIS 2.6 - Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
+        # Iterating through OIC instance have network access rules and ensure 0.0.0.0/0 is not in the list
+        for integration_instance in self.__integration_instances:
+            if not(integration_instance['network_endpoint_details']):
+                self.cis_foundations_benchmark_1_2['2.6']['Status'] = False
+                self.cis_foundations_benchmark_1_2['2.6']['Findings'].append(
+                    integration_instance)
+            elif integration_instance['network_endpoint_details']:
+                if "0.0.0.0/0" in str(integration_instance['network_endpoint_details']):
+                    self.cis_foundations_benchmark_1_2['2.6']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.6']['Findings'].append(
+                        integration_instance)                    
+
+        # CIS 2.7 - Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a VCN
+        for analytics_instance in self.__analytics_instances:
+            if not(analytics_instance['network_endpoint_details']):
+                self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
+                self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
+                    analytics_instance)    
+            elif analytics_instance['network_endpoint_details']:
+                if "0.0.0.0/0" in str(integration_instance['network_endpoint_details']):
+                    self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
+                        analytics_instance) 
+
+        # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
+        # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
+        for autonomous_database in self.__autonomous_databases:
+            if not(autonomous_database['whitelisted_ips']) and not(autonomous_database['nsg_ids']):
+                self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
+                self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                    autonomous_database)
+            elif autonomous_database['whitelisted_ips']:
+                for value in autonomous_database['whitelisted_ips']:
+                    if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
+                        self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                            autonomous_database)
+
+        # CIS 2.9 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
+
+
+        # CIS 3.1 Check - Ensure Audit log retention == 365 - Only checking in home region
+        if self.__home_region == self.__current_region:
+            if self.__audit_retention_period >= 365:
+                self.cis_foundations_benchmark_1_2['3.1']['Status'] = True
 
         # CIS Check 3.2 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
             if tag['value'] == "${iam.principal.name}":
-                self.cis_foundations_benchmark_1_1['3.2']['Status'] = True
+                self.cis_foundations_benchmark_1_2['3.2']['Status'] = True
 
         # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.__subscriptions) > 0:
-            self.cis_foundations_benchmark_1_1['3.3']['Status'] = True
+            self.cis_foundations_benchmark_1_2['3.3']['Status'] = True
 
         # CIS Checks 3.4 - 3.13
         # Iterate through all event rules
@@ -1302,74 +2117,103 @@ class CIS_Report:
                 # Checking if all cis change list is a subset of event condition
                 # if(all(x in test_list for x in sub_list)):
                 if(all(x in event_dict['eventtype'] for x in changes)):
-                    self.cis_foundations_benchmark_1_1[key]['Status'] = True
+                    self.cis_foundations_benchmark_1_2[key]['Status'] = True
 
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             if not(subnet['id'] in self.__subnet_logs):
-                self.cis_foundations_benchmark_1_1['3.14']['Status'] = False
-                self.cis_foundations_benchmark_1_1['3.14']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['3.14']['Status'] = False
+                self.cis_foundations_benchmark_1_2['3.14']['Findings'].append(
                     subnet)
 
         # CIS Check 3.15 - Cloud Guard enabled
         if self.__cloud_guard_config == 'ENABLED':
-            self.cis_foundations_benchmark_1_1['3.15']['Status'] = True
+            self.cis_foundations_benchmark_1_2['3.15']['Status'] = True
         else:
-            self.cis_foundations_benchmark_1_1['3.15']['Status'] = False
+            self.cis_foundations_benchmark_1_2['3.15']['Status'] = False
 
         # CIS Check 3.16 - Encryption keys over 365
+        # Generating list of keys
         for vault in self.__vaults:
             for key in vault['keys']:
                 if self.kms_key_time_max_datetime >= key['time_created']:
-                    self.cis_foundations_benchmark_1_1['3.16']['Status'] = False
-                    self.cis_foundations_benchmark_1_1['3.16']['Findings'].append(
+                    self.cis_foundations_benchmark_1_2['3.16']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['3.16']['Findings'].append(
                         key)
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
-        
         for bucket in self.__buckets:
             if not(bucket['name'] in self.__write_bucket_logs):
-                self.cis_foundations_benchmark_1_1['3.17']['Status'] = False
-                self.cis_foundations_benchmark_1_1['3.17']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['3.17']['Status'] = False
+                self.cis_foundations_benchmark_1_2['3.17']['Findings'].append(
                     bucket)
 
-        # CIS Section 4 Checks
-        
+        # CIS Section 4.1 Bucket Checks
+        # Generating list of buckets names
         for bucket in self.__buckets:
             if 'public_access_type' in bucket:
                 if bucket['public_access_type'] != 'NoPublicAccess':
-                    self.cis_foundations_benchmark_1_1['4.1']['Status'] = False
-                    self.cis_foundations_benchmark_1_1['4.1']['Findings'].append(
+                    self.cis_foundations_benchmark_1_2['4.1.1']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['4.1.1']['Findings'].append(
                         bucket)
 
             if 'kms_key_id' in bucket:
                 if not(bucket['kms_key_id']):
-                    self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(
+                    self.cis_foundations_benchmark_1_2['4.1.2']['Findings'].append(
                         bucket)
-                    self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
-            else:
-                self.cis_foundations_benchmark_1_1['4.2']['Findings'].append(
-                    bucket)
-                self.cis_foundations_benchmark_1_1['4.2']['Status'] = False
-        self.__buckets = []
+                    self.cis_foundations_benchmark_1_2['4.1.2']['Status'] = False
+            
+            if 'versioning' in bucket:
+                if bucket['versioning'] != "Enabled":
+                    self.cis_foundations_benchmark_1_2['4.1.3']['Findings'].append(
+                        bucket)
+                    self.cis_foundations_benchmark_1_2['4.1.3']['Status'] = False
+
+        # CIS Section 4.2.1 Block Volume Checks
+        # Generating list of block volumes names
+        for volume in self.__block_volumes:
+            if 'kms_key_id' in volume:
+                if not(volume['kms_key_id']):
+                    self.cis_foundations_benchmark_1_2['4.2.1']['Findings'].append(
+                        volume)
+                    self.cis_foundations_benchmark_1_2['4.2.1']['Status'] = False
+        
+        # CIS Section 4.2.2 Boot Volume Checks
+        # Generating list of boot names
+        for boot_volume in self.__boot_volumes:
+            if 'kms_key_id' in boot_volume:
+                if not(boot_volume['kms_key_id']):
+                    self.cis_foundations_benchmark_1_2['4.2.2']['Findings'].append(
+                        boot_volume)
+                    self.cis_foundations_benchmark_1_2['4.2.2']['Status'] = False
+
+        # CIS Section 4.3.1 FSS Checks
+        # Generating list of FSS names
+        for file_system in self.__file_storage_system:
+            if 'kms_key_id' in file_system:
+                if not(file_system['kms_key_id']):
+                    self.cis_foundations_benchmark_1_2['4.3.1']['Findings'].append(
+                        file_system)
+                    self.cis_foundations_benchmark_1_2['4.3.1']['Status'] = False
+
         # CIS Section 5 Checks
-        # Checking if more than one compartment becuae of the ManagedPaaS Compartment
+        # Checking if more than one compartment because of the ManagedPaaS Compartment
         if len(self.__compartments) < 2:
-            self.cis_foundations_benchmark_1_1['5.1']['Status'] = False
+            self.cis_foundations_benchmark_1_2['5.1']['Status'] = False
 
         if len(self.__resources_in_root_compartment) > 0:
             for item in self.__resources_in_root_compartment:
-                self.cis_foundations_benchmark_1_1['5.2']['Status'] = False
-                self.cis_foundations_benchmark_1_1['5.2']['Findings'].append(
+                self.cis_foundations_benchmark_1_2['5.2']['Status'] = False
+                self.cis_foundations_benchmark_1_2['5.2']['Findings'].append(
                     item)
 
     ##########################################################################
     # Orchestrates data collection - analysis and report generation
     ##########################################################################
 
-    def report_generate_cis_report(self):
+    def report_generate_cis_report(self, level=2):
         # This function reports generates CSV reports
 
         # Collecting all the tenancy data
@@ -1380,24 +2224,26 @@ class CIS_Report:
 
         # Creating summary report
         summary_report = []
-        for key, recommendation in self.cis_foundations_benchmark_1_1.items():
-            record = {
-                "Recommendation #": key,
-                "Section": recommendation['section'],
-                "Level": str(recommendation['Level']),
-                "Compliant": ('Yes' if recommendation['Status'] else 'No'),
-                "Findings": str(len(recommendation['Findings'])),
-                "Title": recommendation['Title'],
-                "CCCS Guard Rail": recommendation['CCCS Guard Rail']
-            }
-            # Add record to summary report for CSV output
-            summary_report.append(record)
+        for key, recommendation in self.cis_foundations_benchmark_1_2.items():
+            if recommendation['Level'] <= level:
+                record = {
+                    "Recommendation #": key,
+                    "Section": recommendation['section'],
+                    "Level": str(recommendation['Level']),
+                    "Compliant": ('Yes' if recommendation['Status'] else 'No'),
+                    "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
+                    "Title": recommendation['Title'],
+                    "CIS v8": recommendation['CISv8'],
+                    "CCCS Guard Rail": recommendation['CCCS Guard Rail']
+                }
+                # Add record to summary report for CSV output
+                summary_report.append(record)
             
             # Generate Findings report
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
 
         # Screen output for CIS Summary Report
-        self.__print_header("CIS Foundations Benchmark 1.1 Summary Report")
+        self.__print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
         print('#' * 90)
@@ -1421,12 +2267,13 @@ class CIS_Report:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, summary_file_name)
         
-        for key, recommendation in self.cis_foundations_benchmark_1_1.items():
-            report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
-            if report_file_name and self.__output_bucket:
-                self.__os_copy_report_to_object_storage(
-                    self.__output_bucket, report_file_name)
+        for key, recommendation in self.cis_foundations_benchmark_1_2.items():
+            if recommendation['Level'] <= level:
+                report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
+                if report_file_name and self.__output_bucket:
+                    self.__os_copy_report_to_object_storage(
+                        self.__output_bucket, report_file_name)
 
     def __report_collect_tenancy_data(self):
 
@@ -1434,22 +2281,19 @@ class CIS_Report:
                             self.__tenancy.name + " " + self.__current_region + " " + "Region" + "..." )
         
         ######  Runs identity functions only in home region
-        if self.__home_region == self.__current_region: 
-            
-            
+        if self.__home_region == self.__current_region:     
             self.__identity_read_groups_and_membership()
             self.__identity_read_users()
+            self.__identity_read_tenancy_password_policy()
+            self.__identity_read_dynamic_groups()
+            self.__audit_read__tenancy_audit_configuration()
             self.__identity_read_tag_defaults()
             self.__identity_read_tenancy_policies()
-        
-        else : 
-            ""
-        
+
         ######  Runs these functions in all regions
+        self.__identity_read_compartments()
+        self.__identity_read_availability_domains()
         self.__search_resources_in_root_compartment()
-        self.__identity_read_tenancy_password_policy()
-        self.__compartments = self.__identity_read_compartments()
-        self.__audit_read__tenancy_audit_configuration()
         self.__cloud_guard_read_cloud_guard_configuration()
         self.__vault_read_vaults()
         self.__os_read_buckets()
@@ -1459,7 +2303,12 @@ class CIS_Report:
         self.__network_read_network_security_lists()
         self.__network_read_network_security_groups_rules()
         self.__network_read_network_subnets()
-        
+        self.__adb_read_adbs()
+        self.__oic_read_oics()
+        self.__oac_read_oacs()
+        self.__block_volume_read_block_volumes()
+        self.__boot_volume_read_boot_volumes()
+        self.__fss_read_fsss()
 
     ##########################################################################
     # Copy Report to Object Storage
@@ -1671,7 +2520,7 @@ def execute_report():
     # Get Command Line Parser
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', default="", dest='config_profile',
-                        help='Config file section to use (tenancy profile)')
+                        help='Config file section to use (tenancy profile) ')
     parser.add_argument('-p', default="", dest='proxy',
                         help='Set Proxy (i.e. www-proxy-server.com:80) ')
     parser.add_argument('--output-to-bucket', default="", dest='output_bucket',
@@ -1680,10 +2529,12 @@ def execute_report():
                         help='Set Output report directory by default it is the current date (i.e. reports-date) ')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False) ')
+    parser.add_argument('--level', default=2, dest='level',
+                        help='CIS Recommendation Level options are: 1 or 2. Set to 2 by default ')
     parser.add_argument('-ip', action='store_true', default=False,
-                        dest='is_instance_principals', help='Use Instance Principals for Authentication')
+                        dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
-                        dest='is_delegation_token', help='Use Delegation Token for Authentication')
+                        dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
     cmd = parser.parse_args()
     # Getting  Command line  arguments
     # cmd = set_parser_arguments()
@@ -1705,7 +2556,7 @@ def execute_report():
         config['region'] = region_name
         signer.region = region_name
         report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, region_name)
-        report.report_generate_cis_report()
+        report.report_generate_cis_report(int(cmd.level))
 
 ##########################################################################
 # Main

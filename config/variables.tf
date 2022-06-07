@@ -42,7 +42,7 @@ variable "exa_advanced_options" {
   type = bool
   default = false
 } 
-variable "connectivity_advanced_options" {
+variable "hs_advanced_options" {
   type = bool
   default = false
 }
@@ -151,7 +151,7 @@ variable "no_internet_access" {
 variable "existing_drg_id" {
   type        = string
   default     = ""
-  description = "The DRG OCID of an existing DRG, if using an existing DRG."
+  description = "The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you want the Landing Zone to not deploy a DRG."
 }
 
 variable "onprem_cidrs" {
@@ -209,7 +209,7 @@ variable "subnets_sizes" {
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false
-  description = "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
+  description = "Determines if a Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
 }
 
 variable "dmz_vcn_cidr" {

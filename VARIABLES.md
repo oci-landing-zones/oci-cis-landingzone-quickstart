@@ -37,14 +37,14 @@ Variable Name | Description | Required | Default Value
 
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm
 
-### <a name="networking_variables"></a>Networking Variables
+### <a name="networking_variables"></a>Networking - Generic VCNs Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | []
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
 **subnets_names** | List of custom names to be used in each of the spoke(s) subnet names, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match *subnets_sizes*. | No | []
 **subnets_sizes** | List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of VCN CIDR + 4. The list length and elements order must match *subnets_names*. | No | []
-### <a name="exadata_variables"></a>Exadata Cloud Service Variables
+### <a name="exadata_variables"></a>Networking - Exadata Cloud Service VCNs Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **exacs_vcn_cidrs** | List of CIDR blocks for the Exadata VCNs, in CIDR notation. Each provided CIDR relates to one and only one VCN. Be mindful about Exadata *Requirements for IP Address Space* in <a href="https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm">OCI documentation</a>. You can provide up to nine CIDRs. | No | []
@@ -53,22 +53,34 @@ Variable Name | Description | Required | Default Value
 **exacs_backup_subnet_cidrs** | List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs.| No | []
 **deploy_exainfra_cmp** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | false
 
-### <a name="connectivity_variables"></a>Connectivity Variables
+### <a name="hub_spoke_variables"></a>Networking - Hub/Spoke Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. | No | false
-**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
-**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH and RDP inbound connections. It must be a subset of *onprem_cidrs*. | No | []
-**hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | No | false
-**dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. | Yes, if *hub_spoke_architecture* is true | ""
-**dmz_for_firewall** | Determines if the DMZ VCN will be used for deploying 3rd party firewalls via terraform. DRG attachments will not be created. | No | false
+**hub_spoke_architecture** | Determines if Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing through a DRG. If set to rue, either a new DRG is deployed or an existing DRG can be reused (if you provide its OCID in *existing_drg_id* variable.) With Hub/Spoke, all VCNs (Generic and ExaCS) are peered through the DRG. | No | false
+**dmz_vcn_cidr** | IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. | No | ""
+**dmz_for_firewall** | Determines if a 3rd party firewall will be deployed in the DMZ VCN. DRG attachments are not created. | No | false
 **dmz_number_of_subnets** | The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required. | Yes, if *dmz_vcn_cidr* is provided  | 2
 **dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if *dmz_vcn_cidr*'s prefix is 20 (/20) and *dmz_subnet_size* is 4, subnets are going to be /24. | Yes, if *dmz_vcn_cidr* is provided  | 4
-**no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to set *is_vcn_onprem_connected* to true. | No | false
-**existing_drg_id** | The OCID of an existing DRG. If provided, no DRG is created (even if *is_vc_onprem_connected* is set to true).  | No | ""
-**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
-**public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
-**public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. | No | []
+
+### <a name="public_connectivity_variables"></a>Networking - Public Connectivity Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to set *is_vcn_onprem_connected* to true and provide values to *onprem_cidrs*, or your OCI network will not have any entry points. | No | false
+**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to OCI native Bastion resources in private subnets or to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. | No | []
+**public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections to a Load Balancer that is eventually deployed. | No | []
+**public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. Applies to connections made over NAT Gateway. | No | []
+
+### <a name="onprem_connectivity_variables"></a>Networking - Connectivity to On-Premises Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. If set to true, either a new  DRG is deployed or an existing DRG can be reused (if you provide its OCID in *existing_drg_id* variable. | No | false
+**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. If *no_internet_access* is true it's advised to provide values for *onprem_cidrs*, or your OCI network will not have any entry points.| No | []
+**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH and RDP inbound connections. | No | []
+
+### <a name="drg_variables"></a>Networking - DRG (Dynamic Routing Gateway)
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**existing_drg_id** | The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you do NOT want the Landing Zone to deploy a new DRG. | No | ""
 
 ### <a name="notification_variables"></a>Notifications Alarms and Events Variables
 Variable Name | Description | Required | Default Value

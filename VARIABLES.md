@@ -66,7 +66,7 @@ Variable Name | Description | Required | Default Value
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to set *is_vcn_onprem_connected* to true and provide values to *onprem_cidrs*, or your OCI network will not have any entry points. | No | false
-**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to OCI native Bastion resources in private subnets or to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. | No | []
+**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. | No | []
 **public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections to a Load Balancer that is eventually deployed. | No | []
 **public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. Applies to connections made over NAT Gateway. | No | []
 

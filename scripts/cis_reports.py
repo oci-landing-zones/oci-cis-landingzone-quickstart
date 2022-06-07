@@ -647,7 +647,7 @@ class CIS_Report:
                     }
                 self.__dynamic_groups.append(record)
             
-            print("Processed " + str(len(self.__dynamic_groups)) + "  Dynamic Groups")                        
+            print("Processed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")                        
             return self.__dynamic_groups
         except Exception as e:
             raise RuntimeError("Error in __identity_read_dynamic_groups: " + str(e.args))

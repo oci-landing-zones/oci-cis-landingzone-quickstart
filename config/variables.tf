@@ -429,6 +429,15 @@ variable "cloud_guard_configuration_status" {
   }
 }
 
+variable "cloud_guard_risk_level_threshold" {
+  default     = "High"
+  description = "Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems."
+  validation {
+    condition     = contains(["CRITICAL", "HIGH","MEDIUM","MINOR","LOW"], upper(var.cloud_guard_risk_level_threshold))
+    error_message = "Validation failed for cloud_guard_risk_level_threshold: valid values (case insensitive) are CRITICAL, HIGH, MEDIUM, MINOR, LOW."
+  }
+}
+
 # Service Connector Hub related configuration
 variable "create_service_connector_audit" {
   type        = bool

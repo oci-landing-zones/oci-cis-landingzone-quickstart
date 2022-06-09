@@ -268,46 +268,46 @@ locals {
         # Object Storage
         "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.appdev_compartment.name}",
         "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any {request.operation = 'DeleteObject', request.operation = 'DeleteBucket'}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
         # Volume Storage
         "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any {request.operation = 'DeleteVolume', request.operation = 'DeleteVolumeBackup', request.operation = 'DeleteBootVolumeBackup'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
         # File Storage
         "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any {request.operation = 'DeleteFileSystem', request.operation = 'DeleteMountTarget', request.operation = 'DeleteExport', request.operation = 'DeleteExportSet'}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
         # Grants in database compartment
         # Object Storage
         "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.database_compartment.name}",
         "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.database_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any {request.operation = 'DeleteObject', request.operation = 'DeleteBucket'}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
         # Volume Storage
         "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where any {request.operation = 'DeleteVolume', request.operation = 'DeleteVolumeBackup', request.operation = 'DeleteBootVolumeBackup'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
         # File Storage
         "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where any {request.operation = 'DeleteFileSystem', request.operation = 'DeleteMountTarget', request.operation = 'DeleteExport', request.operation = 'DeleteExportSet'}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
         # Grants in security compartment
         # Object Storage
         "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.security_compartment.name}",
         "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.security_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any {request.operation = 'DeleteObject', request.operation = 'DeleteBucket'}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
         # Volume Storage
         "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.security_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where any {request.operation = 'DeleteVolume', request.operation = 'DeleteVolumeBackup', request.operation = 'DeleteBootVolumeBackup'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
         # File Storage
         "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.security_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where any {request.operation = 'DeleteFileSystem', request.operation = 'DeleteMountTarget', request.operation = 'DeleteExport', request.operation = 'DeleteExportSet'}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
         # Grants in network compartment
         # Object Storage
         "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.network_compartment.name}",
         "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.network_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any {request.operation = 'DeleteObject', request.operation = 'DeleteBucket'}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
         # Volume Storage
         "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.network_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where any {request.operation = 'DeleteVolume', request.operation = 'DeleteVolumeBackup', request.operation = 'DeleteBootVolumeBackup'}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
         # File Storage
         "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.network_compartment.name}",
-        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where any {request.operation = 'DeleteFileSystem', request.operation = 'DeleteMountTarget', request.operation = 'DeleteExport', request.operation = 'DeleteExportSet'}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'VNIC_DELETE', request.permission = 'SUBNET_DETACH', request.permission = 'VNIC_DETACH', request.permission = 'PRIVATE_IP_DELETE', request.permission = 'PRIVATE_IP_UNASSIGN', request.permission = 'VNIC_UNASSIGN', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
   ]
     default_policies = { 
       (local.compute_agent_policy_name) = {

@@ -60,8 +60,11 @@ locals {
   ## Security admin grants on Security compartment
   security_admin_grants_on_security_cmp = [
     "allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment.name}",
-    "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name} where any{request.permission != 'VOLUME_DELETE', request.permission != 'VOLUME_BACKUP_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name}",
+    # CIS 1.2 - 1.14 Level 2
+    "allow group ${local.security_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where any{request.permission != 'VOLUME_DELETE', request.permission != 'VOLUME_BACKUP_DELETE'}",
     "allow group ${local.security_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where any{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE' }",
     "allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage keys in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage secret-family in compartment ${local.security_compartment.name}",
@@ -108,8 +111,11 @@ locals {
         "allow group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}",
         # CIS 1.2 - 1.14 Level 2
-        "allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name} where any{request.permission != 'VOLUME_DELETE', request.permission != 'VOLUME_BACKUP_DELETE'}",
-        "allow group ${local.network_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
+        "allow group ${local.network_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
+
         "allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
@@ -134,7 +140,10 @@ locals {
         "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
         # CIS 1.2 - 1.14 Level 2 
-        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} whereall{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.database_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
         "allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment.name}",
@@ -142,7 +151,6 @@ locals {
         "allow group ${local.database_admin_group_name} to manage logging-family in compartment ${local.database_compartment.name}", 
         "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
 
@@ -188,9 +196,9 @@ locals {
         "allow group ${local.appdev_admin_group_name} to manage logging-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage instance-family in compartment ${local.appdev_compartment.name}",
         # CIS 1.2 - 1.14 Level 2 
-        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE'}",
-        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
-        "allow group ${local.appdev_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE' }",
+        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
         "allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment.name}",

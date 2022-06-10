@@ -256,12 +256,24 @@ locals {
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
 
-  // Cost admin permissions to be created always at the root compartment
+  ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
                            "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
                            "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
+  ### Dynamic Group Policies ###
+  ## Compute Agent grants
+  compute_agent_grants = [
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
+
+  ## ADB grants
+  autonomous_database_grants = [
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
+  
   ## Storage admin grants
   storage_admin_grants = [
         # Grants in appdev compartment

@@ -1,3 +1,13 @@
+# June 10, 2022 Release Notes - Stable 2.3.5
+1. [Storage Administrators Group](#storage_admin)
+1. [Connectivity Section Usability Improvements in Resource Manager](#conn_usage)
+
+## <a name="storage_admin">Storage Administrators Group</a>
+We have introduced a group for storage management, entitled to delete OCI Storage resources across Landing Zone compartments. The feature complements recommendation 1.14 of CIS OCI Foundations Benchmark v1.2.0 that states *Ensure storage service-level admins cannot delete resources they manage*, ensuring segregation of duties from service-level administrators, who cannot delete resources they are managing.
+
+## <a name="conn_usage">Connectivity Section Usability Improvements</a>
+The *Connectivity* variables group in [config/schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
+
 # May 11, 2022 Release Notes - Stable 2.3.4
 1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)
 1. [Advanced Options Check Preservation in Resource Manager](#orm_adv_options)

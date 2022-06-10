@@ -1,3 +1,47 @@
+# May 11, 2022 Release Notes - Stable 2.3.4
+1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)
+1. [Advanced Options Check Preservation in Resource Manager](#orm_adv_options)
+1. [Notification Endpoints not Required by CIS Not Shown By Default](#hidden_endpoints)
+1. [ExaCS VCN Route Table Fix](#exacs_vcn_rt_fix)
+
+## <a name="drop_down">Drop Down UI Control for Existing Groups for Resource Manager</a>
+IAM groups are now selectable in a drop down UI control made available in [config/schema.yml](./config/schema.yml) and [pre-config/schema.yml](./pre-config/schema.yml) for OCI Resource Manager. When informing existing groups, typing the group name is no longer needed.
+The drop down makes the group OCID available to the Terraform code, that performs a look up for the group name. As a direct consequence, both group name and group OCID are now supported when informing existing groups in terraform.tfvars file.
+
+## <a name="orm_adv_options">Advanced Options Check Preservation for Resource Manager</a>
+CIS Landing Zone interface for Resource Manager has check boxes allowing for advanced input options, hiding or showing groups of variables. The state of these options used to be reset when users needed to update the variables in the UI, hiding options chosen previously. Now the state is saved and no longer reset. Changes made in [config/variables.tf](./config/variables.tf).
+
+## <a name="hidden_endpoints">Notification Endpoints not Required by CIS Not Displayed By Default</a>
+Except for Security and Network notifications, all other endpoints are no longer displayed by default in [config/schema.yml](./config/schema.yml) for OCI Resource Manager. A new _Additional Notification Endpoints_ check box displays them when checked. 
+
+## <a name="exacs_vcn_rt_fix">ExaCS VCN Route Table Fix</a>
+A fix in the [route table of the Client subnet](./config/net_exacs_vcns.tf) allows for proper on-premises routing with or without a DMZ VCN. If a DMZ VCN is deployed, traffic to an on-premises IP address goes through the VCN. Otherwise, traffic goes to on-premises directly through the DRG.
+
+# April 6, 2022 Release Notes - Stable 2.3.3
+1. [Cloud Guard Updates](#cg_updates)
+1. [VSS Policy Update](#vss_update)
+1. [Code Examples Aligned with Deployment Guide](#code_examples)
+
+## <a name="cg_updates">Cloud Guard Updates</a>
+- [Cloud Guard policy](./config/iam_service_policies.tf) has been simplified with *Allow service cloudguard to read all-resources in tenancy*. This way no policy changes are needed as new services are integrated with Cloud Guard.
+- [Cloud Guard enablement](./config/mon_cloud_guard.tf) and [target creation logic](./modules/monitoring/cloud-guard/main.tf) have been updated, but still based on *cloud_guard_configuration_status* variable. When the variable is set to 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Customers need to make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail**. If there is a **pre-existing** Cloud Guard target for the Root compartment, set the variable to 'DISABLE'. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you set the variable to 'ENABLE', Cloud Guard Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted.
+
+## <a name="vss_update">VSS Policy Update</a>
+[Policy update](./config/iam_service_policies.tf) allowing Vulnerability Scanning Service (VSS) to scan containers in OCI Registry: *Allow service vulnerability-scanning-service to read repos in tenancy*.
+
+## <a name="code_examples">Code Examples Aligned with Deployment Guide</a>
+An [examples](./examples/) folder has been added showcasing input variables for the various deployment samples provided in the [deployment guide](DEPLOYMENT-GUIDE.md). The examples follow Oracle documentation guidelines for acceptable company name.
+
+# March 18, 2022 Release Notes - Stable 2.3.2
+1. [Deployment Guide](#deployment_guide)
+1. [Reviewed IAM Admin Policies](#iam_policies_review)
+
+## <a name="deployment_guide">Deployment Guide</a>
+A compreehensive [deployment guide](DEPLOYMENT-GUIDE.md) for CIS Landing Zone is now available. It covers key deployment considerations, the architecture, major deployment scenarios, customization guidance, detailed steps how to deploy using Terraform CLI and with Resource Manager UI/CLI as well as various deployment configuration samples.
+
+## <a name="iam_policies_review">Reviewed IAM Admin Policies</a>
+IAM admin policy has been updated to not allow IAM administrators to manage compartments and policies at the Root compartment, thus avoiding privilege escalation.
+
 # February 25, 2022 Release Notes - Stable 2.3.1
 1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)

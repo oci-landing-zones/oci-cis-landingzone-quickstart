@@ -29,6 +29,28 @@ variable "region" {
   }
 }
 
+#Advanced options check boxes used in schema.yml
+variable "env_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "net_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "exa_advanced_options" {
+  type = bool
+  default = false
+} 
+variable "hs_advanced_options" {
+  type = bool
+  default = false
+}
+variable "notifications_advanced_options" {
+  type = bool
+  default = false
+}
+
 #Enclosing Compartment
 variable "use_enclosing_compartment" {
   type        = bool
@@ -129,7 +151,7 @@ variable "no_internet_access" {
 variable "existing_drg_id" {
   type        = string
   default     = ""
-  description = "The DRG OCID of an existing DRG, if using an existing DRG."
+  description = "The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you want the Landing Zone to not deploy a DRG."
 }
 
 variable "onprem_cidrs" {
@@ -187,7 +209,7 @@ variable "subnets_sizes" {
 variable "hub_spoke_architecture" {
   type        = bool
   default     = false
-  description = "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
+  description = "Determines if a Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
 }
 
 variable "dmz_vcn_cidr" {
@@ -224,7 +246,7 @@ variable "dmz_subnet_size" {
 variable "public_src_bastion_cidrs" {
   type        = list(string)
   default     = []
-  description = "External IP ranges in CIDR notation allowed to make SSH inbound connections. 0.0.0.0/0 is not allowed in the list."
+  description = "List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list."
   validation {
     condition     = !contains(var.public_src_bastion_cidrs, "0.0.0.0/0") && length([for c in var.public_src_bastion_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.public_src_bastion_cidrs)
     error_message = "Validation failed for public_src_bastion_cidrs: values must be in CIDR notation, all different than 0.0.0.0/0."
@@ -390,7 +412,7 @@ variable "alarm_message_format" {
 
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
-  description = "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
+  description = "Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted."
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))
     error_message = "Validation failed for cloud_guard_configuration_status: valid values (case insensitive) are ENABLE or DISABLE."

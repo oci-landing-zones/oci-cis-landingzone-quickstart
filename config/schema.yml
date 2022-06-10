@@ -32,16 +32,15 @@ variableGroups:
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name"
  
-  - title: "Networking"
+  - title: "Networking - Generic VCNs"
     variables:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
       - "subnets_names"
       - "subnets_sizes"
-
     
-  - title: "Exadata Cloud Service"
+  - title: "Networking - Exadata Cloud Service VCNs"
     variables:
       - "exacs_vcn_cidrs"
       - "exa_advanced_options"
@@ -50,27 +49,41 @@ variableGroups:
       - "exacs_backup_subnet_cidrs"
       - "deploy_exainfra_cmp"
     
-  - title: "Connectivity"
+  - title: "Networking - Hub/Spoke"
     variables:
-      - "is_vcn_onprem_connected"
-      - "onprem_cidrs"
-      - "onprem_src_ssh_cidrs"
       - "hub_spoke_architecture"
-      - "connectivity_advanced_options"
+      - "hs_advanced_options"
       - "dmz_vcn_cidr"
       - "dmz_for_firewall"
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
+      
+  - title: "Networking - Public Connectivity"
+    variables:
       - "no_internet_access"
-      - "existing_drg_id"
       - "public_src_bastion_cidrs"
       - "public_src_lbr_cidrs"
-      - "public_dst_cidrs"
+      - "public_dst_cidrs"    
 
+  - title: "Networking - Connectivity to On-Premises"
+    variables:
+      - "is_vcn_onprem_connected"
+      - "onprem_cidrs"
+      - "onprem_src_ssh_cidrs"
+  
+  - title: "Networking - DRG (Dynamic Routing Gateway)"
+    variables:
+      - "existing_drg_id"  
+    visible: 
+     or:
+       - is_vcn_onprem_connected
+       - hub_spoke_architecture   
+      
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
       - "security_admin_email_endpoints"
+      - "notifications_advanced_options"
       - "compute_admin_email_endpoints"
       - "storage_admin_email_endpoints"
       - "database_admin_email_endpoints"
@@ -186,65 +199,85 @@ variables:
     visible: env_advanced_options
 
   existing_iam_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
     visible: env_advanced_options 
         
   existing_cred_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
     visible: env_advanced_options
       
   existing_security_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
     visible: env_advanced_options
       
   existing_network_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
     visible: env_advanced_options
       
   existing_appdev_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
     visible: env_advanced_options
       
   existing_database_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
     visible: env_advanced_options
   
   existing_exainfra_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing admin group name for Exadata infrastructure"
     description: "Existing group to which Exadata infrastructure management policies will be granted to."
     visible: env_advanced_options      
   
   existing_auditor_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
     visible: env_advanced_options
       
   existing_announcement_reader_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing announcement readers group name"
     description: "Existing group to which announcement reading policies will be granted to."
     visible: env_advanced_options  
   
   existing_cost_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
-    visible: env_advanced_options 
-
+    visible: env_advanced_options
+ 
   existing_security_fun_dyn_group_name:
     type: string
     title: "Existing security dynamic group name"
@@ -275,10 +308,10 @@ variables:
     description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
     default: false
   
-  connectivity_advanced_options:
+  hs_advanced_options:
     type: boolean
     title: "Advanced Options"
-    description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
+    description: "Advanced options for Hub/Spoke. It allows for creating a DMZ VCN. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
     default: false
 
   vcn_cidrs:
@@ -290,7 +323,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "VCNs CIDR Blocks"
-    description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub & Spoke Architecture?' is selected under 'Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub/Spoke Architecture?' is selected under 'Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: ["10.0.0.0/20"]
 
   vcn_names:
@@ -326,32 +359,31 @@ variables:
     required: false
     visible: net_advanced_options
     default: []  
-  
+
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"
-    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
+    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. If checked, either a new  DRG is deployed or an existing DRG can be reused (if you provide its OCID in 'Existing DRG OCID' field below. You must click the check box for the field to appear.) Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
     default: false
-  #  visible: net_advanced_options
-
+  
   public_src_bastion_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound SSH and RDP CIDR Blocks"
+    title: "Bastion Inbound SSH and RDP CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
     default: []
-
+    
   public_src_lbr_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound HTTPS CIDR Blocks"
+    title: "Load Balancer Inbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections to a Load Balancer that is eventually deployed. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_dst_cidrs:
@@ -359,16 +391,15 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Outbound HTTPS CIDR Blocks"
+    title: "NAT Outbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation for HTTPS outbound connections. Applies to connections made over NAT Gateway. (Type the name and hit enter to enter multiple values)"
     default: []  
 
   existing_drg_id:
     type: string
     title: "Existing DRG OCID"
-    #description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
-    description: "The OCID of an existing DRG. If provided, no DRG is created."
+    description: "The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you do NOT want the Landing Zone to deploy a DRG."
     default: ""
     visible: 
       or:
@@ -382,7 +413,7 @@ variables:
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. Required if 'Block Internet Access?' is checked."
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. If 'Block Internet Access?' is checked, it's advised to provide values here, or your OCI network will not have any entry points."
     visible: is_vcn_onprem_connected
     
   onprem_src_ssh_cidrs:
@@ -392,21 +423,20 @@ variables:
     uniqueItems: true  
     title: "On-premises network CIDR Blocks Allowed to Connect over SSH and RDP"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to make SSH and RDP inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
+    description: "List of on-premises IP ranges allowed to make SSH and RDP inbound connections."
     visible: is_vcn_onprem_connected
     
   no_internet_access:
     type: boolean
     title: "Block Internet Access?"
-    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to check 'Connect Landing Zone VCN(s) to on-premises network?' in the Networking section above."
+    description: "Determines if the VCNs are directly connected to the Internet. If left unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to check 'Connect Landing Zone VCN(s) to on-premises network?' and provide values to 'On-premises Network CIDR Blocks' in the 'Networking - Connectivity to On-Premises' section below, or your OCI network will not have any entry points."
     default: false
 
   hub_spoke_architecture:
     type: boolean
-    title: "Deploy Hub & Spoke Architecture?"
-    description: "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
+    title: "Deploy Hub/Spoke Architecture?"
+    description: "Determines if Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing through a DRG. If checked, either a new DRG is deployed or an existing DRG can be reused (if you provide its OCID in 'Existing DRG OCID' field below. You must click the check box for the field to appear.) With Hub/Spoke, all VCNs (generic and ExaCS) are peered through the DRG."
     required: false
-    #visible: net_advanced_options
   
   dmz_vcn_cidr:
     type: string
@@ -416,7 +446,7 @@ variables:
     required: ${hub_spoke_architecture}
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   dmz_for_firewall:
@@ -426,7 +456,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
         
   dmz_number_of_subnets:
@@ -436,7 +466,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   dmz_subnet_size: 
@@ -446,7 +476,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   exacs_vcn_cidrs:
@@ -503,7 +533,7 @@ variables:
     title: "CIDR Blocks for Exadata Backup Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: exa_advanced_options
-    
+
   deploy_exainfra_cmp:
     type: boolean
     title: "Create Compartment for Exadata Infrastructure?"
@@ -529,6 +559,12 @@ variables:
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
+  notifications_advanced_options:
+    type: boolean
+    title: "Additional Notification Endpoints"
+    description: "Allows for notifications that are not required by CIS Benchmark."
+    default: false
+  
   compute_admin_email_endpoints:
     type: array
     items:
@@ -537,6 +573,7 @@ variables:
     title: "Compute Admin Email Endpoints"
     required: false
     description: "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   storage_admin_email_endpoints:
     type: array
@@ -546,6 +583,7 @@ variables:
     title: "Storage Admin Email Endpoints"
     required: false
     description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   database_admin_email_endpoints:
     type: array
@@ -555,6 +593,7 @@ variables:
     title: "Database Admin Email Endpoints"
     required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   exainfra_admin_email_endpoints:
     type: array
@@ -563,7 +602,8 @@ variables:
     uniqueItems: true
     title: "Exadata Infrastructure Admin Email Endpoints"
     required: false
-    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"  
+    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options  
 
   budget_admin_email_endpoints:
     type: array
@@ -573,18 +613,21 @@ variables:
     title: "Budget Admin Email Endpoints"
     required: false
     description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   create_alarms_as_enabled:
     type: boolean
     title: "Create alarms as enabled?"
     description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
     default: false
+    visible: notifications_advanced_options
     
   create_events_as_enabled:
     type: boolean
     title: "Create events as enabled?"
     description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
     default: false
+    visible: notifications_advanced_options
 
   alarm_message_format:
     type: enum
@@ -595,11 +638,12 @@ variables:
       - PRETTY_JSON
       - ONS_OPTIMIZED
       - RAW
+    visible: notifications_advanced_options  
       
   cloud_guard_configuration_status:
     type: enum
     title: "Cloud Guard Configuration Status"
-    description: "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
+    description: "Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted."
     required: true
     enum:
       - ENABLE

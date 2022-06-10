@@ -19,15 +19,16 @@ Variable Name | Description | Required | Default Value
 **use_enclosing_compartment** | A boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**. | Yes | false
 **existing_enclosing_compartment_ocid** | The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. | No | None
 **policies_in_root_compartment** | The Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permissions. | Yes | "CREATE"
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | No | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | No | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators. | No | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators. | No | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | No | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators. | No | None
-**existing_auditor_group_name** | The name of an existing group for auditors. | No | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | No | None
-**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | No | None
+**existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | No | None
+**existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | No | None
+**existing_security_admin_group_name** | The name or OCID of an existing group for security administrators. | No | None
+**existing_network_admin_group_name** | The name or OCID of an existing group for network administrators. | No | None
+**existing_appdev_admin_group_name** | The name or OCID of an existing group for application development administrators. | No | None
+**existing_database_admin_group_name** | The name or OCID of an existing group for database administrators. | No | None
+**existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
+**existing_auditor_group_name** | The name or OCID of an existing group for auditors. | No | None
+**existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | No | None
+**existing_cost_admin_group_name** | The name or OCID of an existing group for cost management administrators. | No | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None
@@ -36,14 +37,14 @@ Variable Name | Description | Required | Default Value
 
 \* For a list of available regions, please see https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm
 
-### <a name="networking_variables"></a>Networking Variables
+### <a name="networking_variables"></a>Networking - Generic VCNs Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | []
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
 **subnets_names** | List of custom names to be used in each of the spoke(s) subnet names, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match *subnets_sizes*. | No | []
 **subnets_sizes** | List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of VCN CIDR + 4. The list length and elements order must match *subnets_names*. | No | []
-### <a name="exadata_variables"></a>Exadata Cloud Service Variables
+### <a name="exadata_variables"></a>Networking - Exadata Cloud Service VCNs Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **exacs_vcn_cidrs** | List of CIDR blocks for the Exadata VCNs, in CIDR notation. Each provided CIDR relates to one and only one VCN. Be mindful about Exadata *Requirements for IP Address Space* in <a href="https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/exanetwork.htm">OCI documentation</a>. You can provide up to nine CIDRs. | No | []
@@ -52,22 +53,34 @@ Variable Name | Description | Required | Default Value
 **exacs_backup_subnet_cidrs** | List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the *nth* value applying to the *nth* value in *exacs_vcn_cidrs*. CIDRs must not overlap with 192.168.128.0/20. You can provide up to nine CIDRs.| No | []
 **deploy_exainfra_cmp** | Whether a compartment for Exadata infrastructure should be created. If false, Exadata infrastructure should be created in the database compartment. | No | false
 
-### <a name="connectivity_variables"></a>Connectivity Variables
+### <a name="hub_spoke_variables"></a>Networking - Hub/Spoke Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. | No | false
-**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | No | []
-**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH and RDP inbound connections. It must be a subset of *onprem_cidrs*. | No | []
-**hub_spoke_architecture** | Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing. | No | false
-**dmz_vcn_cidr** | CIDR block for the DMZ VCN. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ. | Yes, if *hub_spoke_architecture* is true | ""
-**dmz_for_firewall** | Determines if the DMZ VCN will be used for deploying 3rd party firewalls via terraform. DRG attachments will not be created. | No | false
+**hub_spoke_architecture** | Determines if Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing through a DRG. If set to rue, either a new DRG is deployed or an existing DRG can be reused (if you provide its OCID in *existing_drg_id* variable.) With Hub/Spoke, all VCNs (Generic and ExaCS) are peered through the DRG. | No | false
+**dmz_vcn_cidr** | IP range for the DMZ VCN in CIDR notation. DMZ VCNs are commonly used for network appliance deployments. All traffic will be routed through the DMZ VCN. | No | ""
+**dmz_for_firewall** | Determines if a 3rd party firewall will be deployed in the DMZ VCN. DRG attachments are not created. | No | false
 **dmz_number_of_subnets** | The number of subnets to be created in the DMZ VCN. If using the DMZ VCN for a network appliance deployment, please see the vendor's documentation or OCI reference architecture to determine the number of subnets required. | Yes, if *dmz_vcn_cidr* is provided  | 2
 **dmz_subnet_size** | The number of additional bits with which to extend the DMZ VCN CIDR prefix. For instance, if *dmz_vcn_cidr*'s prefix is 20 (/20) and *dmz_subnet_size* is 4, subnets are going to be /24. | Yes, if *dmz_vcn_cidr* is provided  | 4
-**no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created and it becomes required to set *is_vcn_onprem_connected* to true. | No | false
-**existing_drg_id** | The OCID of an existing DRG. If provided, no DRG is created (even if *is_vc_onprem_connected* is set to true).  | No | ""
-**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections. 0.0.0.0/0 is not allowed in the list. | No | []
-**public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. | No | []
-**public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. | No | []
+
+### <a name="public_connectivity_variables"></a>Networking - Public Connectivity Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**no_internet_access** | Determines if the VCNs are directly connected to the Internet. If false, an Internet Gateway and NAT Gateway are created for Internet connectivity. If true, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to set *is_vcn_onprem_connected* to true and provide values to *onprem_cidrs*, or your OCI network will not have any entry points. | No | false
+**public_src_bastion_cidrs** | List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. | No | []
+**public_src_lbr_cidrs** | List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections to a Load Balancer that is eventually deployed. | No | []
+**public_dst_cidrs** | List of external IP ranges in CIDR notation for HTTPS outbound connections. Applies to connections made over NAT Gateway. | No | []
+
+### <a name="onprem_connectivity_variables"></a>Networking - Connectivity to On-Premises Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**is_vcn_onprem_connected** | Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. If set to true, either a new  DRG is deployed or an existing DRG can be reused (if you provide its OCID in *existing_drg_id* variable. | No | false
+**onprem_cidrs** | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. If *no_internet_access* is true it's advised to provide values for *onprem_cidrs*, or your OCI network will not have any entry points.| No | []
+**onprem_src_ssh_cidrs** | List of on-premises IP ranges allowed to make SSH and RDP inbound connections. | No | []
+
+### <a name="drg_variables"></a>Networking - DRG (Dynamic Routing Gateway)
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**existing_drg_id** | The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you do NOT want the Landing Zone to deploy a new DRG. | No | ""
 
 ### <a name="notification_variables"></a>Notifications Alarms and Events Variables
 Variable Name | Description | Required | Default Value
@@ -86,7 +99,7 @@ Variable Name | Description | Required | Default Value
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment. | No | ENABLE
+**cloud_guard_configuration_status** | Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail.** If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted. | No | ENABLE
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
@@ -135,15 +148,16 @@ Variable Name | Description | Required | Default Value
 **existing_provisioning_group_name(\*)** | The name of an existing group to be used for provisioning all resources in the compartments defined by *enclosing_compartment_names* variable. Ignored if *use_existing_provisioning_group* is false. | No | None
 **grant_services_policies** | Whether services policies should be granted. If these policies already exist in the root compartment, set it to false for avoiding policies duplication. Useful if the module is reused across distinct stacks or configurations. | No | true
 **use_existing_groups** | A boolean flag indicating whether or not existing groups are to be reused for Landing Zone. If false, one set of groups is created for each compartment defined by *enclosing_compartment_names* variable. If true, existing group names must be provided and this single set will be able to manage resources in all enclosing compartments. It does not apply to dynamic groups.| No | false 
-**existing_iam_admin_group_name** | The name of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_cred_admin_group_name** | The name of an existing group for credential administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_security_admin_group_name** | The name of an existing group for security administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_network_admin_group_name** | The name of an existing group for network administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_appdev_admin_group_name** | The name of an existing group for application development administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_database_admin_group_name** | The name of an existing group for database administrators. | Yes, if *use_existing_groups* is true. | None
-**existing_auditor_group_name** | The name of an existing group for auditors. | Yes, if *use_existing_groups* is true. | None
-**existing_announcement_reader_group_name** | The name of an existing group for announcement readers. | Yes, if *use_existing_groups* is true. | None
-**existing_cost_admin_group_name** | The name of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_security_admin_group_name** | The name or OCID of an existing group for security administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_network_admin_group_name** | The name or OCID of an existing group for network administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_appdev_admin_group_name** | The name or OCID of an existing group for application development administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_database_admin_group_name** | The name or OCID of an existing group for database administrators. | Yes, if *use_existing_groups* is true. | None
+**existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
+**existing_auditor_group_name** | The name or OCID of an existing group for auditors. | Yes, if *use_existing_groups* is true. | None
+**existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | Yes, if *use_existing_groups* is true. | None
+**existing_cost_admin_group_name** | The name or OCID of an existing group for cost management administrators. | Yes, if *use_existing_groups* is true. | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None

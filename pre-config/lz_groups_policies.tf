@@ -31,9 +31,10 @@ module "lz_provisioning_tenancy_group_policy" {
         "Allow group ${each.value.group_name} to inspect compartments in tenancy",                      # for events: access to resources in compartments to select rules actions
         "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy",                 # ability to enable Cloud Guard, which can be done only at the tenancy level
         "Allow group ${each.value.group_name} to read groups in tenancy",                               # for groups lookup 
+        "Allow group ${each.value.group_name} to read dynamic-groups in tenancy",                       # for dynamic-groups lookup        
         "Allow group ${each.value.group_name} to inspect tenancies in tenancy",                         # for home region lookup
         "Allow group ${each.value.group_name} to manage usage-budgets in tenancy",                      # for budget creation   
-        "Allow group ${each.value.group_name} to inspect users in tenancy"]                               # for users lookup
+        "Allow group ${each.value.group_name} to inspect users in tenancy"]                             # for users lookup
     }
   }
 }
@@ -73,6 +74,7 @@ module "lz_groups_mgmt_policy" {
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-defaults in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloud-guard-family in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read threat-intel-family in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage repos in tenancy",
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
@@ -143,6 +145,7 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to read audit-events in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to use cloud-shell in tenancy",
         # Auditor
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect all-resources in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read repos in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read objectstorage-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read app-catalog-listing in tenancy",

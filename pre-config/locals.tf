@@ -20,16 +20,16 @@ locals {
   
   lz_group_names             = var.use_existing_groups == false ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: ""}}
 
-  iam_admin_group_name_suffix           = var.use_existing_groups == false ? "iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name_suffix          = var.use_existing_groups == false ? "cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  network_admin_group_name_suffix       = var.use_existing_groups == false ? "network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  security_admin_group_name_suffix      = var.use_existing_groups == false ? "security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  appdev_admin_group_name_suffix        = var.use_existing_groups == false ? "appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  database_admin_group_name_suffix      = var.use_existing_groups == false ? "database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
-  exainfra_admin_group_name_suffix      = var.use_existing_groups == false ? "exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  cost_admin_group_name_suffix          = var.use_existing_groups == false ? "cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
+  iam_admin_group_name_suffix           = var.use_existing_groups == false ? "iam-admin-group"           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : data.oci_identity_groups.existing_iam_admin_group.groups[0].name)
+  cred_admin_group_name_suffix          = var.use_existing_groups == false ? "cred-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : data.oci_identity_groups.existing_cred_admin_group.groups[0].name)
+  network_admin_group_name_suffix       = var.use_existing_groups == false ? "network-admin-group"       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : data.oci_identity_groups.existing_network_admin_group.groups[0].name)
+  security_admin_group_name_suffix      = var.use_existing_groups == false ? "security-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : data.oci_identity_groups.existing_security_admin_group.groups[0].name)
+  appdev_admin_group_name_suffix        = var.use_existing_groups == false ? "appdev-admin-group"        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name)
+  database_admin_group_name_suffix      = var.use_existing_groups == false ? "database-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : data.oci_identity_groups.existing_database_admin_group.groups[0].name)
+  auditor_group_name_suffix             = var.use_existing_groups == false ? "auditor-group"             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : data.oci_identity_groups.existing_auditor_group.groups[0].name)
+  announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name)
+  exainfra_admin_group_name_suffix      = var.use_existing_groups == false ? "exainfra-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0      ? data.oci_identity_group.existing_exainfra_admin_group.name      : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name)
+  cost_admin_group_name_suffix          = var.use_existing_groups == false ? "cost-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : data.oci_identity_groups.existing_cost_admin_group.groups[0].name)
   
   grant_tenancy_level_mgmt_policies = true
 

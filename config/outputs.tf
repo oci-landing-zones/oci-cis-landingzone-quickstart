@@ -25,3 +25,7 @@ output "dmz_subnets" {
 output "drg" {
     value = local.display_outputs == true ? (module.lz_drg.drg != null ? {id: module.lz_drg.drg.id, name: module.lz_drg.drg.display_name, parent_id:module.lz_drg.drg.compartment_id, time_created:module.lz_drg.drg.time_created} : null) : null
 }
+
+output "bastions" {
+    value = local.display_outputs == true ? {for k, v in module.lz_app_bastion.bastions : k => {id: v.id, subnet_id: v.target_subnet_id, allowed_cidrs: v.client_cidr_block_allow_list}} : null
+}

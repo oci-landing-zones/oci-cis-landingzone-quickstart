@@ -1,6 +1,14 @@
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+terraform {
+  required_providers {
+    oci = {
+      source = "hashicorp/oci"
+    }
+  }
+}
+
 # CloudGuard enabling and disabling is a tenant-level operation 
 
 data "oci_cloud_guard_detector_recipes" "compartment_detector_recipes" {

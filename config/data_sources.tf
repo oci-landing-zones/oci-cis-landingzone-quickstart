@@ -131,6 +131,18 @@ data "oci_identity_groups" "existing_cost_admin_group" {
   }
 }
 
+data "oci_identity_group" "existing_storage_admin_group" {
+  group_id = length(trimspace(var.existing_storage_admin_group_name)) > 0 ? var.existing_storage_admin_group_name : "nogroup"
+}
+
+data "oci_identity_groups" "existing_storage_admin_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_storage_admin_group_name]
+  }
+}
+
 data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {

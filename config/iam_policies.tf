@@ -264,22 +264,71 @@ locals {
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
 
-  // Cost admin permissions to be created always at the root compartment
+  ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
                            "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
                            "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
-
   ### Dynamic Group Policies ###
   ## Compute Agent grants
-  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+  compute_agent_grants = [
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
         "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
         "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
 
-  autonomous_database_grants = ["allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
+  ## ADB grants
+  autonomous_database_grants = [
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
-
+  
+  ## Storage admin grants
+  storage_admin_grants = [
+        # Grants in appdev compartment
+        # Object Storage
+        "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
+        # Volume Storage
+        "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
+        # File Storage
+        "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
+        # Grants in database compartment
+        # Object Storage
+        "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.database_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.database_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
+        # Volume Storage
+        "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
+        # File Storage
+        "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
+        # Grants in security compartment
+        # Object Storage
+        "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.security_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.security_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
+        # Volume Storage
+        "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.security_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
+        # File Storage
+        "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.security_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
+        # Grants in network compartment
+        # Object Storage
+        "allow group ${local.storage_admin_group_name} to read bucket in compartment ${local.network_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to inspect object in compartment ${local.network_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where any {request.permission = 'OBJECT_DELETE', request.permission = 'BUCKET_DELETE'}",
+        # Volume Storage
+        "allow group ${local.storage_admin_group_name} to read volume-family in compartment ${local.network_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where any {request.permission = 'VOLUME_DELETE', request.permission = 'VOLUME_BACKUP_DELETE', request.permission = 'BOOT_VOLUME_BACKUP_DELETE'}",
+        # File Storage
+        "allow group ${local.storage_admin_group_name} to read file-family in compartment ${local.network_compartment.name}",
+        "allow group ${local.storage_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where any {request.permission = 'FILE_SYSTEM_DELETE', request.permission = 'MOUNT_TARGET_DELETE', request.permission = 'VNIC_DELETE', request.permission = 'SUBNET_DETACH', request.permission = 'VNIC_DETACH', request.permission = 'PRIVATE_IP_DELETE', request.permission = 'PRIVATE_IP_UNASSIGN', request.permission = 'VNIC_UNASSIGN', request.permission = 'EXPORT_SET_UPDATE', request.permission = 'FILE_SYSTEM_NFSv3_UNEXPORT', request.permission = 'EXPORT_SET_DELETE', request.permission = 'FILE_SYSTEM_DELETE_SNAPSHOT'}",
+  ]
     default_policies = { 
       (local.compute_agent_policy_name) = {
         compartment_id = local.enclosing_compartment_id
@@ -329,7 +378,14 @@ locals {
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_enclosing_cmp
-      } : null
+      } : null,
+      (local.storage_admin_policy_name) = length(local.storage_admin_grants) > 0 ? {
+        compartment_id = local.enclosing_compartment_id
+        description    = "Landing Zone policy for ${local.storage_admin_group_name} group to manage storage resources."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
+        statements     = local.storage_admin_grants
+      } : null,
     }
 
     exainfra_policy = var.deploy_exainfra_cmp == true ? {

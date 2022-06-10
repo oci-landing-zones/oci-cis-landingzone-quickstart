@@ -7,6 +7,7 @@ locals {
   all_policies_defined_tags = {}
   all_policies_freeform_tags = {}
   
+  ### User Group Policies ###
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
@@ -24,26 +25,25 @@ locals {
     "allow group ${local.iam_admin_group_name} to use cloud-shell in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-defaults in tenancy",
     "allow group ${local.iam_admin_group_name} to manage tag-namespaces in tenancy",
-    # Statements to allow an IAM admin to deploy IAM resources via ORM
+    # Statements scoped to allow an IAM admin to deploy IAM resources via ORM
     "allow group ${local.iam_admin_group_name} to manage orm-stacks in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-jobs in tenancy",
     "allow group ${local.iam_admin_group_name} to manage orm-config-source-providers in tenancy"]
 
-  ## IAM admin grants at the enclosing compartment level. Policies and compartments are not granted at the Root comparment.
-  iam_admin_grants_on_enclosing_cmp = var.existing_enclosing_compartment_ocid != null ? [
-    "allow group ${local.iam_admin_group_name} to manage policies in compartment ${local.enclosing_compartment.name}", 
-    "allow group ${local.iam_admin_group_name} to manage compartments in compartment ${local.enclosing_compartment.name}"
-  ] : []
+  ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
+  iam_admin_grants_on_enclosing_cmp = [
+    "allow group ${local.iam_admin_group_name} to manage policies in ${local.policy_scope}", 
+    "allow group ${local.iam_admin_group_name} to manage compartments in ${local.policy_scope}"]
 
   // Security admin permissions to be created always at the root compartment
-  security_admin_grants_on_root_cmp = ["Allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
-    "Allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
-    "Allow group ${local.security_admin_group_name} to read threat-intel-family in tenancy",
-    "Allow group ${local.security_admin_group_name} to read tenancies in tenancy",
-    "Allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
-    "Allow group ${local.security_admin_group_name} to use cloud-shell in tenancy",
-    "Allow group ${local.security_admin_group_name} to read usage-budgets in tenancy",
-    "Allow group ${local.security_admin_group_name} to read usage-reports in tenancy"]
+  security_admin_grants_on_root_cmp = [
+    "allow group ${local.security_admin_group_name} to manage cloudevents-rules in tenancy",
+    "allow group ${local.security_admin_group_name} to manage cloud-guard-family in tenancy",
+    "allow group ${local.security_admin_group_name} to read tenancies in tenancy",
+    "allow group ${local.security_admin_group_name} to read objectstorage-namespaces in tenancy",
+    "allow group ${local.security_admin_group_name} to use cloud-shell in tenancy",
+    "allow group ${local.security_admin_group_name} to read usage-budgets in tenancy",
+    "allow group ${local.security_admin_group_name} to read usage-reports in tenancy"]
 
   ## Security admin grants at the enclosing compartment level, which *can* be the root compartment
   security_admin_grants_on_enclosing_cmp = [
@@ -59,6 +59,10 @@ locals {
   security_admin_grants_on_security_cmp = [
     "allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name}",
+    # CIS 1.2 - 1.14 Level 2
+    "allow group ${local.security_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
     "allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage keys in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage secret-family in compartment ${local.security_compartment.name}",
@@ -80,11 +84,6 @@ locals {
     "allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment.name}"]
 
-  ## Compute Agent grants
-  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
-        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
-
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = [
     "allow group ${local.security_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
@@ -103,12 +102,18 @@ locals {
         "allow group ${local.network_admin_group_name} to manage load-balancers in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment.name}",
+        "allow group ${local.network_admin_group_name} to manage ons-family in compartment ${local.network_compartment.name}", 
         "allow group ${local.network_admin_group_name} to manage orm-stacks in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage orm-jobs in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage orm-config-source-providers in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to read audit-events in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to read work-requests in compartment ${local.network_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2
         "allow group ${local.network_admin_group_name} to manage instance-family in compartment ${local.network_compartment.name}",
+        "allow group ${local.network_admin_group_name} to manage volume-family in compartment ${local.network_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage object-family in compartment ${local.network_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.network_admin_group_name} to manage file-family in compartment ${local.network_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
+
         "allow group ${local.network_admin_group_name} to manage bastion-session in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage cloudevents-rules in compartment ${local.network_compartment.name}",
         "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment.name}",
@@ -131,13 +136,19 @@ locals {
         "allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2 
+        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.database_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
         "allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage ons-family in compartment ${local.database_compartment.name}", 
+        "allow group ${local.database_admin_group_name} to manage logging-family in compartment ${local.database_compartment.name}", 
         "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
 
@@ -154,15 +165,10 @@ locals {
         "allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
+        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
   ## Database admin grants on Exainfra compartment
-  database_admin_grants_on_exainfra_cmp = length(var.exacs_vcn_cidrs) > 0 && var.deploy_exainfra_cmp == true ? [
+  database_admin_grants_on_exainfra_cmp = var.deploy_exainfra_cmp == true ? [
         "allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
@@ -185,10 +191,12 @@ locals {
         "allow group ${local.appdev_admin_group_name} to manage cluster-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage logs in compartment ${local.appdev_compartment.name}",
+        "allow group ${local.appdev_admin_group_name} to manage logging-family in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage instance-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name}",
+        # CIS 1.2 - 1.14 Level 2 
+        "allow group ${local.appdev_admin_group_name} to manage volume-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage object-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+        "allow group ${local.appdev_admin_group_name} to manage file-family in compartment ${local.appdev_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
         "allow group ${local.appdev_admin_group_name} to manage repos in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-stacks in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage orm-jobs in compartment ${local.appdev_compartment.name}",
@@ -197,8 +205,6 @@ locals {
         "allow group ${local.appdev_admin_group_name} to read work-requests in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage alarms in compartment ${local.appdev_compartment.name}",
-        "allow group ${local.appdev_admin_group_name} to manage metrics in compartment ${local.appdev_compartment.name}",
         "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment.name}"]
 
   ## AppDev admin grants on Network compartment
@@ -241,16 +247,19 @@ locals {
         "allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}"]
+        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage ons-family in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage alarms in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}"]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
-        "allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
+          "allow group ${local.exainfra_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
+          "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"] 
 
-  ## Exainfra admin grants on Network compartment
-  exainfra_admin_grants_on_network_cmp = [
-        "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
+    ## Exainfra admin grants on Network compartment
+    exainfra_admin_grants_on_network_cmp = [
+          "allow group ${local.exainfra_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}"]
 
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
@@ -262,6 +271,15 @@ locals {
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
 
+  ### Dynamic Group Policies ###
+  ## Compute Agent grants
+  compute_agent_grants = ["allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment.name}",
+        "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment.name}"]
+
+  autonomous_database_grants = ["allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
+
     default_policies = { 
       (local.compute_agent_policy_name) = {
         compartment_id = local.enclosing_compartment_id
@@ -269,6 +287,13 @@ locals {
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = local.compute_agent_grants
+      },
+      (local.database_dynamic_group_policy_name) = {
+        compartment_id = local.enclosing_compartment_id
+        description    = "Landing Zone policy for ${local.database_kms_dynamic_group_name} group to use keys in compartment ${local.security_compartment.name}."
+        defined_tags   = local.policies_defined_tags
+        freeform_tags  = local.policies_freeform_tags
+        statements = local.autonomous_database_grants
       },
        (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
         compartment_id = local.enclosing_compartment_id

@@ -18,6 +18,15 @@ locals {
     default_database_events = "\"com.oraclecloud.databaseservice.autonomous.database.critical\",\"com.oraclecloud.databaseservice.dbsystem.critical\""
     database_events = var.deploy_exainfra_cmp == true ?  local.default_database_events: "${local.exainfra_events},${local.default_database_events}"
     
+    cloudguard_risk_levels = {
+    critical = ["CRITICAL"]
+    high     = ["CRITICAL","HIGH"]
+    medium   = ["CRITICAL","HIGH","MEDIUM"]
+    minor    = ["CRITICAL","HIGH","MEDIUM","MINOR"]
+    low      = ["CRITICAL","HIGH","MEDIUM","MINOR","LOW"]
+  }
+    
+    
   home_region_notifications = merge(
    {for i in [1] :     (local.notify_on_iam_changes_rule.key) => {
       compartment_id      = var.tenancy_ocid
@@ -58,27 +67,22 @@ locals {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone events rule to notify when Cloud Guard problems are Detected, Dismissed or Resolved."
       is_enabled          = true
-      condition           = <<EOT
-            {"eventType":
-             ["com.oraclecloud.cloudguard.problemdetected",
-             "com.oraclecloud.cloudguard.problemdismissed",
-             "com.oraclecloud.cloudguard.problemremediated"],
-             "data":
-              {"additionalDetails":
-               {"riskLevel":
-                ["HIGH",
-                "CRITICAL"]
+      condition           = jsonencode(
+           {"eventType":["com.oraclecloud.cloudguard.problemdetected",
+              "com.oraclecloud.cloudguard.problemdismissed",
+              "com.oraclecloud.cloudguard.problemremediated"],
+            "data":{"additionalDetails": {"riskLevel":local.cloudguard_risk_levels[lower(var.cloud_guard_risk_level_threshold)]}
                }
-              }
+            
             }
-            EOT
+      )
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.cloudguard_topic.id != null ? local.cloudguard_topic.id : module.lz_home_region_topics.topics[local.cloudguard_topic.key].id
       defined_tags        = local.notifications_defined_tags
       freeform_tags       = local.notifications_freeform_tags
-    } if (var.extend_landing_zone_to_new_region == false && length(var.cloudguard_admin_email_endpoints)  > 0)}
+    } if (var.extend_landing_zone_to_new_region == false && length(var.cloud_guard_admin_email_endpoints)  > 0) }
   )
   regional_notifications =  merge (
     {for i in [1] : (local.notify_on_network_changes_rule.key) => {

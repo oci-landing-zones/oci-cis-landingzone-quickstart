@@ -17,6 +17,7 @@ locals  {
   exainfra_topic    = {key: "EXAINFRA-TOPIC",   name: "${var.service_label}-exainfra-topic",   cmp_id: local.exainfra_compartment_id, id : null }
   cloudguard_topic  = {key: "CLOUDGUARD-TOPIC", name: "${var.service_label}-cloudguard-topic", cmp_id: local.security_compartment_id, id: null}
 
+  
   home_region_topics = merge(
     {for i in [1] : (local.security_topic.key) => {
       compartment_id = local.security_topic.cmp_id
@@ -33,7 +34,7 @@ locals  {
       description    = "Landing Zone topic for Cloud Guard related notifications."
       defined_tags   = local.topics_defined_tags
       freeform_tags  = local.topics_freeform_tags
-    } if local.cloudguard_topic.id == null && length(var.cloudguard_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
+    } if local.cloudguard_topic.id == null && length(var.cloud_guard_admin_email_endpoints) > 0 && var.extend_landing_zone_to_new_region == false
     }
   )  
 
@@ -112,8 +113,8 @@ module "lz_topics" {
 module "lz_home_region_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"
   providers  = { oci = oci.home }  
-  subscriptions = { 
-      for e in var.security_admin_email_endpoints: "${e}-${local.security_topic.name}" => {
+  subscriptions = merge(
+    {   for e in var.security_admin_email_endpoints: "${e}-${local.security_topic.name}" => {
         compartment_id = local.security_topic.cmp_id
         topic_id       = local.security_topic.id != null ? local.security_topic.id : module.lz_home_region_topics.topics[local.security_topic.key].id
         protocol       = "EMAIL" # Other valid protocols: "CUSTOM_HTTPS", "PAGER_DUTY", "SLACK", "ORACLE_FUNCTIONS"
@@ -121,8 +122,19 @@ module "lz_home_region_subscriptions" {
         defined_tags   = local.topics_defined_tags
         freeform_tags  = local.topics_freeform_tags
       } if var.extend_landing_zone_to_new_region == false
+    },
+    {   for e in var.cloud_guard_admin_email_endpoints: "${e}-${local.cloudguard_topic.name}" => {
+        compartment_id = local.security_topic.cmp_id
+        topic_id       = local.cloudguard_topic.id != null ? local.cloudguard_topic.id : module.lz_home_region_topics.topics[local.cloudguard_topic.key].id
+        protocol       = "EMAIL" # Other valid protocols: "CUSTOM_HTTPS", "PAGER_DUTY", "SLACK", "ORACLE_FUNCTIONS"
+        endpoint       = e       # Protocol matching endpoints: "https://www.oracle.com", "https://your.pagerduty.endpoint.url", "https://your.slack.endpoint.url", "<function_ocid>"
+        defined_tags   = local.topics_defined_tags
+        freeform_tags  = local.topics_freeform_tags
+      } if var.extend_landing_zone_to_new_region == false
     }
-}
+   )
+  }
+  
 
 module "lz_subscriptions" {
   source        = "../modules/monitoring/topics-v2/subscriptions"

@@ -1,7 +1,9 @@
 # June 10, 2022 Release Notes - Stable 2.3.5
 1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
 1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)
-1. [Connectivity Section Usability Improvements in Resource Manager](#conn_usage)
+1. [Connectivity Section Usability Improvements in Resource Manager](#2-3-5-conn_usage)
+1. [Removed Public RDP Access](#2-3-5-rdp-public-removal)
+
 
 ## <a name="2-3-5-script-update">CIS Compliance Checking Script 1.2 update</a>
 The CIS reports script ([cis_reports.py](./scripts/cis_reports.py)) has been updated to check a tenancy’s compliance with the [CIS OCI Foundations Benchmark 1.2.0]( https://www.cisecurity.org/benchmark/oracle_cloud).  In addition to the new compliance checks, we have streamlined the checks in non-home regions to exclude the IAM since it is redundant.  We also added a new flag `--level` which allows you to run all the CIS OCI Foundations Benchmark 1.2 checks or only those checks associated with Level 1.  The [documentation](./compliance-script.md) for the CIS reports script has been updated to reflect this release.
@@ -18,6 +20,9 @@ In addition we reviewed our policy for consistency.
 
 ## <a name="conn_usage">Connectivity Section Usability Improvements</a>
 The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
+
+## <a name="2-3-5-rdp-public-removal">Removed Public RDP Access</a>
+We no longer grant RDP access to the bastion NSGs for `public_src_bastion_cidrs` CIDR addresses thus preventing public access to RDP.
 
 # May 11, 2022 Release Notes - Stable 2.3.4
 1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)

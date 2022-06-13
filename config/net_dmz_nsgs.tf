@@ -141,20 +141,6 @@ module "lz_nsgs_dmz" {
           icmp_type : null,
           icmp_code : null
         } },
-         { for cidr in var.public_src_bastion_cidrs : "rdp-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
-          is_create : (!var.no_internet_access && length(var.onprem_cidrs) == 0 && length(var.public_src_bastion_cidrs) > 0),
-          description : "Allows RDP connections from hosts in ${cidr} CIDR range.",
-          protocol : "6",
-          stateless : false,
-          src : cidr,
-          src_type : "CIDR_BLOCK",
-          dst_port_min : 3389,
-          dst_port_max : 3389,
-          src_port_min : null,
-          src_port_max : null,
-          icmp_type : null,
-          icmp_code : null
-        } },
         { for cidr in var.onprem_src_ssh_cidrs : "ssh-onprem-ingress-rule-${index(var.onprem_src_ssh_cidrs, cidr)}" => {
           is_create : length(var.onprem_src_ssh_cidrs) > 0,
           description : "Allows SSH connections from hosts in on-premises ${cidr} CIDR range.",

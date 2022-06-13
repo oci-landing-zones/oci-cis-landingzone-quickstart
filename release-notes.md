@@ -4,7 +4,7 @@
 1. [Connectivity Section Usability Improvements in Resource Manager](#conn_usage)
 
 ## <a name="2-3-5-script-update">CIS Compliance Checking Script 1.2 update</a>
-The CIS reports script ([cis_reports.py](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/scripts/cis_reports.py)) has been updated to check a tenancy’s compliance with the [CIS OCI Foundations Benchmark 1.2.0]( https://www.cisecurity.org/benchmark/oracle_cloud).  In addition to the new compliance checks, we have streamlined the checks in non-home regions to exclude the IAM since it is redundant.  We also added a new flag `--level` which allows you to run all the CIS OCI Foundations Benchmark 1.2 checks or only those checks associated with Level 1.  The [documentation]( https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/compliance-script.md) for the CIS reports script has been updated to reflect this release.
+The CIS reports script ([cis_reports.py](./scripts/cis_reports.py)) has been updated to check a tenancy’s compliance with the [CIS OCI Foundations Benchmark 1.2.0]( https://www.cisecurity.org/benchmark/oracle_cloud).  In addition to the new compliance checks, we have streamlined the checks in non-home regions to exclude the IAM since it is redundant.  We also added a new flag `--level` which allows you to run all the CIS OCI Foundations Benchmark 1.2 checks or only those checks associated with Level 1.  The [documentation](./compliance-script.md) for the CIS reports script has been updated to reflect this release.
 
 You can learn about what was added to version 1.2 of the benchmark [here](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update). 
 
@@ -17,7 +17,7 @@ Our recommendation for using this group is to place users in it when they must d
 In addition we reviewed our policy for consistency.
 
 ## <a name="conn_usage">Connectivity Section Usability Improvements</a>
-The *Connectivity* variables group in [config/schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
+The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
 
 # May 11, 2022 Release Notes - Stable 2.3.4
 1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)

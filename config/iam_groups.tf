@@ -61,7 +61,13 @@ locals {
       user_ids     = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_cost_admin_group_name)) == 0 }
+    } if length(trimspace(var.existing_cost_admin_group_name)) == 0 },
+    { for i in [1] : (local.storage_admin_group_name) => {
+      description  = "Landing Zone group for Storage Management."
+      user_ids     = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    } if length(trimspace(var.existing_storage_admin_group_name)) == 0 }
   )
   exainfra_group = var.deploy_exainfra_cmp == true && length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? {
     (local.exainfra_admin_group_name) = {

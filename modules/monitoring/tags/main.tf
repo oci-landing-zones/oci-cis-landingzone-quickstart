@@ -4,6 +4,14 @@
 ### This module creates a tag namespace, tags and tag defaults 
 ### only if tag defaults for tags in the oracle default tag namespace (typically 'Oracle-Tags') do not exist in the informed compartment.
 
+terraform {
+  required_providers {
+    oci = {
+      source = "hashicorp/oci"
+    }
+  }
+}
+
 locals {
     actual_tags = {for k, v in var.tags : k => v 
                             if !contains(data.oci_identity_tag_defaults.default.tag_defaults[*].tag_definition_name,k)} 

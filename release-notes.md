@@ -1,3 +1,29 @@
+# June 13, 2022 Release Notes - Stable 2.3.5
+1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
+1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)
+1. [Connectivity Section Usability Improvements in Resource Manager](#2-3-5-conn_usage)
+1. [Removed Public RDP Access](#2-3-5-rdp-public-removal)
+
+
+## <a name="2-3-5-script-update">CIS Compliance Checking Script 1.2 update</a>
+The CIS reports script ([cis_reports.py](./scripts/cis_reports.py)) has been updated to check a tenancy’s compliance with the [CIS OCI Foundations Benchmark 1.2.0]( https://www.cisecurity.org/benchmark/oracle_cloud).  In addition to the new compliance checks, we have streamlined the checks in non-home regions to exclude the IAM since it is redundant.  We also added a new flag `--level` which allows you to run all the CIS OCI Foundations Benchmark 1.2 checks or only those checks associated with Level 1.  The [documentation](./compliance-script.md) for the CIS reports script has been updated to reflect this release.
+
+You can learn about what was added to version 1.2 of the benchmark [here](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update). 
+
+
+## <a name="2-3-5-storage_admin">CIS 1.2 OCI IAM Policy Updates and Storage Admin</a>
+We have introduced a group for storage management, entitled to delete OCI storage resources across Landing Zone compartments. The feature implements the recommendation 1.14 of CIS OCI Foundations Benchmark v1.2.0 that states *Ensure storage service-level admins cannot delete resources they manage*, ensuring segregation of duties from service-level administrators, who cannot delete resources they are managing.
+
+Our recommendation for using this group is to place users in it when they must delete an OCI storage resource and then remove their access once that resource is deleted.
+
+In addition we reviewed our policy for consistency.
+
+## <a name="2-3-5-conn_usage">Connectivity Section Usability Improvements</a>
+The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
+
+## <a name="2-3-5-rdp-public-removal">Removed Public RDP Access</a>
+We no longer grant RDP access to the bastion NSGs for `public_src_bastion_cidrs` CIDR addresses thus preventing public access to RDP.
+
 # May 11, 2022 Release Notes - Stable 2.3.4
 1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)
 1. [Advanced Options Check Preservation in Resource Manager](#orm_adv_options)

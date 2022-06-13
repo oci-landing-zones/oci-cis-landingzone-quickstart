@@ -69,7 +69,10 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 #budget_admin_email_endpoints     = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all budget related notifications.
 
 ### Cloud Guard variables
-# cloud_guard_configuration_status = "ENABLED"
+# cloud_guard_configuration_status  = "ENABLED"
+# cloud_guard_risk_level_threshold  = "High" # Critical, High, Medium, Minor, Low. Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems.
+# cloud_guard_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # List of email addresses for Cloud Guard related notifications.
+
 
 ### Alarm Configuration
 # create_alarms_as_enabled = false 

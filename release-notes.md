@@ -1,4 +1,4 @@
-# June 10, 2022 Release Notes - Stable 2.3.5
+# June 13, 2022 Release Notes - Stable 2.3.5
 1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
 1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)
 1. [Connectivity Section Usability Improvements in Resource Manager](#2-3-5-conn_usage)

@@ -18,7 +18,7 @@ Our recommendation for using this group is to place users in it when they must d
 
 In addition we reviewed our policy for consistency.
 
-## <a name="#2-3-5-conn_usage">Connectivity Section Usability Improvements</a>
+## <a name="2-3-5-conn_usage">Connectivity Section Usability Improvements</a>
 The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
 
 ## <a name="2-3-5-rdp-public-removal">Removed Public RDP Access</a>

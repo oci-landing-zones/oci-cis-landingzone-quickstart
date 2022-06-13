@@ -85,23 +85,6 @@ locals {
         icmp_type : null,
         icmp_code : null
         }
-
-      },
-      { for cidr in var.public_src_bastion_cidrs : "rdp-public-ingress-rule-${index(var.public_src_bastion_cidrs, cidr)}" => {
-        is_create : length(var.onprem_cidrs) == 0 && length(var.dmz_vcn_cidr) == 0 && !var.no_internet_access && length(var.public_src_bastion_cidrs) > 0,
-        description : "Allows RDP connections from hosts in ${cidr} CIDR range.",
-        protocol : "6",
-        stateless : false,
-        src : cidr,
-        src_type : "CIDR_BLOCK",
-        dst_port_min : 3389,
-        dst_port_max : 3389,
-        src_port_min : null,
-        src_port_max : null,
-        icmp_type : null,
-        icmp_code : null
-        }
-
       }
     ),
     egress_rules : {

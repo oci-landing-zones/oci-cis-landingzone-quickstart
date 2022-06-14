@@ -663,7 +663,7 @@ variables:
   cloud_guard_risk_level_threshold:
     type: enum
     title: "Minimum Risk Level Threshold"
-    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoint. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
+    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
     required: true
     default: High
     enum:

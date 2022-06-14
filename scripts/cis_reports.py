@@ -96,7 +96,7 @@ class CIS_Report:
             '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.2.2': {'section': 'Storage -  Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure boot volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.2.2': {'section': 'Storage -  Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
 
 
@@ -869,7 +869,7 @@ class CIS_Report:
                                     "notes": str(e)
                                 }
                             self.__boot_volumes.append(record)
-            print("Processed " + str(len(self.__boot_volumes)) + " boot volumes")
+            print("Processed " + str(len(self.__boot_volumes)) + " Boot Volumes")
             return(self.__boot_volumes)
         except Exception as e:
             raise RuntimeError("Error in __boot_volume_read_boot_volumes " + str(e.args))            

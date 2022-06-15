@@ -97,6 +97,8 @@ variableGroups:
   - title: "Cloud Guard"
     variables:
       - "cloud_guard_configuration_status"
+      - "cloud_guard_risk_level_threshold"
+      - "cloud_guard_admin_email_endpoints"
 
   - title: "Logging Consolidation: Service Connector Hub For Audit Logs"
     variables:
@@ -568,6 +570,15 @@ variables:
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
+  cloud_guard_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Cloud Guard Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
+
   notifications_advanced_options:
     type: boolean
     title: "Additional Notification Endpoints"
@@ -657,6 +668,19 @@ variables:
     enum:
       - ENABLE
       - DISABLE
+      
+  cloud_guard_risk_level_threshold:
+    type: enum
+    title: "Minimum Risk Level Threshold"
+    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
+    required: true
+    default: High
+    enum:
+      - Critical
+      - High
+      - Medium
+      - Minor
+      - Low
   
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:

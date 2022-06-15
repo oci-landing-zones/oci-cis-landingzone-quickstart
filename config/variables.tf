@@ -342,6 +342,16 @@ variable "security_admin_email_endpoints" {
   }
 }
 
+variable "cloud_guard_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for Cloud Guard related notifications."
+  validation {
+    condition     = length([for e in var.cloud_guard_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.cloud_guard_admin_email_endpoints)
+    error_message = "Validation failed cloud_guard_admin_email_endpoints: invalid email address."
+  }
+}
+
 variable "storage_admin_email_endpoints" {
   type        = list(string)
   default     = []
@@ -420,6 +430,15 @@ variable "cloud_guard_configuration_status" {
   validation {
     condition     = contains(["ENABLE", "DISABLE"], upper(var.cloud_guard_configuration_status))
     error_message = "Validation failed for cloud_guard_configuration_status: valid values (case insensitive) are ENABLE or DISABLE."
+  }
+}
+
+variable "cloud_guard_risk_level_threshold" {
+  default     = "High"
+  description = "Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems."
+  validation {
+    condition     = contains(["CRITICAL", "HIGH","MEDIUM","MINOR","LOW"], upper(var.cloud_guard_risk_level_threshold))
+    error_message = "Validation failed for cloud_guard_risk_level_threshold: valid values (case insensitive) are CRITICAL, HIGH, MEDIUM, MINOR, LOW."
   }
 }
 

@@ -25,14 +25,13 @@ The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI 
 We no longer grant RDP access to the bastion NSGs for `public_src_bastion_cidrs` CIDR addresses thus preventing public access to RDP.
 
 # May 11, 2022 Release Notes - Stable 2.3.4
-1. [Drop Down UI Control for Existing Groups in Resource Manager](#drop_down)
+1. [Configurable Cloud Guard Alerting](#cg_alerting)
 1. [Advanced Options Check Preservation in Resource Manager](#orm_adv_options)
 1. [Notification Endpoints not Required by CIS Not Shown By Default](#hidden_endpoints)
 1. [ExaCS VCN Route Table Fix](#exacs_vcn_rt_fix)
 
-## <a name="drop_down">Drop Down UI Control for Existing Groups for Resource Manager</a>
-IAM groups are now selectable in a drop down UI control made available in [config/schema.yml](./config/schema.yml) and [pre-config/schema.yml](./pre-config/schema.yml) for OCI Resource Manager. When informing existing groups, typing the group name is no longer needed.
-The drop down makes the group OCID available to the Terraform code, that performs a look up for the group name. As a direct consequence, both group name and group OCID are now supported when informing existing groups in terraform.tfvars file.
+## <a name="cg_alerting">Configurable Cloud Guard Alerting based on Problem Risk Level</a>
+Cloud Guard Alerting can optionally be configured by the Landing Zone. Two new variables have been added to the Cloud Guard Section: cloud_guard_risk_level_threshold and cloud_guard_admin_email_endpoints. A new topic and new Event rule will be created only if a valid Email Endpoint is provided. The risk_level_threshold determines what problems will trigger the event rule and send an email to the subscription in the new topic. A level of 'High' will include any problems with a risk level of High or above. This would include High and Critical problems. The event rule looks at any of the 3 Cloud Guard events: Problem Detected, Problem Dismissed and Problem Remediated.
 
 ## <a name="orm_adv_options">Advanced Options Check Preservation for Resource Manager</a>
 CIS Landing Zone interface for Resource Manager has check boxes allowing for advanced input options, hiding or showing groups of variables. The state of these options used to be reset when users needed to update the variables in the UI, hiding options chosen previously. Now the state is saved and no longer reset. Changes made in [config/variables.tf](./config/variables.tf).

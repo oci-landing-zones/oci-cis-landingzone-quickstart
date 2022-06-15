@@ -101,6 +101,8 @@ Variable Name | Description | Required | Default Value
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **cloud_guard_configuration_status** | Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail.** If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted. | No | ENABLE
+**cloud_guard_risk_level_threshold** | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | No | High
+**cloud_guard_admin_email_endpoints** | List of email addresses for Cloud Guard related notifications. If no email addresses are provided, then the topic and event rules are not created. | No | None
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value

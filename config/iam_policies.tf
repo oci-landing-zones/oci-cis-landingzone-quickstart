@@ -60,7 +60,7 @@ locals {
     "allow group ${local.security_admin_group_name} to read all-resources in compartment ${local.security_compartment.name}",
     "allow group ${local.security_admin_group_name} to manage instance-family in compartment ${local.security_compartment.name}",
     # CIS 1.2 - 1.14 Level 2
-    "allow group ${local.security_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+    "allow group ${local.security_admin_group_name} to manage volume-family in compartment ${local.security_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
     "allow group ${local.security_admin_group_name} to manage object-family in compartment ${local.security_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
     "allow group ${local.security_admin_group_name} to manage file-family in compartment ${local.security_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
     "allow group ${local.security_admin_group_name} to manage vaults in compartment ${local.security_compartment.name}",

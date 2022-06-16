@@ -37,6 +37,7 @@ wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-qui
 4. Install OCI
 ```
 pip3 install oci
+pip3 install pytz
 ```
 
 ### Setup the script to run in a Cloud Shell Environment
@@ -49,6 +50,7 @@ wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-qui
 python3 -m venv python-venv
 source python_venv/bin/activate
 pip3 install oci
+pip3 install pytz
 ```
 
 

@@ -32,7 +32,7 @@ locals {
   
   default_tags = { # the map keys are meant to be the tag names.
     (local.createdby_tag_name) = {
-      tag_description         = "Landing Zone tag that identifies who created the resource."
+      tag_description         = "CIS Landing Zone tag that identifies who created the resource."
       tag_is_cost_tracking    = true
       tag_is_retired          = false
       make_tag_default        = true
@@ -42,7 +42,7 @@ locals {
       tag_freeform_tags       = local.tags_freeform_tags
     },
     (local.createdon_tag_name) = {
-      tag_description         = "Landing Zone tag that identifies when the resource was created."
+      tag_description         = "CIS Landing Zone tag that identifies when the resource was created."
       tag_is_cost_tracking    = false
       tag_is_retired          = false
       make_tag_default        = true
@@ -60,8 +60,9 @@ module "lz_tags" {
   tenancy_ocid                 = var.tenancy_ocid
   tag_namespace_compartment_id = local.tag_namespace_compartment_id
   tag_namespace_name           = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
-  tag_namespace_description    = "Landing Zone ${var.service_label} tag namespace"
+  tag_namespace_description    = "CIS Landing Zone ${var.service_label} tag namespace."
   tag_defaults_compartment_id  = local.tag_defaults_compartment_id
   is_create_namespace          = !var.extend_landing_zone_to_new_region
   tags                         = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
+  service_label                = var.service_label
 } 

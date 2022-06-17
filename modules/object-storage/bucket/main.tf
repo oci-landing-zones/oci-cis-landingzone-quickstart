@@ -1,6 +1,14 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+terraform {
+  required_providers {
+    oci = {
+      source = "oracle/oci"
+    }
+  }
+}
+
 # Creates a buckets from a map where the key is the bucket name
 resource "oci_objectstorage_bucket" "these" {
     for_each = var.buckets

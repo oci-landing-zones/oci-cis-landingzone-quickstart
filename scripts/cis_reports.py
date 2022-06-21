@@ -1453,6 +1453,7 @@ class CIS_Report:
                                     "notes": str(e)
                                 }
                             self.__integration_instances.append(record)
+            print("Processed " + str(len(self.__integration_instances)) + " Integration Instances")                        
             return self.__integration_instances
         except Exception as e:
             raise RuntimeError("Error in __oic_read_oics " + str(e.args))
@@ -2069,7 +2070,7 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
                     analytics_instance)    
             elif analytics_instance['network_endpoint_details']:
-                if "0.0.0.0/0" in str(integration_instance['network_endpoint_details']):
+                if "0.0.0.0/0" in str(analytics_instance['network_endpoint_details']):
                     self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
                     self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
                         analytics_instance) 
@@ -2116,8 +2117,9 @@ class CIS_Report:
             for key, changes in self.cis_monitoring_checks.items():
                 # Checking if all cis change list is a subset of event condition
                 # if(all(x in test_list for x in sub_list)):
-                if(all(x in event_dict['eventtype'] for x in changes)):
-                    self.cis_foundations_benchmark_1_2[key]['Status'] = True
+                if event_dict != {}:
+                    if(all(x in event_dict['eventtype'] for x in changes)):
+                        self.cis_foundations_benchmark_1_2[key]['Status'] = True
 
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs

@@ -19,7 +19,7 @@ locals {
     }] 
 }
 module "lz_service_connector" {
-    source = "../modules/monitoring/service-connector"
+    source = "../modules/monitoring/service-connector-v2"
     tenancy_ocid             = var.tenancy_ocid
     service_label            = var.service_label
     display_name             = var.service_connector_name

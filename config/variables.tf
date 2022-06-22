@@ -456,7 +456,7 @@ variable "service_connector_name" {
 variable "service_connector_target_kind" {
   type        = string
   default     = "objectstorage"
-  description = "Service Connector Hub target resource. Valid values are objectstorage, streaming or functions. In case of 'streaming', provide the stream name or ocid in 'service_connector_target_stream'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'service_connector_target_function_id'."
+  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming' or 'functions'. In case of 'streaming', provide the stream name or ocid in 'service_connector_target_stream'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'service_connector_target_function_id'."
   validation {
     condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_target_kind)
     error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming or functions."

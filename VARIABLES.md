@@ -41,7 +41,7 @@ Variable Name | Description | Required | Default Value
 ### <a name="networking_variables"></a>Networking - Generic VCNs Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | []
+**vcn_cidrs** | List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. | No | ["10.0.0.0/20"]
 **vcn_names** | List of custom names to be given to the VCNs, overriding the default VCN names (*service_label*-*index*-vcn). The list length and elements order must match *vcn_cidrs*'. | No | []
 **subnets_names** | List of custom names to be used in each of the spoke(s) subnet names, the first subnet will be public if var.no_internet_access is false. Overriding the default subnet names (*service_label*-*index*-web-subnet). The list length and elements order must match *subnets_sizes*. | No | []
 **subnets_sizes** | List of subnet sizes in bits that will be added to the VCN CIDR size. Overriding the default subnet size of VCN CIDR + 4. The list length and elements order must match *subnets_names*. | No | []
@@ -100,29 +100,20 @@ Variable Name | Description | Required | Default Value
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**cloud_guard_configuration_status** | Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail.** If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted. | No | ENABLE
+**cloud_guard_configuration_status** | Determines whether a Cloud Guard target should be created for the Root compartment. If *ENABLE*, Cloud Guard is enabled and a target is created for the Root compartment. **Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail.** If there's a pre-existing Cloud Guard target for the Root compartment, use *DISABLE*. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you use *ENABLE*, the Root target becomes managed by Landing Zone. If later on you switch to *DISABLE*, Cloud Guard remains enabled but the Root target is deleted. | No | ENABLE
 **cloud_guard_risk_level_threshold** | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | No | High
 **cloud_guard_admin_email_endpoints** | List of email addresses for Cloud Guard related notifications. If no email addresses are provided, then the topic and event rules are not created. | No | None
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**create_service_connector_audit** | Whether to create Service Connector Hub for Audit logs. | No | false
-**service_connector_audit_target** | Destination for Service Connector Hub for Audit Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_audit_state** | State in which to create the Service Connector Hub for Audit logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_audit_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs. | No | None
-**service_connector_audit_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs. | No | None
-**sch_audit_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for Audit logs. | No | 100
-**sch_audit_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for Audit logs. | No | 420000
-**sch_audit_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for Audit logs. | No | "sch-audit"
-**create_service_connector_vcnFlowLogs** | Whether to create Service Connector Hub for VCN Flow logs. | No | false
-**service_connector_vcnFlowLogs_target** | Destination for Service Connector Hub for VCN Flow Logs. Valid values are 'objectstorage', 'streaming' and 'functions'. | No | "objectstorage"
-**service_connector_vcnFlowLogs_state** | State in which to create the Service Connector Hub for VCN Flow logs. Valid values are 'ACTIVE' and 'INACTIVE'. | No | "INACTIVE"
-**service_connector_vcnFlowLogs_target_OCID** | Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**service_connector_vcnFlowLogs_target_cmpt_OCID** | Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs. | No | None
-**sch_vcnFlowLogs_target_rollover_MBs** | Applicable only for objectstorage target type. Target rollover size in MBs for VCN Flow logs. | No | 100
-**sch_vcnFlowLogs_target_rollover_MSs** | Applicable only for objectstorage target type. Target rollover time in MSs for VCN Flow logs. | No | 420000
-**sch_vcnFlowLogs_objStore_objNamePrefix** | Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs.| No | "sch-vcnFlowLogs"	
+**enable_service_connector** | Whether Service Connector Hub should be enabled. | No | false
+**service_connector_name** | The Service Connector display name. | No | service-connector
+**service_connector_target_kind** | Service Connector Hub target resource. Valid values are *objectstorage*, *streaming* or *functions*. In case of *objectstorage*, provide the bucket name to be created in *service_connector_target_bucket_name*. In case of *streaming*, provide the stream name or ocid in *service_connector_target_stream*. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of *functions*, you must provide the function ocid in *service_connector_target_function_id*. | No | objectstorage
+**service_connector_target_bucket_name** | The Service Connector target Object Storage bucket name to be created. Applicable if *service_connector_target_kind* is *objectstorage*.| No | service-connector-bucket
+**service_connector_target_object_name_prefix** | The Service Connector target Object Storage object name prefix. Applicable if *service_connector_target_kind* is *objectstorage*.| No | sch
+**service_connector_target_stream** | The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used. Applicable if *service_connector_target_kind* is *streaming*.| No | service-connector-stream
+**service_connector_target_function_id** | The Service Connector target function ocid. Applicable if *service_connector_target_kind* is *functions*. | No | None
 
 ### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value

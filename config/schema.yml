@@ -689,6 +689,13 @@ variables:
       - streaming
       - functions
 
+  service_connector_name:
+    type: string
+    required: false
+    title: "Service Connector Display Name"
+    description: "The Service Connector display name."
+    visible: enable_service_connector
+
   service_connector_target_bucket_name:
     type: string
     required: false

@@ -4,13 +4,13 @@
 locals {
     target_bucket_name = var.target_bucket_name != "service-connector-bucket" ? var.target_bucket_name : "${var.service_label}-${var.target_bucket_name}"
 
-    target_stream_id = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? var.target_stream : oci_streaming_stream.sch[0].id) : null
+    target_stream_id = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? var.target_stream : oci_streaming_stream.this[0].id) : null
     target_stream_name = var.target_stream != "service-connector-stream" ? var.target_stream : "${var.service_label}-${var.target_stream}"
 
     policy_compartment_id = var.policy_compartment_id != null ? var.policy_compartment_id : data.oci_identity_compartment.this.compartment_id
 }
 
-resource "oci_sch_service_connector" "logging" {
+resource "oci_sch_service_connector" "this" {
     compartment_id = var.compartment_id
     display_name   = var.display_name != "service-connector" ? var.display_name : "${var.service_label}-${var.display_name}"
     defined_tags   = var.defined_tags
@@ -42,7 +42,7 @@ resource "oci_sch_service_connector" "logging" {
     state  = var.enable_service_connector ? "ACTIVE" : "INACTIVE"
 }
 
-resource "oci_objectstorage_bucket" "sch" {
+resource "oci_objectstorage_bucket" "this" {
     count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
     compartment_id = var.compartment_id
     name           = local.target_bucket_name
@@ -53,7 +53,7 @@ resource "oci_objectstorage_bucket" "sch" {
 	freeform_tags  = var.target_bucket_freeform_tags
 }
 
-resource "oci_identity_policy" "sch_oss" {
+resource "oci_identity_policy" "oss" {
     count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
@@ -70,7 +70,7 @@ resource "oci_identity_policy" "sch_oss" {
 	freeform_tags  = var.target_stream_freeform_tags
 }
 
-resource "oci_streaming_stream" "sch" {
+resource "oci_streaming_stream" "this" {
     count = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
     name = local.target_stream_name
     partitions = var.target_stream_partitions
@@ -80,7 +80,7 @@ resource "oci_streaming_stream" "sch" {
     retention_in_hours = var.target_stream_retention_in_hours
 }
 
-resource "oci_identity_policy" "sch_streaming" {
+resource "oci_identity_policy" "streaming" {
     count          = lower(var.target_kind) == "streaming" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to use the target stream."
@@ -97,7 +97,7 @@ resource "oci_identity_policy" "sch_streaming" {
     freeform_tags  = var.policy_freeform_tags
 }
 
-resource "oci_identity_policy" "sch_function" {
+resource "oci_identity_policy" "function" {
     count          = lower(var.target_kind) == "functions" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to use the target function."

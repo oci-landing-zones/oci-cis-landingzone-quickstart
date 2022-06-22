@@ -449,7 +449,7 @@ variable "enable_service_connector" {
   default = false
 }
 variable "service_connector_name" {
-  description = "The Service Connector name."
+  description = "The Service Connector display name."
   type        = string
   default     = "service-connector"
 }

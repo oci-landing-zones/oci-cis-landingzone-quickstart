@@ -681,7 +681,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Target Kind"
-    description: "Service Connector Hub target resource."
+    description: "Service Connector Hub target resource. In case of 'objectstorage', provide the bucket name to be created in 'Service Connector Target Bucket Name'. In case of 'streaming', provide the stream name or ocid in 'Service Connector Target Stream (name or ocid)'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'Service Connector Target Function Ocid'."
     default: objectstorage
     visible: enable_service_connector
     enum:

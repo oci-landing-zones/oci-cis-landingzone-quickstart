@@ -701,28 +701,48 @@ variables:
     required: false
     title: "Service Connector Target Bucket Name"
     description: "The Service Connector target Object Storage bucket name to be created. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
-    visible: enable_service_connector
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
 
   service_connector_target_object_name_prefix:
     type: string
     required: false
     title: "Service Connector Target Object Name Prefix"
     description: "The Service Connector target Object Storage object name prefix. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
-    visible: enable_service_connector  
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"  
 
   service_connector_target_stream:
     type: string
     required: false
     title: "Service Connector Target Stream (name or ocid)"
     description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used. Applicable if 'Service Connector Target Kind' is 'streaming'."
-    visible: enable_service_connector
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "streaming"
 
   service_connector_target_function_id:
     type: string
     required: false
     title: "Service Connector Target Function Ocid"
     description: "The Service Connector target function ocid. Applicable if 'Service Connector Target Kind' is 'functions'."
-    visible: enable_service_connector
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "functions"
 
   # Vulnerability Scanning
   vss_create:

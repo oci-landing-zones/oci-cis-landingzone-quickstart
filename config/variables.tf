@@ -448,11 +448,13 @@ variable "enable_service_connector" {
   type = bool
   default = false
 }
+
 variable "service_connector_name" {
   description = "The Service Connector display name."
   type        = string
   default     = "service-connector"
 }
+
 variable "service_connector_target_kind" {
   type        = string
   default     = "objectstorage"
@@ -462,21 +464,25 @@ variable "service_connector_target_kind" {
     error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming or functions."
   }
 }
+
 variable "service_connector_target_bucket_name" {
   description = "The Service Connector target Object Storage bucket name to be created."
   type        = string
   default     = "service-connector-bucket"
 }
+
 variable "service_connector_target_object_name_prefix" {
     description = "The Service Connector target Object Storage object name prefix."
     type = string
     default = "sch"
 }
+
 variable "service_connector_target_stream" {
     description = "The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used."
     type = string
     default = "service-connector-stream"
 }
+
 variable "service_connector_target_function_id" {
     description = "The Service Connector target function ocid."
     type = string

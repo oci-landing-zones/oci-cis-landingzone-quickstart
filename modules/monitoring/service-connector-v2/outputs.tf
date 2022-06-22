@@ -3,15 +3,15 @@
 
 output "service_connector" {
   description = "Managed Service Connector information"
-  value       = oci_sch_service_connector.logging
+  value       = oci_sch_service_connector.this
 }
 
 output "service_connector_target_bucket" {
   description = "Managed Object Storage Bucket used as Service Connector target"
-  value       = length(oci_objectstorage_bucket.sch) > 0 ? oci_objectstorage_bucket.sch[0] : null
+  value       = length(oci_objectstorage_bucket.this) > 0 ? oci_objectstorage_bucket.this[0] : null
 }
 
 output "service_connector_target_stream" {
   description = "Managed Stream used as Service Connector target"
-  value       = length(oci_streaming_stream.sch) > 0 ? oci_streaming_stream.sch[0] : null
+  value       = length(oci_streaming_stream.this) > 0 ? oci_streaming_stream.this[0] : null
 }

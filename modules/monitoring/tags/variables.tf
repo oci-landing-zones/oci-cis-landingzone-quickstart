@@ -60,17 +60,6 @@ variable "is_create_namespace" {
   default = true
 }
 
-variable "create_arch_center_tag" {
-  type = bool
-  description = "Whether to create a defined tag for OCI Architecture Center."
-  default = true
-}
-
-variable "service_label" {
-  type        = string
-  description = "Landing Zone service label"
-}
-
 variable "tags" {
   type = map(object({
     tag_description         = string,

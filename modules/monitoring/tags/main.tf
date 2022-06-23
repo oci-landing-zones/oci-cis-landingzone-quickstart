@@ -73,17 +73,3 @@ resource "oci_identity_tag_default" "these" {
         value             = local.actual_tag_defaults[each.value].tag_default_value       # the tag default value
         is_required       = local.actual_tag_defaults[each.value].tag_default_is_required # whether the tag default value is required
 }
-
-resource "oci_identity_tag_namespace" "arch_center" {
-  count = var.create_arch_center_tag == true ? 1 : 0
-  compartment_id = var.tenancy_ocid
-  description    = "CIS Landing Zone tag namespace for OCI Architecture Center."
-  name           = "ArchitectureCenter\\cis-oci-landing-zone-quickstart-${var.service_label}"
-}
-
-resource "oci_identity_tag" "arch_center" {
-  count = var.create_arch_center_tag == true ? 1 : 0
-  description      = "CIS Landing Zone tag for OCI Architecture Center."
-  name             = "release"
-  tag_namespace_id = oci_identity_tag_namespace.arch_center[0].id
-}

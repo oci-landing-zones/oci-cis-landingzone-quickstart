@@ -1,3 +1,32 @@
+# June XX, 2022 Release Notes - 2.3.6
+1. [Cloud Guard Events](#2-3-6-cg-events)
+1. [Updated Logging Architecture](#2-3-6-updated-logging)
+1. [Terraform OCI Provider Moved to oracle/oci](#2-3-6-provider-switch)
+1. [Architecture Center Tag](#2-3-6-arch-center-tag)
+
+## <a name="2-3-6-cg-events">Cloud Guard Events</a>
+Cloud Guard events have been added to Landing Zone notifications framework. Now users can be notified about Cloud Guard problems that exceeds a user provided criticality threshold.
+
+## <a name="2-3-6-updated-logging">Updated Logging Architecture</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) has been updated to align with the [best practice architecture for third-party SIEM tools](https://github.com/oracle-quickstart/oci-arch-logging-splunk).
+Now there is a single Landing Zone Service Connector that ingests three log sources (Audit logs, VCN flow logs and Object Storage logs) into a target resource of choice: Object Storage Bucket, Stream or Function.
+Landing Zone creates the Bucket and can either create the Stream or use an existing one. If a Function is the target, it must be provided as an input.
+
+## <a name="2-3-6-provider-switch">Terraform OCI Provider Moved to oracle/oci</a>
+Landing Zone has been updated with the new home for Terraform OCI provider. It has moved to oracle/oci from hashicorp/oci. 
+- Existing Landing Zone customers who use Terraform CLI are required to replace the provider in the state file. To update the state file, run the command below in the folder where the state file is present:
+
+        > terraform state replace-provider hashicorp/oci oracle/oci
+
+- Existing Landing Zone customers who use OCI Resource Manager do not need to do anything, as Resource Manager will update the state file based on the new Landing Zone configuration. 
+
+As part of this move, we have introduced provider requirements expressed in [provider.tf](./config/provider.tf):
+- Terraform required version >= 1.0.0
+- OCI provider version >= 4.78.0
+
+## <a name="2-3-6-arch-center-tag">Architecture Center Tag</a>
+A [defined tag](./config/mon_tags.tf) to track Landing Zone deployments through [OCI Architecture Center](https://docs.oracle.com/solutions/) has been added.
+
 # June 13, 2022 Release Notes - Stable 2.3.5
 1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
 1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)

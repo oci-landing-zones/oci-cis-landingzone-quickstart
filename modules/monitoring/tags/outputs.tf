@@ -5,6 +5,6 @@ output custom_tags {
     value = length(oci_identity_tag.these) > 0 ? {for tag in oci_identity_tag.these : tag.name => tag} : null
 }
 
-output custom_tag_namespace_name {
-    value = length(oci_identity_tag_namespace.namespace) > 0 ? oci_identity_tag_namespace.namespace[0].name : null
+output custom_tag_namespace {
+    value = length(oci_identity_tag_namespace.namespace) > 0 ? oci_identity_tag_namespace.namespace[0] : null
 }

@@ -64,5 +64,11 @@ module "lz_tags" {
   tag_defaults_compartment_id  = local.tag_defaults_compartment_id
   is_create_namespace          = !var.extend_landing_zone_to_new_region
   tags                         = length(local.all_tags) > 0 ? local.all_tags : local.default_tags
-  service_label                = var.service_label
-} 
+}
+
+module "lz_arch_center_tag" {
+  source        = "../modules/monitoring/tags-arch-center"
+  providers     = { oci = oci.home }
+  tenancy_ocid  = var.tenancy_ocid
+  service_label = var.service_label
+}

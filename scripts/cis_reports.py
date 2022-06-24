@@ -248,8 +248,8 @@ class CIS_Report:
         self.__vaults = []
 
         # For Region
-        self.__current_region = ""
-        self.__is_home_region = []
+        self.__regions = []
+        self.__home_region = []
 
         # For ONS Subscriptions
         self.__subscriptions = []
@@ -291,8 +291,7 @@ class CIS_Report:
             self.__cloud_guard = oci.cloud_guard.CloudGuardClient(
                 self.__config, signer=self.__signer)
             if proxy:
-                self.__cloud_guard.base_client.session.proxies = {
-                    'https': proxy}
+                self.__cloud_guard.base_client.session.proxies = {'https': proxy}
 
             self.__search = oci.resource_search.ResourceSearchClient(
                 self.__config, signer=self.__signer)
@@ -357,14 +356,28 @@ class CIS_Report:
             # Getting Tenancy Data and Region data
             self.__tenancy = self.__identity.get_tenancy(
                 config["tenancy"]).data
-            self.__regions = self.__identity.list_region_subscriptions(
+            regions = self.__identity.list_region_subscriptions(
                 self.__tenancy.id).data
 
-
-            for i in self.__regions:
-                if i._is_home_region:
-                    self.__home_region = i.region_name
+            # Creating a record for home region and a list of all regions including the home region
+            for region in regions:
+                if region.is_home_region:
                     print("Home region for tenancy is " + self.__home_region)
+                    record = {
+                        "is_home_region": region.is_home_region,
+                        "region_key": region.region_key,
+                        "region_name": region.region_name,
+                        "status": region.status
+                        }
+                        self.__home_region = record
+
+                record = {
+                    "is_home_region": region.is_home_region,
+                    "region_key": region.region_key,
+                    "region_name": region.region_name,
+                    "status": region.status
+                    }
+                self.__regions.append(record)
 
             
             # By Default it is today's date
@@ -376,6 +389,13 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Failed to create service objects" + str(e.args))
+
+    ##########################################################################
+    # Create regional config and signers
+    ##########################################################################
+    def __create_regional_signers(self):
+        pass
+
 
     ##########################################################################
     # Check for Managed PaaS Compartment
@@ -1814,7 +1834,7 @@ class CIS_Report:
     ##########################################################################
     # Resources in root compartment
     ##########################################################################
-    def __search_resources_in_root_compartment(self):
+    def __search_resources_in_root_compartment(self, region_name):
         self.__resources_in_root_compartment = []
         query = []
         resources_in_root_data = []
@@ -1825,7 +1845,8 @@ class CIS_Report:
         for item in resources_in_root_data:
             record = {
                 "display_name": item.display_name,
-                "id": item.identifier
+                "id": item.identifier,
+                "region" : region_name
             }
             self.__resources_in_root_compartment.append(record)
 

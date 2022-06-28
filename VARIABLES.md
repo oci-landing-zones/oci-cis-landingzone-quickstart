@@ -110,10 +110,10 @@ Variable Name | Description | Required | Default Value
 **enable_service_connector** | Whether Service Connector Hub should be enabled. | No | false
 **service_connector_name** | The Service Connector display name. | No | service-connector
 **service_connector_target_kind** | Service Connector Hub target resource. Valid values are *objectstorage*, *streaming* or *functions*. In case of *objectstorage*, provide the bucket name to be created in *service_connector_target_bucket_name*. In case of *streaming*, provide the stream name or ocid in *service_connector_target_stream*. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of *functions*, you must provide the function ocid in *service_connector_target_function_id*. | No | objectstorage
-**service_connector_target_bucket_name** | The Service Connector target Object Storage bucket name to be created. Applicable if *service_connector_target_kind* is *objectstorage*.| No | service-connector-bucket
+**service_connector_target_bucket_name** | The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if *service_connector_target_kind* is *objectstorage*.| No | service-connector-bucket
 **service_connector_target_object_name_prefix** | The Service Connector target Object Storage object name prefix. Applicable if *service_connector_target_kind* is *objectstorage*.| No | sch
-**service_connector_target_stream** | The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used. Applicable if *service_connector_target_kind* is *streaming*.| No | service-connector-stream
-**service_connector_target_function_id** | The Service Connector target function ocid. Applicable if *service_connector_target_kind* is *functions*. | No | None
+**service_connector_target_stream** | The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if *service_connector_target_kind* is *streaming*.| No | service-connector-stream
+**service_connector_target_function_id** | The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if *service_connector_target_kind* is *functions*. | No | None
 
 ### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value

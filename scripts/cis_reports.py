@@ -46,7 +46,7 @@ class CIS_Report:
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -213,6 +213,7 @@ class CIS_Report:
         # For IAM Checks
         self.__tenancy_password_policy = None
         self.__compartments = []
+        self.__raw_compartment = []
         self.__policies = []
         self.__users = []
         self.__groups_to_users = []
@@ -268,9 +269,6 @@ class CIS_Report:
         self.__config = config
         self.__signer = signer
 
-        # Working with input variables from
-        self.__output_bucket = output_bucket
-
         # By Default it is passed True to print all output
         if print_to_screen.upper() == 'TRUE':
             self.__print_to_screen = True
@@ -306,6 +304,8 @@ class CIS_Report:
 
         except Exception as e:
             raise RuntimeError("Failed to get identity information." + str(e.args))     
+
+
 
         # Creating a record for home region and a list of all regions including the home region
         for region in regions:
@@ -344,6 +344,15 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Failed to get tenancy namespace." + str(e.args))
+        
+        # Determining if a need a object storage client for output
+        self.__output_bucket = output_bucket
+        if self.__output_bucket:
+            self.__output_bucket_client = self.__regions[self.__home_region]['os_client']
+
+        # Determining if all raw data will be output
+        self.__output_raw_data = raw_data
+
 
 
     ##########################################################################
@@ -471,9 +480,37 @@ class CIS_Report:
                 compartment_id_in_subtree=True,
                 lifecycle_state = "ACTIVE"
             ).data
-
+            # Need to covnert for raw output
+            for compartment in self.__compartments:
+                record = {
+                    "id" : compartment.id,
+                    "name" : compartment.name,
+                    "compartment_id": compartment.compartment_id,
+                    "defined_tags": compartment.defined_tags,
+                    "description": compartment.description,
+                    "freeform_tags": compartment.freeform_tags,
+                    "inactive_status": compartment.inactive_status,
+                    "is_accessible": compartment.is_accessible,
+                    "lifecycle_state": compartment.lifecycle_state,
+                    "time_created": compartment.time_created
+                    }
+                self.__raw_compartment.append(record)
+            
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
+            root_compartment = {
+                "id" : self.__tenancy.id,
+                "name" : self.__tenancy.name,
+                "compartment_id": "(root)",
+                "defined_tags": self.__tenancy.defined_tags,
+                "description": self.__tenancy.description,
+                "freeform_tags": self.__tenancy.freeform_tags,
+                "inactive_status": "",
+                "is_accessible": "",
+                "lifecycle_state": "",
+                "time_created": ""
+            }
+            self.__raw_compartment.append(root_compartment)
 
             print("\tProcessed " + str(len(self.__compartments)) + " Compartments")                        
             return self.__compartments
@@ -1900,26 +1937,6 @@ class CIS_Report:
                 "Error in __identity_read_tag_defaults " + str(e.args))
 
     ##########################################################################
-    # Run advanced search structure query
-    ##########################################################################
-    # def __search_run_structured_query(self, query):
-    #     self.__search_results = []
-    #     search_results = []
-    #     structured_search = []
-    #     search_results = []
-    #     try:
-    #         structured_search = oci.resource_search.models.StructuredSearchDetails(query=query, type='Structured',
-    #                                                                                matching_context_type=oci.resource_search.models.SearchDetails.MATCHING_CONTEXT_TYPE_NONE)
-    #         search_results = self.__search.search_resources(
-    #             structured_search).data.items
-
-    #         return search_results
-
-    #     except Exception as e:
-    #         raise RuntimeError(
-    #             "Error in search_run_structure_query " + str(e.args))
-
-    ##########################################################################
     # Resources in root compartment
     ##########################################################################
     def __search_resources_in_root_compartment(self):
@@ -2380,6 +2397,7 @@ class CIS_Report:
         self.__print_header("Writing reports to CSV")
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
+        
         # Outputting to a bucket if I have one
         if summary_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
@@ -2393,6 +2411,98 @@ class CIS_Report:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
 
+        if self.__output_raw_data:
+            # List to store output reports if copying to object storage is required
+            list_report_file_names = []
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
+            list_report_file_names.append(report_file_name)
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_users", self.__users)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_policies", self.__policies)
+            list_report_file_names.append(report_file_name)  
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_dyanmic_groups", self.__dynamic_groups)
+            list_report_file_names.append(report_file_name)
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_tags", self.__tag_defaults)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "identity_compartments", self.__raw_compartment)
+            list_report_file_names.append(report_file_name)
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "network_security_groups", self.__network_security_groups)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "network_security_lists", self.__network_security_lists)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "network_subnets", self.__network_subnets)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "autonomous_databases", self.__autonomous_databases)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "analytics_instances", self.__analytics_instances)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "integration_instances", self.__integration_instances)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "event_rules", self.__event_rules)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "log_groups_and_logs", self.__logging_list)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "object_storage_buckets", self.__buckets)
+            list_report_file_names.append(report_file_name)            
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "boot_volumes", self.__boot_volumes)
+            list_report_file_names.append(report_file_name)
+
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "block_volumes", self.__block_volumes)
+            list_report_file_names.append(report_file_name)
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "file_stroage_system", self.__file_storage_system)
+            list_report_file_names.append(report_file_name)
+            
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "vaults_and_keys", self.__vaults)
+            list_report_file_names.append(report_file_name)
+    
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "ons_subscriptions", self.__subscriptions)
+            list_report_file_names.append(report_file_name)
+    
+            if self.__output_bucket:
+                for raw_report in list_report_file_names:
+                    if raw_report:
+                        self.__os_copy_report_to_object_storage(
+                            self.__output_bucket, raw_report)
+    
+    
+    
     def __report_collect_tenancy_data(self):
         
         ######  Runs identity functions only in home region
@@ -2436,11 +2546,11 @@ class CIS_Report:
         try:
             with open(filename, "rb") as f:
                 try:
-                    self.__os_client.put_object(
+                    self.__output_bucket_client.put_object(
                         self.__os_namespace, bucketname, object_name, f)
                 except Exception as e:
-                    raise Exception(
-                        "Error uploading file os_copy_report_to_object_storage: " + str(e.args))
+                    print("Failed to write " + object_name + " to bucket " + bucketname + ". Please check your bucket and IAM permissions.")
+
         except Exception as e:
             raise Exception(
                 "Error opening file os_copy_report_to_object_storage: " + str(e.args))
@@ -2642,14 +2752,16 @@ def execute_report():
                         help='Set Proxy (i.e. www-proxy-server.com:80) ')
     parser.add_argument('--output-to-bucket', default="", dest='output_bucket',
                         help='Set Output bucket name (i.e. my-reporting-bucket) ')
-    parser.add_argument('--regions', default="", dest='regions',
-                        help='Regions')
     parser.add_argument('--report-directory', default=None, dest='report_directory',
                         help='Set Output report directory by default it is the current date (i.e. reports-date) ')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False) ')
     parser.add_argument('--level', default=2, dest='level',
                         help='CIS Recommendation Level options are: 1 or 2. Set to 2 by default ')
+    parser.add_argument('--regions', default="", dest='regions',
+                        help='Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1')    
+    parser.add_argument('--raw', action='store_true', default=False,
+                            help='Outputs all resource data into CSV files')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -2657,7 +2769,7 @@ def execute_report():
     cmd = parser.parse_args()
 
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw)
     report.report_generate_cis_report(int(cmd.level))
 
 

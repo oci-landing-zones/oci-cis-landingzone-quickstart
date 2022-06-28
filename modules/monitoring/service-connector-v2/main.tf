@@ -70,7 +70,7 @@ resource "oci_identity_policy" "oss" {
                     <<EOF
                         Allow any-user to manage objects in compartment id ${var.compartment_id} where all {
                         request.principal.type='serviceconnector',
-                        target.bucket.name= '${var.target_bucket_name}',
+                        target.bucket.name= '${local.target_bucket_name}',
                         request.principal.compartment.id='${var.compartment_id}' }
                     EOF
                 ]

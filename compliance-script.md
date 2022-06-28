@@ -77,22 +77,22 @@ Num     Level   Compliant       Findings        Title
 1.4     1       Yes                             Ensure IAM password policy requires minimum length of 14 or greater
 1.5     1       Yes                             Ensure IAM password policy expires passwords within 365 days
 1.6     1       Yes                             Ensure IAM password policy prevents password reuse
-1.7     1       No              33              Ensure MFA is enabled for all users with a console password
-1.8     1       No              46              Ensure user API keys rotate within 90 days or less
+1.7     1       No              29              Ensure MFA is enabled for all users with a console password
+1.8     1       No              40              Ensure user API keys rotate within 90 days or less
 1.9     1       No              4               Ensure user customer secret keys rotate within 90 days or less
-1.10    1       No              10              Ensure user auth tokens rotate within 90 days or less
-1.11    1       No              2               Ensure API keys are not created for tenancy administrator users
-1.12    1       No              33              Ensure all OCI IAM user accounts have a valid and current email address
+1.10    1       No              9               Ensure user auth tokens rotate within 90 days or less
+1.11    1       No              1               Ensure API keys are not created for tenancy administrator users
+1.12    1       No              29              Ensure all OCI IAM user accounts have a valid and current email address
 1.13    1       Yes                             Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
 1.14    2       No                              Ensure storage service-level admins cannot delete resources they manage
-2.1     1       No              23              Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
-2.2     1       No              3               Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389
-2.3     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22
+2.1     1       No              42              Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
+2.2     1       No              6               Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389
+2.3     1       No              3               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22
 2.4     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389
-2.5     1       No              55              Ensure the default security list of every VCN restricts all traffic except ICMP
-2.6     1       No              3               Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
+2.5     1       No              101             Ensure the default security list of every VCN restricts all traffic except ICMP
+2.6     1       No              5               Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
 2.7     1       Yes                             Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network
-2.8     1       No              5               Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN
+2.8     1       No              8               Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN
 3.1     1       Yes                             Ensure audit log retention period is set to 365 days
 3.2     1       Yes                             Ensure default tags are used on resources
 3.3     1       Yes                             Create at least one notification topic and subscription to receive monitoring alerts
@@ -106,48 +106,48 @@ Num     Level   Compliant       Findings        Title
 3.11    1       Yes                             Ensure a notification is configured for  security list changes
 3.12    1       Yes                             Ensure a notification is configured for  network security group changes
 3.13    1       Yes                             Ensure a notification is configured for  changes to network gateways
-3.14    2       No              54              Ensure VCN flow logging is enabled for all subnets
+3.14    2       No              98              Ensure VCN flow logging is enabled for all subnets
 3.15    1       Yes                             Ensure Cloud Guard is enabled in the root compartment of the tenancy
-3.16    1       No              5               Ensure customer created Customer Managed Key (CMK) is rotated at least annually
-3.17    2       No              239             Ensure write level Object Storage logging is enabled for all buckets
-4.1.1   1       No              10              Ensure no Object Storage buckets are publicly visible
-4.1.2   2       No              239             Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)
-4.1.3   2       No              244             Ensure Versioning is Enabled for Object Storage Buckets
-4.2.1   2       No              1               Ensure Block Volumes are encrypted with Customer Managed Keys
-4.2.2   2       No              46              Ensure boot volumes are encrypted with Customer Managed Key
+3.16    1       No              8               Ensure customer created Customer Managed Key (CMK) is rotated at least annually
+3.17    2       No              250             Ensure write level Object Storage logging is enabled for all buckets
+4.1.1   1       No              8               Ensure no Object Storage buckets are publicly visible
+4.1.2   2       No              250             Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)
+4.1.3   2       No              255             Ensure Versioning is Enabled for Object Storage Buckets
+4.2.1   2       No              2               Ensure Block Volumes are encrypted with Customer Managed Keys
+4.2.2   2       No              64              Ensure Boot Volumes are encrypted with Customer Managed Key
 4.3.1   2       No              6               Ensure File Storage Systems are encrypted with Customer Managed Keys
 5.1     1       Yes                             Create at least one compartment in your tenancy to store cloud resources
-5.2     1       No              204             Ensure no resources are created in the root compartment
+5.2     1       No              206             Ensure no resources are created in the root compartment
 ```
 For each non-compliant report item, a file with findings details is generated, as shown in the last part of the output:
 ```
 ##########################################################################################
 #                                 Writing reports to CSV                                 #
 ##########################################################################################
-CSV: summary_report         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_summary_report.csv
-CSV: Identity and Access Management_1.7 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-7.csv
-CSV: Identity and Access Management_1.8 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-8.csv
-CSV: Identity and Access Management_1.9 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-9.csv
-CSV: Identity and Access Management_1.10 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-10.csv
-CSV: Identity and Access Management_1.11 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-11.csv
-CSV: Identity and Access Management_1.12 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Identity_and_Access_Management_1-12.csv
-CSV: Networking_2.1         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-1.csv
-CSV: Networking_2.2         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-2.csv
-CSV: Networking_2.3         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-3.csv
-CSV: Networking_2.4         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-4.csv
-CSV: Networking_2.5         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-5.csv
-CSV: Networking_2.6         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-6.csv
-CSV: Networking_2.8         --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Networking_2-8.csv
-CSV: Logging and Monitoring_3.14 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Logging_and_Monitoring_3-14.csv
-CSV: Logging and Monitoring_3.16 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Logging_and_Monitoring_3-16.csv
-CSV: Logging and Monitoring_3.17 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Logging_and_Monitoring_3-17.csv
-CSV: Storage: Object Storage_4.1.1 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_Object_Storage_4-1-1.csv
-CSV: Storage: Object Storage_4.1.2 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_Object_Storage_4-1-2.csv
-CSV: Storage: Object Storage_4.1.3 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_Object_Storage_4-1-3.csv
-CSV: Storage: Block Volumes_4.2.1 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_Block_Volumes_4-2-1.csv
-CSV: Storage: Block Volumes_4.2.2 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_Block_Volumes_4-2-2.csv
-CSV: Storage: File Storage Service_4.3.1 --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Storage:_File_Storage_Service_4-3-1.csv
-CSV: Asset Management_5.2   --> us-ashburn-1-<tenancy_name>-2022-06-02/cis_Asset_Management_5-2.csv
+CSV: summary_report         --> orasenatdpltsecitom01-2022-06-27/cis_summary_report.csv
+CSV: Identity and Access Management_1.7 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-7.csv
+CSV: Identity and Access Management_1.8 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-8.csv
+CSV: Identity and Access Management_1.9 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-9.csv
+CSV: Identity and Access Management_1.10 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-10.csv
+CSV: Identity and Access Management_1.11 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-11.csv
+CSV: Identity and Access Management_1.12 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-12.csv
+CSV: Networking_2.1         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-1.csv
+CSV: Networking_2.2         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-2.csv
+CSV: Networking_2.3         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-3.csv
+CSV: Networking_2.4         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-4.csv
+CSV: Networking_2.5         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-5.csv
+CSV: Networking_2.6         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-6.csv
+CSV: Networking_2.8         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-8.csv
+CSV: Logging and Monitoring_3.14 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-14.csv
+CSV: Logging and Monitoring_3.16 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-16.csv
+CSV: Logging and Monitoring_3.17 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-17.csv
+CSV: Storage - Object Storage_4.1.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-1.csv
+CSV: Storage - Object Storage_4.1.2 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-2.csv
+CSV: Storage - Object Storage_4.1.3 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-3.csv
+CSV: Storage - Block Volumes_4.2.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Block_Volumes_4-2-1.csv
+CSV: Storage -  Block Volumes_4.2.2 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-__Block_Volumes_4-2-2.csv
+CSV: Storage - File Storage Service_4.3.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_File_Storage_Service_4-3-1.csv
+CSV: Asset Management_5.2   --> orasenatdpltsecitom01-2022-06-27/cis_Asset_Management_5-2.csv
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
 
@@ -247,7 +247,9 @@ Num     Level   Compliant       Findings        Title
 ### Arguments
 ```
 % python3 cis_reports.py -h       
-usage: cis_reports.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [-ip] [-dt]
+usage: cis_reports.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET]
+                      [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN]
+                      [--level LEVEL] [--regions REGIONS] [--raw] [-ip] [-dt]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -256,10 +258,14 @@ optional arguments:
   --output-to-bucket OUTPUT_BUCKET
                         Set Output bucket name (i.e. my-reporting-bucket)
   --report-directory REPORT_DIRECTORY
-                        Set Output report directory by default it is the current date (i.e. reports-date)
+                        Set Output report directory by default it is the current date (i.e.
+                        reports-date)
   --print-to-screen PRINT_TO_SCREEN
                         Set to False if you want to see only non-compliant findings (i.e. False)
   --level LEVEL         CIS Recommendation Level options are: 1 or 2. Set to 2 by default
+  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all
+                        regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
+  --raw                 Outputs all resource data into CSV files
   -ip                   Use Instance Principals for Authentication
   -dt                   Use Delegation Token for Authentication in Cloud Shell
 % 
@@ -294,6 +300,12 @@ To run on an OCI instance that associated with Instance Principal.
 % python3 cis_reports.py -ip'
 ``` 
 
+#### Executing using Cloud Shell in only two regions
+To run on using Cloud Shell in on us-ashburn-1 and us-phoenix-1. IAM checks will performed in the tenancy's Home Region.
+```
+% python3 cis_reports.py -dt --region us-ashburn-1,us-phoenix-1'
+``` 
+
 #### Executing using output to an bucket
 To write the output files to an Object Storage bucket.
  ```
@@ -313,7 +325,20 @@ To write the output files to an specified directory in an object storage bucket.
  ```
 % python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
 ``` 
-Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist, the specified directory must exist in the bucket, and inside the specified directory there must be a folder for each region ex. ````<directory-name>\us-ashburn-1```.
+Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+
+#### Executing using report directory and output to a bucket
+To write the output files to an specified directory in an object storage bucket.
+ ```
+% python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
+``` 
+Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+
+#### Executing on local machine and output raw data
+To run on a local machine with the default profile and output raw data as well as the reports.
+```
+% python3 cis_reports.py --raw
+``` 
 
 ## <a name="faq"></a>FAQ
 

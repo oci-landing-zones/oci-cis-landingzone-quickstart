@@ -12,7 +12,7 @@ terraform {
 locals {
     target_bucket_name = var.target_bucket_name != "service-connector-bucket" ? var.target_bucket_name : "${var.service_label}-${var.target_bucket_name}"
 
-    target_stream_id = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? var.target_stream : oci_streaming_stream.this[0].id) : null
+    target_stream_id = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.stream.oc.*$", var.target_stream)) > 0 ? var.target_stream : oci_streaming_stream.this[0].id) : null
     target_stream_name = var.target_stream != "service-connector-stream" ? var.target_stream : "${var.service_label}-${var.target_stream}"
 
     policy_compartment_id = var.policy_compartment_id != null ? var.policy_compartment_id : data.oci_identity_compartment.this.compartment_id

@@ -16,12 +16,12 @@ No Modules.
 
 | Name |
 |------|
-| [oci_identity_compartment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartment) |
-| [oci_identity_policy](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_policy) |
-| [oci_objectstorage_bucket](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/objectstorage_bucket) |
-| [oci_objectstorage_namespace](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/objectstorage_namespace) |
-| [oci_sch_service_connector](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/sch_service_connector) |
-| [oci_streaming_stream](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/streaming_stream) |
+| [oci_identity_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) |
+| [oci_identity_policy](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/identity_policy) |
+| [oci_objectstorage_bucket](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/objectstorage_bucket) |
+| [oci_objectstorage_namespace](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/objectstorage_namespace) |
+| [oci_sch_service_connector](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/sch_service_connector) |
+| [oci_streaming_stream](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/streaming_stream) |
 
 ## Inputs
 
@@ -37,11 +37,11 @@ No Modules.
 | policy\_defined\_tags | The Service Connector policy defined tags | `map(string)` | `null` | no |
 | policy\_freeform\_tags | The Service Connector policy freeform tags | `map(string)` | `null` | no |
 | service\_label | The service label. | `string` | n/a | yes |
-| target\_bucket\_defined\_tags | The Service Connector target bucket defined tags. | `map(string)` | `null` | no |
-| target\_bucket\_freeform\_tags | The Service Connector target bucket freeform tags. | `map(string)` | `null` | no |
 | target\_bucket\_kms\_key\_id | The KMS key ocid used to encrypt the target Object Storage bucket. | `string` | n/a | yes |
 | target\_bucket\_name | The target Object Storage bucket name to be created. | `string` | `"service-connector-bucket"` | no |
 | target\_compartment\_id | The target compartment ocid. | `string` | n/a | yes |
+| target\_defined\_tags | The Service Connector target defined tags. | `map(string)` | `null` | no |
+| target\_freeform\_tags | The Service Connector target freeform tags. | `map(string)` | `null` | no |
 | target\_function\_id | The target function ocid. | `string` | `null` | no |
 | target\_kind | The target kind. | `string` | `"objectstorage"` | no |
 | target\_object\_name\_prefix | The target Object Storage object name prefix. | `string` | `"sch"` | no |
@@ -49,8 +49,6 @@ No Modules.
 | target\_object\_store\_batch\_rollover\_time\_in\_ms | The batch rollover time in milliseconds. | `number` | `420000` | no |
 | target\_policy\_name | The Service Connector target policy name | `string` | `"service-connector-target-policy"` | no |
 | target\_stream | The target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used. | `string` | `"service-connector-stream"` | no |
-| target\_stream\_defined\_tags | The Service Connector target stream defined tags. | `map(string)` | `null` | no |
-| target\_stream\_freeform\_tags | The Service Connector target stream freeform tags. | `map(string)` | `null` | no |
 | target\_stream\_partitions | The number of partitions in the target stream. Applicable if target\_stream is not an ocid. | `number` | `1` | no |
 | target\_stream\_retention\_in\_hours | The retention period of the target stream, in hours. Applicable if target\_stream is not an ocid. | `number` | `24` | no |
 | tenancy\_ocid | The tenancy ocid. | `string` | n/a | yes |

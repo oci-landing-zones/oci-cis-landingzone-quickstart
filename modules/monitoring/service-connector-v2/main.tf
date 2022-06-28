@@ -57,8 +57,8 @@ resource "oci_objectstorage_bucket" "this" {
     namespace      = data.oci_objectstorage_namespace.this.namespace 
     kms_key_id     = var.target_bucket_kms_key_id
     versioning     =  "Enabled" 
-	defined_tags   = var.target_bucket_defined_tags
-	freeform_tags  = var.target_bucket_freeform_tags
+	defined_tags   = var.target_defined_tags
+	freeform_tags  = var.target_freeform_tags
 }
 
 resource "oci_identity_policy" "oss" {
@@ -74,17 +74,17 @@ resource "oci_identity_policy" "oss" {
                         request.principal.compartment.id='${var.compartment_id}' }
                     EOF
                 ]
-    defined_tags   = var.target_stream_defined_tags
-	freeform_tags  = var.target_stream_freeform_tags
+    defined_tags   = var.policy_defined_tags
+	freeform_tags  = var.policy_freeform_tags
 }
 
 resource "oci_streaming_stream" "this" {
-    count = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
-    name = local.target_stream_name
-    partitions = var.target_stream_partitions
+    count          = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
+    name           = local.target_stream_name
+    partitions     = var.target_stream_partitions
     compartment_id = var.compartment_id
-    defined_tags = null
-    freeform_tags = null
+    defined_tags   = var.target_defined_tags
+	freeform_tags  = var.target_freeform_tags
     retention_in_hours = var.target_stream_retention_in_hours
 }
 

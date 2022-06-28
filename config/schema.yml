@@ -700,7 +700,7 @@ variables:
     type: string
     required: false
     title: "Service Connector Target Bucket Name"
-    description: "The Service Connector target Object Storage bucket name to be created. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
+    description: "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
     visible:
       and:
         - ${enable_service_connector}
@@ -724,7 +724,7 @@ variables:
     type: string
     required: false
     title: "Service Connector Target Stream (name or ocid)"
-    description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used. Applicable if 'Service Connector Target Kind' is 'streaming'."
+    description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if 'Service Connector Target Kind' is 'streaming'."
     visible:
       and:
         - ${enable_service_connector}
@@ -736,7 +736,7 @@ variables:
     type: string
     required: false
     title: "Service Connector Target Function Ocid"
-    description: "The Service Connector target function ocid. Applicable if 'Service Connector Target Kind' is 'functions'."
+    description: "The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'functions'."
     visible:
       and:
         - ${enable_service_connector}

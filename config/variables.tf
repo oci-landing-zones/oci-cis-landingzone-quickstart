@@ -466,7 +466,7 @@ variable "service_connector_target_kind" {
 }
 
 variable "service_connector_target_bucket_name" {
-  description = "The Service Connector target Object Storage bucket name to be created."
+  description = "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment."
   type        = string
   default     = "service-connector-bucket"
 }
@@ -478,13 +478,13 @@ variable "service_connector_target_object_name_prefix" {
 }
 
 variable "service_connector_target_stream" {
-    description = "The Service Connector target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used."
+    description = "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment)."
     type = string
     default = "service-connector-stream"
 }
 
 variable "service_connector_target_function_id" {
-    description = "The Service Connector target function ocid."
+    description = "The Service Connector target function ocid in Landing Zone's Security compartment."
     type = string
     default = null
 }

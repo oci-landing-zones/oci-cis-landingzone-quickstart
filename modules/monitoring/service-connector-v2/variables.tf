@@ -102,14 +102,14 @@ variable "target_object_store_batch_rollover_time_in_ms" {
     default = 420000
 }
 
-variable "target_bucket_defined_tags" {
-    description = "The Service Connector target bucket defined tags."
+variable "target_defined_tags" {
+    description = "The Service Connector target defined tags."
     type = map(string)
     default = null
 }
 
-variable "target_bucket_freeform_tags" {
-    description = "The Service Connector target bucket freeform tags."
+variable "target_freeform_tags" {
+    description = "The Service Connector target freeform tags."
     type = map(string)
     default = null
 }
@@ -130,18 +130,6 @@ variable "target_stream_retention_in_hours" {
     description = "The retention period of the target stream, in hours. Applicable if target_stream is not an ocid."
     type = number
     default = 24
-}
-
-variable "target_stream_defined_tags" {
-    description = "The Service Connector target stream defined tags."
-    type = map(string)
-    default = null
-}
-
-variable "target_stream_freeform_tags" {
-    description = "The Service Connector target stream freeform tags."
-    type = map(string)
-    default = null
 }
 
 variable "target_function_id" {

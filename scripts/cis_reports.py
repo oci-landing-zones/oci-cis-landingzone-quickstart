@@ -35,10 +35,9 @@ class CIS_Report:
     
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
-    start_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-
+    start_time_str = str(start_datetime.strftime("%Y-%m-%d %H:%M:%S"))
+    report_datetime = str(start_datetime.strftime("%Y-%m-%d-%H-%M"))
     # For User based key checks
-    start_date = str(datetime.datetime.now().strftime("%Y-%m-%d"))
     api_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=_DAYS_OLD)
 
@@ -332,7 +331,7 @@ class CIS_Report:
         if report_directory:
             self.__report_directory = report_directory + "/"
         else:
-            self.__report_directory = self.__tenancy.name + "-" + self.start_date 
+            self.__report_directory = self.__tenancy.name + "-" + self.report_datetime
 
         # Creating signers and config for all regions           
         self.__create_regional_signers(proxy)
@@ -2581,7 +2580,7 @@ class CIS_Report:
                          ).replace(".", "-") + ".csv"
             file_path = os.path.join(report_directory, file_name)
 
-            # add start_date to each dictionary
+            # add report_datetimeto each dictionary
             result = [dict(item, extract_date=self.start_time_str)
                       for item in data]
 

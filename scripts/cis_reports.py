@@ -36,7 +36,7 @@ class CIS_Report:
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(start_datetime.strftime("%Y-%m-%d %H:%M:%S"))
-    report_datetime = str(start_datetime.strftime("%Y-%m-%d-%H-%M"))
+    report_datetime = str(start_datetime.strftime("%Y-%m-%d_%H-%M"))
     # For User based key checks
     api_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=_DAYS_OLD)
@@ -95,7 +95,7 @@ class CIS_Report:
             '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.2.2': {'section': 'Storage -  Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
 
 
@@ -2577,7 +2577,7 @@ class CIS_Report:
             
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")
-                         ).replace(".", "-") + ".csv"
+                         ).replace(".", "-").replace("_-_","_") + ".csv"
             file_path = os.path.join(report_directory, file_name)
 
             # add report_datetimeto each dictionary

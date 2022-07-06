@@ -124,30 +124,30 @@ For each non-compliant report item, a file with findings details is generated, a
 ##########################################################################################
 #                                 Writing reports to CSV                                 #
 ##########################################################################################
-CSV: summary_report         --> orasenatdpltsecitom01-2022-06-27/cis_summary_report.csv
-CSV: Identity and Access Management_1.7 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-7.csv
-CSV: Identity and Access Management_1.8 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-8.csv
-CSV: Identity and Access Management_1.9 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-9.csv
-CSV: Identity and Access Management_1.10 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-10.csv
-CSV: Identity and Access Management_1.11 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-11.csv
-CSV: Identity and Access Management_1.12 --> orasenatdpltsecitom01-2022-06-27/cis_Identity_and_Access_Management_1-12.csv
-CSV: Networking_2.1         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-1.csv
-CSV: Networking_2.2         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-2.csv
-CSV: Networking_2.3         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-3.csv
-CSV: Networking_2.4         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-4.csv
-CSV: Networking_2.5         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-5.csv
-CSV: Networking_2.6         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-6.csv
-CSV: Networking_2.8         --> orasenatdpltsecitom01-2022-06-27/cis_Networking_2-8.csv
-CSV: Logging and Monitoring_3.14 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-14.csv
-CSV: Logging and Monitoring_3.16 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-16.csv
-CSV: Logging and Monitoring_3.17 --> orasenatdpltsecitom01-2022-06-27/cis_Logging_and_Monitoring_3-17.csv
-CSV: Storage - Object Storage_4.1.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-1.csv
-CSV: Storage - Object Storage_4.1.2 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-2.csv
-CSV: Storage - Object Storage_4.1.3 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Object_Storage_4-1-3.csv
-CSV: Storage - Block Volumes_4.2.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_Block_Volumes_4-2-1.csv
-CSV: Storage -  Block Volumes_4.2.2 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-__Block_Volumes_4-2-2.csv
-CSV: Storage - File Storage Service_4.3.1 --> orasenatdpltsecitom01-2022-06-27/cis_Storage_-_File_Storage_Service_4-3-1.csv
-CSV: Asset Management_5.2   --> orasenatdpltsecitom01-2022-06-27/cis_Asset_Management_5-2.csv
+CSV: summary_report         --> <tenancy-name>-2022-07-06_12-15/cis_summary_report.csv
+CSV: Identity and Access Management_1.7 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-7.csv
+CSV: Identity and Access Management_1.8 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-8.csv
+CSV: Identity and Access Management_1.9 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-9.csv
+CSV: Identity and Access Management_1.10 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-10.csv
+CSV: Identity and Access Management_1.11 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-11.csv
+CSV: Identity and Access Management_1.12 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-12.csv
+CSV: Networking_2.1         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-1.csv
+CSV: Networking_2.2         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-2.csv
+CSV: Networking_2.3         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-3.csv
+CSV: Networking_2.4         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-4.csv
+CSV: Networking_2.5         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-5.csv
+CSV: Networking_2.6         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-6.csv
+CSV: Networking_2.8         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-8.csv
+CSV: Logging and Monitoring_3.14 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-14.csv
+CSV: Logging and Monitoring_3.16 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-16.csv
+CSV: Logging and Monitoring_3.17 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-17.csv
+CSV: Storage - Object Storage_4.1.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-1.csv
+CSV: Storage - Object Storage_4.1.2 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-2.csv
+CSV: Storage - Object Storage_4.1.3 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-3.csv
+CSV: Storage - Block Volumes_4.2.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Block_Volumes_4-2-1.csv
+CSV: Storage - Block Volumes_4.2.2 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Block_Volumes_4-2-2.csv
+CSV: Storage - File Storage Service_4.3.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_File_Storage_Service_4-3-1.csv
+CSV: Asset Management_5.2   --> <tenancy-name>-2022-07-06_12-15/cis_Asset_Management_5-2.csv
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
 

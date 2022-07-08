@@ -479,7 +479,7 @@ class CIS_Report:
                 compartment_id_in_subtree=True,
                 lifecycle_state = "ACTIVE"
             ).data
-            # Need to covnert for raw output
+            # Need to convert for raw output
             for compartment in self.__compartments:
                 record = {
                     "id" : compartment.id,
@@ -2506,13 +2506,13 @@ class CIS_Report:
         
         ######  Runs identity functions only in home region
         self.__identity_read_groups_and_membership()
+        self.__identity_read_compartments()
         self.__identity_read_users()
         self.__identity_read_tenancy_password_policy()
         self.__identity_read_dynamic_groups()
         self.__audit_read__tenancy_audit_configuration()
         self.__identity_read_tag_defaults()
         self.__identity_read_tenancy_policies()
-        self.__identity_read_compartments()
         self.__cloud_guard_read_cloud_guard_configuration()
 
         # The above checks are run in the home region 

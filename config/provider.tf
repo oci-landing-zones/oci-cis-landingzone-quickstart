@@ -19,3 +19,15 @@ provider "oci" {
   private_key_path     = var.private_key_path
   private_key_password = var.private_key_password
 }
+
+ terraform {
+  required_version = ">= 1.0.0"
+
+  required_providers {
+    oci = {
+      source                = "oracle/oci"
+      version               = ">= 4.78.0"
+      configuration_aliases = [oci.home]
+    }
+  }
+} 

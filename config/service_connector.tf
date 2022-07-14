@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-locals {
+/* locals {
   sch_audit_display_name        = "${var.service_label}-audit-sch"
   sch_audit_bucket_name         = "${var.service_label}-audit-sch-bucket"
   sch_audit_target_rollover_MBs = 100
@@ -280,3 +280,4 @@ resource "null_resource" "slow_down_buckets" {
      command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
    }
 }
+ */

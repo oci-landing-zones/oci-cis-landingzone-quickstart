@@ -29,6 +29,7 @@ locals {
     for k, v in var.security_zones : k => {
       name = v.name
       tenancy_ocid = v.tenancy_ocid
+      compartment_id = v.compartment_id
       service_label = v.service_label
       description   = v.description
       security_policies = coalesce(v.security_policies,[])
@@ -40,28 +41,42 @@ locals {
 
 }
 
-
-resource "oci_cloud_guard_security_recipe" "this" {
-    #Required
-    compartment_id = var.compartment_id
-    display_name = var.description
-    security_policies = local.sz_policies
-
-    #Optional
-    defined_tags = var.defined_tags
-    description = "${var.description} recipe."
-    freeform_tags = var.freeform_tags
+resource "oci_cloud_guard_security_recipe" "these" {
+  for_each = local.security_zones
+      compartment_id    = each.compartment_id
+      display_name      = "${each.service_label} ${each.description} reciepe"
+      security_policies = each.cis_level == "2" ? setunion(local.cis_1_2_L2,local.cis_1_2_L1,each.security_policies) : setunion(local.cis_1_2_L1,each.security_policies)
+      defined_tags      = each.defined_tags
+      freeform_tags     = each.freeform_tags
 }
 
-resource "oci_cloud_guard_security_zone" "this" {
-    #Required
-    # depends_on = [ oci_cloud_guard_security_recipe]
-    compartment_id = var.compartment_id
-    display_name = var.description
-    security_zone_recipe_id = oci_cloud_guard_security_recipe.this.id
-
-    #Optional
-    defined_tags = var.defined_tags
-    description = "${var.description}."
-    freeform_tags = var.freeform_tags
+resource "oci_cloud_guard_security_zone" "these" {
+  for_each = local.security_zones
+    
 }
+
+
+# resource "oci_cloud_guard_security_recipe" "this" {
+#     #Required
+#     compartment_id = var.compartment_id
+#     display_name = var.description
+#     security_policies = local.sz_policies
+
+#     #Optional
+#     defined_tags = var.defined_tags
+#     description = "${var.description} recipe."
+#     freeform_tags = var.freeform_tags
+# }
+
+# resource "oci_cloud_guard_security_zone" "this" {
+#     #Required
+#     # depends_on = [ oci_cloud_guard_security_recipe]
+#     compartment_id = var.compartment_id
+#     display_name = var.description
+#     security_zone_recipe_id = oci_cloud_guard_security_recipe.this.id
+
+#     #Optional
+#     defined_tags = var.defined_tags
+#     description = "${var.description}."
+#     freeform_tags = var.freeform_tags
+# }

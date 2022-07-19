@@ -6,7 +6,6 @@
 #---------------------------------------------------------------
 variable "security_zones" {
   type = map(object({
-    name                = string
     tenancy_ocid        = string
     service_label       = string
     compartment_id      = string

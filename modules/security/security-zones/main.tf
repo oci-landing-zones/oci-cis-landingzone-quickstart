@@ -23,11 +23,11 @@ locals {
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaaff6n52aojbgdg46jpm3kn7nizmh6iwvr7myez7svtfxsfs7irigq",
     ]
 
-    sz_policies = var.cis_level == "2" ? setunion(local.cis_1_2_L2,local.cis_1_2_L1,var.security_policies) : setunion(local.cis_1_2_L1,var.security_policies)
+    # sz_policies = var.cis_level == "2" ? setunion(local.cis_1_2_L2,local.cis_1_2_L1,var.security_policies) : setunion(local.cis_1_2_L1,var.security_policies)
 
   security_zones = {
     for k, v in var.security_zones : k => {
-      name = v.name
+      display_name = k
       tenancy_ocid = v.tenancy_ocid
       compartment_id = v.compartment_id
       service_label = v.service_label
@@ -44,10 +44,21 @@ locals {
 resource "oci_cloud_guard_security_recipe" "these" {
   for_each = local.security_zones
       compartment_id    = each.compartment_id
-      display_name      = "${each.service_label} ${each.description} reciepe"
+      display_name      = each.display_name
       security_policies = each.cis_level == "2" ? setunion(local.cis_1_2_L2,local.cis_1_2_L1,each.security_policies) : setunion(local.cis_1_2_L1,each.security_policies)
       defined_tags      = each.defined_tags
       freeform_tags     = each.freeform_tags
+}
+
+data "oci_cloud_guard_security_recipes" "these" {
+  for_each = local.security_zones
+    compartment_id = each.compartment_id
+}
+
+locals {
+  local_security_zones  = { for i in oci_cloud_guard_security_recipe.these : i.display_name => i.id }
+  remote_security_zones = { for k,v in local.security_zones : k => [for i in data.oci_cloud_guard_security_recipe.these[k].security_policies : i.id] if contains(keys(data.oci_cloud_guard_security_recipe.these),k)}
+  security_zones_ids    = merge(local.local_security_zones, local.remote_security_zones)
 }
 
 resource "oci_cloud_guard_security_zone" "these" {

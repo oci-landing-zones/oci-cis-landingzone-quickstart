@@ -25,6 +25,7 @@ module "lz_security_zones" {
         ("key") = {
             name                = "Name"
             tenancy_ocid        = var.tenancy_ocid
+            compartment_id      = local.enclosing_compartment_id
             service_label       = var.service_label
             description         = null
             security_policies   = null

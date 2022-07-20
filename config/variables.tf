@@ -183,7 +183,7 @@ variable "vcn_cidrs" {
   default     = ["10.0.0.0/20"]
   description = "List of CIDR blocks for the VCNs to be created in CIDR notation. If hub_spoke_architecture is true, these VCNs are turned into spoke VCNs. You can create up to nine VCNs."
   validation {
-    condition     = length(var.vcn_cidrs) > 0 && (length(var.vcn_cidrs) < 10 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs))
+    condition     = length(var.vcn_cidrs) == 0 || (length(var.vcn_cidrs) < 10 && length([for c in var.vcn_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.vcn_cidrs))
     error_message = "Validation failed for vcn_cidrs: values must be in CIDR notation. Minimum of one required and maximum of nine allowed."
   }
 }
@@ -443,81 +443,50 @@ variable "cloud_guard_risk_level_threshold" {
 }
 
 # Service Connector Hub related configuration
-variable "create_service_connector_audit" {
-  type        = bool
-  default     = false
-  description = "Create Service Connector Hub for Audit logs. This may incur some charges."
+variable "enable_service_connector" {
+  description = "Whether Service Connector Hub should be enabled."
+  type = bool
+  default = false
 }
-variable "service_connector_audit_target" {
+
+variable "service_connector_name" {
+  description = "The Service Connector display name."
+  type        = string
+  default     = "service-connector"
+}
+
+variable "service_connector_target_kind" {
   type        = string
   default     = "objectstorage"
-  description = "Destination for Service Connector Hub for Audit Logs. Valid values are objectstorage, streaming or functions (case insensitive). In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below."
+  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming' or 'functions'. In case of 'streaming', provide the stream name or ocid in 'service_connector_target_stream'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'service_connector_target_function_id'."
   validation {
-    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_audit_target)
-    error_message = "Validation failed for service_connector_audit_target: valid values are objectstorage, streaming or functions (case insensitive)."
+    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_target_kind)
+    error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming or functions."
   }
 }
-variable "service_connector_audit_state" {
+
+variable "service_connector_target_bucket_name" {
+  description = "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment."
   type        = string
-  default     = "INACTIVE"
-  description = "State in which to create the Service Connector Hub for Audit logs. Valid values are ACTIVE and INACTIVE (case insensitive)."
-  validation {
-    condition     = contains(["ACTIVE", "INACTIVE"], var.service_connector_audit_state)
-    error_message = "Validation failed for for service_connector_audit_target: valid values are ACTIVE or INACTIVE (case insensitive)."
-  }
+  default     = "service-connector-bucket"
 }
-variable "service_connector_audit_target_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs."
+
+variable "service_connector_target_object_name_prefix" {
+    description = "The Service Connector target Object Storage object name prefix."
+    type = string
+    default = "sch"
 }
-variable "service_connector_audit_target_cmpt_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs."
+
+variable "service_connector_target_stream" {
+    description = "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment)."
+    type = string
+    default = "service-connector-stream"
 }
-variable "sch_audit_objStore_objNamePrefix" {
-  type        = string
-  default     = "sch-audit"
-  description = "Applicable only for objectStorage target type. The prefix for the objects for Audit logs."
-}
-variable "create_service_connector_vcnFlowLogs" {
-  type        = bool
-  default     = false
-  description = "Create Service Connector Hub for VCN Flow logs. This may incur some charges."
-}
-variable "service_connector_vcnFlowLogs_target" {
-  type        = string
-  default     = "objectstorage"
-  description = "Destination for Service Connector Hub for VCN Flow Logs. Valid values are objectstorage, streaming or functions (case insensitive). In case of streaming/functions provide stream/function OCID and compartment OCID in the variables below."
-  validation {
-    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_vcnFlowLogs_target)
-    error_message = "Validation failed for service_connector_vcnFlowLogs_target: valid values are objectstorage, streaming or functions (case insensitive)."
-  }
-}
-variable "service_connector_vcnFlowLogs_state" {
-  type        = string
-  default     = "INACTIVE"
-  description = "State in which to create the Service Connector Hub for VCN Flow logs. Valid values are ACTIVE or INACTIVE (case insensitive)."
-  validation {
-    condition     = contains(["ACTIVE", "INACTIVE"], var.service_connector_vcnFlowLogs_state)
-    error_message = "Validation failed for service_connector_vcnFlowLogs_state: valid values are ACTIVE or INACTIVE (case insensitive)."
-  }
-}
-variable "service_connector_vcnFlowLogs_target_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs"
-}
-variable "service_connector_vcnFlowLogs_target_cmpt_OCID" {
-  type        = string
-  default     = ""
-  description = "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs"
-}
-variable "sch_vcnFlowLogs_objStore_objNamePrefix" {
-  type        = string
-  default     = "sch-vcnFlowLogs"
-  description = "Applicable only for objectStorage target type. The prefix for the objects for VCN Flow logs."
+
+variable "service_connector_target_function_id" {
+    description = "The Service Connector target function ocid in Landing Zone's Security compartment."
+    type = string
+    default = null
 }
 
 # Vulnerability Scanning Service

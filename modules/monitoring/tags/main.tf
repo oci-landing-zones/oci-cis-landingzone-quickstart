@@ -7,7 +7,7 @@
 terraform {
   required_providers {
     oci = {
-      source = "hashicorp/oci"
+      source = "oracle/oci"
     }
   }
 }
@@ -61,7 +61,7 @@ resource "oci_identity_tag" "these" {
         tag_namespace_id = oci_identity_tag_namespace.namespace[0].id 
         name             = each.key
         description      = each.value.tag_description
-	defined_tags     = each.value.tag_defined_tags
+	    defined_tags     = each.value.tag_defined_tags
         is_cost_tracking = each.value.tag_is_cost_tracking
         is_retired       = each.value.tag_is_retired
 }

@@ -1,3 +1,42 @@
+# July 11, 2022 Release Notes - 2.3.6
+1. [Cloud Guard Events](#2-3-6-cg-events)
+1. [Updated Logging Architecture](#2-3-6-updated-logging)
+1. [Terraform OCI Provider Moved to oracle/oci](#2-3-6-provider-switch)
+1. [Architecture Center Tag](#2-3-6-arch-center-tag)
+1. [CIS Compliance Checking Script Update](#2-3-6-cis-script-update)
+
+## <a name="2-3-6-cg-events">Cloud Guard Events</a>
+Cloud Guard events have been added to Landing Zone notifications framework. Now users can be notified about Cloud Guard problems that exceeds a user provided criticality threshold.  To support this two new variables have been added to the Cloud Guard Section: `cloud_guard_risk_level_threshold` and `cloud_guard_admin_email_endpoints`. The risk_level_threshold determines what problems will trigger the event rule and send an email to the subscription in the new topic. A level of 'High' will include any problems with a risk level of High or above. This would include High and Critical problems. The event rule looks at any of the 3 Cloud Guard events: Problem Detected, Problem Dismissed and Problem Remediated.
+
+## <a name="2-3-6-updated-logging">Updated Logging Architecture</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) has been updated to align with the [best practice architecture for third-party SIEM tools](https://github.com/oracle-quickstart/oci-arch-logging-splunk).
+Now there is a single Landing Zone Service Connector that ingests three log sources (Audit logs, VCN flow logs and Object Storage logs) into a target resource of choice: Object Storage Bucket, Stream or Function.
+Landing Zone creates the Bucket and can either create the Stream or use an existing one. If a Function is the target, it must be provided as an input.
+
+## <a name="2-3-6-provider-switch">Terraform OCI Provider Moved to oracle/oci</a>
+Landing Zone has been updated with the new home for Terraform OCI provider. It has moved to oracle/oci from hashicorp/oci. 
+- Existing Landing Zone customers who use Terraform CLI are required to replace the provider in the state file. To update the state file, run the command below in the folder where the state file is present:
+
+        > terraform state replace-provider hashicorp/oci oracle/oci
+
+- Existing Landing Zone customers who use OCI Resource Manager do not need to do anything, as Resource Manager will update the state file based on the new Landing Zone configuration. 
+
+As part of this move, we have introduced provider requirements expressed in [provider.tf](./config/provider.tf):
+- Terraform required version >= 1.0.0
+- OCI provider version >= 4.78.0
+
+## <a name="2-3-6-arch-center-tag">Architecture Center Tag</a>
+A [defined tag](./config/mon_tags.tf) to track Landing Zone deployments through [OCI Architecture Center](https://docs.oracle.com/solutions/) has been added.
+
+## <a name="2-3-6-cis-script-update">CIS Compliance Checking Script Update</a>
+The CIS Compliance checking script now consolidates regional output.  There is a single directory which contains the summary report and findings reports in a directory, the name includes the tenancy name and datetime ex. `<tenancy-name>-2022-MM-DD_HH-MM/`.  The findings CSV in that directory now have a region column to tell you which region the resource is located. 
+
+In addition two new flags have been added:
+- `--region` - pass an OCI region name(s) ex. `--region us-ashburn-1,eu-frankfurt-1` and the script will check that region's resources for CIS compliance 
+- `--raw` - will output all OCI resource data collected into CSV files with the OCI Service name 
+
+For more details on these flags [compliance-script.md](./compliance-script.md)
+
 # June 13, 2022 Release Notes - Stable 2.3.5
 1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
 1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)

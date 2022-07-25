@@ -175,7 +175,7 @@ locals {
         "allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage databases in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}"] : []     
+        "allow group ${local.database_admin_group_name} to manage db-backups in compartment ${local.exainfra_compartment.name}"] : []     
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp, 

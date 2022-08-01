@@ -862,7 +862,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         volumes_data = oci.pagination.list_call_get_all_results(
                             region_values['bv_client'].list_volumes,
-                            compartment.id
+                            compartment_id=compartment.id
                         ).data
                     # Getting Block Volume inf
                     for volume in volumes_data:
@@ -933,8 +933,8 @@ class CIS_Report:
                         for ad in region_values['availability_domains']:
                             boot_volumes_data = oci.pagination.list_call_get_all_results(
                                     region_values['bv_client'].list_boot_volumes,
-                                    ad.name,
-                                    compartment.id
+                                    availability_domain=ad.name,
+                                    compartment_id=compartment.id
                                 ).data
                             for boot_volume in boot_volumes_data:
                                 try:

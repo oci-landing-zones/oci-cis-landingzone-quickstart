@@ -19,23 +19,17 @@ module "lz_security_zones" {
     # depends_on = [ null_resource.slow_down_buckets ]
     # count = (var.create_service_connector_vcnFlowLogs  == true && lower(var.service_connector_vcnFlowLogs_target) == "objectstorage") ? 1 : 0
     
-    source       = "../modules/security/security-zones"
-    providers = { oci = oci.home }
-    security_zones = {
-        ("key") = {
-            name                = "Name"
-            tenancy_ocid        = var.tenancy_ocid
-            compartment_id      = local.enclosing_compartment_id
-            service_label       = var.service_label
-            description         = null
-            security_policies   = null
-            cis_level           = "2"
-            defined_tags        = local.security_zones_defined_tags
-            freeform_tags       = local.security_zones_freeform_tags
-        }
-    }
-
+    source                      = "../modules/security/security-zones"
+    providers                   = { oci = oci.home }
+    enclosing_compartment_id    = var.use_enclosing_compartment ? local.enclosing_compartment_id : null
+    security_compartment_id     = local.security_compartment_id
+    network_compartment_id      = local.network_compartment_id
+    appdev_compartment_id       = local.appdev_compartment_id
+    database_compartment_id     = local.database_compartment_id
+    exadata_compartment_id      = var.deploy_exainfra_cmp ? local.exainfra_compartment_id : null
+    security_policies           = [] 
 }
+
 locals {
 
   all_security_zones_defined_tags = {}

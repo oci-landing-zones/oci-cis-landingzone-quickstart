@@ -3,7 +3,7 @@
 
 output "security_zone_recipes" {
   description = "The seccurity zones, indexed by keys."
-  value = {for v in oci_cloud_guard_security_zone.these : v.display_name => v}
+  value = {for v in oci_cloud_guard_security_recipe.these : v.display_name => v}
 } 
 
 output "security_zones" {

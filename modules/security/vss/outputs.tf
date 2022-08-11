@@ -1,9 +1,22 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 output "vss_recipes" {
-  description = "VSS recipes, indexed by recipe name."
-  value       = {for r in oci_vulnerability_scanning_host_scan_recipe.these : r.display_name => r}
+  description = "The VSS recipes."
+  value       = oci_vulnerability_scanning_host_scan_recipe.these
 }
 
 output "vss_targets" {
-  description = "VSS targets, indexed by target name."
-  value       = {for t in oci_vulnerability_scanning_host_scan_target.these : t.display_name => t}
+  description = "The VSS targets."
+  value       = oci_vulnerability_scanning_host_scan_target.these
+}
+
+output "vss_custom_recipes" {
+  description = "The VSS custom recipes."
+  value       = oci_vulnerability_scanning_host_scan_recipe.custom
+}
+
+output "vss_custom_targets" {
+  description = "The VSS custom targets."
+  value       = oci_vulnerability_scanning_host_scan_target.custom
 }

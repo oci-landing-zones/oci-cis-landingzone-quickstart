@@ -29,3 +29,19 @@ output "drg" {
 output "bastions" {
     value = local.display_outputs == true ? {for k, v in module.lz_app_bastion.bastions : k => {id: v.id, subnet_id: v.target_subnet_id, allowed_cidrs: v.client_cidr_block_allow_list}} : null
 }
+
+output "vss_recipes" {
+    value = local.display_outputs == true ? module.lz_scanning.vss_recipes : null
+}
+
+output "vss_targets" {
+    value = local.display_outputs == true ? module.lz_scanning.vss_targets : null
+}
+
+output "vss_custom_recipes" {
+    value = local.display_outputs == true ? module.lz_scanning.vss_custom_recipes : null
+}
+
+output "vss_custom_targets" {
+    value = local.display_outputs == true ? module.lz_scanning.vss_custom_targets : null
+}

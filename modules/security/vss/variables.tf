@@ -71,13 +71,13 @@ variable "vss_policy_name" {
 variable "defined_tags" {
   description = "Any defined tags to apply on the VSS resources." 
   type = map(string)
-  default = {}
+  default = null
 }
 
 variable "freeform_tags" {
   description = "Any freeform tags to apply on the VSS resources."
   type = map(string)
-  default = {}
+  default = null
 }
 
 variable "vss_custom_recipes" {

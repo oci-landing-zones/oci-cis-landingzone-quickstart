@@ -6,8 +6,8 @@
 locals {
   all_scan_recipes = {}
   all_scan_targets = {}
-  all_vss_defined_tags = {}
-  all_vss_freeform_tags = {}
+  all_vss_defined_tags = null
+  all_vss_freeform_tags = null
   vss_custom_recipe_name = null
   vss_custom_policy_name = null
 }
@@ -26,7 +26,7 @@ module "lz_scanning" {
   vss_recipe_name = local.vss_custom_recipe_name
   vss_policy_name = local.vss_custom_policy_name
   defined_tags  = local.all_vss_defined_tags
-  freeform_tags = length(local.all_vss_freeform_tags) > 0 ? merge(local.all_vss_freeform_tags, local.landing_zone_tags) : local.landing_zone_tags
+  freeform_tags = local.all_vss_freeform_tags != null ? merge(local.all_vss_freeform_tags, local.landing_zone_tags) : local.landing_zone_tags
 
   #-- Custom recipes and targets that override Landing Zone's defaults.
   vss_custom_recipes = local.all_scan_recipes

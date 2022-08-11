@@ -69,6 +69,8 @@ locals {
     "allow service vulnerability-scanning-service to read vnic-attachments in tenancy"
   ]
 
+  #-- Map used to retrieve the actual index for Landing Zone default recipe. 
+  #-- Used when overriding VSS targets.
   lz_recipe_key_map = {
     "LZ-RECIPE" : local.recipe_name
   }
@@ -122,8 +124,12 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
 #-- until apply, so Terraform cannot predict how many instances will be created.
 #-- To work around this, use the -target argument to first apply only the
 #-- resources that the for_each depends on."
+#-- This happens because compartment ids that are managed by terraform are part of
+#-- local.scan_targets and these values are not know until apply. Terraform needs
+#-- to know these values during the plan phase.
 #-- Hence the approach of looping through a list of target names (var.scan_target_names) 
 #-- that MUST contain the same keys used by local.scan_targets. 
+#-- Internal issue reference: 181.
 #---------------------------------------------------------------------------------------
  resource "oci_vulnerability_scanning_host_scan_target" "these" {
   for_each = var.vss_create ? (length(var.vss_custom_targets) == 0 ? toset(local.compat_scan_target_names) : toset([])) : toset([])
@@ -150,7 +156,8 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
 }
 
  #-----------------------------------------------------------------------------
- #-- Custom recipes resources, overriding the default recipes.
+ #-- Custom recipes resources. They don't override the default recipe, 
+ #-- as the default recipe can be referenced in custom targets.
  #----------------------------------------------------------------------------- 
  resource "oci_vulnerability_scanning_host_scan_recipe" "custom" {
   lifecycle {

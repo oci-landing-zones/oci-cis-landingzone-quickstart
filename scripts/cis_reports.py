@@ -862,60 +862,60 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         volumes_data = oci.pagination.list_call_get_all_results(
                             region_values['bv_client'].list_volumes,
-                            compartment.id
+                            compartment_id=compartment.id
                         ).data
-                    # Getting Block Volume inf
-                    for volume in volumes_data:
-                        try:
-                            record = {
-                                "id":volume.id,
-                                "display_name": volume.display_name,
-                                "kms_key_id": volume.kms_key_id,
-                                "lifecycle_state": volume.lifecycle_state,
-                                "compartment_id": volume.compartment_id,
-                                "size_in_gbs": volume.size_in_gbs,
-                                "size_in_mbs": volume.size_in_mbs,
-                                "source_details": volume.source_details,
-                                "time_created": volume.time_created,
-                                "volume_group_id": volume.volume_group_id,
-                                "vpus_per_gb": volume.vpus_per_gb,
-                                "auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
-                                "availability_domain" : volume.availability_domain,
-                                "block_volume_replicas": volume.block_volume_replicas,
-                                "is_auto_tune_enabled": volume.is_auto_tune_enabled,
-                                "is_hydrated": volume.is_hydrated,
-                                "defined_tags": volume.defined_tags,
-                                "freeform_tags": volume.freeform_tags,
-                                "system_tags": volume.system_tags,
-                                "region" : region_key,
-                                "notes": ""
-                            }
-                        except Exception as e:
-                            record = {
-                                "id":"",
-                                "display_name": "",
-                                "kms_key_id": "",
-                                "lifecycle_state": "",
-                                "compartment_id": "",
-                                "size_in_gbs": "",
-                                "size_in_mbs": "",
-                                "source_details": "",
-                                "time_created":"",
-                                "volume_group_id": "",
-                                "vpus_per_gb": "",
-                                "auto_tuned_vpus_per_gb": "",
-                                "availability_domain" : "",
-                                "block_volume_replicas": "",
-                                "is_auto_tune_enabled": "",
-                                "is_hydrated": "",
-                                "defined_tags": "",
-                                "freeform_tags": "",
-                                "system_tags": "",
-                                "region" : region_key,
-                                "notes": str(e)
+                        # Getting Block Volume inf
+                        for volume in volumes_data:
+                            try:
+                                record = {
+                                    "id":volume.id,
+                                    "display_name": volume.display_name,
+                                    "kms_key_id": volume.kms_key_id,
+                                    "lifecycle_state": volume.lifecycle_state,
+                                    "compartment_id": volume.compartment_id,
+                                    "size_in_gbs": volume.size_in_gbs,
+                                    "size_in_mbs": volume.size_in_mbs,
+                                    "source_details": volume.source_details,
+                                    "time_created": volume.time_created,
+                                    "volume_group_id": volume.volume_group_id,
+                                    "vpus_per_gb": volume.vpus_per_gb,
+                                    "auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
+                                    "availability_domain" : volume.availability_domain,
+                                    "block_volume_replicas": volume.block_volume_replicas,
+                                    "is_auto_tune_enabled": volume.is_auto_tune_enabled,
+                                    "is_hydrated": volume.is_hydrated,
+                                    "defined_tags": volume.defined_tags,
+                                    "freeform_tags": volume.freeform_tags,
+                                    "system_tags": volume.system_tags,
+                                    "region" : region_key,
+                                    "notes": ""
                                 }
-                        self.__block_volumes.append(record)
-            print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
+                            except Exception as e:
+                                record = {
+                                    "id":"",
+                                    "display_name": "",
+                                    "kms_key_id": "",
+                                    "lifecycle_state": "",
+                                    "compartment_id": "",
+                                    "size_in_gbs": "",
+                                    "size_in_mbs": "",
+                                    "source_details": "",
+                                    "time_created":"",
+                                    "volume_group_id": "",
+                                    "vpus_per_gb": "",
+                                    "auto_tuned_vpus_per_gb": "",
+                                    "availability_domain" : "",
+                                    "block_volume_replicas": "",
+                                    "is_auto_tune_enabled": "",
+                                    "is_hydrated": "",
+                                    "defined_tags": "",
+                                    "freeform_tags": "",
+                                    "system_tags": "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+                                    }
+                            self.__block_volumes.append(record)
+                print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
             return self.__block_volumes
         except Exception as e:
             raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))            
@@ -933,8 +933,8 @@ class CIS_Report:
                         for ad in region_values['availability_domains']:
                             boot_volumes_data = oci.pagination.list_call_get_all_results(
                                     region_values['bv_client'].list_boot_volumes,
-                                    ad.name,
-                                    compartment.id
+                                    availability_domain=ad.name,
+                                    compartment_id=compartment.id
                                 ).data
                             for boot_volume in boot_volumes_data:
                                 try:

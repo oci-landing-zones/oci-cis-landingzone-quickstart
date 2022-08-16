@@ -4,52 +4,23 @@
 #---------------------------------------------------------------
 #--- Cloud Guard Security Zone Recipe variables ----------------
 #---------------------------------------------------------------
-variable "single_compartment_id" {
-  type        = string
-  description = "Compartment OCID to create and attach a security zone to a single compartment. If this variable is provide all other compartments_ids will ignored."
-  default     = null
-}
-
-variable "enclosing_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's enclosing compartment.  If this varibale is provided compartment_ids for app, database, network, security, and exadata will be ignored."
-  default     = null
-}
-
-variable "appdev_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's AppDev compartment."
-  default     = null
-}
-
-variable "database_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's Database compartment."
-  default     = null
-}
-
-variable "exadata_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's Exadata compartment."
-  default     = null
-}
-
-variable "network_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's Network compartment."
-  default     = null
-}
-
-variable "security_compartment_id" {
-  type        = string
-  description = "Compartment OCID of the Landing Zone's Security compartment."
-  default     = null
+variable "sz_target_compartments" {
+  type        = map(object({
+                  sz_compartment_name  = string
+                  sz_compartment_id = string
+  }))
+  description = "Map of compartment OCIDs and compartment names to create and attach a security zones to. "
+  default     = {}
 }
 
 variable "cis_level" {
   type        = string
-  description = "CIS OCI Benchmark Level of security zone polices to apply. Default is 1."
+  description = "Determines CIS OCI Benchmark Level of security zone polices to be applied to the compartments. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability."
   default     = "1"
+  validation {
+     condition     = contains(["1", "2"], upper(var.cis_level))
+      error_message = "Validation failed for cis_level: valid values are 1 or 2."
+  }
 }
 
 variable "security_policies" {

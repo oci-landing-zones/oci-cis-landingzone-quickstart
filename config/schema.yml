@@ -12,6 +12,7 @@ variableGroups:
     variables:
       - "region"
       - "service_label"
+      - "cis_level"
       - "env_advanced_options"
       - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
@@ -99,6 +100,11 @@ variableGroups:
       - "cloud_guard_configuration_status"
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
+  
+  - title: "Security Zones"
+    variables:
+    - "create_security_zone"
+    - "sz_security_policies"
 
   - title: "Logging Consolidation: Service Connector Hub For Audit Logs"
     variables:
@@ -159,13 +165,22 @@ variables:
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
     description: "A unique label that gets prepended to all resources created by the Landing Zone."
     required: true
+  
+  cis_level:
+    type: enum
+    title: CIS Level
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">OCI CIS Benchmark</a>."
+    enum:
+      - "1"
+      - "2"
+    default: "1"
 
   region:
     type: oci:identity:region:name
     title: "Region"
     description: "The region for resources deployment."
     required: true
-
+  
   use_enclosing_compartment:
     type: boolean
     title: "Use an enclosing compartment?"
@@ -682,6 +697,19 @@ variables:
       - Minor
       - Low
   
+  # Security Zone - Variables
+  create_security_zone:
+    type: boolean
+    title: Enable Security Zones
+    description: "Determines if Security Zones are enabled in Landing Zone compartments."
+    default: false
+
+  sz_security_policies:
+    type: list
+    title: Security Zone policies
+    description: = "Security Zones Policy OCIDs to add to security zone recipe."
+    default: []
+
   # Service Connector Hub For Audit Logs - Variables
   create_service_connector_audit:
     type: boolean

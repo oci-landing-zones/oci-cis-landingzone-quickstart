@@ -9,6 +9,17 @@ variable "service_label" {
   }
 }
 
+variable "cis_level" {
+  type = string
+  default = "1"
+  description = "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: https://www.cisecurity.org/benchmark/oracle_cloud"
+  validation {
+     condition     = contains(["1", "2"], upper(var.cis_level))
+      error_message = "Validation failed for cis_level: valid values are 1 or 2."
+  }
+    
+}
+
 variable "tenancy_ocid" {}
 variable "user_ocid" {
   default = ""
@@ -424,6 +435,7 @@ variable "alarm_message_format" {
   }
 }
 
+# Cloud Guard related configuration
 variable "cloud_guard_configuration_status" {
   default     = "ENABLE"
   description = "Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted."
@@ -441,6 +453,21 @@ variable "cloud_guard_risk_level_threshold" {
     error_message = "Validation failed for cloud_guard_risk_level_threshold: valid values (case insensitive) are CRITICAL, HIGH, MEDIUM, MINOR, LOW."
   }
 }
+
+# Security Zones related configurations
+variable "create_security_zone" {
+  type        = bool
+  default     = false
+  description = "Determines if Security Zones are enabled in Landing Zone compartments."
+}
+
+variable "sz_security_policies" {
+  type = list
+  default = []
+  description =  "Security Zones Policy OCIDs to add to security zone recipe."
+    
+}
+
 
 # Service Connector Hub related configuration
 variable "create_service_connector_audit" {

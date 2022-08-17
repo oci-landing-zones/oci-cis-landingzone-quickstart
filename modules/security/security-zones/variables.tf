@@ -15,7 +15,7 @@ variable "sz_target_compartments" {
 
 variable "cis_level" {
   type        = string
-  description = "Determines CIS OCI Benchmark Level to be applied to Landing Zone resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: https://www.cisecurity.org/benchmark/oracle_cloud"
+  description = "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: https://www.cisecurity.org/benchmark/oracle_cloud"
   default     = "1"
   validation {
      condition     = contains(["1", "2"], upper(var.cis_level))

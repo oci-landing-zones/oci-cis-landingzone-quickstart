@@ -2,8 +2,9 @@
  * ## CIS OCI Landing Zone Security Zone Module.
  *
  * This module manages Cloud Guard Security Zones targets and recipes. 
- * It manages multiple Security Zones and recipes in var.sz_target_compartments. Keys are expected to specify the grantees (service_grantees and group_grantees) allowed to use them.
- * The module can also take a map of existing keys in var.existing_keys to manage their IAM policies. For existing keys, the module manages one policy to each
+ * It manages multiple Security Zones and recipes in var.sz_target_compartments and the policies for those recipes in var.security_policies
+ * The module will create one recipe for each compartment and create a Security Zone for each compartment with the assocaited recipe.
+ * Each recipe will include CIS Level 1 or CIS Level 2 polices based on var.cis_level and append the customer provided polices in var.security_policies
  * key, as these keys can exist in different compartments.
  */
 # Copyright (c) 2022 Oracle and/or its affiliates.

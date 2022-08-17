@@ -5,11 +5,11 @@
 #--- Cloud Guard Security Zone Recipe variables ----------------
 #---------------------------------------------------------------
 variable "sz_target_compartments" {
-  type        = map(object({
-                  sz_compartment_name  = string
-                  sz_compartment_id = string
+  type = map(object({
+    sz_compartment_id = string
+    sz_compartment_name = string
   }))
-  description = "Map of compartment OCIDs and compartment names to create and attach a security zones to. "
+  description = "Map of compartment OCIDs and Security Zone Compartment names to create and attach a security zones to. "
   default     = {}
 }
 

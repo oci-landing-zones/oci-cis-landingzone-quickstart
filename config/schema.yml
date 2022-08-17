@@ -106,27 +106,15 @@ variableGroups:
     - "create_security_zone"
     - "sz_security_policies"
 
-  - title: "Logging Consolidation: Service Connector Hub For Audit Logs"
+  - title: "Logging Consolidation: Service Connector Hub"
     variables:
-      - "create_service_connector_audit"
-      - "service_connector_audit_target"
-      - "service_connector_audit_state"
-      - "service_connector_audit_target_OCID"
-      - "service_connector_audit_target_cmpt_OCID"
-      - "sch_audit_target_rollover_MBs"
-      - "sch_audit_target_rollover_MSs"
-      - "sch_audit_objStore_objNamePrefix"
-  
-  - title: "Logging Consolidation: Service Connector Hub For VCN Flow Logs"
-    variables:
-      - "create_service_connector_vcnFlowLogs"
-      - "service_connector_vcnFlowLogs_target"
-      - "service_connector_vcnFlowLogs_state"
-      - "service_connector_vcnFlowLogs_target_OCID"
-      - "service_connector_vcnFlowLogs_target_cmpt_OCID"
-      - "sch_vcnFlowLogs_target_rollover_MBs"
-      - "sch_vcnFlowLogs_target_rollover_MSs"
-      - "sch_vcnFlowLogs_objStore_objNamePrefix"  
+      - "enable_service_connector"
+      - "service_connector_name"
+      - "service_connector_target_kind"
+      - "service_connector_target_bucket_name"
+      - "service_connector_target_object_name_prefix"
+      - "service_connector_target_stream"
+      - "service_connector_target_function_id"
   
   - title: "Vulnerability Scanning"
     variables:
@@ -716,158 +704,79 @@ variables:
         - ${create_security_zone}
         
   # Service Connector Hub For Audit Logs - Variables
-  create_service_connector_audit:
+  enable_service_connector:
     type: boolean
     required: true
-    title: "Create Service Connector Hub for Audit Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for Audit logs. Costs associated are due to storing objects in Object Storage, Streaming or Function invocations."
-    default: false
-
-  service_connector_audit_target:
+    title: "Enable Service Connector Hub? (This might incur some cost)"
+    description: "Whether Service Connector Hub should be enabled. When enabled, a single Service Connector is created for all services log sources and the designated target specified in 'Service Connector Target Kind'."
+  
+  service_connector_target_kind:
     type: enum
     required: false
-    title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for Audit Logs. Select one of objectstorage, streaming or functions."
+    title: "Service Connector Target Kind"
+    description: "Service Connector Hub target resource. In case of 'objectstorage', provide the bucket name to be created in 'Service Connector Target Bucket Name'. In case of 'streaming', provide the stream name or ocid in 'Service Connector Target Stream (name or ocid)'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'Service Connector Target Function Ocid'."
     default: objectstorage
-    visible: create_service_connector_audit
+    visible: enable_service_connector
     enum:
       - objectstorage
       - streaming
       - functions
 
-  service_connector_audit_state:
-    type: enum
-    required: false
-    title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for Audit logs."
-    default: INACTIVE
-    visible: create_service_connector_audit
-    enum:
-      - INACTIVE
-      - ACTIVE
-
-  service_connector_audit_target_OCID:
+  service_connector_name:
     type: string
     required: false
-    title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs."
-    visible: 
-      and:
-        - ${create_service_connector_audit}
-        - or:
-          - eq:
-            - service_connector_audit_target
-            - "streaming"
-          - eq:
-            - service_connector_audit_target
-            - "functions"
+    title: "Service Connector Display Name"
+    description: "The Service Connector display name."
+    visible: enable_service_connector
 
-  service_connector_audit_target_cmpt_OCID:
+  service_connector_target_bucket_name:
     type: string
     required: false
-    title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs."
-    visible: 
+    title: "Service Connector Target Bucket Name"
+    description: "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
+    visible:
       and:
-        - ${create_service_connector_audit}
-        - or:
-          - eq:
-            - service_connector_audit_target
-            - "streaming"
-          - eq:
-            - service_connector_audit_target
-            - "functions"
-
-  sch_audit_objStore_objNamePrefix:
-    type: string
-    required: false
-    title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for Audit logs."
-    default: "sch-audit"
-    visible: 
-      and:
-        - ${create_service_connector_audit}
+        - ${enable_service_connector}
         - eq:
-          - service_connector_audit_target
+          - service_connector_target_kind
           - "objectstorage"
 
-
-  # Service Connector Hub For VCN Flow Logs - Variables
-  create_service_connector_vcnFlowLogs:
-    type: boolean
-    required: true
-    title: "Create Service Connector Hub for VCN Flow Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for VCN Flow logs. Costs associated are due to storing objects in Object Storage, Streaming or Function invocations."
-    default: false
-
-  service_connector_vcnFlowLogs_target:
-    type: enum
-    required: false
-    title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for VCN Flow Logs. Select one of - objectstorage, streaming or functions."
-    default: objectstorage
-    visible: create_service_connector_vcnFlowLogs
-    enum:
-      - objectstorage
-      - streaming
-      - functions
-
-  service_connector_vcnFlowLogs_state:
-    type: enum
-    required: false
-    title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for VCN Flow logs."
-    default: INACTIVE
-    visible: create_service_connector_vcnFlowLogs
-    enum:
-      - INACTIVE
-      - ACTIVE
-
-  service_connector_vcnFlowLogs_target_OCID:
+  service_connector_target_object_name_prefix:
     type: string
     required: false
-    title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs."
-    visible: 
+    title: "Service Connector Target Object Name Prefix"
+    description: "The Service Connector target Object Storage object name prefix. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
+    visible:
       and:
-        - ${create_service_connector_vcnFlowLogs}
-        - or:
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "streaming"
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "functions"
-
-  service_connector_vcnFlowLogs_target_cmpt_OCID:
-    type: string
-    required: false
-    title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs."
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
-        - or:
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "streaming"
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "functions"
-
-  sch_vcnFlowLogs_objStore_objNamePrefix:
-    type: string
-    required: false
-    title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs."
-    default: "sch-vcnFlowLogs"
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
+        - ${enable_service_connector}
         - eq:
-          - service_connector_vcnFlowLogs_target
-          - "objectstorage"
-    
+          - service_connector_target_kind
+          - "objectstorage"  
+
+  service_connector_target_stream:
+    type: string
+    required: false
+    title: "Service Connector Target Stream (name or ocid)"
+    description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if 'Service Connector Target Kind' is 'streaming'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "streaming"
+
+  service_connector_target_function_id:
+    type: string
+    required: false
+    title: "Service Connector Target Function Ocid"
+    description: "The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'functions'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "functions"
+
   # Vulnerability Scanning
   vss_create:
     type: boolean

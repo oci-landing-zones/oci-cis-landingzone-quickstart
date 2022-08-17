@@ -16,6 +16,9 @@ data "oci_identity_compartment" "enclosing_compartment" {
   id = var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : var.tenancy_ocid
 }
 module "lz_security_zones" {
+  depends_on = [
+    module.lz_compartments
+  ]
   count                  = var.create_security_zone ? 1 : 0
   source                 = "../modules/security/security-zones"
   providers              = { oci = oci.home }

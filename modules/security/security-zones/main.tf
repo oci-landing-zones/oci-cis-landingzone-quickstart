@@ -1,3 +1,11 @@
+/**
+ * ## CIS OCI Landing Zone Security Zone Module.
+ *
+ * This module manages Cloud Guard Security Zones targets and recipes. 
+ * It manages multiple Security Zones and recipes in var.sz_target_compartments. Keys are expected to specify the grantees (service_grantees and group_grantees) allowed to use them.
+ * The module can also take a map of existing keys in var.existing_keys to manage their IAM policies. For existing keys, the module manages one policy to each
+ * key, as these keys can exist in different compartments.
+ */
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
@@ -14,13 +22,13 @@ locals {
     sz_suffix = "security-zone"
     sz_recipe_suffix = "${local.sz_suffix}-recipe"
 
-    # Secuirty Zone recipes aligned to CIS 1.2 Level 2
-    cis_1_2_L2 = [
+    # Secuirty Zone recipes aligned to CIS 1.2 Level 1
+    cis_1_2_L1 = [
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaa5ocyo7jqjzgjenvccch46buhpaaofplzxlp3xbxfcdwwk2tyrwqa",
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaauoi2xnbusvfd4yffdjaaazk64gndp4flumaw3r7vedwndqd6vmrq"
       ]
-    # Secuirty Zone recipes aligned to CIS 1.2 Level 1
-    cis_1_2_L1 = [
+    # Secuirty Zone recipes aligned to CIS 1.2 Level 2
+    cis_1_2_L2 = [
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaa7pgtjyod3pze6wuylgmts6ensywmeplabsxqq2bk4ighps4fqq4a", 
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaaxxs63ulmtcnxqmcvy6eaozh5jdtiaa2bk7wll5bbdsbnmmoczp5a",
         "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaaqmq4jqcxqbjj5cjzb7t5ira66dctyypq2m2o4psxmx6atp45lyda",

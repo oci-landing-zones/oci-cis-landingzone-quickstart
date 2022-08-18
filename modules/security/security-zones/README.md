@@ -24,8 +24,8 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_cloud_guard_security_recipe.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/cloud_guard_security_recipe) | resource |
-| [oci_cloud_guard_security_zone.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/cloud_guard_security_zone) | resource |
+| [oci_cloud_guard_security_recipe.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_security_recipe) | resource |
+| [oci_cloud_guard_security_zone.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_security_zone) | resource |
 
 ## Inputs
 
@@ -34,6 +34,7 @@ No modules.
 | <a name="input_cis_level"></a> [cis\_level](#input\_cis\_level) | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: https://www.cisecurity.org/benchmark/oracle_cloud | `string` | `"1"` | no |
 | <a name="input_defined_tags"></a> [defined\_tags](#input\_defined\_tags) | Security Zone and Security Zone recipe defined tags. | `map(string)` | `null` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description of the Security Zone and Security Zone recipe it will be appended to the security zone and security recipe name. | `string` | `""` | no |
+| <a name="input_enable_security_zones"></a> [enable\_security\_zones](#input\_enable\_security\_zones) | Determines if Security Zones are enabled in Landing Zone compartments. | `bool` | `null` | no |
 | <a name="input_freeform_tags"></a> [freeform\_tags](#input\_freeform\_tags) | Security Zone and Security Zone recipe freeform tags. | `map(string)` | `null` | no |
 | <a name="input_security_policies"></a> [security\_policies](#input\_security\_policies) | List of Security Zone Policies OCIDs which will be merged with CIS security zone policies. | `list` | `null` | no |
 | <a name="input_sz_target_compartments"></a> [sz\_target\_compartments](#input\_sz\_target\_compartments) | Map of compartment OCIDs and Security Zone Compartment names to create and attach a security zones to. | <pre>map(object({<br>    sz_compartment_id = string<br>    sz_compartment_name = string<br>  }))</pre> | `{}` | no |

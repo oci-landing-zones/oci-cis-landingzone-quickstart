@@ -15,6 +15,7 @@ private_key_password = ""
 ### Environment/IAM variables
 region        = "<tenancy_region>"
 service_label = "<a_label_to_prefix_resource_names_with>"
+cis_level = "1" # Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: https://www.cisecurity.org/benchmark/oracle_cloud
 # extend_landing_zone_to_new_region       = false
 # use_enclosing_compartment               = false
 # existing_enclosing_compartment_ocid     = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
@@ -74,6 +75,9 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # cloud_guard_risk_level_threshold  = "High" # Critical, High, Medium, Minor, Low. Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems.
 # cloud_guard_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # List of email addresses for Cloud Guard related notifications.
 
+### Security Zone Variables
+# enable_security_zones = true
+# sz_security_policies ["security-zone-policy-ocid","security-zone-policy-ocid"] # List of Security Zone Policy OCIDs to be added to Security Zones recipes
 
 ### Alarm Configuration
 # create_alarms_as_enabled = false 

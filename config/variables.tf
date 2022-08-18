@@ -455,7 +455,7 @@ variable "cloud_guard_risk_level_threshold" {
 }
 
 # Security Zones related configurations
-variable "create_security_zone" {
+variable "enable_security_zones" {
   type        = bool
   default     = false
   description = "Determines if Security Zones are enabled in Landing Zone compartments."

@@ -21,7 +21,7 @@ module "lz_security_zones" {
   ]
   count                  = var.create_security_zone ? 1 : 0
   source                 = "../modules/security/security-zones"
-  providers              = { oci = oci.home }
+  # providers              = { oci = oci.home }
   cis_level              = var.cis_level
   security_policies      = var.sz_security_policies
   sz_target_compartments = local.security_zone_target_compartments

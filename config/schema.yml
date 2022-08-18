@@ -103,7 +103,7 @@ variableGroups:
   
   - title: "Security Zones"
     variables:
-    - "create_security_zone"
+    - "enable_security_zones"
     - "sz_security_policies"
 
   - title: "Logging Consolidation: Service Connector Hub"
@@ -686,7 +686,7 @@ variables:
       - Low
   
   # Security Zone - Variables
-  create_security_zone:
+  enable_security_zones:
     type: boolean
     title: Enable Security Zones
     description: "Determines if Security Zones are enabled in Landing Zone compartments."
@@ -701,7 +701,7 @@ variables:
     description: "list of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values)."
     visible: 
       and:
-        - ${create_security_zone}
+        - ${enable_security_zones}
         
   # Service Connector Hub For Audit Logs - Variables
   enable_service_connector:

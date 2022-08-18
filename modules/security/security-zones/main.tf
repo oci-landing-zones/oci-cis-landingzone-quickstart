@@ -48,7 +48,7 @@ locals {
     security_policies       = local.landing_zone_security_policies
     defined_tags            = var.defined_tags
     freeform_tags           = var.freeform_tags
-  }
+  } if var.enable_security_zones
   }
   
 }

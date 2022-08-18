@@ -19,9 +19,9 @@ module "lz_security_zones" {
   depends_on = [
     module.lz_compartments
   ]
-  count                  = var.create_security_zone ? 1 : 0
   source                 = "../modules/security/security-zones"
   providers              = { oci = oci.home }
+  enable_security_zones  = var.enable_security_zones
   cis_level              = var.cis_level
   security_policies      = var.sz_security_policies
   sz_target_compartments = local.security_zone_target_compartments

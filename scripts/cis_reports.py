@@ -45,7 +45,7 @@ class CIS_Report:
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, map):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -101,6 +101,11 @@ class CIS_Report:
 
             '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12'},
             '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3'}
+        }
+
+        # MAP Checks
+        self.map_foundations_checks = {
+            'Budgets' : {'Status' : False, 'Findings' : [] }
         }
 
         # CIS monitoring notifications check
@@ -258,6 +263,10 @@ class CIS_Report:
         # Results from Advanced search query
         self.__resources_in_root_compartment = []
 
+        # For Budgets
+        self.__budgets = []
+
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -305,6 +314,13 @@ class CIS_Report:
             raise RuntimeError("Failed to get identity information." + str(e.args))     
 
 
+        try:
+            self.__budget_client = oci.budget.BudgetClient(
+                self.__config, signer=self.__signer)
+            if proxy:
+                self.__budget_client.base_client.session.proxies = {'https': proxy}
+        except Exception as e:
+            raise RuntimeError("Failed to get create budgets client" + str(e.args))
 
         # Creating a record for home region and a list of all regions including the home region
         for region in regions:
@@ -316,7 +332,8 @@ class CIS_Report:
                     "region_key": region.region_key,
                     "region_name": region.region_name,
                     "status": region.status,
-                    "identity_client" : self.__identity
+                    "identity_client" : self.__identity,
+                    "budget_client" : self.__budget_client
                 }
             elif region.region_name in self.__regions_to_run_in or self.__run_in_all_regions: 
                 self.__regions[region.region_name] = {
@@ -351,6 +368,9 @@ class CIS_Report:
 
         # Determining if all raw data will be output
         self.__output_raw_data = raw_data
+
+        # Determining if OCI Best Practices will be checked and output
+        self.__map_checks = map
 
 
 
@@ -457,6 +477,12 @@ class CIS_Report:
                 if proxy:
                     fss.base_client.session.proxies = {'https': proxy}
                 region_values['fss_client'] = fss
+
+                sch = oci.sch.ServiceConnectorClient(
+                    region_config, signer=region_signer)
+                if proxy:
+                    sch.base_client.session.proxies = {'https': proxy}
+                region_values['sch_client'] = sch  
 
             except Exception as e:
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
@@ -1527,6 +1553,7 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError (
                 "Error in __adb_read_adbs " + str(e.args))
+    
     ############################################
     # Load Oracle Integration Cloud
     ############################################
@@ -1591,6 +1618,7 @@ class CIS_Report:
             return self.__integration_instances
         except Exception as e:
             raise RuntimeError("Error in __oic_read_oics " + str(e.args))
+    
     ############################################
     # Load Oracle Analytics Cloud
     ############################################
@@ -1646,6 +1674,7 @@ class CIS_Report:
             return self.__analytics_instances
         except Exception as e:
             raise RuntimeError("Error in __oac_read_oacs " + str(e.args))
+    
     ##########################################################################
     # Events
     ##########################################################################
@@ -1826,6 +1855,47 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __vault_read_vaults " + str(e.args))
+
+    ##########################################################################
+    # OCI Budgets
+    ##########################################################################
+    def __budget_read_budgets(self):
+        print("Processing Budgets...")
+        try:
+            # Getting all budgets in tenancy of any type
+            budgets_data = oci.pagination.list_call_get_all_results(
+                self.__regions[self.__home_region]['budget_client'].list_budgets,
+                compartment_id=self.__tenancy.id,
+                target_type="ALL"
+            ).data
+            # Looping through Budgets to to get records
+            for budget in budgets_data:
+                record = {
+                    "actual_spend" : budget.actual_spend,
+                    "alert_rule_count" : budget.alert_rule_count,
+                    "amount" : budget.amount,
+                    "budget_processing_period_start_offset" : budget.budget_processing_period_start_offset,
+                    "compartment_id": budget.compartment_id,
+                    "description" : budget.description,
+                    "display_name": budget.display_name,
+                    "id": budget.id,
+                    "lifecycle_state" : budget.lifecycle_state,
+                    "processing_period_type" : budget.processing_period_type,
+                    "reset_period" : budget.reset_period,
+                    "target_compartment_id" : budget.target_compartment_id,
+                    "target_type" : budget.target_type,
+                    "tagerts" : budget.targets,
+                    "time_created": budget.time_created,
+                    "time_spend_computed": budget.time_spend_computed,
+                }
+                # Append Budget to list of Budgets
+                self.__budgets.append(record)
+            print("\tProcessed " + str(len(self.__budgets)) + " ")
+            return self.__budgets
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __budget_read_budgets " + str(e.args))
+
 
     ##########################################################################
     # Audit Configuration
@@ -2343,6 +2413,23 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['5.2']['Findings'].append(
                     item)
 
+    
+    
+    ##########################################################################
+    # Analyzes Tenancy Data for MAP Report
+    ##########################################################################
+    def __map_analyze_tenancy_data(self):
+        
+        if len(self.__budgets) > 0:
+            for budget in self.__budgets:
+                if budget['alert_rule_count'] > 0:
+                    self.map_foundations_checks['Budgets']['Status'] = True
+                else:
+                    self.map_foundations_checks['Budgets']['Findings'].append(budget)
+
+
+
+
     ##########################################################################
     # Orchestrates data collection - analysis and report generation
     ##########################################################################
@@ -2502,6 +2589,41 @@ class CIS_Report:
     
     
     
+    ##########################################################################
+    # Orchestrates analysis and report generation
+    ##########################################################################
+    def report_generate_map_report(self):
+
+        # Analyzing
+        self.__map_analyze_tenancy_data()
+        
+        # Screen output for CIS Summary Report
+        self.__print_header("OCI Best Practices Findings")
+        print('Category' + "\t" + "Compliant" + "\t" + "Findings  ")
+        print('#' * 90)
+        for key, value in self.map_foundations_checks.items():
+            print(str(key) + "\t" + "\t" + str(value['Status']) + "\t" + "\t" + str(len(value['Findings'])))
+        
+        for key, value in self.map_foundations_checks.items():
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "map", key + "_Findings", value['Findings'])
+            if report_file_name and self.__output_bucket:
+                    self.__os_copy_report_to_object_storage(
+                        self.__output_bucket, report_file_name)
+
+        if self.__output_raw_data:
+            list_report_file_names = []
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "raw_data", "budgets", self.__budgets)
+            list_report_file_names.append(report_file_name)
+            print(list_report_file_names)
+
+            if self.__output_bucket:
+                for raw_report in list_report_file_names:
+                    if raw_report:
+                        self.__os_copy_report_to_object_storage(
+                            self.__output_bucket, raw_report)
+
     def __report_collect_tenancy_data(self):
         
         ######  Runs identity functions only in home region
@@ -2515,6 +2637,9 @@ class CIS_Report:
         self.__identity_read_tenancy_policies()
         self.__cloud_guard_read_cloud_guard_configuration()
 
+        if self.__map_checks:
+            self.__budget_read_budgets()
+            
         # The above checks are run in the home region 
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
             self.__regions.pop(self.__home_region)
@@ -2761,6 +2886,8 @@ def execute_report():
                         help='Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1')    
     parser.add_argument('--raw', action='store_true', default=False,
                             help='Outputs all resource data into CSV files')
+    parser.add_argument('--map', action='store_true', default=False,
+                            help='Checks for OCI best practices')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -2768,9 +2895,11 @@ def execute_report():
     cmd = parser.parse_args()
 
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.map)
     report.report_generate_cis_report(int(cmd.level))
 
+    if cmd.map:
+        report.report_generate_map_report()
 
 
 ##########################################################################

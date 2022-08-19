@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Secure Landing Zone Quick Start Configuration"
@@ -12,6 +12,7 @@ variableGroups:
     variables:
       - "region"
       - "service_label"
+      - "cis_level"
       - "env_advanced_options"
       - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
@@ -94,6 +95,13 @@ variableGroups:
       - "create_events_as_enabled"
       - "alarm_message_format"
 
+  - title: "Object Storage"
+    variables:
+      - "enable_oss_bucket"
+      - "existing_bucket_key_compartment_id"
+      - "existing_bucket_vault_id"
+      - "existing_bucket_key_id"
+
   - title: "Cloud Guard"
     variables:
       - "cloud_guard_configuration_status"
@@ -103,12 +111,13 @@ variableGroups:
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
       - "enable_service_connector"
-      - "service_connector_name"
+      - "activate_service_connector"
       - "service_connector_target_kind"
-      - "service_connector_target_bucket_name"
-      - "service_connector_target_object_name_prefix"
-      - "service_connector_target_stream"
-      - "service_connector_target_function_id"
+      - "existing_service_connector_bucket_key_compartment_id"
+      - "existing_service_connector_bucket_vault_id"
+      - "existing_service_connector_bucket_key_id"
+      - "existing_service_connector_target_stream_id"
+      - "existing_service_connector_target_function_id"
   
   - title: "Vulnerability Scanning"
     variables:
@@ -147,6 +156,15 @@ variables:
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
     description: "A unique label that gets prepended to all resources created by the Landing Zone."
     required: true
+
+  cis_level:
+    type: enum
+    title: CIS Level
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    enum:
+      - "1"
+      - "2"
+    required: true  
 
   region:
     type: oci:identity:region:name
@@ -674,14 +692,21 @@ variables:
   enable_service_connector:
     type: boolean
     required: true
-    title: "Enable Service Connector Hub? (This might incur some cost)"
-    description: "Whether Service Connector Hub should be enabled. When enabled, a single Service Connector is created for all services log sources and the designated target specified in 'Service Connector Target Kind'."
+    title: "Enable Service Connector?"
+    description: "Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur)."
+  
+  activate_service_connector:
+    type: boolean
+    required: true
+    title: "Activate Service Connector? (This might incur some cost)"
+    description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+    visible: enable_service_connector
   
   service_connector_target_kind:
     type: enum
     required: false
     title: "Service Connector Target Kind"
-    description: "Service Connector Hub target resource. In case of 'objectstorage', provide the bucket name to be created in 'Service Connector Target Bucket Name'. In case of 'streaming', provide the stream name or ocid in 'Service Connector Target Stream (name or ocid)'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'Service Connector Target Function Ocid'."
+    description: "Service Connector target resource. Valid values are 'objectstorage', 'streaming' or 'functions'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream in 'Existing Target Stream' and that stream is used. If no stream is provided, a new stream is created. In case of 'functions', you MUST provide the existing function in 'Existing Target Function'."
     default: objectstorage
     visible: enable_service_connector
     enum:
@@ -689,42 +714,61 @@ variables:
       - streaming
       - functions
 
-  service_connector_name:
-    type: string
+  existing_service_connector_bucket_key_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Encryption Key Compartment"
+    description: "An existing compartment for the key used to encrypt Service Connector target Object Storage bucket."
     required: false
-    title: "Service Connector Display Name"
-    description: "The Service Connector display name."
-    visible: enable_service_connector
-
-  service_connector_target_bucket_name:
-    type: string
-    required: false
-    title: "Service Connector Target Bucket Name"
-    description: "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
     visible:
       and:
         - ${enable_service_connector}
         - eq:
           - service_connector_target_kind
           - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"  
 
-  service_connector_target_object_name_prefix:
-    type: string
+  existing_service_connector_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
     required: false
-    title: "Service Connector Target Object Name Prefix"
-    description: "The Service Connector target Object Storage object name prefix. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_key_compartment_id}
     visible:
       and:
         - ${enable_service_connector}
         - eq:
           - service_connector_target_kind
-          - "objectstorage"  
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
 
-  service_connector_target_stream:
+  existing_service_connector_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_key_compartment_id}
+      vaultId: ${existing_service_connector_bucket_vault_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_target_stream_id:
     type: string
     required: false
-    title: "Service Connector Target Stream (name or ocid)"
-    description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if 'Service Connector Target Kind' is 'streaming'."
+    title: "Existing Target Stream"
+    description: "An existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
     visible:
       and:
         - ${enable_service_connector}
@@ -732,11 +776,11 @@ variables:
           - service_connector_target_kind
           - "streaming"
 
-  service_connector_target_function_id:
+  existing_service_connector_target_function_id:
     type: string
     required: false
-    title: "Service Connector Target Function Ocid"
-    description: "The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'functions'."
+    title: "Existing Target Function"
+    description: "An existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
     visible:
       and:
         - ${enable_service_connector}
@@ -780,6 +824,54 @@ variables:
         - eq:
           - vss_scan_schedule
           - "WEEKLY"
+
+  # Object Storage
+  enable_oss_bucket:
+    type: boolean
+    title: "Enable Object Storage bucket?"
+    description: "Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. Providing an encryption key is optional. If a key is not provided and 'CIS Level' is set to 2, the Landing Zone will manage the key."
+    required: false
+
+  existing_bucket_key_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Encryption Key Compartment"
+    description: "An existing compartment for the key used in Object Storage bucket encryption."
+    required: false
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used in Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_key_compartment_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used for Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_key_compartment_id}
+      vaultId: ${existing_bucket_vault_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"  
 
 # Cost Management
   create_budget:

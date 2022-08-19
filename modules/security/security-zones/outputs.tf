@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 output "security_zone_recipes" {
-  description = "The seccurity zones, indexed by keys."
+  description = "The seccurity zones recipes, indexed by keys."
   value = {for v in oci_cloud_guard_security_recipe.these : v.display_name => v}
 } 
 

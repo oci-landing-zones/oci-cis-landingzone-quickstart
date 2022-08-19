@@ -29,13 +29,6 @@ variable "security_policies" {
   default     = null 
 }
 
-variable "enable_security_zones" {
-  type        = bool
-  description = "Determines if Security Zones are enabled in Landing Zone compartments."
-  default     = null 
-}
-
-
 variable "description" {
   type        = string
   description = "Description of the Security Zone and Security Zone recipe it will be appended to the security zone and security recipe name."

@@ -2,15 +2,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 #---------------------------------------------------------------
-#--- Service Connector variables -------------------------------
+#--- Service Connector variables 
 #---------------------------------------------------------------
-variable "tenancy_ocid" {
+variable "tenancy_id" {
     description = "The tenancy ocid."
-    type = string
-}
-
-variable "service_label" {
-    description = "The service label."
     type = string
 }
 
@@ -22,11 +17,11 @@ variable "compartment_id" {
 variable "display_name" {
     description = "The Service Connector display name."
     type = string
-    default = "service-connector"
+    default = "lz-service-connector"
 }
 
-variable "enable_service_connector" {
-    description = "Whether the Service Connector should be enabled."
+variable "activate" {
+    description = "Whether the Service Connector should be activated."
     type = bool
     default = false
 }
@@ -44,7 +39,7 @@ variable "freeform_tags" {
 }
 
 #---------------------------------------------------------------
-#--- Sources variables ------------------------------------------
+#--- Sources variables 
 #---------------------------------------------------------------
 variable "logs_sources" {
     description = "The Service Connector logs sources."
@@ -56,7 +51,7 @@ variable "logs_sources" {
 }
 
 #---------------------------------------------------------------
-#--- Target variables ------------------------------------------
+#--- Target variables 
 #---------------------------------------------------------------
 variable "target_kind" {
     description = "The target kind."
@@ -76,13 +71,13 @@ variable "target_compartment_id" {
 variable "target_bucket_name" {
     description = "The target Object Storage bucket name to be created."
     type = string
-    default = "service-connector-bucket"
+    default = "lz-service-connector-bucket"
 }
 
 variable "target_object_name_prefix" {
     description = "The target Object Storage object name prefix."
     type = string
-    default = "sch"
+    default = "lz-sch"
 }
 
 variable "target_bucket_kms_key_id" {
@@ -117,7 +112,7 @@ variable "target_freeform_tags" {
 variable "target_stream" {
     description = "The target stream name or ocid. If a name is given, a new stream is created. If an ocid is given, the existing stream is used."
     type = string
-    default = "service-connector-stream"
+    default = "lz-service-connector-stream"
 }
 
 variable "target_stream_partitions" {
@@ -139,28 +134,32 @@ variable "target_function_id" {
 }
 
 #---------------------------------------------------------------
-#--- Policy variables ------------------------------------------
+#--- Policy variables 
 #---------------------------------------------------------------
-variable "policy_compartment_id" {
-    description = "The Service Connector policy compartment ocid"
-    type = string
-    default = null
-}
-
 variable "target_policy_name" {
-    description = "The Service Connector target policy name"
+    description = "The Service Connector target policy name."
     type = string
-    default = "service-connector-target-policy"
+    default = "lz-service-connector-target-policy"
 }
 
 variable "policy_defined_tags" {
-    description = "The Service Connector policy defined tags"
+    description = "The Service Connector policy defined tags."
     type = map(string)
     default = null
 }
 
 variable "policy_freeform_tags" {
-    description = "The Service Connector policy freeform tags"
+    description = "The Service Connector policy freeform tags."
     type = map(string)
     default = null
+}
+
+variable "cis_level" {
+  type = string
+  description = "The CIS OCI Benchmark profile level for buckets. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability."
+  default = "2"
+  validation {
+    condition     = contains(["1", "2"], var.cis_level)
+    error_message = "Validation failed for cis_level: valid values are 1 or 2."
+  }
 }

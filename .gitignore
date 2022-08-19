@@ -8,5 +8,6 @@
 *.pem
 **/terraform.tfvars
 **/terraform_*.tfvars
+**/vars_*.tfvars
 test/**
 *.csv

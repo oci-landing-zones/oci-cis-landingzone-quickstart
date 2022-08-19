@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 output "service_label" {
     value = local.display_outputs == true ? var.service_label : null
 }
@@ -28,4 +31,16 @@ output "drg" {
 
 output "bastions" {
     value = local.display_outputs == true ? {for k, v in module.lz_app_bastion.bastions : k => {id: v.id, subnet_id: v.target_subnet_id, allowed_cidrs: v.client_cidr_block_allow_list}} : null
+}
+
+output "kms_vault" {
+    value = local.display_outputs == true ? (length(module.lz_vault) > 0 ? {name: module.lz_vault[0].vault.display_name, id: module.lz_vault[0].vault.id, type: module.lz_vault[0].vault.vault_type, compartment_id: module.lz_vault[0].vault.compartment_id, management_endpoint: module.lz_vault[0].vault.management_endpoint, crypto_endpoint: module.lz_vault[0].vault.crypto_endpoint, state: module.lz_vault[0].vault.state} : null) : null
+}
+
+output "kms_keys" {
+    value = local.display_outputs == true ? (length(module.lz_keys) > 0 ? {for k,v in module.lz_keys[0].keys : k => {name: v.display_name, id: v.id, compartment_id: v.compartment_id, key_shape: v.key_shape, management_endpoint: v.management_endpoint, state: v.state}} : null) : null
+}
+
+output "buckets" {
+    value = local.display_outputs == true ? (length(module.lz_buckets) > 0 ? {for k, v in module.lz_buckets[0].buckets : k => {name: v.name, bucket_id: v.bucket_id, compartment_id: v.compartment_id, access_type: v.access_type, versioning: v.versioning, storage_tier: v.storage_tier}} : null) : null
 }

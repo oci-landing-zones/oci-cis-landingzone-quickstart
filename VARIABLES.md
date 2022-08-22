@@ -118,9 +118,14 @@ Variable Name | Description | Required | Default Value
 ### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | No | true
+**vss_create** | Whether Vulnerability Scanning Service (VSS) recipes and targets are enabled in the Landing Zone. | No | false
 **vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | No | "WEEKLY"
 **vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | No | "SUNDAY"
+**vss_port_scan_level** | The port scan level. Valid values are STANDARD, LIGHT or NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | No | "STANDARD"
+**vss_agent_scan_level** | The level for agent-based scans. Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | No | "STANDARD"
+**vss_agent_cis_benchmark_settings_scan_level** | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables CIS benchmark scanning. | No | "MEDIUM"
+**vss_enable_file_scan** | Whether file scanning is enabled. Only applies if *vss_agent_scan_level* is not NONE. | No | false
+**vss_folders_to_scan** | A list of folders to scan. Only applies if *vss_enable_file_scan* is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | No | ["/"]
 
 ### <a name="budget_variables"></a>Budget Variables
 Variable Name | Description | Required | Default Value

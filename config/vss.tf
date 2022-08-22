@@ -4,33 +4,37 @@
 ### Creates scanning recipes and targets. All Landing Zone compartments are targets.
 
 locals {
-  all_scan_recipes = {}
-  all_scan_targets = {}
   all_vss_defined_tags = null
   all_vss_freeform_tags = null
-  vss_custom_recipe_name = null
-  vss_custom_policy_name = null
+  custom_vss_recipe_name = null
+  custom_vss_policy_name = null
+
+  vss_recipe_name = local.custom_vss_recipe_name == null ? "${var.service_label}-default-scan-recipe" : local.custom_vss_recipe_name
+  vss_policy_name = local.custom_vss_policy_name == null ? "${var.service_label}-scan-policy" : local.custom_vss_policy_name
 }
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
+  count      = var.vss_create ? 1 : 0
   depends_on = [null_resource.wait_on_services_policy]
   tenancy_id = var.tenancy_ocid
   compartment_id = local.security_compartment_id
-  name_prefix = var.service_label
-  vss_create = var.vss_create
+
   vss_scan_schedule = var.vss_scan_schedule
-  vss_scan_day = var.vss_scan_day
-  vss_targets = {for k, v in module.lz_compartments.compartments : k => {"target_compartment_id" : v.id, "target_compartment_name" : v.name}}
-  vss_target_names = keys(module.lz_compartments.compartments)
-  vss_recipe_name = local.vss_custom_recipe_name
-  vss_policy_name = local.vss_custom_policy_name
+  vss_scan_day      = var.vss_scan_day
+  vss_port_scan_level  = var.vss_port_scan_level
+  vss_agent_scan_level = var.vss_agent_scan_level
+  vss_agent_cis_benchmark_settings_scan_level = var.vss_agent_cis_benchmark_settings_scan_level
+  vss_enable_file_scan = var.vss_enable_file_scan
+  vss_folders_to_scan  = var.vss_folders_to_scan
+
+  vss_targets       = {for k, v in module.lz_compartments.compartments : k => {"target_compartment_id" : v.id, "target_compartment_name" : v.name}}
+  vss_target_names  = keys(module.lz_compartments.compartments)
+  vss_recipe_name   = local.vss_recipe_name
+  vss_policy_name   = local.vss_policy_name
+
   defined_tags  = local.all_vss_defined_tags
   freeform_tags = local.all_vss_freeform_tags != null ? merge(local.all_vss_freeform_tags, local.landing_zone_tags) : local.landing_zone_tags
 
-  #-- Custom recipes and targets that override Landing Zone's defaults.
-  vss_custom_recipes = local.all_scan_recipes
-  vss_custom_targets = local.all_scan_targets
-  
   #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 }

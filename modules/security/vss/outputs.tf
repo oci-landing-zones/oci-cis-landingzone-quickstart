@@ -10,13 +10,3 @@ output "vss_targets" {
   description = "The VSS targets."
   value       = oci_vulnerability_scanning_host_scan_target.these
 }
-
-output "vss_custom_recipes" {
-  description = "The VSS custom recipes."
-  value       = oci_vulnerability_scanning_host_scan_recipe.custom
-}
-
-output "vss_custom_targets" {
-  description = "The VSS custom targets."
-  value       = oci_vulnerability_scanning_host_scan_target.custom
-}

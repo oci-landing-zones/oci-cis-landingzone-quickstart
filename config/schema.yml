@@ -115,6 +115,11 @@ variableGroups:
       - "vss_create"
       - "vss_scan_schedule"
       - "vss_scan_day"
+      - "vss_port_scan_level"
+      - "vss_agent_scan_level"
+      - "vss_agent_cis_benchmark_settings_scan_level"
+      - "vss_enable_file_scan"
+      - "vss_folders_to_scan"
 
   - title: "Cost Management"
     variables:
@@ -748,14 +753,13 @@ variables:
   vss_create:
     type: boolean
     title: "Enable Vulnerability Scanning?"
-    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
-    default: true
-
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment."
+  
   vss_scan_schedule:
     type: enum
     title: "Scanning Schedule"
     description: "When to scan. WEEKLY or DAILY."
-    default: WEEKLY
+    #default: WEEKLY
     visible: vss_create
     enum:
       - WEEKLY
@@ -765,7 +769,7 @@ variables:
     type: enum
     title: "Scanning Day"
     description: "The day when to scan. Applies to weekly scans only."
-    default: SUNDAY
+    #default: SUNDAY
     enum:
       - SUNDAY
       - MONDAY
@@ -780,6 +784,68 @@ variables:
         - eq:
           - vss_scan_schedule
           - "WEEKLY"
+
+  vss_port_scan_level:
+    type: enum
+    title: "Port Scan Level"
+    description : "Checks for open ports using a network mapper that searches your public IP addresses. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+    enum:
+      - STANDARD
+      - LIGHT
+      - NONE  
+    visible: vss_create
+
+  vss_agent_scan_level:
+    type: enum
+    title: "Agent Scan Level"
+    description : "Checks for open ports on both public and private IP addresses, OS vulnerabilities; compliance with industry benchmarks, vulnerabilities in third-party application files (for application files scanning, check 'Enable File Scanning' below)."
+    enum:
+      - STANDARD
+      - NONE  
+    visible: vss_create   
+
+  vss_agent_cis_benchmark_settings_scan_level:
+    type: enum
+    title: "Agent CIS Benchmark Settings Scan Level"
+    description : "Checks targets for compliance with industry-standard benchmarks published by the Center for Internet Security (CIS)"
+    enum:
+      - STRICT
+      - MEDIUM
+      - LIGHTWEIGTH
+      - NONE
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_enable_file_scan:
+    type: boolean
+    title: "Enable File Scanning?"
+    description: "Whether file scanning is enabled."
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_folders_to_scan:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Folders to Scan"
+    required: false
+    description: "List of file system folders to scan. Required if 'Enable Folder Scanning?' is selected. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell (Type a value and hit enter to enter multiple values)."
+    visible: 
+      and:
+        - ${vss_create}
+        - ${vss_enable_file_scan}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
 
 # Cost Management
   create_budget:

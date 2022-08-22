@@ -97,9 +97,14 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 
 
 ### Vulnerability Scanning Service variables
-# vss_create        = true
-# vss_scan_schedule = "WEEKLY"
-# vss_scan_day      = "SUNDAY"
+# vss_create           = false      # whether Vulnerability Scanning Service recipes and targets are enabled.
+# vss_scan_schedule    = "WEEKLY"   # the scan schedule for the Vulnerability Scanning Service recipe. Valid values are WEEKLY or DAILY (case insensitive).
+# vss_scan_day         = "SUNDAY"   # the week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY (case insensitive).
+# vss_port_scan_level  = "STANDARD" # the port scan level. STANDARD, LIGHT or NONE (case insensitive).
+# vss_agent_scan_level = "STANDARD" # the agent scan level. STANDARD or NONE (case insensitive).
+# vss_agent_cis_benchmark_settings_scan_level = "MEDIUM" # the CIS benchmark level for agent-based scans. STRICT, MEDIUM, LIGHTWEIGHT or NONE (case insensitive)..
+# vss_enable_file_scan = false   # whether file scanning is enabled for agent-based scans
+# vss_folders_to_scan  = ["/"]   # folders to scan. Required if vss_enable_file_scan is true. 
 
 ### Cost Management variables
 ## Percentage of budget amount

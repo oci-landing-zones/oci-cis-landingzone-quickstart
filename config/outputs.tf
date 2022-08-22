@@ -31,17 +31,9 @@ output "bastions" {
 }
 
 output "vss_recipes" {
-    value = local.display_outputs == true ? module.lz_scanning.vss_recipes : null
+    value = local.display_outputs == true ? (length(module.lz_scanning) > 0 ? {for k, v in module.lz_scanning[0].vss_recipes : k => {name: v.display_name, id: v.id, compartment_id: v.compartment_id}}: null) : null
 }
 
 output "vss_targets" {
-    value = local.display_outputs == true ? module.lz_scanning.vss_targets : null
-}
-
-output "vss_custom_recipes" {
-    value = local.display_outputs == true ? module.lz_scanning.vss_custom_recipes : null
-}
-
-output "vss_custom_targets" {
-    value = local.display_outputs == true ? module.lz_scanning.vss_custom_targets : null
+    value = local.display_outputs == true ? (length(module.lz_scanning) > 0 ? {for k, v in module.lz_scanning[0].vss_targets : k => {name: v.display_name, id: v.id, compartment_id: v.compartment_id}}: null) : null
 }

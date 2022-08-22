@@ -93,6 +93,7 @@ module "lz_service_connector" {
   target_compartment_id = local.security_compartment_id
 
   target_bucket_name        = local.service_connector_target_bucket_name
+  target_bucket_namespace   = data.oci_objectstorage_namespace.this.namespace
   target_object_name_prefix = local.service_connector_target_object_name_prefix
   target_bucket_kms_key_id  = var.existing_service_connector_bucket_key_id != null ? var.existing_service_connector_bucket_key_id : (length(module.lz_service_connector_keys) > 0 ? module.lz_service_connector_keys[0].keys[local.sch_key_mapkey].id : null) 
     

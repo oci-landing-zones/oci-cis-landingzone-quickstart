@@ -68,6 +68,12 @@ variable "target_compartment_id" {
     type = string
 }
 
+variable "target_bucket_namespace" {
+    description = "The target Object Storage bucket namespace. If null, the module retrives the namespace based on the tenancy ocid."
+    type = string
+    default = null
+}
+
 variable "target_bucket_name" {
     description = "The target Object Storage bucket name to be created."
     type = string

@@ -107,7 +107,7 @@ resource "oci_sch_service_connector" "this" {
         compartment_id     = var.target_compartment_id
         bucket             = lower(var.target_kind) == "objectstorage" ? var.target_bucket_name : null
         object_name_prefix = lower(var.target_kind) == "objectstorage" ? var.target_object_name_prefix : null
-        namespace          = lower(var.target_kind) == "objectstorage" ? data.oci_objectstorage_namespace.this.namespace : null
+        namespace          = lower(var.target_kind) == "objectstorage" ? (var.target_bucket_namespace != null ? var.target_bucket_namespace : data.oci_objectstorage_namespace.this.namespace) : null
         batch_rollover_size_in_mbs = lower(var.target_kind) == "objectstorage" ? var.target_object_store_batch_rollover_size_in_mbs : null
         batch_rollover_time_in_ms  = lower(var.target_kind) == "objectstorage" ? var.target_object_store_batch_rollover_time_in_ms : null
 
@@ -121,7 +121,7 @@ resource "oci_objectstorage_bucket" "this" {
     count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
     compartment_id = var.compartment_id
     name           = var.target_bucket_name
-    namespace      = data.oci_objectstorage_namespace.this.namespace
+    namespace      = var.target_bucket_namespace != null ? var.target_bucket_namespace : data.oci_objectstorage_namespace.this.namespace
     #-- The try expression is expected to produce an error. 
     #-- var.cis_level = 2 and var.target_bucket_kms_key_id = null is a CIS violation 
     kms_key_id     = var.cis_level == "2" ? (var.target_bucket_kms_key_id != null ? var.target_bucket_kms_key_id : try(substr(var.target_bucket_kms_key_id,0,0))) : var.target_bucket_kms_key_id

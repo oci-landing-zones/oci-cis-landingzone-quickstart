@@ -53,6 +53,7 @@ No Modules.
 | policy\_freeform\_tags | The Service Connector policy freeform tags. | `map(string)` | `null` | no |
 | target\_bucket\_kms\_key\_id | The KMS key ocid used to encrypt the target Object Storage bucket. | `string` | n/a | yes |
 | target\_bucket\_name | The target Object Storage bucket name to be created. | `string` | `"lz-service-connector-bucket"` | no |
+| target\_bucket\_namespace | The target Object Storage bucket namespace. If null, the module retrives the namespace based on the tenancy ocid. | `string` | `null` | no |
 | target\_compartment\_id | The target compartment ocid. | `string` | n/a | yes |
 | target\_defined\_tags | The Service Connector target defined tags. | `map(string)` | `null` | no |
 | target\_freeform\_tags | The Service Connector target freeform tags. | `map(string)` | `null` | no |

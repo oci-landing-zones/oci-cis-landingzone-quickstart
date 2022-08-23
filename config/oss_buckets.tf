@@ -39,4 +39,5 @@ module "lz_buckets" {
   count      = var.enable_oss_bucket ? 1 : 0
   depends_on = [null_resource.wait_on_keys_policy]
   buckets    = local.buckets
+  cis_level  = var.cis_level
 }

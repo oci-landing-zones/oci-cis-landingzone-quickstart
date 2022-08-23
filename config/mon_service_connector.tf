@@ -86,6 +86,7 @@ module "lz_service_connector" {
   activate       = var.activate_service_connector
   defined_tags   = local.all_service_connector_defined_tags
   freeform_tags  = local.service_connector_freeform_tags
+  cis_level      = var.cis_level
 
   logs_sources = concat(local.audit_logs_sources, local.oss_logs_sources, local.flow_logs_sources)
     

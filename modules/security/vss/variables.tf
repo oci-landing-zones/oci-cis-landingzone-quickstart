@@ -108,3 +108,39 @@ variable "vss_folders_to_scan" {
   description = "A list of folders to scan. Only applies if vss_enable_folder_scan is true."
   type = list(string)
 }
+
+variable "vss_custom_recipes" {
+  description = "VSS custom recipes. Use it to override the default recipe."
+  type = map(object({
+    compartment_id                          = string,
+    name                                    = string,
+    agent_scan_level                        = string,
+    agent_configuration_vendor              = string,
+    agent_cis_benchmark_settings_scan_level = string,
+    port_scan_level                         = string,
+    schedule_type                           = string,
+    schedule_day_of_week                    = string,
+    enable_file_scan                        = bool,
+    file_scan_recurrence                    = string,
+    folders_to_scan                         = list(string),
+    folders_to_scan_os                      = string,
+    defined_tags                            = map(string),
+    freeform_tags                           = map(string)
+  }))
+  default = {}
+}
+
+variable "vss_custom_targets" {
+  description = "VSS custom targets. Use it to override the default targets. For recipe_key, pass the corresponding key in vss_custom_recipes."
+  type = map(object({
+    compartment_id        = string,
+    name                  = string,
+    description           = string,
+    recipe_key            = string,
+    target_compartment_id = string,
+    defined_tags          = map(string),
+    freeform_tags         = map(string)
+  }))
+  default = {}
+}
+

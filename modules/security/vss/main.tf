@@ -3,6 +3,7 @@
  *
  * This module manages one single VSS recipe, multiple VSS targets and one IAM policy for VSS. 
  * The recipe is assigned to all provided targets.
+ * var.vss_custom_recipes and var.vss_custom_targets, when provided, are added to Landing Zone default recipe and targets.
  */
 
 # Copyright (c) 2022 Oracle and/or its affiliates.
@@ -72,7 +73,13 @@ locals {
 
   #-- Supported file scan recurrences by VSS: BI-WEEKLY, MONTHLY
   #-- If overall scan schedule is WEEKLY, file scan uses the same scan day. If overall scan sechdule is DAILY, we set file scan day to Sundays (WKST=SU).
-  file_scan_recurrence = upper(var.vss_scan_schedule) == "WEEKLY" ? "FREQ=WEEKLY;WKST=${substr(upper(var.vss_scan_day),0,2)};INTERVAL=2" : "FREQ=WEEKLY;WKST=SU;INTERVAL=2"
+  #-- RFC 5545
+  file_scan_recurrence = upper(var.vss_scan_schedule) == "WEEKLY" ? "FREQ=WEEKLY;INTERVAL=2;WKST=${substr(upper(var.vss_scan_day),0,2)}" : "FREQ=WEEKLY;INTERVAL=2;WKST=SU"
+
+  lz_recipe_key_map = {
+    "LZ-RECIPE" : var.vss_recipe_name
+  }
+
 }
 
 #---------------------------------------------------------------------------------------
@@ -161,3 +168,56 @@ resource "oci_identity_policy" "vss" {
   defined_tags   = var.defined_tags
   freeform_tags  = var.freeform_tags
 }
+
+#-----------------------------------------------------------------------------
+#-- Custom recipes resources
+#----------------------------------------------------------------------------- 
+resource "oci_vulnerability_scanning_host_scan_recipe" "custom" {
+  lifecycle {
+    create_before_destroy = true
+  }  
+  for_each = var.vss_custom_recipes
+    compartment_id = each.value.compartment_id
+    display_name = each.value.name
+    port_settings {
+      scan_level = each.value.port_scan_level
+    }
+    schedule {
+      type = each.value.schedule_type
+      day_of_week = each.value.schedule_day_of_week
+    } 
+    agent_settings {
+      scan_level = each.value.agent_scan_level
+      agent_configuration {
+        vendor = each.value.agent_configuration_vendor
+        cis_benchmark_settings {
+          scan_level = each.value.agent_cis_benchmark_settings_scan_level
+        }
+      }
+    }
+    application_settings {
+      application_scan_recurrence = each.value.file_scan_recurrence
+      folders_to_scan {
+        folder = join(";",each.value.folders_to_scan)
+        operatingsystem = each.value.folders_to_scan_os
+      }
+      is_enabled = each.value.enable_file_scan
+    }
+    defined_tags = each.value.defined_tags
+    freeform_tags = each.value.freeform_tags
+}
+
+#-----------------------------------------------------------------------------
+#-- Custom targets resources.
+#-----------------------------------------------------------------------------
+resource "oci_vulnerability_scanning_host_scan_target" "custom" {
+  for_each = var.vss_custom_targets
+    compartment_id        = each.value.compartment_id
+    display_name          = each.value.name
+    description           = each.value.description
+    host_scan_recipe_id   = upper(substr(each.value.recipe_key,0,3)) == "LZ-" ? oci_vulnerability_scanning_host_scan_recipe.these[local.lz_recipe_key_map[upper(each.value.recipe_key)]].id : oci_vulnerability_scanning_host_scan_recipe.custom[each.value.recipe_key].id
+    target_compartment_id = each.value.target_compartment_id
+    defined_tags          = each.value.defined_tags
+    freeform_tags         = each.value.freeform_tags
+}
+

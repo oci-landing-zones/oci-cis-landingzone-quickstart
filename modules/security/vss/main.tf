@@ -215,7 +215,7 @@ resource "oci_vulnerability_scanning_host_scan_target" "custom" {
     compartment_id        = each.value.compartment_id
     display_name          = each.value.name
     description           = each.value.description
-    host_scan_recipe_id   = upper(substr(each.value.recipe_key,0,3)) == "LZ-" ? oci_vulnerability_scanning_host_scan_recipe.these[local.lz_recipe_key_map[upper(each.value.recipe_key)]].id : oci_vulnerability_scanning_host_scan_recipe.custom[each.value.recipe_key].id
+    host_scan_recipe_id   = upper(each.value.recipe_key) == "LZ-RECIPE" ? oci_vulnerability_scanning_host_scan_recipe.these[local.lz_recipe_key_map[upper(each.value.recipe_key)]].id : oci_vulnerability_scanning_host_scan_recipe.custom[each.value.recipe_key].id
     target_compartment_id = each.value.target_compartment_id
     defined_tags          = each.value.defined_tags
     freeform_tags         = each.value.freeform_tags

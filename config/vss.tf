@@ -4,13 +4,23 @@
 ### Creates scanning recipes and targets. All Landing Zone compartments are targets.
 
 locals {
+  all_scan_recipes = {}
+  all_scan_targets = {}
   all_vss_defined_tags = null
   all_vss_freeform_tags = null
   custom_vss_recipe_name = null
   custom_vss_policy_name = null
 
-  vss_recipe_name = local.custom_vss_recipe_name == null ? "${var.service_label}-default-scan-recipe" : local.custom_vss_recipe_name
-  vss_policy_name = local.custom_vss_policy_name == null ? "${var.service_label}-scan-policy" : local.custom_vss_policy_name
+  ### DON'T TOUCH THESE ###
+  default_vss_defined_tags = null
+  default_vss_freeform_tags = local.landing_zone_tags
+  
+  vss_defined_tags =  local.all_vss_defined_tags != null ? merge(local.all_vss_defined_tags, local.default_vss_defined_tags) : local.default_vss_defined_tags
+  vss_freeform_tags = local.all_vss_freeform_tags != null ? merge(local.all_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
+
+  vss_recipe_name = local.custom_vss_recipe_name != null ? local.custom_vss_recipe_name : "${var.service_label}-default-scan-recipe"
+  vss_policy_name = local.custom_vss_policy_name != null ? local.custom_vss_policy_name : "${var.service_label}-scan-policy" 
+  ###
 }
 
 module "lz_scanning" {
@@ -35,6 +45,9 @@ module "lz_scanning" {
 
   defined_tags  = local.all_vss_defined_tags
   freeform_tags = local.all_vss_freeform_tags != null ? merge(local.all_vss_freeform_tags, local.landing_zone_tags) : local.landing_zone_tags
+
+  vss_custom_recipes = local.all_scan_recipes
+  vss_custom_targets = local.all_scan_targets
 
   #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 }

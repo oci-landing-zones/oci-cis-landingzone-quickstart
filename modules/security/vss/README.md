@@ -1,7 +1,8 @@
 ## CIS OCI Landing Zone Vulnerability Scanning Service (VSS) Module
 
 This module manages one single VSS recipe, multiple VSS targets and one IAM policy for VSS.  
-The recipe is assigned to all provided targets.
+The recipe is assigned to all provided targets.  
+var.vss\_custom\_recipes and var.vss\_custom\_targets, when provided, are added to Landing Zone default recipe and targets.
 
 ## Requirements
 
@@ -35,6 +36,8 @@ No Modules.
 | tenancy\_id | The tenancy ocid. | `string` | n/a | yes |
 | vss\_agent\_cis\_benchmark\_settings\_scan\_level | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `"MEDIUM"` | no |
 | vss\_agent\_scan\_level | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `"STANDARD"` | no |
+| vss\_custom\_recipes | VSS custom recipes. Use it to override the default recipe. | <pre>map(object({<br>    compartment_id                          = string,<br>    name                                    = string,<br>    agent_scan_level                        = string,<br>    agent_configuration_vendor              = string,<br>    agent_cis_benchmark_settings_scan_level = string,<br>    port_scan_level                         = string,<br>    schedule_type                           = string,<br>    schedule_day_of_week                    = string,<br>    enable_file_scan                        = bool,<br>    file_scan_recurrence                    = string,<br>    folders_to_scan                         = list(string),<br>    folders_to_scan_os                      = string,<br>    defined_tags                            = map(string),<br>    freeform_tags                           = map(string)<br>  }))</pre> | `{}` | no |
+| vss\_custom\_targets | VSS custom targets. Use it to override the default targets. For recipe\_key, pass the corresponding key in vss\_custom\_recipes. | <pre>map(object({<br>    compartment_id        = string,<br>    name                  = string,<br>    description           = string,<br>    recipe_key            = string,<br>    target_compartment_id = string,<br>    defined_tags          = map(string),<br>    freeform_tags         = map(string)<br>  }))</pre> | `{}` | no |
 | vss\_enable\_file\_scan | Whether file scanning is enabled. | `bool` | `false` | no |
 | vss\_folders\_to\_scan | A list of folders to scan. Only applies if vss\_enable\_folder\_scan is true. | `list(string)` | n/a | yes |
 | vss\_policy\_name | The VSS policy name. Use it to override the default policy name, which is either <name-prefix>-vss-policy or vss-policy. | `string` | `null` | no |
@@ -49,5 +52,5 @@ No Modules.
 
 | Name | Description |
 |------|-------------|
-| vss\_recipes | The VSS recipes. |
-| vss\_targets | The VSS targets. |
+| vss\_recipes | The VSS recipes, including custom ones. |
+| vss\_targets | The VSS targets, including custom ones. |

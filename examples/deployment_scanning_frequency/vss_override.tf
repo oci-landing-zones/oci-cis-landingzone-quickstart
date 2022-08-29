@@ -4,7 +4,7 @@ locals {
   #-------------------------------------------------------------------------------------
 
   #-- VSS sample custom recipe
-  all_scan_recipes = {
+  custom_vss_recipes = {
     ("CUSTOM-RECIPE-1") = { # The key can be any string, but once defined it should not be changed.
       compartment_id       = local.security_compartment_id 
       name                 = "lz-custom-scan-recipe"
@@ -24,7 +24,7 @@ locals {
   }
 
   #-- VSS sample custom targets
-  all_scan_targets = {
+  custom_vss_targets = {
     ("LZ-ENCLOSING-CMP-TARGET") = { # The key can be any string, but once defined it should not be changed.
       compartment_id        = local.security_compartment_id
       name                  = "lz-enclosing-compartment-scan-target"

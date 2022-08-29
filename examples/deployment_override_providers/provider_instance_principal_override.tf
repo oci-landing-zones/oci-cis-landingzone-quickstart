@@ -1,6 +1,6 @@
 provider "oci" {
-   auth   = "InstancePrincipal"
-   region = "${var.region}"
+  auth   = "InstancePrincipal"
+  region = "${var.region}"
 }
 
 provider "oci" {

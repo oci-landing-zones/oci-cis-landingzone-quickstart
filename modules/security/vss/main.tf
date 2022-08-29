@@ -22,10 +22,10 @@ locals {
   #-- Three variables below are to keep module backwards compatibility, as the "scan-target" suffix has been used 
   #-- as part of the key name to index the map variable for the creation of target resources.
   target_suffix = "scan-target"
-  compat_scan_targets = {for k, v in var.vss_targets : "${k}-${local.target_suffix}" => v}
-  compat_scan_target_names = [for t in var.vss_target_names : "${t}-${local.target_suffix}"]
+  compat_vss_targets = {for k, v in var.vss_targets : "${k}-${local.target_suffix}" => v}
+  compat_vss_target_names = [for t in var.vss_target_names : "${t}-${local.target_suffix}"]
 
-  scan_recipes = {
+  default_vss_recipe = {
     (var.vss_recipe_name) = {
       compartment_id  = var.compartment_id
       name            = var.vss_recipe_name
@@ -53,7 +53,7 @@ locals {
     }
   }
 
-  scan_targets = { for k, v in local.compat_scan_targets : k => {
+  default_vss_targets = { for k, v in local.compat_vss_targets : k => {
     compartment_id = var.compartment_id
     name = "${v.target_compartment_name}-${local.target_suffix}"
     description = "CIS Landing Zone ${v.target_compartment_name} compartment scanning target."
@@ -89,7 +89,7 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
   lifecycle {
       create_before_destroy = true
   }  
-  for_each = local.scan_recipes
+  for_each = local.default_vss_recipe
     compartment_id = each.value.compartment_id
     display_name = each.value.name 
     #Required
@@ -147,14 +147,14 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
 #-- Internal issue reference: 181.
 #---------------------------------------------------------------------------------------
 resource "oci_vulnerability_scanning_host_scan_target" "these" {
-  for_each = toset(local.compat_scan_target_names)
-    compartment_id        = local.scan_targets[each.key].compartment_id
-    display_name          = local.scan_targets[each.key].name
-    description           = local.scan_targets[each.key].description
+  for_each = toset(local.compat_vss_target_names)
+    compartment_id        = local.default_vss_targets[each.key].compartment_id
+    display_name          = local.default_vss_targets[each.key].name
+    description           = local.default_vss_targets[each.key].description
     host_scan_recipe_id   = oci_vulnerability_scanning_host_scan_recipe.these[var.vss_recipe_name].id
-    target_compartment_id = local.scan_targets[each.key].target_compartment_id
-    defined_tags          = local.scan_targets[each.key].defined_tags
-    freeform_tags         = local.scan_targets[each.key].freeform_tags
+    target_compartment_id = local.default_vss_targets[each.key].target_compartment_id
+    defined_tags          = local.default_vss_targets[each.key].defined_tags
+    freeform_tags         = local.default_vss_targets[each.key].freeform_tags
  }
 
 #----------------------------------------------------------------------------

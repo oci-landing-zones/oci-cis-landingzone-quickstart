@@ -5,26 +5,14 @@
 
 locals {
 #------------------------------------------------------------------------------------------------------
-#-- Any of these local vars before ### DON'T TOUCH THESE ### can be overriden in a _override.tf file
+#-- Any of these local vars before can be overriden in a _override.tf file
 #------------------------------------------------------------------------------------------------------
-
   custom_vss_recipes = {}
   custom_vss_targets = {}
   custom_vss_defined_tags = null
   custom_vss_freeform_tags = null
   custom_vss_recipe_name = null
   custom_vss_policy_name = null
-
-  ### DON'T TOUCH THESE ###
-  default_vss_defined_tags = null
-  default_vss_freeform_tags = local.landing_zone_tags
-  
-  vss_defined_tags =  local.custom_vss_defined_tags != null ? merge(local.custom_vss_defined_tags, local.default_vss_defined_tags) : local.default_vss_defined_tags
-  vss_freeform_tags = local.custom_vss_freeform_tags != null ? merge(local.custom_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
-
-  vss_recipe_name = local.custom_vss_recipe_name != null ? local.custom_vss_recipe_name : "${var.service_label}-default-scan-recipe"
-  vss_policy_name = local.custom_vss_policy_name != null ? local.custom_vss_policy_name : "${var.service_label}-scan-policy" 
-  ###
 }
 
 module "lz_scanning" {
@@ -54,4 +42,17 @@ module "lz_scanning" {
   vss_custom_targets = local.custom_vss_targets
 
   #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
+}
+
+locals {
+  ### DON'T TOUCH THESE ###
+  default_vss_defined_tags = null
+  default_vss_freeform_tags = local.landing_zone_tags
+  
+  vss_defined_tags =  local.custom_vss_defined_tags != null ? merge(local.custom_vss_defined_tags, local.default_vss_defined_tags) : local.default_vss_defined_tags
+  vss_freeform_tags = local.custom_vss_freeform_tags != null ? merge(local.custom_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
+
+  vss_recipe_name = local.custom_vss_recipe_name != null ? local.custom_vss_recipe_name : "${var.service_label}-default-scan-recipe"
+  vss_policy_name = local.custom_vss_policy_name != null ? local.custom_vss_policy_name : "${var.service_label}-scan-policy" 
+  ###
 }

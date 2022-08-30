@@ -119,10 +119,3 @@ resource "null_resource" "wait_on_services_policy" {
     command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
   }
 }
-
-resource "null_resource" "wait_on_keys_policy" {
-   depends_on = [ module.lz_keys ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
-   }
-}

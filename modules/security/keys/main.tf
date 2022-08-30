@@ -40,6 +40,11 @@ locals {
 #-- Default managed keys.
 #------------------------------------------------------------------
 resource "oci_kms_key" "these" {
+  #-- create_before_destroy makes Terraform to first update any resources that depend on these keys before destroying the keys.
+  #-- This helps with Object Storage encrypted buckets, when updated with a new encryption key.
+  lifecycle {
+    create_before_destroy = true
+  }
   for_each = var.managed_keys
     compartment_id       = var.compartment_id
     display_name         = each.value.key_name
@@ -56,6 +61,9 @@ resource "oci_kms_key" "these" {
 #-- Single policy for default managed keys.
 #------------------------------------------------------------------
 resource "oci_identity_policy" "managed_keys" {
+  lifecycle {
+    create_before_destroy = true
+  }
   count = length(var.managed_keys) > 0 ? 1 : 0
     name           = var.policy_name
     description    = "CIS Landing Zone policy allowing access to keys in the Vault service."

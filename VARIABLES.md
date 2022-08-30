@@ -101,7 +101,7 @@ Variable Name | Description | Required | Default Value
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **enable_oss_bucket** | Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. | No | true
-**existing_bucket_key_compartment_id** | The OCID of an existing compartment for the key used in Object Storage bucket encryption. | No | null
+**existing_bucket_vault_compartment_id** | The OCID of an existing compartment for the vault with the key used in Object Storage bucket encryption. | No | null
 **existing_bucket_vault_id** | The OCID of an existing vault for the key used in Object Storage bucket encryption. | No | null
 **existing_bucket_key_id** | The OCID of an existing key used in Object Storage bucket encryption. | No | null
 
@@ -118,7 +118,7 @@ Variable Name | Description | Required | Default Value
 **enable_service_connector** | Whether Service Connector Hub should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in *service_connector_target_kind*. The Service Connector is created in INACTIVE state. | No | false
 **activate_service_connector** | Whether Service Connector Hub should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function. | No | false
 **service_connector_target_kind** | Service Connector Hub target resource. Valid values are *objectstorage*, *streaming* or *functions*. In case of *objectstorage*, a new bucket is created. In case of *streaming*, you can provide an existing stream ocid in *existing_service_connector_target_stream_id* and that stream is used. If no ocid is provided, a new stream is created. In case of *functions*, you must provide the existing function ocid in *existing_service_connector_target_function_id*. | No | objectstorage
-**existing_service_connector_bucket_key_compartment_id** | The OCID of an existing compartment for the encryption key used in Service Connector target Object Storage bucket. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
+**existing_service_connector_bucket_vault_compartment_id** | The OCID of an existing compartment for the vault with the key used in Service Connector target Object Storage bucket encryption. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
 **existing_service_connector_bucket_vault_id** | The OCID of an existing vault for the encryption key used in Service Connector target Object Storage bucket. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
 **existing_service_connector_bucket_key_id** | The OCID of an existing encryption key used in Service Connector target Object Storage bucket. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
 **existing_service_connector_target_stream_id** | The OCID of an existing stream to be used as the Service Connector target. Only applicable if *service_connector_target_kind* is set to *streaming*.| No | null

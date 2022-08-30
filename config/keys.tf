@@ -91,7 +91,7 @@ locals {
   existing_appdev_bucket_key = var.existing_bucket_key_id != null ? {
     (local.appdev_key_mapkey) = {
       key_id            = var.existing_bucket_key_id 
-      compartment_id    = var.existing_bucket_key_compartment_id 
+      compartment_id    = var.existing_bucket_vault_compartment_id 
       service_grantees  = ["objectstorage-${var.region}"]
       group_grantees    = [local.database_admin_group_name,local.appdev_admin_group_name]
     }
@@ -100,7 +100,7 @@ locals {
   existing_sch_bucket_key = var.existing_service_connector_bucket_key_id != null ? {
     (local.sch_key_mapkey) = {
       key_id            = var.existing_service_connector_bucket_key_id 
-      compartment_id    = var.existing_service_connector_bucket_key_compartment_id 
+      compartment_id    = var.existing_service_connector_bucket_vault_compartment_id 
       service_grantees  = ["objectstorage-${var.region}"]
       group_grantees    = []
     }

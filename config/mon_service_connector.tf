@@ -79,7 +79,7 @@ locals {
 module "lz_service_connector" {
   source         = "../modules/monitoring/service-connector-v2"
   count          = var.enable_service_connector ? 1 : 0
-  depends_on     = [null_resource.wait_on_keys_policy]
+  depends_on     = [null_resource.wait_on_service_connector_keys_policy]
   tenancy_id     = var.tenancy_ocid
   display_name   = local.service_connector_name
   compartment_id = local.security_compartment_id
@@ -107,4 +107,11 @@ module "lz_service_connector" {
 
   policy_defined_tags  = local.policy_defined_tags
   policy_freeform_tags = local.policy_freeform_tags
+}
+
+resource "null_resource" "wait_on_service_connector_keys_policy" {
+   depends_on = [ module.lz_service_connector_keys ]
+   provisioner "local-exec" {
+     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
+   }
 }

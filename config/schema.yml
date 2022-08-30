@@ -98,7 +98,7 @@ variableGroups:
   - title: "Object Storage"
     variables:
       - "enable_oss_bucket"
-      - "existing_bucket_key_compartment_id"
+      - "existing_bucket_vault_compartment_id"
       - "existing_bucket_vault_id"
       - "existing_bucket_key_id"
 
@@ -113,7 +113,7 @@ variableGroups:
       - "enable_service_connector"
       - "activate_service_connector"
       - "service_connector_target_kind"
-      - "existing_service_connector_bucket_key_compartment_id"
+      - "existing_service_connector_bucket_vault_compartment_id"
       - "existing_service_connector_bucket_vault_id"
       - "existing_service_connector_bucket_key_id"
       - "existing_service_connector_target_stream_id"
@@ -714,10 +714,10 @@ variables:
       - streaming
       - functions
 
-  existing_service_connector_bucket_key_compartment_id:
+  existing_service_connector_bucket_vault_compartment_id:
     type: oci:identity:compartment:id
-    title: "Existing Encryption Key Compartment"
-    description: "An existing compartment for the key used to encrypt Service Connector target Object Storage bucket."
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used to encrypt Service Connector target Object Storage bucket."
     required: false
     visible:
       and:
@@ -832,10 +832,10 @@ variables:
     description: "Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. Providing an encryption key is optional. If a key is not provided and 'CIS Level' is set to 2, the Landing Zone will manage the key."
     required: false
 
-  existing_bucket_key_compartment_id:
+  existing_bucket_vault_compartment_id:
     type: oci:identity:compartment:id
-    title: "Existing Encryption Key Compartment"
-    description: "An existing compartment for the key used in Object Storage bucket encryption."
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used in Object Storage bucket encryption."
     required: false
     visible: 
       and: 

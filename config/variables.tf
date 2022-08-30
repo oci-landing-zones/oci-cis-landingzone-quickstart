@@ -487,8 +487,8 @@ variable "service_connector_target_kind" {
     error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming or functions."
   }
 }
-variable "existing_service_connector_bucket_key_compartment_id" {
-  description = "The OCID of an existing compartment for the encryption key used in Service Connector target Object Storage bucket. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+variable "existing_service_connector_bucket_vault_compartment_id" {
+  description = "The OCID of an existing compartment for the vault with the key used in Service Connector target Object Storage bucket encryption. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
   type = string
   default = null
 }
@@ -548,8 +548,8 @@ variable "enable_oss_bucket" {
   type = bool
   default = true
 }
-variable "existing_bucket_key_compartment_id" {
-  description = "The OCID of an existing compartment for the key used in Object Storage bucket encryption."
+variable "existing_bucket_vault_compartment_id" {
+  description = "The OCID of an existing compartment for the vault with the key used in Object Storage bucket encryption."
   type = string
   default = null
 }

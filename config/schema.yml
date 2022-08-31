@@ -12,10 +12,10 @@ variableGroups:
     variables:
       - "region"
       - "service_label"
-      - "env_advanced_options"
-      - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
+      - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -164,7 +164,13 @@ variables:
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
-    visible: env_advanced_options
+  
+  existing_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing enclosing compartment"
+    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the Root compartment."
+    required: false 
+    visible: use_enclosing_compartment
 
   extend_landing_zone_to_new_region:
     type: boolean
@@ -173,16 +179,6 @@ variables:
     default: false
     visible: env_advanced_options
   
-  existing_enclosing_compartment_ocid:
-    type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the root compartment."
-    required: false 
-    visible:  
-      and:
-        - env_advanced_options
-        - use_enclosing_compartment
-
   policies_in_root_compartment:
     type: enum
     title: "CREATE or USE policies in the root compartment?"

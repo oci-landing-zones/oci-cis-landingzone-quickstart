@@ -35,8 +35,8 @@ module "lz_scanning" {
   vss_recipe_name   = local.vss_recipe_name
   vss_policy_name   = local.vss_policy_name
 
-  defined_tags  = local.custom_vss_defined_tags
-  freeform_tags = local.custom_vss_freeform_tags != null ? merge(local.custom_vss_freeform_tags, local.landing_zone_tags) : local.landing_zone_tags
+  defined_tags  = local.vss_defined_tags
+  freeform_tags = local.vss_freeform_tags
 
   vss_custom_recipes = local.custom_vss_recipes
   vss_custom_targets = local.custom_vss_targets

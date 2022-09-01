@@ -150,7 +150,9 @@ locals {
         "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
+        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}"
+	]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -175,7 +177,9 @@ locals {
         "allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage databases in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}"] : []     
+        "allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment.name}"
+	] : []
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp, 
@@ -250,7 +254,9 @@ locals {
         "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage ons-family in compartment ${local.exainfra_compartment.name}",
         "allow group ${local.exainfra_admin_group_name} to manage alarms in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}"]
+        "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}",
+        "allow group ${local.exainfra_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment.name}"
+	]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
@@ -462,7 +468,9 @@ locals {
           "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
           "Allow group ${local.auditor_group_name} to read vss-family in tenancy",       
           "Allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
-          "Allow group ${local.auditor_group_name} to read usage-reports in tenancy"]
+          "Allow group ${local.auditor_group_name} to read usage-reports in tenancy",
+          "Allow group ${local.auditor_group_name} to read data-safe-family in tenancy"
+	  ]
       },
       (local.announcement_reader_policy_name) = {
         compartment_id = var.tenancy_ocid

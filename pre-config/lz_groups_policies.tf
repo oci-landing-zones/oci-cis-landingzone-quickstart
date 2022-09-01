@@ -134,6 +134,7 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to use cloud-shell in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-budgets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-reports in tenancy",                        
+        "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read data-safe-family in tenancy",
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect users in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect groups in tenancy",
@@ -144,6 +145,16 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect identity-providers in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to read audit-events in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to use cloud-shell in tenancy",
+        # Announcement reader
+        "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
+      "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy", ]
+    }
+    "${each.key}-auditor-root-policy" = {
+      compartment_id = var.tenancy_ocid
+      description    = "CIS Landing Zone groups auditor root policy."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
+      statements = [
         # Auditor
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect all-resources in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read repos in tenancy",
@@ -155,9 +166,8 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to use cloud-shell in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-budgets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-reports in tenancy",                        
-        # Announcement reader
-        "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
-      "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy", ]
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read data-safe-family in tenancy"
+      ]
     }
   }
 }

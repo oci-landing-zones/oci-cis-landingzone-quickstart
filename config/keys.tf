@@ -112,8 +112,12 @@ locals {
 #----------------------------------------------------------------------------
 module "lz_keys" {
   source = "../modules/security/keys"
+  providers = {
+    oci = oci
+    oci.home = oci.home
+  }
+  depends_on = [null_resource.wait_on_compartments]
   count  = (var.enable_oss_bucket && var.cis_level == "2") ? 1 : 0
-  depends_on            = [null_resource.wait_on_compartments]
   compartment_id        = local.security_compartment_id
   managed_keys          = local.managed_appdev_bucket_key
   policy_compartment_id = local.enclosing_compartment_id
@@ -128,8 +132,12 @@ module "lz_keys" {
 #----------------------------------------------------------------------------
 module "lz_service_connector_keys" {
   source = "../modules/security/keys"
+  providers = {
+    oci = oci
+    oci.home = oci.home
+  }
+  depends_on = [null_resource.wait_on_compartments]
   count = (var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.cis_level == "2") ? 1 : 0
-  depends_on            = [null_resource.wait_on_compartments]
   compartment_id        = local.security_compartment_id
   managed_keys          = local.managed_sch_bucket_key
   policy_compartment_id = local.enclosing_compartment_id

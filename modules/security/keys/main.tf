@@ -13,16 +13,20 @@
 terraform {
   required_providers {
     oci = {
-      source = "oracle/oci"
+      source  = "oracle/oci"
+      version = ">= 4.80.0"
+      configuration_aliases = [ oci, oci.home ] 
     }
   }
 }
 
 data "oci_identity_compartment" "this" {
+  provider = oci.home
   id = var.compartment_id
 }
 
 data "oci_kms_vault" "these" {
+  provider = oci
   for_each = var.managed_keys
     vault_id = each.value.vault_id
 }
@@ -40,6 +44,7 @@ locals {
 #-- Default managed keys.
 #------------------------------------------------------------------
 resource "oci_kms_key" "these" {
+  provider = oci
   #-- create_before_destroy makes Terraform to first update any resources that depend on these keys before destroying the keys.
   #-- This helps with Object Storage encrypted buckets, when updated with a new encryption key.
   lifecycle {
@@ -61,6 +66,7 @@ resource "oci_kms_key" "these" {
 #-- Single policy for default managed keys.
 #------------------------------------------------------------------
 resource "oci_identity_policy" "managed_keys" {
+  provider = oci.home
   lifecycle {
     create_before_destroy = true
   }
@@ -78,6 +84,7 @@ resource "oci_identity_policy" "managed_keys" {
 #-- Keys can live in different compartments.
 #------------------------------------------------------------------
 resource "oci_identity_policy" "existing_keys" {
+  provider = oci.home
   for_each = var.existing_keys
     name           = "${each.key}-policy"
     description    = "CIS Landing Zone policy allowing access to keys in the Vault service."

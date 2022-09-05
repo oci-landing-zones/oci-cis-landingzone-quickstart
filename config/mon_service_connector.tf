@@ -78,8 +78,12 @@ locals {
 
 module "lz_service_connector" {
   source         = "../modules/monitoring/service-connector-v2"
-  count          = var.enable_service_connector ? 1 : 0
+  providers      = {
+    oci = oci
+    oci.home = oci.home
+  }
   depends_on     = [null_resource.wait_on_service_connector_keys_policy]
+  count          = var.enable_service_connector ? 1 : 0
   tenancy_id     = var.tenancy_ocid
   display_name   = local.service_connector_name
   compartment_id = local.security_compartment_id

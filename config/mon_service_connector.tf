@@ -3,12 +3,22 @@
 
 locals {
 #------------------------------------------------------------------------------------------------------
-#-- Any of these local vars before ### DON'T TOUCH THESE ### can be overriden in a _override.tf file
+#-- Any of these local vars can be overriden in a _override.tf file
 #------------------------------------------------------------------------------------------------------
   custom_service_connector_name = null
   custom_service_connector_target_bucket_name = null
   custom_service_connector_target_object_name_prefix = null
   custom_service_connector_target_stream_name = null
+  custom_service_connector_target_policy_name = null
+
+  custom_service_connector_defined_tags = null
+  custom_service_connector_freeform_tags = null
+
+  custom_target_defined_tags = null
+  custom_target_freeform_tags = null
+
+  custom_policy_defined_tags = null
+  custom_policy_freeform_tags = null
 
   audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for k, v in module.lz_compartments.compartments : {
     compartment_id = v.id
@@ -25,56 +35,7 @@ locals {
     log_group_id = module.lz_flow_logs.log_group.id
     log_id = v.id
   }] 
-
-  all_service_connector_defined_tags = null
-  all_service_connector_freeform_tags = null
-
-  all_target_defined_tags = null
-  all_target_freeform_tags = null
-
-  all_policy_defined_tags = null
-  all_policy_freeform_tags = null
-
-  ### DON'T TOUCH THESE ###
-  #---------------------------------------------
-  #--- Service Connector tags 
-  #---------------------------------------------
-  default_service_connector_defined_tags = null
-  default_service_connector_freeform_tags = local.landing_zone_tags
-  service_connector_defined_tags = local.all_service_connector_defined_tags != null ? local.all_service_connector_defined_tags : local.default_service_connector_defined_tags
-  service_connector_freeform_tags = local.all_service_connector_freeform_tags != null ? merge(local.all_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
-
-  #---------------------------------------------
-  #--- Service Connector Target tags 
-  #---------------------------------------------
-  default_target_defined_tags = null
-  default_target_freeform_tags = local.landing_zone_tags  
-  target_defined_tags = local.all_target_defined_tags != null ? local.all_target_defined_tags : local.default_target_defined_tags
-  target_freeform_tags = local.all_target_freeform_tags != null ? merge(local.all_target_freeform_tags, local.default_target_freeform_tags) : local.default_target_freeform_tags
-
-  #---------------------------------------------
-  #--- Service Connector Policy tags 
-  #---------------------------------------------
-  default_policy_defined_tags = null
-  default_policy_freeform_tags = local.landing_zone_tags  
-  policy_defined_tags = local.all_policy_defined_tags != null ? local.all_policy_defined_tags : local.default_policy_defined_tags
-  policy_freeform_tags = local.all_policy_freeform_tags != null ? merge(local.all_policy_freeform_tags, local.default_policy_freeform_tags) : local.default_policy_freeform_tags
-
-  #---------------------------------------------
-  #--- Service Connector resources naming 
-  #---------------------------------------------
-  default_service_connector_name = "${var.service_label}-service-connector"
-  service_connector_name = local.custom_service_connector_name != null ? local.custom_service_connector_name : local.default_service_connector_name
-
-  default_service_connector_target_bucket_name = "${var.service_label}-service-connector-bucket"
-  service_connector_target_bucket_name = local.custom_service_connector_target_bucket_name != null ? local.custom_service_connector_target_bucket_name : local.default_service_connector_target_bucket_name
-
-  default_service_connector_target_stream_name = "${var.service_label}-service-connector-stream"
-  service_connector_target_stream_name = local.custom_service_connector_target_stream_name != null ? local.custom_service_connector_target_stream_name : local.default_service_connector_target_stream_name
-
-  default_service_connector_target_object_name_prefix = "sch"
-  service_connector_target_object_name_prefix = local.custom_service_connector_target_object_name_prefix != null ? local.custom_service_connector_target_object_name_prefix : local.default_service_connector_target_object_name_prefix
-}
+}  
 
 module "lz_service_connector" {
   source         = "../modules/monitoring/service-connector-v2"
@@ -88,7 +49,7 @@ module "lz_service_connector" {
   display_name   = local.service_connector_name
   compartment_id = local.security_compartment_id
   activate       = var.activate_service_connector
-  defined_tags   = local.all_service_connector_defined_tags
+  defined_tags   = local.service_connector_defined_tags
   freeform_tags  = local.service_connector_freeform_tags
   cis_level      = var.cis_level
 
@@ -106,6 +67,8 @@ module "lz_service_connector" {
 
   target_function_id = var.existing_service_connector_target_function_id
 
+  target_policy_name = local.service_connector_target_policy_name
+
   target_defined_tags  = local.target_defined_tags
   target_freeform_tags = local.target_freeform_tags
 
@@ -118,4 +81,49 @@ resource "null_resource" "wait_on_service_connector_keys_policy" {
    provisioner "local-exec" {
      command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
    }
+}
+
+locals {
+  ### DON'T TOUCH THESE ###
+  #---------------------------------------------
+  #--- Service Connector tags 
+  #---------------------------------------------
+  default_service_connector_defined_tags = null
+  default_service_connector_freeform_tags = local.landing_zone_tags
+  service_connector_defined_tags = local.custom_service_connector_defined_tags != null ? merge(local.custom_service_connector_defined_tags, local.default_service_connector_defined_tags) : local.default_service_connector_defined_tags
+  service_connector_freeform_tags = local.custom_service_connector_freeform_tags != null ? merge(local.custom_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
+
+  #---------------------------------------------
+  #--- Service Connector Target tags 
+  #---------------------------------------------
+  default_target_defined_tags = null
+  default_target_freeform_tags = local.landing_zone_tags  
+  target_defined_tags = local.custom_target_defined_tags != null ? merge(local.custom_target_defined_tags, local.default_target_defined_tags) : local.default_target_defined_tags
+  target_freeform_tags = local.custom_target_freeform_tags != null ? merge(local.custom_target_freeform_tags, local.default_target_freeform_tags) : local.default_target_freeform_tags
+
+  #---------------------------------------------
+  #--- Service Connector Policy tags 
+  #---------------------------------------------
+  default_policy_defined_tags = null
+  default_policy_freeform_tags = local.landing_zone_tags  
+  policy_defined_tags = local.custom_policy_defined_tags != null ? merger(local.custom_policy_defined_tags, local.default_policy_defined_tags) : local.default_policy_defined_tags
+  policy_freeform_tags = local.custom_policy_freeform_tags != null ? merge(local.custom_policy_freeform_tags, local.default_policy_freeform_tags) : local.default_policy_freeform_tags
+
+  #---------------------------------------------
+  #--- Service Connector resources naming 
+  #---------------------------------------------
+  default_service_connector_name = "${var.service_label}-service-connector"
+  service_connector_name = local.custom_service_connector_name != null ? local.custom_service_connector_name : local.default_service_connector_name
+
+  default_service_connector_target_bucket_name = "${var.service_label}-service-connector-bucket"
+  service_connector_target_bucket_name = local.custom_service_connector_target_bucket_name != null ? local.custom_service_connector_target_bucket_name : local.default_service_connector_target_bucket_name
+
+  default_service_connector_target_stream_name = "${var.service_label}-service-connector-stream"
+  service_connector_target_stream_name = local.custom_service_connector_target_stream_name != null ? local.custom_service_connector_target_stream_name : local.default_service_connector_target_stream_name
+
+  default_service_connector_target_object_name_prefix = "sch"
+  service_connector_target_object_name_prefix = local.custom_service_connector_target_object_name_prefix != null ? local.custom_service_connector_target_object_name_prefix : local.default_service_connector_target_object_name_prefix
+
+  default_service_connector_target_policy_name = "${var.service_label}-service-connector-target-${local.region_key}-policy"
+  service_connector_target_policy_name = local.custom_service_connector_target_policy_name != null ? local.custom_service_connector_target_policy_name : local.default_service_connector_target_policy_name
 }

@@ -3,27 +3,21 @@
 
 locals {
 #------------------------------------------------------------------------------------------------------
-#-- Any of these local vars before ### DON'T TOUCH THESE ### can be overriden in a _override.tf file
+#-- Any of these local vars can be overriden in a _override.tf file
 #------------------------------------------------------------------------------------------------------
+  #-- Vault
   custom_vault_name = null
   custom_vault_type = null   
-  all_vault_defined_tags   = null
-  all_vault_freeform_tags  = null
+  custom_vault_defined_tags   = null
+  custom_vault_freeform_tags  = null
 
-  ### DON'T TOUCH THESE ###
-  default_vault_name = "${var.service_label}-vault"
-  default_vault_type = "DEFAULT"
-  default_vault_defined_tags  = null
-  default_vault_freeform_tags = local.landing_zone_tags
-
-  vault_name = local.custom_vault_name != null ? local.custom_vault_name : local.default_vault_name
-  vault_type = local.custom_vault_type != null ? local.custom_vault_type : local.default_vault_type
-  vault_defined_tags = local.all_vault_defined_tags != null ? local.all_vault_defined_tags : local.default_vault_defined_tags
-  vault_freeform_tags = local.all_vault_freeform_tags != null ? merge(local.all_vault_freeform_tags, local.default_vault_freeform_tags) : local.default_vault_freeform_tags
-  ###
-
-  enable_vault = (var.enable_oss_bucket && var.existing_bucket_vault_id == null && var.cis_level == "2") || (
-                  var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.existing_service_connector_bucket_vault_id == null && var.cis_level == "2")
+  #-- Keys
+  custom_appdev_bucket_key_name = null
+  custom_appdev_bucket_key_policy_name = null
+  custom_sch_bucket_key_name = null
+  custom_sch_bucket_key_policy_name = null
+  custom_keys_defined_tags = null
+  custom_keys_freeform_tags = null
 }
 
 #---------------------------------------------------------------------------
@@ -39,29 +33,80 @@ module "lz_vault" {
   freeform_tags  = local.vault_freeform_tags
 }
 
-#------------------------------------------------------------------------------------------------------
-#-- Any of these local vars before ### DON'T TOUCH THESE ### can be overriden in a _override.tf file
-#------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+#-- This module call manages KMS Keys used by AppDev bucket
+#----------------------------------------------------------------------------
+module "lz_keys" {
+  source = "../modules/security/keys"
+  providers = {
+    oci = oci
+    oci.home = oci.home
+  }
+  depends_on = [null_resource.wait_on_compartments]
+  count  = (var.enable_oss_bucket && var.cis_level == "2") ? 1 : 0
+  compartment_id        = local.security_compartment_id
+  managed_keys          = local.managed_appdev_bucket_key
+  policy_compartment_id = local.enclosing_compartment_id
+  policy_name           = local.appdev_bucket_key_policy_name
+  existing_keys         = local.existing_appdev_bucket_key
+  defined_tags          = local.keys_defined_tags
+  freeform_tags         = local.keys_freeform_tags
+}
+
+#----------------------------------------------------------------------------
+#-- This module call manages KMS Keys used by Service Connector bucket
+#----------------------------------------------------------------------------
+module "lz_service_connector_keys" {
+  source = "../modules/security/keys"
+  providers = {
+    oci = oci
+    oci.home = oci.home
+  }
+  depends_on = [null_resource.wait_on_compartments]
+  count = (var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.cis_level == "2") ? 1 : 0
+  compartment_id        = local.security_compartment_id
+  managed_keys          = local.managed_sch_bucket_key
+  policy_compartment_id = local.enclosing_compartment_id
+  policy_name           = local.sch_bucket_key_policy_name
+  existing_keys         = local.existing_sch_bucket_key
+  defined_tags          = local.keys_defined_tags
+  freeform_tags         = local.keys_freeform_tags
+}
+
 locals {
-
-  custom_appdev_bucket_key_name = null
-  custom_sch_bucket_key_name = null
-  all_keys_defined_tags = null
-  all_keys_freeform_tags = null
-
   ### DON'T TOUCH THESE ###
+  #-- Vault
+  default_vault_name = "${var.service_label}-vault"
+  default_vault_type = "DEFAULT"
+  default_vault_defined_tags  = null
+  default_vault_freeform_tags = local.landing_zone_tags
+
+  vault_name = local.custom_vault_name != null ? local.custom_vault_name : local.default_vault_name
+  vault_type = local.custom_vault_type != null ? local.custom_vault_type : local.default_vault_type
+  vault_defined_tags = local.custom_vault_defined_tags != null ? local.custom_vault_defined_tags : local.default_vault_defined_tags
+  vault_freeform_tags = local.custom_vault_freeform_tags != null ? merge(local.custom_vault_freeform_tags, local.default_vault_freeform_tags) : local.default_vault_freeform_tags
+  
+  enable_vault = (var.enable_oss_bucket && var.existing_bucket_vault_id == null && var.cis_level == "2") || (
+                  var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.existing_service_connector_bucket_vault_id == null && var.cis_level == "2")
+
+  #-- Keys
   default_appdev_bucket_key_name = "${var.service_label}-oss-key"
   appdev_bucket_key_name = local.custom_appdev_bucket_key_name != null ? local.custom_appdev_bucket_key_name : local.default_appdev_bucket_key_name
+
+  default_appdev_bucket_key_policy_name = "${var.service_label}-oss-key-${local.region_key}-policy"
+  appdev_bucket_key_policy_name = local.custom_appdev_bucket_key_policy_name != null ? local.custom_appdev_bucket_key_policy_name : local.default_appdev_bucket_key_policy_name
   
   default_sch_bucket_key_name = "${var.service_label}-sch-bucket-key"
   sch_bucket_key_name = local.custom_sch_bucket_key_name != null ? local.custom_sch_bucket_key_name : local.default_sch_bucket_key_name
+
+  default_sch_bucket_key_policy_name = "${var.service_label}-service-connector-key-${local.region_key}-policy"
+  sch_bucket_key_policy_name = local.custom_sch_bucket_key_policy_name != null ? local.custom_sch_bucket_key_policy_name : local.default_sch_bucket_key_policy_name
   
   default_keys_defined_tags  = null
   default_keys_freeform_tags = local.landing_zone_tags
   
-  keys_defined_tags = local.all_keys_defined_tags != null ? local.all_keys_defined_tags : local.default_keys_defined_tags
-  keys_freeform_tags = local.all_keys_freeform_tags != null ? merge(local.all_keys_freeform_tags, local.default_keys_freeform_tags) : local.default_keys_freeform_tags
-  ###
+  keys_defined_tags = local.custom_keys_defined_tags != null ? merge(local.custom_keys_defined_tags, local.default_keys_defined_tags) : local.default_keys_defined_tags
+  keys_freeform_tags = local.custom_keys_freeform_tags != null ? merge(local.custom_keys_freeform_tags, local.default_keys_freeform_tags) : local.default_keys_freeform_tags
   
   appdev_key_mapkey = "${var.service_label}-oss-key"
   sch_key_mapkey    = "${var.service_label}-sch-bucket-key" 
@@ -105,44 +150,4 @@ locals {
       group_grantees    = []
     }
   } : {}
-}
-
-#----------------------------------------------------------------------------
-#-- This module call manages KMS Keys used by AppDev bucket
-#----------------------------------------------------------------------------
-module "lz_keys" {
-  source = "../modules/security/keys"
-  providers = {
-    oci = oci
-    oci.home = oci.home
-  }
-  depends_on = [null_resource.wait_on_compartments]
-  count  = (var.enable_oss_bucket && var.cis_level == "2") ? 1 : 0
-  compartment_id        = local.security_compartment_id
-  managed_keys          = local.managed_appdev_bucket_key
-  policy_compartment_id = local.enclosing_compartment_id
-  policy_name           = "${var.service_label}-oss-key-${local.region_key}-policy"
-  existing_keys         = local.existing_appdev_bucket_key
-  defined_tags          = local.keys_defined_tags
-  freeform_tags         = local.keys_freeform_tags
-}
-
-#----------------------------------------------------------------------------
-#-- This module call manages KMS Keys used by Service Connector bucket
-#----------------------------------------------------------------------------
-module "lz_service_connector_keys" {
-  source = "../modules/security/keys"
-  providers = {
-    oci = oci
-    oci.home = oci.home
-  }
-  depends_on = [null_resource.wait_on_compartments]
-  count = (var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.cis_level == "2") ? 1 : 0
-  compartment_id        = local.security_compartment_id
-  managed_keys          = local.managed_sch_bucket_key
-  policy_compartment_id = local.enclosing_compartment_id
-  policy_name           = "${var.service_label}-service-connector-key-${local.region_key}-policy"
-  existing_keys         = local.existing_sch_bucket_key
-  defined_tags          = local.keys_defined_tags
-  freeform_tags         = local.keys_freeform_tags
 }

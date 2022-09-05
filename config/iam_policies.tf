@@ -272,8 +272,8 @@ locals {
 
   ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
-                           "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
-                           "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
+                           "allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
+                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
   ### Dynamic Group Policies ###
@@ -426,27 +426,27 @@ locals {
         description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.appdev_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.database_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.auditor_policy_name) = {
         compartment_id = var.tenancy_ocid

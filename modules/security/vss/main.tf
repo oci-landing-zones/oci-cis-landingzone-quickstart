@@ -12,7 +12,9 @@
 terraform {
   required_providers {
     oci = {
-      source = "oracle/oci"
+      source  = "oracle/oci"
+      version = ">= 4.80.0"
+      configuration_aliases = [ oci, oci.home ]
     }
   }
 }
@@ -86,6 +88,7 @@ locals {
 #-- Default recipes resources.
 #---------------------------------------------------------------------------------------
 resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
+  provider = oci
   lifecycle {
       create_before_destroy = true
   }  
@@ -147,6 +150,7 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "these" {
 #-- Internal issue reference: 181.
 #---------------------------------------------------------------------------------------
 resource "oci_vulnerability_scanning_host_scan_target" "these" {
+  provider = oci
   for_each = toset(local.compat_vss_target_names)
     compartment_id        = local.default_vss_targets[each.key].compartment_id
     display_name          = local.default_vss_targets[each.key].name
@@ -161,6 +165,7 @@ resource "oci_vulnerability_scanning_host_scan_target" "these" {
 #-- VSS policy resource.
 #----------------------------------------------------------------------------
 resource "oci_identity_policy" "vss" {
+  provider       = oci.home
   name           = var.vss_policy_name
   description    = "CIS Landing Zone policy for VSS (Vulnerability Scanning Service)."
   compartment_id = var.tenancy_id
@@ -173,6 +178,7 @@ resource "oci_identity_policy" "vss" {
 #-- Custom recipes resources
 #----------------------------------------------------------------------------- 
 resource "oci_vulnerability_scanning_host_scan_recipe" "custom" {
+  provider = oci
   lifecycle {
     create_before_destroy = true
   }  
@@ -211,6 +217,7 @@ resource "oci_vulnerability_scanning_host_scan_recipe" "custom" {
 #-- Custom targets resources.
 #-----------------------------------------------------------------------------
 resource "oci_vulnerability_scanning_host_scan_target" "custom" {
+  provider = oci
   for_each = var.vss_custom_targets
     compartment_id        = each.value.compartment_id
     display_name          = each.value.name

@@ -4,7 +4,9 @@
 terraform {
   required_providers {
     oci = {
-      source = "oracle/oci"
+      source  = "oracle/oci"
+      version = ">= 4.80.0"
+      configuration_aliases = [ oci, oci.home]
     }
   }
 }
@@ -19,6 +21,7 @@ locals {
 }
 
 resource "oci_sch_service_connector" "this" {
+    provider       = oci
     compartment_id = var.compartment_id
     display_name   = var.display_name != "service-connector" ? var.display_name : "${var.service_label}-${var.display_name}"
     defined_tags   = var.defined_tags
@@ -51,6 +54,7 @@ resource "oci_sch_service_connector" "this" {
 }
 
 resource "oci_objectstorage_bucket" "this" {
+    provider       = oci
     count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
     compartment_id = var.compartment_id
     name           = local.target_bucket_name
@@ -62,6 +66,7 @@ resource "oci_objectstorage_bucket" "this" {
 }
 
 resource "oci_identity_policy" "oss" {
+    provider       = oci.home
     count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to manage objects in the target bucket."
@@ -79,6 +84,7 @@ resource "oci_identity_policy" "oss" {
 }
 
 resource "oci_streaming_stream" "this" {
+    provider       = oci
     count          = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
     name           = local.target_stream_name
     partitions     = var.target_stream_partitions
@@ -89,6 +95,7 @@ resource "oci_streaming_stream" "this" {
 }
 
 resource "oci_identity_policy" "streaming" {
+    provider       = oci.home
     count          = lower(var.target_kind) == "streaming" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to use the target stream."
@@ -106,6 +113,7 @@ resource "oci_identity_policy" "streaming" {
 }
 
 resource "oci_identity_policy" "function" {
+    provider       = oci
     count          = lower(var.target_kind) == "functions" ? 1 : 0
     name           = var.target_policy_name != "service-connector-target-policy" ? var.target_policy_name : "${var.service_label}-${var.target_policy_name}"
     description    = "CIS Landing Zone policy for Service Connector Hub to use the target function."

@@ -17,8 +17,11 @@ locals {
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
+  providers  = {
+    oci = oci
+    oci.home = oci.home
+  }
   count      = var.vss_create ? 1 : 0
-  depends_on = [null_resource.wait_on_services_policy]
   tenancy_id = var.tenancy_ocid
   compartment_id = local.security_compartment_id
 

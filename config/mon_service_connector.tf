@@ -55,8 +55,12 @@ locals {
 
 }
 module "lz_service_connector" {
-    depends_on = [null_resource.wait_on_keys_policy]
     source = "../modules/monitoring/service-connector-v2"
+    providers = {
+        oci = oci
+        oci.home = oci.home
+    }
+    depends_on = [null_resource.wait_on_keys_policy]
     tenancy_ocid             = var.tenancy_ocid
     service_label            = var.service_label
     display_name             = var.service_connector_name

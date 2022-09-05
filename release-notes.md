@@ -1,3 +1,12 @@
+# - 2.4.x
+1. [Data Safe permissions](#2-4-x-datasafe-perms)
+## <a name="2-4-0-datasafe-perms">Cloud Guard Events</a>
+In the config directory, management permission for the Data Safe family has been added to the Database Adminstrators and Exadata Infrastructure Admnistrators groups. Read permission for the Data Safe family has been added to the Auditors group.
+
+In the pre-config directory, read permission for the Data Safe family has been added to the Database Administrators and Auditors groups.
+
+##
+
 # July 11, 2022 Release Notes - 2.3.6
 1. [Cloud Guard Events](#2-3-6-cg-events)
 1. [Updated Logging Architecture](#2-3-6-updated-logging)

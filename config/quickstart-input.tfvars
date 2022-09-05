@@ -132,12 +132,18 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # existing_service_connector_target_stream_id   = null # the OCID of an existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'.
 # existing_service_connector_target_function_id = null # the OCID of an existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'.
 
+
 # ------------------------------------------------------
 # ----- Vulnerability Scanning Service
 # ------------------------------------------------------
-# vss_create        = true
-# vss_scan_schedule = "WEEKLY"
-# vss_scan_day      = "SUNDAY"
+# vss_create           = false      # whether Vulnerability Scanning Service recipes and targets are enabled.
+# vss_scan_schedule    = "WEEKLY"   # the scan schedule for the Vulnerability Scanning Service recipe. Valid values are WEEKLY or DAILY (case insensitive).
+# vss_scan_day         = "SUNDAY"   # the week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY (case insensitive).
+# vss_port_scan_level  = "STANDARD" # the port scan level. STANDARD, LIGHT or NONE (case insensitive).
+# vss_agent_scan_level = "STANDARD" # the agent scan level. STANDARD or NONE (case insensitive).
+# vss_agent_cis_benchmark_settings_scan_level = "MEDIUM" # the CIS benchmark level for agent-based scans. STRICT, MEDIUM, LIGHTWEIGHT or NONE (case insensitive)..
+# vss_enable_file_scan = false   # whether file scanning is enabled for agent-based scans
+# vss_folders_to_scan  = ["/"]   # folders to scan. Required if vss_enable_file_scan is true. 
 
 # ------------------------------------------------------
 # ----- Object Storage bucket

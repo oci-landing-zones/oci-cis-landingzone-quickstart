@@ -33,6 +33,14 @@ output "bastions" {
     value = local.display_outputs == true ? {for k, v in module.lz_app_bastion.bastions : k => {id: v.id, subnet_id: v.target_subnet_id, allowed_cidrs: v.client_cidr_block_allow_list}} : null
 }
 
+output "vss_recipes" {
+    value = local.display_outputs == true ? (length(module.lz_scanning) > 0 ? {for k, v in module.lz_scanning[0].vss_recipes : k => {name: v.display_name, id: v.id, compartment_id: v.compartment_id}}: null) : null
+}
+
+output "vss_targets" {
+    value = local.display_outputs == true ? (length(module.lz_scanning) > 0 ? {for k, v in module.lz_scanning[0].vss_targets : k => {name: v.display_name, id: v.id, compartment_id: v.compartment_id}}: null) : null
+}
+
 output "kms_vault" {
     value = local.display_outputs == true ? (length(module.lz_vault) > 0 ? {name: module.lz_vault[0].vault.display_name, id: module.lz_vault[0].vault.id, type: module.lz_vault[0].vault.vault_type, compartment_id: module.lz_vault[0].vault.compartment_id, management_endpoint: module.lz_vault[0].vault.management_endpoint, crypto_endpoint: module.lz_vault[0].vault.crypto_endpoint, state: module.lz_vault[0].vault.state} : null) : null
 }

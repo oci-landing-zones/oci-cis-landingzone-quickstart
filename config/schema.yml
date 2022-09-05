@@ -13,10 +13,10 @@ variableGroups:
       - "region"
       - "service_label"
       - "cis_level"
-      - "env_advanced_options"
-      - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
+      - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -124,6 +124,11 @@ variableGroups:
       - "vss_create"
       - "vss_scan_schedule"
       - "vss_scan_day"
+      - "vss_port_scan_level"
+      - "vss_agent_scan_level"
+      - "vss_agent_cis_benchmark_settings_scan_level"
+      - "vss_enable_file_scan"
+      - "vss_folders_to_scan"
 
   - title: "Cost Management"
     variables:
@@ -177,7 +182,13 @@ variables:
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
-    visible: env_advanced_options
+  
+  existing_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing enclosing compartment"
+    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the Root compartment."
+    required: false 
+    visible: use_enclosing_compartment
 
   extend_landing_zone_to_new_region:
     type: boolean
@@ -186,16 +197,6 @@ variables:
     default: false
     visible: env_advanced_options
   
-  existing_enclosing_compartment_ocid:
-    type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the root compartment."
-    required: false 
-    visible:  
-      and:
-        - env_advanced_options
-        - use_enclosing_compartment
-
   policies_in_root_compartment:
     type: enum
     title: "CREATE or USE policies in the root compartment?"
@@ -792,14 +793,13 @@ variables:
   vss_create:
     type: boolean
     title: "Enable Vulnerability Scanning?"
-    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
-    default: true
-
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment."
+  
   vss_scan_schedule:
     type: enum
     title: "Scanning Schedule"
     description: "When to scan. WEEKLY or DAILY."
-    default: WEEKLY
+    #default: WEEKLY
     visible: vss_create
     enum:
       - WEEKLY
@@ -809,7 +809,7 @@ variables:
     type: enum
     title: "Scanning Day"
     description: "The day when to scan. Applies to weekly scans only."
-    default: SUNDAY
+    #default: SUNDAY
     enum:
       - SUNDAY
       - MONDAY
@@ -825,7 +825,69 @@ variables:
           - vss_scan_schedule
           - "WEEKLY"
 
-  # Object Storage
+  vss_port_scan_level:
+    type: enum
+    title: "Port Scan Level"
+    description : "Checks for open ports using a network mapper that searches your public IP addresses. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+    enum:
+      - STANDARD
+      - LIGHT
+      - NONE  
+    visible: vss_create
+
+  vss_agent_scan_level:
+    type: enum
+    title: "Agent Scan Level"
+    description : "Checks for open ports on both public and private IP addresses, OS vulnerabilities; compliance with industry benchmarks, vulnerabilities in third-party application files (for application files scanning, check 'Enable File Scanning' below)."
+    enum:
+      - STANDARD
+      - NONE  
+    visible: vss_create   
+
+  vss_agent_cis_benchmark_settings_scan_level:
+    type: enum
+    title: "Agent CIS Benchmark Settings Scan Level"
+    description : "Checks targets for compliance with industry-standard benchmarks published by the Center for Internet Security (CIS)"
+    enum:
+      - STRICT
+      - MEDIUM
+      - LIGHTWEIGTH
+      - NONE
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_enable_file_scan:
+    type: boolean
+    title: "Enable File Scanning?"
+    description: "Whether file scanning is enabled."
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_folders_to_scan:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Folders to Scan"
+    required: false
+    description: "List of file system folders to scan. Required if 'Enable Folder Scanning?' is selected. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell (Type a value and hit enter to enter multiple values)."
+    visible: 
+      and:
+        - ${vss_create}
+        - ${vss_enable_file_scan}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+# Object Storage
   enable_oss_bucket:
     type: boolean
     title: "Enable Object Storage bucket?"
@@ -871,8 +933,8 @@ variables:
         - enable_oss_bucket
         - eq:
           - cis_level
-          - "2"  
-
+          - "2"
+          
 # Cost Management
   create_budget:
     type: boolean

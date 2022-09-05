@@ -517,9 +517,9 @@ variable "existing_service_connector_target_function_id" {
 # ----- Vulnerability Scanning Service
 # ------------------------------------------------------
 variable "vss_create" {
-  description = "Whether or not Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone."
+  description = "Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone."
   type        = bool
-  default     = true
+  default     = false
 }
 variable "vss_scan_schedule" {
   description = "The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive)."
@@ -538,6 +538,43 @@ variable "vss_scan_day" {
     condition     = contains(["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"], upper(var.vss_scan_day))
     error_message = "Validation failed for vss_scan_day: valid values are SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY (case insensitive)."
   }
+}
+variable "vss_port_scan_level" {
+  description = "Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+  type = string
+  default = "STANDARD"
+  validation {
+    condition     = contains(["STANDARD", "LIGHT", "NONE"], upper(var.vss_port_scan_level))
+    error_message = "Validation failed for vss_port_scan_level: valid values are STANDARD, LIGHT, NONE (case insensitive)."
+  }
+}
+variable "vss_agent_scan_level" {
+  description = "Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes."
+  type = string
+  default = "STANDARD"
+  validation {
+    condition     = contains(["STANDARD", "NONE"], upper(var.vss_agent_scan_level))
+    error_message = "Validation failed for vss_agent_scan_level: valid values are STANDARD, NONE (case insensitive)."
+  }
+}
+variable "vss_agent_cis_benchmark_settings_scan_level" {
+  description = "Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning."
+  type = string
+  default = "MEDIUM"
+  validation {
+    condition     = contains(["STRICT", "MEDIUM", "LIGHTWEIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
+    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHTWEIGHT, NONE (case insensitive)."
+  }
+}
+variable "vss_enable_file_scan" {
+  description = "Whether file scanning is enabled."
+  type        = bool
+  default     = false
+}
+variable "vss_folders_to_scan" {
+  description = "A list of folders to scan. Only applies if vss_enable_file_scan is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell."
+  type = list(string)
+  default = ["/"]
 }
 
 # ------------------------------------------------------

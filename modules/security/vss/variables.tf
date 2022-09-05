@@ -11,6 +11,12 @@ variable "compartment_id" {
   type = string
 }
 
+variable "manage_iam_policies" {
+  description = "Whether the module should manage VSS IAM policies. Since these policies are created at a global level and are available across regions, it might be they are already present."
+  type = bool
+  default = true
+}
+
 variable "vss_recipe_name" {
   description = "The recipe name. Use it to override the default one, that is either <name-prefix>-default-scan-recipe or default-scan-recipe."
   type = string
@@ -107,6 +113,7 @@ variable "vss_enable_file_scan" {
 variable "vss_folders_to_scan" {
   description = "A list of folders to scan. Only applies if vss_enable_folder_scan is true."
   type = list(string)
+  default = []
 }
 
 variable "vss_custom_recipes" {

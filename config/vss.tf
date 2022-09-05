@@ -24,6 +24,7 @@ module "lz_scanning" {
   count      = var.vss_create ? 1 : 0
   tenancy_id = var.tenancy_ocid
   compartment_id = local.security_compartment_id
+  manage_iam_policies = !var.extend_landing_zone_to_new_region
 
   vss_scan_schedule = var.vss_scan_schedule
   vss_scan_day      = var.vss_scan_day

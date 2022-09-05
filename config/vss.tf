@@ -1,111 +1,62 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-### Creates Scanning recipes and targets. All Landing Zone compartments are potential targets.
+### Creates scanning recipes and targets. All Landing Zone compartments are targets.
 
 locals {
-  all_scan_recipes = {}
-  all_scan_targets = {}
-
-  all_vss_defined_tags = {}
-  all_vss_freeform_tags = {}
-
-  # Names
-  scan_default_recipe_name = "${var.service_label}-default-scan-recipe"
-  security_cmp_target_name = "${local.security_compartment.key}-scan-target"
-  network_cmp_target_name  = "${local.network_compartment.key}-scan-target"
-  appdev_cmp_target_name   = "${local.appdev_compartment.key}-scan-target"
-  database_cmp_target_name = "${local.database_compartment.key}-scan-target"
-  exainfra_cmp_target_name = "${local.exainfra_compartment.key}-scan-target"
-  
-  default_scan_recipes = var.vss_create == true ? {
-    (local.scan_default_recipe_name) = {
-      compartment_id  = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      port_scan_level = "STANDARD"
-      # Valid values: STANDARD, LIGHT, NONE 
-      # STANDARD checks the 1000 most common port numbers.
-      # LIGHT checks the 100 most common port numbers.
-      # NONE does not check for open ports.
-      schedule_type        = upper(var.vss_scan_schedule)
-      schedule_day_of_week = upper(var.vss_scan_day)
-      agent_scan_level     = "STANDARD"
-      # Valid values: STANDARD, NONE
-      # STANDARD enables agent-based scanning.
-      # NONE disables agent-based scanning and moots all subsequent agent related attributes. 
-      agent_configuration_vendor = "OCI"
-      # Valid values: OCI
-      agent_cis_benchmark_settings_scan_level = "MEDIUM"
-      # Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE
-      # STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical.
-      # MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. 
-      # LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High.
-      # NONE: disables cis benchmark scanning.
-      defined_tags = local.vss_defined_tags
-      freeform_tags = local.vss_freeform_tags
-    }
-  } : {}
-
-  default_scan_targets = var.vss_create == true ? {
-    (local.security_cmp_target_name) = {
-      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      description           = "Landing Zone ${local.security_compartment.name} compartment scanning target."
-      scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      defined_tags          = local.vss_defined_tags
-      freeform_tags         = local.vss_freeform_tags
-    },
-    (local.network_cmp_target_name) = {
-      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      description           = "Landing Zone ${local.network_compartment.name} compartment scanning target."
-      scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = local.network_compartment_id #module.lz_compartments.compartments[local.network_compartment.key].id
-      defined_tags          = local.vss_defined_tags
-      freeform_tags         = local.vss_freeform_tags
-    },
-    (local.appdev_cmp_target_name) = {
-      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      description           = "Landing Zone ${local.appdev_compartment.name} compartment scanning target."
-      scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = local.appdev_compartment_id #module.lz_compartments.compartments[local.appdev_compartment.key].id
-      defined_tags          = local.vss_defined_tags
-      freeform_tags         = local.vss_freeform_tags
-    },
-    (local.database_cmp_target_name) = {
-      compartment_id        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id
-      description           = "Landing Zone ${local.database_compartment.name} compartment scanning target."
-      scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = local.database_compartment_id #module.lz_compartments.compartments[local.database_compartment.key].id
-      defined_tags          = local.vss_defined_tags
-      freeform_tags         = local.vss_freeform_tags
-    }
-  } : {}
-
-  exainfra_scan_target = var.vss_create == true && length(data.oci_identity_compartments.exainfra.compartments) > 0 ? {
-    (local.exainfra_cmp_target_name) = {
-      compartment_id        = local.security_compartment_id
-      description           = "Landing Zone ${local.exainfra_compartment.name} compartment scanning target."
-      scan_recipe_name      = local.scan_default_recipe_name
-      target_compartment_id = local.exainfra_compartment_id
-      defined_tags          = local.vss_defined_tags
-      freeform_tags         = local.vss_freeform_tags
-    } 
-  } : {}  
-
-  scan_targets = merge(local.default_scan_targets, local.exainfra_scan_target)
-
-  ### DON'T TOUCH THESE ###
-  default_vss_defined_tags = null
-  default_vss_freeform_tags = local.landing_zone_tags
-  
-  vss_defined_tags = length(local.all_vss_defined_tags) > 0 ? local.all_vss_defined_tags : local.default_vss_defined_tags
-  vss_freeform_tags = length(local.all_vss_freeform_tags) > 0 ? merge(local.all_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
-
+#------------------------------------------------------------------------------------------------------
+#-- Any of these local vars before can be overriden in a _override.tf file
+#------------------------------------------------------------------------------------------------------
+  custom_vss_recipes = {}
+  custom_vss_targets = {}
+  custom_vss_defined_tags = null
+  custom_vss_freeform_tags = null
+  custom_vss_recipe_name = null
+  custom_vss_policy_name = null
 }
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
-  depends_on = [null_resource.wait_on_services_policy]
-  scan_recipes = length(local.all_scan_recipes) > 0 ? local.all_scan_recipes :  local.default_scan_recipes
-  scan_targets = length(local.all_scan_targets) > 0 ? local.all_scan_targets : local.scan_targets
-  # VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
+  providers  = {
+    oci = oci
+    oci.home = oci.home
+  }
+  count      = var.vss_create ? 1 : 0
+  tenancy_id = var.tenancy_ocid
+  compartment_id = local.security_compartment_id
+  manage_iam_policies = !var.extend_landing_zone_to_new_region
+
+  vss_scan_schedule = var.vss_scan_schedule
+  vss_scan_day      = var.vss_scan_day
+  vss_port_scan_level  = var.vss_port_scan_level
+  vss_agent_scan_level = var.vss_agent_scan_level
+  vss_agent_cis_benchmark_settings_scan_level = var.vss_agent_cis_benchmark_settings_scan_level
+  vss_enable_file_scan = var.vss_enable_file_scan
+  vss_folders_to_scan  = var.vss_folders_to_scan
+
+  vss_targets       = {for k, v in module.lz_compartments.compartments : k => {"target_compartment_id" : v.id, "target_compartment_name" : v.name}}
+  vss_target_names  = keys(module.lz_compartments.compartments)
+  vss_recipe_name   = local.vss_recipe_name
+  vss_policy_name   = local.vss_policy_name
+
+  defined_tags  = local.vss_defined_tags
+  freeform_tags = local.vss_freeform_tags
+
+  vss_custom_recipes = local.custom_vss_recipes
+  vss_custom_targets = local.custom_vss_targets
+
+  #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
+}
+
+locals {
+  ### DON'T TOUCH THESE ###
+  default_vss_defined_tags = null
+  default_vss_freeform_tags = local.landing_zone_tags
+  
+  vss_defined_tags =  local.custom_vss_defined_tags != null ? merge(local.custom_vss_defined_tags, local.default_vss_defined_tags) : local.default_vss_defined_tags
+  vss_freeform_tags = local.custom_vss_freeform_tags != null ? merge(local.custom_vss_freeform_tags, local.default_vss_freeform_tags) : local.default_vss_freeform_tags
+
+  vss_recipe_name = local.custom_vss_recipe_name != null ? local.custom_vss_recipe_name : "${var.service_label}-default-scan-recipe"
+  vss_policy_name = local.custom_vss_policy_name != null ? local.custom_vss_policy_name : "${var.service_label}-scan-policy" 
+  ###
 }

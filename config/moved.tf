@@ -23,3 +23,8 @@ moved {
   from = module.lz_service_connector
   to   = module.lz_service_connector[0]
 }
+
+moved {
+  from = module.lz_scanning
+  to   = module.lz_scanning[0]
+}

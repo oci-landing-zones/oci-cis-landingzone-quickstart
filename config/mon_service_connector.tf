@@ -106,7 +106,7 @@ locals {
   #---------------------------------------------
   default_policy_defined_tags = null
   default_policy_freeform_tags = local.landing_zone_tags  
-  policy_defined_tags = local.custom_policy_defined_tags != null ? merger(local.custom_policy_defined_tags, local.default_policy_defined_tags) : local.default_policy_defined_tags
+  policy_defined_tags = local.custom_policy_defined_tags != null ? merge(local.custom_policy_defined_tags, local.default_policy_defined_tags) : local.default_policy_defined_tags
   policy_freeform_tags = local.custom_policy_freeform_tags != null ? merge(local.custom_policy_freeform_tags, local.default_policy_freeform_tags) : local.default_policy_freeform_tags
 
   #---------------------------------------------

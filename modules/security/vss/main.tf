@@ -165,6 +165,7 @@ resource "oci_vulnerability_scanning_host_scan_target" "these" {
 #-- VSS policy resource.
 #----------------------------------------------------------------------------
 resource "oci_identity_policy" "vss" {
+  count          = var.manage_iam_policies ? 1 : 0
   provider       = oci.home
   name           = var.vss_policy_name
   description    = "CIS Landing Zone policy for VSS (Vulnerability Scanning Service)."

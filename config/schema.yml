@@ -736,7 +736,7 @@ variables:
     description: "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
     required: false
     dependsOn: 
-      compartmentId: ${existing_service_connector_bucket_key_compartment_id}
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
     visible:
       and:
         - ${enable_service_connector}
@@ -753,7 +753,7 @@ variables:
     description: "An existing key used to encrypt Service Connector target Object Storage bucket."
     required: false
     dependsOn: 
-      compartmentId: ${existing_service_connector_bucket_key_compartment_id}
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
       vaultId: ${existing_service_connector_bucket_vault_id}
     visible:
       and:
@@ -912,7 +912,7 @@ variables:
     description: "An existing vault for the key used in Object Storage bucket encryption."
     required: false
     dependsOn: 
-      compartmentId: ${existing_bucket_key_compartment_id}
+      compartmentId: ${existing_bucket_vault_compartment_id}
     visible: 
       and: 
         - enable_oss_bucket
@@ -926,7 +926,7 @@ variables:
     description: "An existing key used for Object Storage bucket encryption."
     required: false
     dependsOn: 
-      compartmentId: ${existing_bucket_key_compartment_id}
+      compartmentId: ${existing_bucket_vault_compartment_id}
       vaultId: ${existing_bucket_vault_id}
     visible: 
       and: 

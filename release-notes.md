@@ -1,4 +1,15 @@
-# - 2.4.x
+# September 09, 2022 Release Notes - 2.4.0
+1. [Service Connector Hub Improved Configuration](#2-4-0-sch-update)
+
+## <a name="2-4-0-sch-update">Service Connector Hub Improved Configuration</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) as announced in [Updated Logging Architecture](#2-3-6-updated-logging) has been updated to now optionally manage Service Connector Hub related resources. For details, look at *enable_service_connector* and *activate_service_connector* variables in [VARIABLES.md](./VARIABLES.md#logging_variables). As a result, the following requirements must be satisfied:
+
+- Landing Zone now requires Terraform version 1.1.
+- Existing users are required to pick Terraform version 1.1.x when updating their stack in OCI Resource Manager.
+- Existing users need to set *enable_service_connector* and *activate_service_connector* variables to true for creating Service Connector Hub resources and activating the service.
+
+When deploying an Object Storage bucket as Service Connector target, users can now bring an existing key for bucket encryption. For details, look at *existing_service_connector_bucket_vault_compartment_id*, *existing_service_connector_bucket_vault_id* and *existing_service_connector_bucket_key_id* variables in [VARIABLES.md](./VARIABLES.md#logging_variables).
+
 1. [Data Safe permissions](#2-4-x-datasafe-perms)
 ## <a name="2-4-0-datasafe-perms">Cloud Guard Events</a>
 In the config directory, management permission for the Data Safe family has been added to the Database Adminstrators and Exadata Infrastructure Admnistrators groups. Read permission for the Data Safe family has been added to the Auditors group.

@@ -464,8 +464,7 @@ variable "enable_security_zones" {
 variable "sz_security_policies" {
   type = list
   default = []
-  description =  "Security Zones Policy OCIDs to add to security zone recipe."
-    
+  description =  "List of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
 }
 
 

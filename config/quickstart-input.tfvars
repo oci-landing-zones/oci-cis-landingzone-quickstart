@@ -77,7 +77,7 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 
 ### Security Zone Variables
 # enable_security_zones = true
-# sz_security_policies ["security-zone-policy-ocid","security-zone-policy-ocid"] # List of Security Zone Policy OCIDs to be added to Security Zones recipes
+# sz_security_policies ["security-zone-policy-ocid","security-zone-policy-ocid"] # List of Security Zone Policy OCIDs to be added to Security Zones recipes. To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid> 
 
 ### Alarm Configuration
 # create_alarms_as_enabled = false 

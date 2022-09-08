@@ -15,6 +15,7 @@ Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **region** \* | The tenancy region identifier where the Terraform should provision the resources. | Yes | None
 **service_label** | A label used as a prefix for naming resources. | Yes | None
+**cis_level** | Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. For more information please review the CIS OCI Benchmark available [here](https://www.cisecurity.org/benchmark/oracle_cloud). Acceptable inputs are "1" or "2". | Yes | "1"
 **extend_landing_zone_to_new_region** | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. |  No | false
 **use_enclosing_compartment** | A boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**. | Yes | false
 **existing_enclosing_compartment_ocid** | The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. | No | None
@@ -111,6 +112,13 @@ Variable Name | Description | Required | Default Value
 **cloud_guard_configuration_status** | Determines whether a Cloud Guard target should be created for the Root compartment. If *ENABLE*, Cloud Guard is enabled and a target is created for the Root compartment. **Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail.** If there's a pre-existing Cloud Guard target for the Root compartment, use *DISABLE*. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you use *ENABLE*, the Root target becomes managed by Landing Zone. If later on you switch to *DISABLE*, Cloud Guard remains enabled but the Root target is deleted. | No | ENABLE
 **cloud_guard_risk_level_threshold** | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | No | High
 **cloud_guard_admin_email_endpoints** | List of email addresses for Cloud Guard related notifications. If no email addresses are provided, then the topic and event rules are not created. | No | None
+
+### <a name="security_zones_variables"></a>Security Zones Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is attached to either the enclosing compartment if enabled or the individual compartments managed by the Landing Zone. | No | false
+**sz_security_policies** | List of Security Zones policy OCIDs that will be added to the Security Zones recipe.  These policies will in addition to the Security Zones policies associated to your select cis_level. To get a Security Zone policy OCID use the oci cli:  `oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>`  | No | []
+
 
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value

@@ -466,6 +466,24 @@ variable "cloud_guard_admin_email_endpoints" {
 }
 
 # ------------------------------------------------------
+# ----- Security Zones
+# ------------------------------------------------------
+variable "enable_security_zones" {
+    type        = bool
+    default     = false
+    description = "Determines if Security Zones are enabled in Landing Zone compartments."
+  }
+  
+  variable "sz_security_policies" {
+    type = list
+    default = []
+    description =  "List of Security Zones Policy OCIDs to add to security zone recipe. To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
+    validation {
+      condition = length([for e in var.sz_security_policies : e if length(regexall("ocid1.securityzonessecuritypolicy.*", e)) > 0]) == length(var.sz_security_policies)
+      error_message = "Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
+    }
+  }
+# ------------------------------------------------------
 # ----- Service Connector Hub
 # ------------------------------------------------------
 variable "enable_service_connector" {

@@ -108,6 +108,11 @@ variableGroups:
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
 
+  - title: "Security Zones"
+    variables:
+    - "enable_security_zones"
+    - "sz_security_policies"
+
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
       - "enable_service_connector"
@@ -689,6 +694,24 @@ variables:
       - Minor
       - Low
   
+  # Security Zone - Variables
+  enable_security_zones:
+    type: boolean
+    title: Enable Security Zones
+    description: "Determines if Security Zones are enabled in Landing Zone compartments."
+    default: false
+
+  sz_security_policies:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: Security Zone policies
+    description: "List of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
+    visible: 
+      and:
+        - ${enable_security_zones}
+
   # Service Connector Hub For Audit Logs - Variables
   enable_service_connector:
     type: boolean

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Secure Landing Zone Quick Start Configuration"
@@ -13,10 +13,10 @@ variableGroups:
       - "region"
       - "service_label"
       - "cis_level"
-      - "env_advanced_options"
-      - "extend_landing_zone_to_new_region"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
+      - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -95,12 +95,19 @@ variableGroups:
       - "create_events_as_enabled"
       - "alarm_message_format"
 
+  - title: "Object Storage"
+    variables:
+      - "enable_oss_bucket"
+      - "existing_bucket_vault_compartment_id"
+      - "existing_bucket_vault_id"
+      - "existing_bucket_key_id"
+
   - title: "Cloud Guard"
     variables:
       - "cloud_guard_configuration_status"
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
-  
+
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
@@ -109,18 +116,24 @@ variableGroups:
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
       - "enable_service_connector"
-      - "service_connector_name"
+      - "activate_service_connector"
       - "service_connector_target_kind"
-      - "service_connector_target_bucket_name"
-      - "service_connector_target_object_name_prefix"
-      - "service_connector_target_stream"
-      - "service_connector_target_function_id"
+      - "existing_service_connector_bucket_vault_compartment_id"
+      - "existing_service_connector_bucket_vault_id"
+      - "existing_service_connector_bucket_key_id"
+      - "existing_service_connector_target_stream_id"
+      - "existing_service_connector_target_function_id"
   
   - title: "Vulnerability Scanning"
     variables:
       - "vss_create"
       - "vss_scan_schedule"
       - "vss_scan_day"
+      - "vss_port_scan_level"
+      - "vss_agent_scan_level"
+      - "vss_agent_cis_benchmark_settings_scan_level"
+      - "vss_enable_file_scan"
+      - "vss_folders_to_scan"
 
   - title: "Cost Management"
     variables:
@@ -153,28 +166,34 @@ variables:
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
     description: "A unique label that gets prepended to all resources created by the Landing Zone."
     required: true
-  
+
   cis_level:
     type: enum
     title: CIS Level
-    description: "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
     enum:
       - "1"
       - "2"
-    required: true
+    required: true  
 
   region:
     type: oci:identity:region:name
     title: "Region"
     description: "The region for resources deployment."
     required: true
-  
+
   use_enclosing_compartment:
     type: boolean
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
-    visible: env_advanced_options
+  
+  existing_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing enclosing compartment"
+    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the Root compartment."
+    required: false 
+    visible: use_enclosing_compartment
 
   extend_landing_zone_to_new_region:
     type: boolean
@@ -183,16 +202,6 @@ variables:
     default: false
     visible: env_advanced_options
   
-  existing_enclosing_compartment_ocid:
-    type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the root compartment."
-    required: false 
-    visible:  
-      and:
-        - env_advanced_options
-        - use_enclosing_compartment
-
   policies_in_root_compartment:
     type: enum
     title: "CREATE or USE policies in the root compartment?"
@@ -702,19 +711,26 @@ variables:
     visible: 
       and:
         - ${enable_security_zones}
-        
+
   # Service Connector Hub For Audit Logs - Variables
   enable_service_connector:
     type: boolean
     required: true
-    title: "Enable Service Connector Hub? (This might incur some cost)"
-    description: "Whether Service Connector Hub should be enabled. When enabled, a single Service Connector is created for all services log sources and the designated target specified in 'Service Connector Target Kind'."
+    title: "Enable Service Connector?"
+    description: "Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur)."
+  
+  activate_service_connector:
+    type: boolean
+    required: true
+    title: "Activate Service Connector? (This might incur some cost)"
+    description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+    visible: enable_service_connector
   
   service_connector_target_kind:
     type: enum
     required: false
     title: "Service Connector Target Kind"
-    description: "Service Connector Hub target resource. In case of 'objectstorage', provide the bucket name to be created in 'Service Connector Target Bucket Name'. In case of 'streaming', provide the stream name or ocid in 'Service Connector Target Stream (name or ocid)'. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of 'functions', you must provide the function ocid in 'Service Connector Target Function Ocid'."
+    description: "Service Connector target resource. Valid values are 'objectstorage', 'streaming' or 'functions'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream in 'Existing Target Stream' and that stream is used. If no stream is provided, a new stream is created. In case of 'functions', you MUST provide the existing function in 'Existing Target Function'."
     default: objectstorage
     visible: enable_service_connector
     enum:
@@ -722,42 +738,61 @@ variables:
       - streaming
       - functions
 
-  service_connector_name:
-    type: string
+  existing_service_connector_bucket_vault_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used to encrypt Service Connector target Object Storage bucket."
     required: false
-    title: "Service Connector Display Name"
-    description: "The Service Connector display name."
-    visible: enable_service_connector
-
-  service_connector_target_bucket_name:
-    type: string
-    required: false
-    title: "Service Connector Target Bucket Name"
-    description: "The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
     visible:
       and:
         - ${enable_service_connector}
         - eq:
           - service_connector_target_kind
           - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"  
 
-  service_connector_target_object_name_prefix:
-    type: string
+  existing_service_connector_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
     required: false
-    title: "Service Connector Target Object Name Prefix"
-    description: "The Service Connector target Object Storage object name prefix. Applicable if 'Service Connector Target Kind' is 'objectstorage'."
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
     visible:
       and:
         - ${enable_service_connector}
         - eq:
           - service_connector_target_kind
-          - "objectstorage"  
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
 
-  service_connector_target_stream:
+  existing_service_connector_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
+      vaultId: ${existing_service_connector_bucket_vault_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_target_stream_id:
     type: string
     required: false
-    title: "Service Connector Target Stream (name or ocid)"
-    description: "The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if 'Service Connector Target Kind' is 'streaming'."
+    title: "Existing Target Stream"
+    description: "An existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
     visible:
       and:
         - ${enable_service_connector}
@@ -765,11 +800,11 @@ variables:
           - service_connector_target_kind
           - "streaming"
 
-  service_connector_target_function_id:
+  existing_service_connector_target_function_id:
     type: string
     required: false
-    title: "Service Connector Target Function Ocid"
-    description: "The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if 'Service Connector Target Kind' is 'functions'."
+    title: "Existing Target Function"
+    description: "An existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
     visible:
       and:
         - ${enable_service_connector}
@@ -781,14 +816,13 @@ variables:
   vss_create:
     type: boolean
     title: "Enable Vulnerability Scanning?"
-    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
-    default: true
-
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment."
+  
   vss_scan_schedule:
     type: enum
     title: "Scanning Schedule"
     description: "When to scan. WEEKLY or DAILY."
-    default: WEEKLY
+    #default: WEEKLY
     visible: vss_create
     enum:
       - WEEKLY
@@ -798,7 +832,7 @@ variables:
     type: enum
     title: "Scanning Day"
     description: "The day when to scan. Applies to weekly scans only."
-    default: SUNDAY
+    #default: SUNDAY
     enum:
       - SUNDAY
       - MONDAY
@@ -814,6 +848,116 @@ variables:
           - vss_scan_schedule
           - "WEEKLY"
 
+  vss_port_scan_level:
+    type: enum
+    title: "Port Scan Level"
+    description : "Checks for open ports using a network mapper that searches your public IP addresses. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+    enum:
+      - STANDARD
+      - LIGHT
+      - NONE  
+    visible: vss_create
+
+  vss_agent_scan_level:
+    type: enum
+    title: "Agent Scan Level"
+    description : "Checks for open ports on both public and private IP addresses, OS vulnerabilities; compliance with industry benchmarks, vulnerabilities in third-party application files (for application files scanning, check 'Enable File Scanning' below)."
+    enum:
+      - STANDARD
+      - NONE  
+    visible: vss_create   
+
+  vss_agent_cis_benchmark_settings_scan_level:
+    type: enum
+    title: "Agent CIS Benchmark Settings Scan Level"
+    description : "Checks targets for compliance with industry-standard benchmarks published by the Center for Internet Security (CIS)"
+    enum:
+      - STRICT
+      - MEDIUM
+      - LIGHTWEIGTH
+      - NONE
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_enable_file_scan:
+    type: boolean
+    title: "Enable File Scanning?"
+    description: "Whether file scanning is enabled."
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_folders_to_scan:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Folders to Scan"
+    required: false
+    description: "List of file system folders to scan. Required if 'Enable Folder Scanning?' is selected. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell (Type a value and hit enter to enter multiple values)."
+    visible: 
+      and:
+        - ${vss_create}
+        - ${vss_enable_file_scan}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+# Object Storage
+  enable_oss_bucket:
+    type: boolean
+    title: "Enable Object Storage bucket?"
+    description: "Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. Providing an encryption key is optional. If a key is not provided and 'CIS Level' is set to 2, the Landing Zone will manage the key."
+    required: false
+
+  existing_bucket_vault_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used in Object Storage bucket encryption."
+    required: false
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used in Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_vault_compartment_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used for Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_vault_compartment_id}
+      vaultId: ${existing_bucket_vault_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+          
 # Cost Management
   create_budget:
     type: boolean

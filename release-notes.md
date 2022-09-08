@@ -1,3 +1,47 @@
+# September 09, 2022 Release Notes - 2.4.0
+1. [Terraform Requirements](#2-4-0-tf-reqs)
+1. [CIS Profile Levels](#2-4-0-cis-level)
+1. [Custom Security Zones](#2-4-0-csz)
+1. [Service Connector Hub Improved Configuration](#2-4-0-sch-update)
+1. [Vulnerability Scanning Improved Configuration](#2-4-0-vss-update)
+1. [Application Bucket Improved Configuration](#2-4-0-appdev-bucket-update)
+1. [Data Safe Permissions](#2-4-0-datasafe-perms)
+
+## <a name="2-4-0-tf-reqs">Terraform Requirements</a>
+The features in this release of CIS Landing Zone require Terraform binary updated to 1.1.0 at least, where the *moved* block feature is available. The *moved* block provides a transparent way for preserving backwards compatibility in face of required code changes. We have consolidated all *moved* blocks in [moved.tf](./config/moved.tf). For details on this feature, check [Terraform's doc on refactoring](https://www.terraform.io/language/modules/develop/refactoring).
+
+## <a name="2-4-0-cis-level">CIS Profile Levels</a>
+CIS Landing Zone introduces the notion of CIS Profile Levels available in the CIS Benchmark. 
+
+When deploying CIS Landing Zone, users can now specify the CIS profile level using the variable *cis_level* and it defines the behavior of some Landing Zone managed resources. For this release, the affected resources are Object Storage Buckets and Custom Security Zones. The *cis_level* setting drives how buckets are encrypted and the minimum set of policies in a custom security zone.
+
+## <a name="2-4-0-csz">Custom Security Zones</a>
+CIS Landing Zone adds to the overall tenancy security posture with the support for [OCI Custom Security Zones](https://docs.oracle.com/en-us/iaas/security-zone/using/security-zones.htm). Landing Zone users can now enable Custom Security Zones for Landing Zone managed compartments and specify which policies to apply. These policies are the preventive controls that make sure a tenancy stays within the defined track as it evolves over time.
+
+Aligning with the [CIS Profile Levels](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the provided custom policies are appended to two CIS Benchmark required policies. If *cis_level* is set to 2, the provided custom policies are appended to four CIS Benchmark required policies.
+
+## <a name="2-4-0-sch-update">Service Connector Hub Improved Configuration</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) as announced in [Updated Logging Architecture](#2-3-6-updated-logging) has been updated to now optionally manage Service Connector Hub related resources. As a result, existing users need to set *enable_service_connector* and *activate_service_connector* variables to true for creating Service Connector Hub resources and activating the service. For details, look at *enable_service_connector* and *activate_service_connector* variables in [VARIABLES.md](./VARIABLES.md#logging_variables).
+
+When deploying an Object Storage bucket as Service Connector target, users can now bring an existing key for bucket encryption. For details, look at *existing_service_connector_bucket_vault_compartment_id*, *existing_service_connector_bucket_vault_id* and *existing_service_connector_bucket_key_id* variables in [VARIABLES.md](./VARIABLES.md#logging_variables). Aligning with the [CIS Profile Levels](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the bucket is encrypted with an Oracle-managed key; if *cis_level* is set to 2, a customer-managed key (either provided or managed by Landing Zone) is used for bucket encryption.
+
+## <a name="2-4-0-vss-update">Vulnerability Scanning Improved Configuration</a>
+Users have more control on Landing Zone Vulnerability Scanning recipe. It is now possible to specify the levels for port scan, agent-based scan and CIS setting for agent-based scans. Additionally, users can enable file scanning for Linux systems and specify the folders to scan. Variables are described in [VARIABLES.md](./VARIABLES.md#vss_variables).
+
+Vulnerability Scanning is now disabled by default in CIS Landing Zone. Moving forward, the intent is enabling by default only those services that are required by CIS Benchmark. Existing users who are managing Vulnerability Scanning resources with Landing Zone should simply enable it back, by setting *vss_create* variable to true.
+
+A bug preventing Vulnerability Scanning target creation in default enclosing compartment has been fixed.
+
+## <a name="2-4-0-appdev-bucket-update">Application Bucket Improved Configuration</a>
+Previously to this release, CIS Landing Zone would manage a sample bucket in the Application (a.k.a AppDev) compartment and encrypt it with a customer-managed key. This has changed. Now the bucket creation is optional, and when deployed, the user has a choice to bring an existing key for encryption. Aligning with the [CIS Profile Levels](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the bucket is encrypted with an Oracle-managed key; if *cis_level* is set to 2, a customer-managed key (either provided or managed by Landing Zone) is used for bucket encryption.
+
+## <a name="2-4-0-datasafe-perms">Data Safe Permissions</a>
+In the config directory, management permission for the Data Safe family has been added to the Database Adminstrators and Exadata Infrastructure Admnistrators groups. Read permission for the Data Safe family has been added to the Auditors group.
+
+In the pre-config directory, read permission for the Data Safe family has been added to the Database Administrators and Auditors groups.
+
+##
+
 # July 11, 2022 Release Notes - 2.3.6
 1. [Cloud Guard Events](#2-3-6-cg-events)
 1. [Updated Logging Architecture](#2-3-6-updated-logging)

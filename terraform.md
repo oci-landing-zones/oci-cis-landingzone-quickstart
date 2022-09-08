@@ -7,8 +7,6 @@ Within the config folder, the Terraform files are named after the use cases they
 
 The variables in each root module are described in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
-**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
-
 ## How to Execute the Code Using Terraform CLI
 Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
 

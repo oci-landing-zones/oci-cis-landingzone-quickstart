@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### This Terraform configuration provisions Landing Zone policies.
@@ -131,26 +131,28 @@ locals {
 
   ## Database admin grants on Database compartment
   database_admin_grants_on_database_cmp = [
-        "allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
-        # CIS 1.2 - 1.14 Level 2 
-        "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
-        "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
-        "allow group ${local.database_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
-        "allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage ons-family in compartment ${local.database_compartment.name}", 
-        "allow group ${local.database_admin_group_name} to manage logging-family in compartment ${local.database_compartment.name}", 
-        "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}"]
+    "allow group ${local.database_admin_group_name} to read all-resources in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage database-family in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage autonomous-database-family in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage alarms in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage metrics in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage cloudevents-rules in compartment ${local.database_compartment.name}",
+    # CIS 1.2 - 1.14 Level 2 
+    "allow group ${local.database_admin_group_name} to manage object-family in compartment ${local.database_compartment.name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+    "allow group ${local.database_admin_group_name} to manage instance-family in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage volume-family in compartment ${local.database_compartment.name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+    "allow group ${local.database_admin_group_name} to manage file-family in compartment ${local.database_compartment.name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
+    "allow group ${local.database_admin_group_name} to manage orm-stacks in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage orm-jobs in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage orm-config-source-providers in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage ons-family in compartment ${local.database_compartment.name}", 
+    "allow group ${local.database_admin_group_name} to manage logging-family in compartment ${local.database_compartment.name}", 
+    "allow group ${local.database_admin_group_name} to read audit-events in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}"
+  ]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -169,13 +171,15 @@ locals {
 
   ## Database admin grants on Exainfra compartment
   database_admin_grants_on_exainfra_cmp = var.deploy_exainfra_cmp == true ? [
-        "allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage databases in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}"] : []     
+    "allow group ${local.database_admin_group_name} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to use cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage db-nodes in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage db-homes in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage databases in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage backups in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment.name}"
+  ] : []
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp, 
@@ -242,15 +246,17 @@ locals {
 
   ## Exainfra admin grants on Exinfra compartment
   exainfra_admin_grants_on_exainfra_cmp = [
-        "allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage ons-family in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage alarms in compartment ${local.exainfra_compartment.name}",
-        "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}"]
+    "allow group ${local.exainfra_admin_group_name} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage cloud-vmclusters in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to read work-requests in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage bastion-session in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage instance-family in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to read instance-agent-plugins in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage ons-family in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage alarms in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment.name}",
+    "allow group ${local.exainfra_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment.name}"
+  ]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
@@ -266,8 +272,8 @@ locals {
 
   ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
-                           "Allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
-                           "Allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
+                           "allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
+                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
                            "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
 
   ### Dynamic Group Policies ###
@@ -420,67 +426,74 @@ locals {
         description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.network_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.network_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.appdev_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.appdev_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.appdev_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.database_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements     = ["Allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
-                          "Allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
-                          "Allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
+        statements     = ["allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
+                          "allow group ${local.database_admin_group_name} to read usage-budgets in tenancy",
+                          "allow group ${local.database_admin_group_name} to read usage-reports in tenancy"]
       },
       (local.auditor_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
         defined_tags = local.policies_defined_tags
         freeform_tags = local.policies_freeform_tags
-        statements = ["Allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
-          "Allow group ${local.auditor_group_name} to read instances in tenancy",
-          "Allow group ${local.auditor_group_name} to read load-balancers in tenancy",
-          "Allow group ${local.auditor_group_name} to read buckets in tenancy",
-          "Allow group ${local.auditor_group_name} to read nat-gateways in tenancy",
-          "Allow group ${local.auditor_group_name} to read public-ips in tenancy",
-          "Allow group ${local.auditor_group_name} to read file-family in tenancy",
-          "Allow group ${local.auditor_group_name} to read instance-configurations in tenancy",
-          "Allow group ${local.auditor_group_name} to read network-security-groups in tenancy",
-          "Allow group ${local.auditor_group_name} to read resource-availability in tenancy",
-          "Allow group ${local.auditor_group_name} to read audit-events in tenancy",
-          "Allow group ${local.auditor_group_name} to read users in tenancy",
-          "Allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
-          "Allow group ${local.auditor_group_name} to read vss-family in tenancy",       
-          "Allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
-          "Allow group ${local.auditor_group_name} to read usage-reports in tenancy"]
+        statements = [
+          "allow group ${local.auditor_group_name} to inspect all-resources in tenancy",
+          "allow group ${local.auditor_group_name} to read instances in tenancy",
+          "allow group ${local.auditor_group_name} to read load-balancers in tenancy",
+          "allow group ${local.auditor_group_name} to read buckets in tenancy",
+          "allow group ${local.auditor_group_name} to read nat-gateways in tenancy",
+          "allow group ${local.auditor_group_name} to read public-ips in tenancy",
+          "allow group ${local.auditor_group_name} to read file-family in tenancy",
+          "allow group ${local.auditor_group_name} to read instance-configurations in tenancy",
+          "allow group ${local.auditor_group_name} to read network-security-groups in tenancy",
+          "allow group ${local.auditor_group_name} to read resource-availability in tenancy",
+          "allow group ${local.auditor_group_name} to read audit-events in tenancy",
+          "allow group ${local.auditor_group_name} to read users in tenancy",
+          "allow group ${local.auditor_group_name} to use cloud-shell in tenancy",
+          "allow group ${local.auditor_group_name} to read vss-family in tenancy",       
+          "allow group ${local.auditor_group_name} to read usage-budgets in tenancy" ,
+          "allow group ${local.auditor_group_name} to read usage-reports in tenancy",
+          "allow group ${local.auditor_group_name} to read data-safe-family in tenancy"
+        ]
       },
       (local.announcement_reader_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements = ["allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
-                      "allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"]
+        statements = [
+          "allow group ${local.announcement_reader_group_name} to read announcements in tenancy",
+          "allow group ${local.announcement_reader_group_name} to use cloud-shell in tenancy"
+        ]
       },
       (local.cred_admin_policy_name) = {
         compartment_id = var.tenancy_ocid
         description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
-        statements = ["Allow group ${local.cred_admin_group_name} to inspect users in tenancy",
-          "Allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
-          "Allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
-          "Allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"]
+        statements = [
+          "allow group ${local.cred_admin_group_name} to inspect users in tenancy",
+          "allow group ${local.cred_admin_group_name} to inspect groups in tenancy",
+          "allow group ${local.cred_admin_group_name} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
+          "allow group ${local.cred_admin_group_name} to use cloud-shell in tenancy"
+        ]
       },
       (local.cost_admin_root_policy_name) = {
         compartment_id = var.tenancy_ocid

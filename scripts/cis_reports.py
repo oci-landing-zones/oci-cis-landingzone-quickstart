@@ -266,6 +266,8 @@ class CIS_Report:
         # For Budgets
         self.__budgets = []
 
+        # For Service Connector
+        self.__service_connectors = []
 
         # Setting list of regions to run in
 
@@ -817,7 +819,6 @@ class CIS_Report:
 
         print("Processing Object Store Buckets...")
         
-
         try:
             # looping through regions
             for region_key, region_values in self.__regions.items():
@@ -2004,6 +2005,75 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __identity_read_tag_defaults " + str(e.args))
+
+    ##########################################################################
+    # Get Service Connectors
+    ##########################################################################
+    def __sch_read_service_connectors(self):
+        
+        print("Processing Service Connectors...")
+        
+        try:
+            # looping through regions
+            for region_key, region_values in self.__regions.items():
+                # Collecting Service Connectors from each compartment
+                for compartment in self.__compartments:
+                    # Skipping the managed paas compartment
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        service_connectors_data = oci.pagination.list_call_get_all_results(
+                            region_values['sch_client'].list_service_connectors,
+                            compartment_id=compartment.id
+                        ).data.items
+                        # Getting Bucket Info
+                        for connector in service_connectors_data:
+                            try:
+                                service_connector = oci.pagination.list_call_get_all_results(
+                                    region_values['sch_client'].sch.get_service_connector,
+                                    service_connector_id=connector.id
+                                )
+                                record = {
+                                    "id": service_connector.id,
+                                    "display_name": service_connector.display_name,
+                                    "description": service_connector.description,
+                                    "freeform_tags": service_connector.freeform_tags,
+                                    "defined_tags" : service_connector.defined_tags,
+                                    "lifecycle_state" : service_connector.lifecycle_state,
+                                    "lifeycle_details": service_connector.lifescycle_details,
+                                    "system_tags": service_connector.system_tags,
+                                    "tasks": service_connector.tasks,
+                                    "time_created": service_connector.time_created,
+                                    "time_updated": service_connector.time_updated,
+                                    "target_kind" : service_connector.target.kind,
+                                    # "target_id" : service_connector.
+                                    "log_sources" : [],
+                                    "region" : region_key,
+                                    "notes": ""
+                                }
+                                for log_source in connector.log_
+                                self.__service_connector.append(record)
+                            except Exception as e:
+                                record = {
+                                    "id": "",
+                                    "name": bucket.name,
+                                    "kms_key_id": "",
+                                    "namespace": bucket.namespace,
+                                    "compartment_id": bucket.compartment_id,
+                                    "object_events_enabled": "",
+                                    "public_access_type": "",
+                                    "replication_enabled": "",
+                                    "is_read_only": "",
+                                    "storage_tier": "",
+                                    "time_created": bucket.time_created,
+                                    "versioning": "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+                                }
+                                self.__buckets.append(record)
+                # Returning Buckets
+            print("\tProcessed " + str(len(self.__buckets)) + " Buckets")            
+            return self.__buckets
+        except Exception as e:
+            raise RuntimeError("Error in __os_read_buckets " + str(e.args))
 
     ##########################################################################
     # Resources in root compartment

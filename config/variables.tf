@@ -31,7 +31,7 @@ variable "service_label" {
 }
 variable "cis_level" {
   type = string
-  default = "1"
+  default = "2"
   description = "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability."
 }
 variable "env_advanced_options" {
@@ -477,10 +477,10 @@ variable "enable_security_zones" {
   variable "sz_security_policies" {
     type = list
     default = []
-    description =  "List of Security Zones Policy OCIDs to add to security zone recipe. To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
+    description =  "List of Security Zones Policy OCIDs to add to security zone recipe. To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
     validation {
       condition = length([for e in var.sz_security_policies : e if length(regexall("ocid1.securityzonessecuritypolicy.*", e)) > 0]) == length(var.sz_security_policies)
-      error_message = "Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>"
+      error_message = "Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
     }
   }
 # ------------------------------------------------------

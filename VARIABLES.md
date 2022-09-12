@@ -15,9 +15,10 @@ Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
 **region** \* | The tenancy region identifier where the Terraform should provision the resources. | Yes | None
 **service_label** | A label used as a prefix for naming resources. | Yes | None
-**extend_landing_zone_to_new_region** | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. |  No | false
+**cis_level** | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. For more information please review the CIS OCI Benchmark available [here](https://www.cisecurity.org/benchmark/oracle_cloud). Acceptable inputs are "1" or "2". | Yes | "2"
 **use_enclosing_compartment** | A boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. **When provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to true**. | Yes | false
 **existing_enclosing_compartment_ocid** | The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. | No | None
+**extend_landing_zone_to_new_region** | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. |  No | false
 **policies_in_root_compartment** | The Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permissions. | Yes | "CREATE"
 **existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | No | None
 **existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | No | None
@@ -97,6 +98,14 @@ Variable Name | Description | Required | Default Value
 **create_events_as_enabled** | Creates event rules artifacts in disabled state when set to False. | No | False
 **alarm_message_format** | Format of the message sent by alarms. | No | PRETTY_JSON
 
+### <a name="oss_bucket_variables"></a>Object Storage Bucket Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**enable_oss_bucket** | Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. | No | true
+**existing_bucket_vault_compartment_id** | The OCID of an existing compartment for the vault with the key used in Object Storage bucket encryption. | No | null
+**existing_bucket_vault_id** | The OCID of an existing vault for the key used in Object Storage bucket encryption. | No | null
+**existing_bucket_key_id** | The OCID of an existing key used in Object Storage bucket encryption. | No | null
+
 ### <a name="cloudguard_variables"></a>Cloud Guard Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
@@ -104,23 +113,42 @@ Variable Name | Description | Required | Default Value
 **cloud_guard_risk_level_threshold** | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | No | High
 **cloud_guard_admin_email_endpoints** | List of email addresses for Cloud Guard related notifications. If no email addresses are provided, then the topic and event rules are not created. | No | None
 
+### <a name="security_zones_variables"></a>Security Zones Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is attached to either the enclosing compartment if enabled or the individual compartments managed by the Landing Zone. | No | false
+**sz_security_policies** | List of Security Zones policy OCIDs that will be added to the Security Zones recipe.  These policies will in addition to the Security Zones policies associated to your select cis_level. To get a Security Zone policy OCID use the oci cli:  `oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>`  | No | []
+
+
 ### <a name="logging_variables"></a>Logging Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**enable_service_connector** | Whether Service Connector Hub should be enabled. | No | false
-**service_connector_name** | The Service Connector display name. | No | service-connector
-**service_connector_target_kind** | Service Connector Hub target resource. Valid values are *objectstorage*, *streaming* or *functions*. In case of *objectstorage*, provide the bucket name to be created in *service_connector_target_bucket_name*. In case of *streaming*, provide the stream name or ocid in *service_connector_target_stream*. If a name is provided, a new stream is created. If an ocid is provided, the stream is used. In case of *functions*, you must provide the function ocid in *service_connector_target_function_id*. | No | objectstorage
-**service_connector_target_bucket_name** | The Service Connector target Object Storage bucket name to be created. The bucket is created in Landing Zone's Security compartment. Applicable if *service_connector_target_kind* is *objectstorage*.| No | service-connector-bucket
-**service_connector_target_object_name_prefix** | The Service Connector target Object Storage object name prefix. Applicable if *service_connector_target_kind* is *objectstorage*.| No | sch
-**service_connector_target_stream** | The Service Connector target stream name or ocid. If a name is given, a new stream is created in Landing Zone's Security compartment. If an ocid is given, the existing stream is used (it's assumed to be available in Landing Zone's Security compartment). Applicable if *service_connector_target_kind* is *streaming*.| No | service-connector-stream
-**service_connector_target_function_id** | The Service Connector target function ocid in Landing Zone's Security compartment. Applicable if *service_connector_target_kind* is *functions*. | No | None
+**enable_service_connector** | Whether Service Connector Hub should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in *service_connector_target_kind*. The Service Connector is created in INACTIVE state. | No | false
+**activate_service_connector** | Whether Service Connector Hub should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function. | No | false
+**service_connector_target_kind** | Service Connector Hub target resource. Valid values are *objectstorage*, *streaming* or *functions*. In case of *objectstorage*, a new bucket is created. In case of *streaming*, you can provide an existing stream ocid in *existing_service_connector_target_stream_id* and that stream is used. If no ocid is provided, a new stream is created. In case of *functions*, you must provide the existing function ocid in *existing_service_connector_target_function_id*. | No | objectstorage
+**existing_service_connector_bucket_vault_compartment_id** | The OCID of an existing compartment for the vault with the key used in Service Connector target Object Storage bucket encryption. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
+**existing_service_connector_bucket_vault_id** | The OCID of an existing vault for the encryption key used in Service Connector target Object Storage bucket. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
+**existing_service_connector_bucket_key_id** | The OCID of an existing encryption key used in Service Connector target Object Storage bucket. Only applicable if *service_connector_target_kind* is set to *objectstorage*. | No | null
+**existing_service_connector_target_stream_id** | The OCID of an existing stream to be used as the Service Connector target. Only applicable if *service_connector_target_kind* is set to *streaming*.| No | null
+**existing_service_connector_target_function_id** | The OCID of an existing function to be used as the Service Connector target. Only applicable if *service_connector_target_kind* is set to *functions*. | No | null
 
 ### <a name="vss_variables"></a>Scanning Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**vss_create** | Whether or not Vulnerability Scanning Service (VSS) recipes and targets are to be created in the Landing Zone. | No | true
+**vss_create** | Whether Vulnerability Scanning Service (VSS) recipes and targets are enabled in the Landing Zone. | No | false
 **vss_scan_schedule** | The scan schedule for the VSS recipe, if enabled. Valid values are WEEKLY or DAILY. | No | "WEEKLY"
 **vss_scan_day** | The week day for the VSS recipe, if enabled. Only applies if vss_scan_schedule is WEEKLY. | No | "SUNDAY"
+**vss_port_scan_level** | The port scan level. Valid values are STANDARD, LIGHT or NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | No | "STANDARD"
+**vss_agent_scan_level** | The level for agent-based scans. Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | No | "STANDARD"
+**vss_agent_cis_benchmark_settings_scan_level** | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables CIS benchmark scanning. | No | "MEDIUM"
+**vss_enable_file_scan** | Whether file scanning is enabled. Only applies if *vss_agent_scan_level* is not NONE. | No | false
+**vss_folders_to_scan** | A list of folders to scan. Only applies if *vss_enable_file_scan* is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | No | ["/"]
+
+### <a name="kms_variables"></a>KMS Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**existing_key_id** | The OCID of an existing key to be used for Object Storage bucket encryption. If not provided, a new key is created. | No | ""
+**existing_key_compartment_id** | The compartment OCID of the provided existing key. | No | ""
 
 ### <a name="budget_variables"></a>Budget Variables
 Variable Name | Description | Required | Default Value

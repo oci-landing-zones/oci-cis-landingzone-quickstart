@@ -82,9 +82,6 @@ locals {
     cidr = var.dmz_vcn_cidr
   } : {}
 
-  ### Object Storage
-  bucket_name  = "${var.service_label}-bucket"
-
   # Bastion
   bastion_name = "${var.service_label}-bastion"
   bastion_max_session_ttl_in_seconds = 3 * 60 * 60 // 3 hrs.
@@ -121,11 +118,4 @@ resource "null_resource" "wait_on_services_policy" {
   provisioner "local-exec" {
     command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
   }
-}
-
-resource "null_resource" "wait_on_keys_policy" {
-   depends_on = [ module.lz_keys_policies ]
-   provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
-   }
 }

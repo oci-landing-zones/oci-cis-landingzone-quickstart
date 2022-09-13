@@ -105,7 +105,10 @@ class CIS_Report:
 
         # MAP Checks
         self.map_foundations_checks = {
-            'Budgets' : {'Status' : False, 'Findings' : [] }
+            'Budgets' : {'Status' : False, 'Findings' : [] },
+            'SIEM_Audit_Logging' : {'Status' : False, 'Findings' : []},
+            'SIEM_VCN_Flow_Logging' :  {'Status' : False, 'Findings' : []},
+            'SIEM_Object_Storage' :  {'Status' : False, 'Findings' : []},
         }
 
         # CIS monitoring notifications check
@@ -2023,14 +2026,13 @@ class CIS_Report:
                         service_connectors_data = oci.pagination.list_call_get_all_results(
                             region_values['sch_client'].list_service_connectors,
                             compartment_id=compartment.id
-                        ).data.items
+                        ).data
                         # Getting Bucket Info
                         for connector in service_connectors_data:
                             try:
-                                service_connector = oci.pagination.list_call_get_all_results(
-                                    region_values['sch_client'].sch.get_service_connector,
+                                service_connector = region_values['sch_client'].get_service_connector(
                                     service_connector_id=connector.id
-                                )
+                                    ).data
                                 record = {
                                     "id": service_connector.id,
                                     "display_name": service_connector.display_name,
@@ -2038,42 +2040,46 @@ class CIS_Report:
                                     "freeform_tags": service_connector.freeform_tags,
                                     "defined_tags" : service_connector.defined_tags,
                                     "lifecycle_state" : service_connector.lifecycle_state,
-                                    "lifeycle_details": service_connector.lifescycle_details,
+                                    "lifecyle_details": service_connector.lifecyle_details,
                                     "system_tags": service_connector.system_tags,
-                                    "tasks": service_connector.tasks,
                                     "time_created": service_connector.time_created,
                                     "time_updated": service_connector.time_updated,
                                     "target_kind" : service_connector.target.kind,
-                                    # "target_id" : service_connector.
                                     "log_sources" : [],
                                     "region" : region_key,
                                     "notes": ""
                                 }
-                                for log_source in connector.log_
-                                self.__service_connector.append(record)
+                                for log_source in service_connector.source.log_sources:
+                                    record['log_sources'].append({
+                                            'compartment_id' : log_source.compartment_id,
+                                            'log_group_id' : log_source.log_group_id,
+                                            'log_id' : log_source.log_id
+                                        }
+                                    )
+                                self.__service_connectors.append(record)
                             except Exception as e:
                                 record = {
-                                    "id": "",
-                                    "name": bucket.name,
-                                    "kms_key_id": "",
-                                    "namespace": bucket.namespace,
-                                    "compartment_id": bucket.compartment_id,
-                                    "object_events_enabled": "",
-                                    "public_access_type": "",
-                                    "replication_enabled": "",
-                                    "is_read_only": "",
-                                    "storage_tier": "",
-                                    "time_created": bucket.time_created,
-                                    "versioning": "",
+                                    "id": connector.id,
+                                    "display_name": connector.display_name,
+                                    "description": connector.description,
+                                    "freeform_tags": connector.freeform_tags,
+                                    "defined_tags" : connector.defined_tags,
+                                    "lifecycle_state" : connector.lifecycle_state,
+                                    "lifecycle_details": connector.lifecycle_details,
+                                    "system_tags": "",
+                                    "time_created": connector.time_created,
+                                    "time_updated": connector.time_updated,
+                                    "target_kind" : "",
+                                    "log_sources" : [],
                                     "region" : region_key,
                                     "notes": str(e)
                                 }
-                                self.__buckets.append(record)
+                                self.__service_connectors.append(record)
                 # Returning Buckets
-            print("\tProcessed " + str(len(self.__buckets)) + " Buckets")            
-            return self.__buckets
+            print("\tProcessed " + str(len(self.__service_connectors)) + " Service Connectors")
+            return self.__service_connectors
         except Exception as e:
-            raise RuntimeError("Error in __os_read_buckets " + str(e.args))
+            raise RuntimeError("Error in __sch_read_service_connectors " + str(e.args))
 
     ##########################################################################
     # Resources in root compartment
@@ -2483,13 +2489,29 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['5.2']['Findings'].append(
                     item)
 
+    ##########################################################################
+    # Recursive function the gets the child compartments of a compartment
+    ##########################################################################    
     
-    
+    def __get_children(self,parent, compartments):
+        try:
+            kids = compartments[parent]
+        except:
+            kids = []
+
+        if kids:
+            for kid in compartments[parent]:
+                kids = kids + self.__get_children(kid, compartments)
+            return kids
+        else:
+            return kids
+
     ##########################################################################
     # Analyzes Tenancy Data for MAP Report
     ##########################################################################
     def __map_analyze_tenancy_data(self):
         
+        ## Determines if a Budget Exists with an alert rule
         if len(self.__budgets) > 0:
             for budget in self.__budgets:
                 if budget['alert_rule_count'] > 0:
@@ -2497,6 +2519,57 @@ class CIS_Report:
                 else:
                     self.map_foundations_checks['Budgets']['Findings'].append(budget)
 
+        # Stores Regional Checks 
+        map_regional_checks = {}
+        for region_key, region_values in self.__regions.items():
+            map_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : []}, 
+                                               "VCN" :  {"all_subnet" : False, "subnets" : []}, 
+                                               "Bucket" : {"all_bucekts" : False, "buckets" : []}
+                                               }
+
+        list_of_all_compartments = []
+        dict_of_compartments = {}
+        for compartment in self.__compartments:
+            list_of_all_compartments.append(compartment.id)
+        
+        # Building a Hash Table of Parent Child Hieracrchy for Audit
+        dict_of_compartments = {}
+        for compartment in self.__compartments:
+            if "tenancy" not in compartment.id:
+                try:
+                    dict_of_compartments[compartment.compartment_id].append(compartment.id)
+                except:
+                    dict_of_compartments[compartment.compartment_id] = []
+                    dict_of_compartments[compartment.compartment_id].append(compartment.id)
+        
+        print(dict_of_compartments)
+
+        # This is used for comparing compartments that are audit to the full list of compartments
+        set_of_all_compartments = set(list_of_all_compartments)
+
+        
+        ## Collecting Servie Connectors Logs related to compartments
+        for sch in self.__service_connectors:
+            print("&" * 40)
+            print(sch)
+            print("&" * 40)
+            # Only Active SCH with a target that is configured
+            if sch['lifecycle_state'].upper() == "ACTIVE" and sch['target_kind']:
+                for source in sch['log_sources']:
+                    # Checking if a the compartment being logged is the Tenancy and it has all child compartments
+                    if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
+                        map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
+                    # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
+                    elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
+                        map_regional_checks[sch['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + map_regional_checks[sch['region']]['Audit']['compartments']
+                    elif source['log_group_id'].upper() == "_Audit".upper():
+                        map_regional_checks[sch['region']]['Audit']['compartments'].append(source['compartment_id'])
+                        
+        for region_key, region_values in map_regional_checks.items():
+            print(region_key)
+            print(region_values)
+            print(len(region_values['Audit']['compartments']))
+                
 
 
 
@@ -2699,16 +2772,19 @@ class CIS_Report:
         ######  Runs identity functions only in home region
         self.__identity_read_groups_and_membership()
         self.__identity_read_compartments()
-        self.__identity_read_users()
-        self.__identity_read_tenancy_password_policy()
-        self.__identity_read_dynamic_groups()
-        self.__audit_read__tenancy_audit_configuration()
-        self.__identity_read_tag_defaults()
-        self.__identity_read_tenancy_policies()
+        # self.__identity_read_users()
+        # self.__identity_read_tenancy_password_policy()
+        # self.__identity_read_dynamic_groups()
+        # self.__audit_read__tenancy_audit_configuration()
+        # self.__identity_read_tag_defaults()
+        # self.__identity_read_tenancy_policies()
         self.__cloud_guard_read_cloud_guard_configuration()
 
         if self.__map_checks:
             self.__budget_read_budgets()
+            self.__sch_read_service_connectors()
+            self.__map_analyze_tenancy_data()
+            exit()
             
         # The above checks are run in the home region 
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):

@@ -915,7 +915,7 @@ class CIS_Report:
                                     "notes": str(e)
                                     }
                             self.__block_volumes.append(record)
-                print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
+            print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
             return self.__block_volumes
         except Exception as e:
             raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))            
@@ -1837,10 +1837,12 @@ class CIS_Report:
             self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
                 self.__tenancy.id).data.retention_period_days
         except Exception as e:
-            print(
-                "\tAccess to audit retention requires the user to be part of the Administrator group")
-            self.__audit_retention_period = -1
-
+            if "NotAuthorizedOrNotFound" in str(e):
+                self.__audit_retention_period = -1
+                print("\t***Access to audit retention requires the user to be part of the Administrator group")
+            else:
+                raise RuntimeError("Error in __audit_read__tenancy_audit_configuration " + str(e.args))
+            
         return self.__audit_retention_period
 
     ##########################################################################
@@ -1854,7 +1856,7 @@ class CIS_Report:
             return self.__cloud_guard_config
         except Exception as e:
             self.__cloud_guard_config = 'DISABLED'
-            print("Cloud Guard service requires a PayGo account")
+            print("***Cloud Guard service requires a PayGo account")
 
     ##########################################################################
     # Identity Password Policy
@@ -1866,8 +1868,12 @@ class CIS_Report:
                 self.__tenancy.id).data
 
         except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read__tenancy_password_policy " + str(e.args))
+            if "NotAuthorizedOrNotFound" in str(e):
+                self.__tenancy_password_policy = None
+                print("\t***Access to password policies in this tenancy requires elevated permissions.")
+            else:
+                raise RuntimeError(
+                "Error in __identity_read_tenancy_password_policy " + str(e.args))
 
     ##########################################################################
     # Oracle Notifications Services for Subscriptions
@@ -2022,8 +2028,11 @@ class CIS_Report:
 
 
         # 1.4 Check - Password Policy - Only in home region
-        if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
-            self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
+        if self.__tenancy_password_policy:
+            if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
+                self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
+        else:
+            self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:

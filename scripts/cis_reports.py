@@ -1865,9 +1865,9 @@ class CIS_Report:
             self.__tenancy_password_policy = self.__regions[self.__home_region]['identity_client'].get_authentication_policy(
                 self.__tenancy.id).data
 
-        except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read__tenancy_password_policy " + str(e.args))
+        except:
+            self.__tenancy_password_policy = None
+            print(“In tenancies with Identity Domains, retrieving password policy requires elevated permissions.”)
 
     ##########################################################################
     # Oracle Notifications Services for Subscriptions

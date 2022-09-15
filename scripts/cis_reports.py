@@ -105,11 +105,14 @@ class CIS_Report:
 
         # MAP Checks
         self.map_foundations_checks = {
-            'Budgets' : {'Status' : False, 'Findings' : [] },
-            'SIEM_Audit_Logging' : {'Status' : False, 'Findings' : []},
-            'SIEM_VCN_Flow_Logging' :  {'Status' : False, 'Findings' : []},
-            'SIEM_Object_Storage' :  {'Status' : False, 'Findings' : []},
+            'Budgets' : {'Status' : None, 'Findings' : [] },
+            'SIEM_Audit_Logging' : {'Status' : True, 'Findings' : []}, # Assumes True a first
+            'SIEM_VCN_Flow_Logging' :  {'Status' : True, 'Findings' : []},
+            'SIEM_Object_Storage' :  {'Status' : True, 'Findings' : []},
         }
+        # MAP Regional Data
+        self.__map_regional_checks = {}
+
 
         # CIS monitoring notifications check
         self.cis_monitoring_checks = {
@@ -2502,9 +2505,9 @@ class CIS_Report:
         if kids:
             for kid in compartments[parent]:
                 kids = kids + self.__get_children(kid, compartments)
-            return kids
-        else:
-            return kids
+
+        return kids
+
 
     ##########################################################################
     # Analyzes Tenancy Data for MAP Report
@@ -2520,9 +2523,8 @@ class CIS_Report:
                     self.map_foundations_checks['Budgets']['Findings'].append(budget)
 
         # Stores Regional Checks 
-        map_regional_checks = {}
         for region_key, region_values in self.__regions.items():
-            map_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : []}, 
+            self.__map_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : []}, 
                                                "VCN" :  {"all_subnet" : False, "subnets" : []}, 
                                                "Bucket" : {"all_bucekts" : False, "buckets" : []}
                                                }
@@ -2550,27 +2552,46 @@ class CIS_Report:
         
         ## Collecting Servie Connectors Logs related to compartments
         for sch in self.__service_connectors:
-            print("&" * 40)
-            print(sch)
-            print("&" * 40)
             # Only Active SCH with a target that is configured
             if sch['lifecycle_state'].upper() == "ACTIVE" and sch['target_kind']:
                 for source in sch['log_sources']:
                     # Checking if a the compartment being logged is the Tenancy and it has all child compartments
                     if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
+                        self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
                     # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                     elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        map_regional_checks[sch['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + map_regional_checks[sch['region']]['Audit']['compartments']
+                        self.__map_regional_checks[sch['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__map_regional_checks[sch['region']]['Audit']['compartments']
                     elif source['log_group_id'].upper() == "_Audit".upper():
-                        map_regional_checks[sch['region']]['Audit']['compartments'].append(source['compartment_id'])
-                        
-        for region_key, region_values in map_regional_checks.items():
-            print(region_key)
-            print(region_values)
-            print(len(region_values['Audit']['compartments']))
-                
-
+                        self.__map_regional_checks[sch['region']]['Audit']['compartments'].append(source['compartment_id'])
+        
+        ## Analyzing Service Connector Audit Logs to see if each region has all compartments
+        for region_key, region_values in self.__map_regional_checks.items():
+            # Checking if I already found the tenancy ocid with all child compartments included
+            if not self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit']:
+                audit_findings = set_of_all_compartments - set(self.__map_regional_checks[sch['region']]['Audit']['compartments'])
+                # If there are items in the then it is not auditing everything in the tenancy
+                if audit_findings:
+                    self.__map_regional_checks[sch['region']]['Audit']['compartments'] = self.__map_regional_checks[sch['region']]['Audit']['compartments'] + list(audit_findings)
+                else:
+                    self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
+        
+        # Aggregating Findings across regions
+        for region_key, region_values in self.__map_regional_checks.items():
+            for finding in region_values['Audit']['compartments']:
+                missing_comp = list(filter(lambda compartment: compartment.id == finding, self.__compartments))
+                record = {
+                    "parent_compartment" : missing_comp[0].compartment_id if "tenancy" not in missing_comp[0].id else None,
+                    "id" : missing_comp[0].id,
+                    "name" : missing_comp[0].name,
+                    "region" : region_key
+                }
+                self.map_foundations_checks['SIEM_Audit_Logging']['Findings'].append(record)
+        
+        # If their are findings the check fails
+        if self.map_foundations_checks['SIEM_Audit_Logging']['Findings']:
+            self.map_foundations_checks['SIEM_Audit_Logging']['Status'] = False
+        
+        print(self.map_foundations_checks['SIEM_Audit_Logging'])
 
 
     ##########################################################################

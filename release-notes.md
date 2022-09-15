@@ -1,3 +1,9 @@
+# September 16, 2022 Release Notes - 2.4.1
+1. [Compliance Checking Report Identity Domain Fix](#2-4-1-script-fix)
+
+## <a name="2-4-1-script-fix">Compliance Checking Report Identity Domain Fix</a>
+Until this update, a user in the CIS Landing Zone Auditor group would not have been able to successfully run the compliance checking script in tenancies with Identity Domains.  The reason is tenancies with Identity Domains require elevated privileges to check the tenancies password policy.  With release 2.4.1 if the user doesn't have permissions to check password policy the script will continue running and just print an alert.
+
 # September 09, 2022 Release Notes - 2.4.0
 1. [Terraform Requirements](#2-4-0-tf-reqs)
 1. [CIS OCI Benchmark Configuration Profiles](#2-4-0-cis-level)

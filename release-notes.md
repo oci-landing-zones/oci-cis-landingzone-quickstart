@@ -1,3 +1,9 @@
+#  Month XX, XXXX Release Notes - 2.5.0
+1. [Compliance Checking Supports Custom OCI Config File Location](#2-5-0-script-config-file)
+
+## <a name="2-5-0-script-config-file">Compliance Checking Supports Custom OCI Config File Location</a>
+The Compliance Checking adds a new flag `-c` that takes the location of an OCI config file. This flag allows users to specify which OCI config file to use instead of using the one in the default location (`~/.oci/config`).
+
 # September 16, 2022 Release Notes - 2.4.1
 1. [Compliance Checking Report Identity Domain Fix](#2-4-1-script-fix)
 

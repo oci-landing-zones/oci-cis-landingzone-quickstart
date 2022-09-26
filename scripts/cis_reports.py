@@ -104,14 +104,16 @@ class CIS_Report:
         }
 
         # MAP Checks
-        self.map_foundations_checks = {
+        self.obp_foundations_checks = {
             'Budgets' : {'Status' : None, 'Findings' : [] },
-            'SIEM_Audit_Logging' : {'Status' : True, 'Findings' : []}, # Assumes True a first
-            'SIEM_VCN_Flow_Logging' :  {'Status' : True, 'Findings' : []},
-            'SIEM_Object_Storage' :  {'Status' : True, 'Findings' : []},
+            'SIEM_Audit_Logging' : {'Status' : None, 'Findings' : []}, 
+            'SIEM_VCN_Flow_Logging' :  {'Status' : None, 'Findings' : []},
+            'SIEM_Write_Bucket_Logs' :  {'Status' : None, 'Findings' : []},
+            'SIEM_Read_Bucket_Logs' :  {'Status' : None, 'Findings' : []}
+
         }
         # MAP Regional Data
-        self.__map_regional_checks = {}
+        self.__obp_regional_checks = {}
 
 
         # CIS monitoring notifications check
@@ -247,8 +249,13 @@ class CIS_Report:
         # For Logging & Monitoring checks
         self.__event_rules = []
         self.__logging_list = []
-        self.__subnet_logs = []
-        self.__write_bucket_logs = []
+        self.__subnet_logs = {}
+        self.__write_bucket_logs = {}
+        self.__read_bucket_logs = {}
+        self.__load_balancer_access_logs = []
+        self.__load_balancer_error_logs = []
+        self.__api_gateway_access_logs = []
+        self.__api_gateway_error_logs = []
 
         # For Storage Checks
         self.__buckets = []
@@ -273,7 +280,7 @@ class CIS_Report:
         self.__budgets = []
 
         # For Service Connector
-        self.__service_connectors = []
+        self.__service_connectors = {}
 
         # Setting list of regions to run in
 
@@ -378,7 +385,7 @@ class CIS_Report:
         self.__output_raw_data = raw_data
 
         # Determining if OCI Best Practices will be checked and output
-        self.__map_checks = map
+        self.__obp_checks = map
 
 
 
@@ -855,6 +862,8 @@ class CIS_Report:
                                     "storage_tier": bucket_info.storage_tier,
                                     "time_created": bucket_info.time_created,
                                     "versioning": bucket_info.versioning,
+                                    "defined_tags" : bucket_info.defined_tags,
+                                    "freeform_tags" : bucket_info.freeform_tags,
                                     "region" : region_key,
                                     "notes": ""
                                 }
@@ -873,6 +882,8 @@ class CIS_Report:
                                     "storage_tier": "",
                                     "time_created": bucket.time_created,
                                     "versioning": "",
+                                    "defined_tags" : "",
+                                    "freeform_tags" : "",
                                     "region" : region_key,
                                     "notes": str(e)
                                 }
@@ -948,7 +959,7 @@ class CIS_Report:
                                     "notes": str(e)
                                     }
                             self.__block_volumes.append(record)
-                print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
+            print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
             return self.__block_volumes
         except Exception as e:
             raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))            
@@ -1112,6 +1123,8 @@ class CIS_Report:
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created,
                                 "vcn_id": nsg.vcn_id,
+                                "freeform_tags" : nsg.freeform_tags,
+                                "defined_tags" : nsg.defined_tags,
                                 "region" : region_key,
                                 "rules": []
                             }
@@ -1173,6 +1186,8 @@ class CIS_Report:
                                 "time_created": security_list.time_created,
                                 "vcn_id": security_list.vcn_id,
                                 "region" : region_key,
+                                "freeform_tags" : security_list.freeform_tags,
+                                "defined_tags" : security_list.defined_tags,
                                 "egress_security_rules": [],
                                 "ingress_security_rules": []
                             }
@@ -1247,6 +1262,8 @@ class CIS_Report:
                                     "vcn_id": subnet.vcn_id,
                                     "virtual_router_ip": subnet.virtual_router_ip,
                                     "virtual_router_mac": subnet.virtual_router_mac,
+                                    "freeform_tags" : subnet.freeform_tags,
+                                    "define_tags" : subnet.defined_tags,
                                     "region" : region_key,
                                     "notes":""
 
@@ -1595,6 +1612,8 @@ class CIS_Report:
                                         "state_message": oic_instance.state_message,
                                         "time_created": oic_instance.time_created,
                                         "time_updated": oic_instance.time_updated,
+                                        "defined_tags": oic_instance.defined_tags,
+                                        "freeform_tags": oic_instance.freeform_tags,
                                         "region" : region_key,
                                         "notes": ""
                                     }
@@ -1655,6 +1674,8 @@ class CIS_Report:
                                     "license_type": oac_instance.license_type,
                                     "time_created": oac_instance.time_created,
                                     "time_updated": oac_instance.time_updated,
+                                    "defined_tags" : oac_instance.defined_tags,
+                                    "freeform_tags" : oac_instance.freeform_tags,
                                     "region" : region_key,
                                     "notes":""
                                 }
@@ -1672,6 +1693,8 @@ class CIS_Report:
                                     "license_type": "",
                                     "time_created": "",
                                     "time_updated": "",
+                                    "defined_tags": "",
+                                    "freeform_tags": "",
                                     "region" : region_key,
                                     "notes":str(e)
                                 }
@@ -1743,13 +1766,15 @@ class CIS_Report:
                                 "id": log_group.id,
                                 "time_created": log_group.time_created,
                                 "time_last_modified": log_group.time_last_modified,
+                                "defined_tags" : log_group.defined_tags,
+                                "freeform_tags" : log_group.freeform_tags,
                                 "region" : region_key,
                                 "logs": []
                             }
 
                             logs = oci.pagination.list_call_get_all_results(
                                 region_values['logging_client'].list_logs,
-                                log_group.id
+                                log_group_id=log_group.id
                             ).data
                             for log in logs:
                                 log_record = {
@@ -1763,6 +1788,9 @@ class CIS_Report:
                                     "retention_duration": log.retention_duration,
                                     "time_created": log.time_created,
                                     "time_last_modified": log.time_last_modified,
+                                    "defined_tags" : log.defined_tags,
+                                    "freeform_tags" : log.freeform_tags,
+                                    "retention_duration" : log.retention_duration,
 
                                 }
                                 try:
@@ -1773,12 +1801,30 @@ class CIS_Report:
                                         log_record["source_resource"] = log.configuration.source.resource,
                                         log_record["source_service"] = log.configuration.source.service,
                                         log_record["source_source_type"] = log.configuration.source.source_type
+                                        log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
+
                                     if log.configuration.source.service == 'flowlogs':
-                                        self.__subnet_logs.append(
-                                            log.configuration.source.resource)
+                                        self.__subnet_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+                                            
                                     elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
                                         # Only write logs
-                                        self.__write_bucket_logs.append(
+                                        self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+
+                                    elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
+                                        # Only read logs
+                                        self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+
+                                    elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
+                                        self.__load_balancer_error_logs.append(
+                                            log.configuration.source.resource)
+                                    elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
+                                        self.__load_balancer_access_logs.append(
+                                            log.configuration.source.resource)
+                                    elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
+                                        self.__api_gateway_access_logs.append(
+                                            log.configuration.source.resource)
+                                    elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
+                                        self.__api_gateway_error_logs.append(
                                             log.configuration.source.resource)
                                 except:
                                     pass
@@ -1818,6 +1864,8 @@ class CIS_Report:
                                 "management_endpoint": vlt.management_endpoint,
                                 "time_created": vlt.time_created,
                                 "vault_type": vlt.time_created,
+                                "freeform_tags": vlt.freeform_tags,
+                                "defined_tags": vlt.defined_tags,
                                 "region" : region_key,
                                 "keys": []
                             }
@@ -1969,6 +2017,8 @@ class CIS_Report:
                                 "protocol": sub.protocol,
                                 "topic_id": sub.topic_id,
                                 "lifecycle_state": sub.lifecycle_state,
+                                "defined_tags": sub.defined_tags,
+                                "freeform_tags": sub.freeform_tags,
                                 "region" : region_key
 
                             }
@@ -2026,9 +2076,11 @@ class CIS_Report:
                 for compartment in self.__compartments:
                     # Skipping the managed paas compartment
                     if self.__if_not_managed_paas_compartment(compartment.name):
+                        # Only getting active service connectors
                         service_connectors_data = oci.pagination.list_call_get_all_results(
                             region_values['sch_client'].list_service_connectors,
-                            compartment_id=compartment.id
+                            compartment_id=compartment.id,
+                            lifecycle_state='ACTIVE'
                         ).data
                         # Getting Bucket Info
                         for connector in service_connectors_data:
@@ -2043,7 +2095,7 @@ class CIS_Report:
                                     "freeform_tags": service_connector.freeform_tags,
                                     "defined_tags" : service_connector.defined_tags,
                                     "lifecycle_state" : service_connector.lifecycle_state,
-                                    "lifecyle_details": service_connector.lifecyle_details,
+                                    "lifecycle_details": service_connector.lifecyle_details,
                                     "system_tags": service_connector.system_tags,
                                     "time_created": service_connector.time_created,
                                     "time_updated": service_connector.time_updated,
@@ -2059,7 +2111,7 @@ class CIS_Report:
                                             'log_id' : log_source.log_id
                                         }
                                     )
-                                self.__service_connectors.append(record)
+                                self.__service_connectors[service_connector.id] = record
                             except Exception as e:
                                 record = {
                                     "id": connector.id,
@@ -2077,7 +2129,7 @@ class CIS_Report:
                                     "region" : region_key,
                                     "notes": str(e)
                                 }
-                                self.__service_connectors.append(record)
+                                self.__service_connectors[connector.id] = record
                 # Returning Buckets
             print("\tProcessed " + str(len(self.__service_connectors)) + " Service Connectors")
             return self.__service_connectors
@@ -2120,7 +2172,7 @@ class CIS_Report:
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
-    def __report_analyze_tenancy_data(self):
+    def __report_cis_analyze_tenancy_data(self):
         
         # 1.1 Check - checking if there are additional policies
         policy_counter = 0
@@ -2510,24 +2562,28 @@ class CIS_Report:
 
 
     ##########################################################################
-    # Analyzes Tenancy Data for MAP Report
+    # Analyzes Tenancy Data for OBP Report
     ##########################################################################
-    def __map_analyze_tenancy_data(self):
+    def __mbp_analyze_tenancy_data(self):
         
         ## Determines if a Budget Exists with an alert rule
         if len(self.__budgets) > 0:
             for budget in self.__budgets:
                 if budget['alert_rule_count'] > 0:
-                    self.map_foundations_checks['Budgets']['Status'] = True
+                    self.obp_foundations_checks['Budgets']['Status'] = True
                 else:
-                    self.map_foundations_checks['Budgets']['Findings'].append(budget)
+                    self.obp_foundations_checks['Budgets']['Findings'].append(budget)
 
         # Stores Regional Checks 
         for region_key, region_values in self.__regions.items():
-            self.__map_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : []}, 
-                                               "VCN" :  {"all_subnet" : False, "subnets" : []}, 
-                                               "Bucket" : {"all_bucekts" : False, "buckets" : []}
+            self.__obp_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : [], "findings" : []}, 
+                                               "VCN" :  {"subnets" : [], "findings" : []}, 
+                                               "Write_Bucket" : {"buckets" : [], "findings" : []},
+                                               "Read_Bucket" : {"buckets" : [], "findings" : []}
                                                }
+
+        
+        ### OCI Audit Log Compartments Checks
 
         list_of_all_compartments = []
         dict_of_compartments = {}
@@ -2543,41 +2599,39 @@ class CIS_Report:
                 except:
                     dict_of_compartments[compartment.compartment_id] = []
                     dict_of_compartments[compartment.compartment_id].append(compartment.id)
-        
-        print(dict_of_compartments)
-
+    
         # This is used for comparing compartments that are audit to the full list of compartments
         set_of_all_compartments = set(list_of_all_compartments)
 
-        
         ## Collecting Servie Connectors Logs related to compartments
-        for sch in self.__service_connectors:
+        for sch_id, sch_values in self.__service_connectors.items():
             # Only Active SCH with a target that is configured
-            if sch['lifecycle_state'].upper() == "ACTIVE" and sch['target_kind']:
-                for source in sch['log_sources']:
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
+                for source in sch_values['log_sources']:
                     # Checking if a the compartment being logged is the Tenancy and it has all child compartments
                     if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
+                        self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
                     # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                     elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        self.__map_regional_checks[sch['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__map_regional_checks[sch['region']]['Audit']['compartments']
+                        self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
                     elif source['log_group_id'].upper() == "_Audit".upper():
-                        self.__map_regional_checks[sch['region']]['Audit']['compartments'].append(source['compartment_id'])
+                        self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
         
         ## Analyzing Service Connector Audit Logs to see if each region has all compartments
-        for region_key, region_values in self.__map_regional_checks.items():
+        for region_key, region_values in self.__obp_regional_checks.items():
             # Checking if I already found the tenancy ocid with all child compartments included
-            if not self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit']:
-                audit_findings = set_of_all_compartments - set(self.__map_regional_checks[sch['region']]['Audit']['compartments'])
+            if not region_values['Audit']['tenancy_level_audit']:
+                audit_findings = set_of_all_compartments - set(region_values['Audit']['compartments'])
                 # If there are items in the then it is not auditing everything in the tenancy
                 if audit_findings:
-                    self.__map_regional_checks[sch['region']]['Audit']['compartments'] = self.__map_regional_checks[sch['region']]['Audit']['compartments'] + list(audit_findings)
+                    region_values['Audit']['findings'] = region_values['Audit']['findings'] + list(audit_findings)
                 else:
-                    self.__map_regional_checks[sch['region']]['Audit']['tenancy_level_audit'] = True
+                    region_values[region_key]['Audit']['tenancy_level_audit'] = True
         
-        # Aggregating Findings across regions
-        for region_key, region_values in self.__map_regional_checks.items():
-            for finding in region_values['Audit']['compartments']:
+        # Aggregating Findings across regional findings 
+        for region_key, region_values in self.__obp_regional_checks.items():
+
+            for finding in region_values['Audit']['findings']:
                 missing_comp = list(filter(lambda compartment: compartment.id == finding, self.__compartments))
                 record = {
                     "parent_compartment" : missing_comp[0].compartment_id if "tenancy" not in missing_comp[0].id else None,
@@ -2585,27 +2639,130 @@ class CIS_Report:
                     "name" : missing_comp[0].name,
                     "region" : region_key
                 }
-                self.map_foundations_checks['SIEM_Audit_Logging']['Findings'].append(record)
+                self.obp_foundations_checks['SIEM_Audit_Logging']['Findings'].append(record)
         
         # If their are findings the check fails
-        if self.map_foundations_checks['SIEM_Audit_Logging']['Findings']:
-            self.map_foundations_checks['SIEM_Audit_Logging']['Status'] = False
+        if self.obp_foundations_checks['SIEM_Audit_Logging']['Findings']:
+            self.obp_foundations_checks['SIEM_Audit_Logging']['Status'] = False
         
-        print(self.map_foundations_checks['SIEM_Audit_Logging'])
+
+        for sch_id, sch_values in self.__service_connectors.items():
+            # Only Active SCH with a target that is configured
+
+            ### Subnet Logs Checks
+
+            for subnet_id, log_values in self.__subnet_logs.items():
+                
+                log_id = log_values['log_id']
+                log_group_id = log_values['log_group_id']
+
+                # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
+                if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
+                    print("In Region: " + sch_values['region'] + " is this subnet via log id" + subnet_id )
+                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                
+                # Checking if the Subnet's log Group in is in the service connector's log sources if so I will add it
+                elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
+                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+    
+                else:
+                    self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
+
+            ### Bucket Write Logs Checks
+
+                for bucket_name, log_values in self.__write_bucket_logs.items():
+                    
+                    log_id = log_values['log_id']
+                    log_group_id = log_values['log_group_id']
+
+                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                    if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                    
+                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                    elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+
+                    else:
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
+            
+            ### Bucket Read Log Checks
+
+                for bucket_name, log_values in self.__read_bucket_logs.items():
+                    
+                    log_id = log_values['log_id']
+                    log_group_id = log_values['log_group_id']
+
+                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                    if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+
+                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                    elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+
+                    else:
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['findings'].append(bucket_name)
+
+        for region_key, region_values in self.__obp_regional_checks.items():
+            for finding in region_values['VCN']['findings']:
+                missing_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
+                self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(missing_subnet[0])
+
+            for finding in region_values['Write_Bucket']['findings']:
+                missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
+                self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(missing_bucket[0])
+
+            for finding in region_values['Write_Bucket']['findings']:
+                missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
+                self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
+
+
+        if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] and not self.__service_connectors:
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
+        elif not self.__service_connectors:
+            # If there are no service connectors then by default all subnets are not logged
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] = self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] + self.__network_subnets
+        else:
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
+
+        
+        if self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] and not self.__service_connectors:
+            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
+        elif not self.__service_connectors:
+            # If there are no service connectors then by default all buckets are not logged
+            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
+            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] = self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] + self.__buckets
+        else:
+            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = True
+
+        
+        if self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] and not self.__service_connectors:
+            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = False
+        elif not self.__service_connectors:
+            # If there are no service connectors then by default all buckets are not logged
+            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = False
+            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] = self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] + self.__buckets
+        else:
+            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
+
+
+        # print("Audit status is " + str(self.obp_foundations_checks['SIEM_Audit_Logging']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Audit_Logging']['Findings'])))        
+        
+        # print("VCN status is " + str(self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'])))
+
+        # print("Bucket Write status is " + str(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'])))
+
+        # print("Bucket Read status is " + str(self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'])))
 
 
     ##########################################################################
-    # Orchestrates data collection - analysis and report generation
+    # Orchestrates data collection and CIS report generation
     ##########################################################################
 
-    def report_generate_cis_report(self, level=2):
+    def __report_generate_cis_report(self, level):
         # This function reports generates CSV reports
-
-        # Collecting all the tenancy data
-        self.__report_collect_tenancy_data()
-
-        # Analyzing Data in reports
-        self.__report_analyze_tenancy_data()
 
         # Creating summary report
         summary_report = []
@@ -2661,151 +2818,43 @@ class CIS_Report:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
 
-        if self.__output_raw_data:
-            # List to store output reports if copying to object storage is required
-            list_report_file_names = []
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
-            list_report_file_names.append(report_file_name)
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_users", self.__users)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_policies", self.__policies)
-            list_report_file_names.append(report_file_name)  
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_dyanmic_groups", self.__dynamic_groups)
-            list_report_file_names.append(report_file_name)
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_tags", self.__tag_defaults)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "identity_compartments", self.__raw_compartment)
-            list_report_file_names.append(report_file_name)
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "network_security_groups", self.__network_security_groups)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "network_security_lists", self.__network_security_lists)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "network_subnets", self.__network_subnets)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "autonomous_databases", self.__autonomous_databases)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "analytics_instances", self.__analytics_instances)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "integration_instances", self.__integration_instances)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "event_rules", self.__event_rules)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "log_groups_and_logs", self.__logging_list)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "object_storage_buckets", self.__buckets)
-            list_report_file_names.append(report_file_name)            
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "boot_volumes", self.__boot_volumes)
-            list_report_file_names.append(report_file_name)
-
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "block_volumes", self.__block_volumes)
-            list_report_file_names.append(report_file_name)
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "file_stroage_system", self.__file_storage_system)
-            list_report_file_names.append(report_file_name)
-            
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "vaults_and_keys", self.__vaults)
-            list_report_file_names.append(report_file_name)
-    
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "ons_subscriptions", self.__subscriptions)
-            list_report_file_names.append(report_file_name)
-    
-            if self.__output_bucket:
-                for raw_report in list_report_file_names:
-                    if raw_report:
-                        self.__os_copy_report_to_object_storage(
-                            self.__output_bucket, raw_report)
-    
-    
     
     ##########################################################################
     # Orchestrates analysis and report generation
     ##########################################################################
-    def report_generate_map_report(self):
+    def __report_generate_obp_report(self):
 
-        # Analyzing
-        self.__map_analyze_tenancy_data()
         
         # Screen output for CIS Summary Report
         self.__print_header("OCI Best Practices Findings")
         print('Category' + "\t" + "Compliant" + "\t" + "Findings  ")
         print('#' * 90)
-        for key, value in self.map_foundations_checks.items():
+        for key, value in self.obp_foundations_checks.items():
             print(str(key) + "\t" + "\t" + str(value['Status']) + "\t" + "\t" + str(len(value['Findings'])))
         
-        for key, value in self.map_foundations_checks.items():
+        for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "map", key + "_Findings", value['Findings'])
+                    self.__report_directory, "obp", key + "_Findings", value['Findings'])
+
             if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
 
-        if self.__output_raw_data:
-            list_report_file_names = []
-            report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "raw_data", "budgets", self.__budgets)
-            list_report_file_names.append(report_file_name)
-            print(list_report_file_names)
 
-            if self.__output_bucket:
-                for raw_report in list_report_file_names:
-                    if raw_report:
-                        self.__os_copy_report_to_object_storage(
-                            self.__output_bucket, raw_report)
-
-    def __report_collect_tenancy_data(self):
+    def __collect_tenancy_data(self):
         
         ######  Runs identity functions only in home region
         self.__identity_read_groups_and_membership()
         self.__identity_read_compartments()
-        # self.__identity_read_users()
-        # self.__identity_read_tenancy_password_policy()
-        # self.__identity_read_dynamic_groups()
-        # self.__audit_read__tenancy_audit_configuration()
-        # self.__identity_read_tag_defaults()
-        # self.__identity_read_tenancy_policies()
+        self.__identity_read_users()
+        self.__identity_read_tenancy_password_policy()
+        self.__identity_read_dynamic_groups()
+        self.__audit_read__tenancy_audit_configuration()
+        self.__identity_read_tag_defaults()
+        self.__identity_read_tenancy_policies()
         self.__cloud_guard_read_cloud_guard_configuration()
 
-        if self.__map_checks:
-            self.__budget_read_budgets()
-            self.__sch_read_service_connectors()
-            self.__map_analyze_tenancy_data()
-            exit()
+
             
         # The above checks are run in the home region 
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
@@ -2828,6 +2877,113 @@ class CIS_Report:
         self.__boot_volume_read_boot_volumes()
         self.__fss_read_fsss()
 
+        if self.__obp_checks:
+            self.__budget_read_budgets()
+            self.__sch_read_service_connectors()
+
+    ##########################################################################
+    # Generate Raw Data Output
+    ##########################################################################
+    def __report_generate_raw_data_output(self):
+
+        # List to store output reports if copying to object storage is required
+        list_report_file_names = []
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_users", self.__users)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_policies", self.__policies)
+        list_report_file_names.append(report_file_name)  
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_dyanmic_groups", self.__dynamic_groups)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_tags", self.__tag_defaults)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "identity_compartments", self.__raw_compartment)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_security_groups", self.__network_security_groups)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_security_lists", self.__network_security_lists)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_subnets", self.__network_subnets)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "autonomous_databases", self.__autonomous_databases)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "analytics_instances", self.__analytics_instances)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "integration_instances", self.__integration_instances)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "event_rules", self.__event_rules)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "log_groups_and_logs", self.__logging_list)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "object_storage_buckets", self.__buckets)
+        list_report_file_names.append(report_file_name)            
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "boot_volumes", self.__boot_volumes)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "block_volumes", self.__block_volumes)
+        list_report_file_names.append(report_file_name)
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "file_stroage_system", self.__file_storage_system)
+        list_report_file_names.append(report_file_name)
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "vaults_and_keys", self.__vaults)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "ons_subscriptions", self.__subscriptions)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "budgets", self.__budgets)
+        list_report_file_names.append(report_file_name)
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "service_connectors", list(self.__service_connectors.values()))
+        list_report_file_names.append(report_file_name)
+
+        if self.__output_bucket:
+            for raw_report in list_report_file_names:
+                if raw_report:
+                    self.__os_copy_report_to_object_storage(
+                        self.__output_bucket, raw_report)
+
+   
     ##########################################################################
     # Copy Report to Object Storage
     ##########################################################################
@@ -2896,7 +3052,31 @@ class CIS_Report:
            
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
+
+
+    ##########################################################################
+    # Orchestrates Data collection and reports
+    ##########################################################################
+
+    def generate_reports(self, level=2):
+ 
+        # Collecting all the tenancy data
+        self.__collect_tenancy_data()
+
+        # Analyzing Data for CIS reports
+        self.__report_cis_analyze_tenancy_data()
+
+        # Generate CIS reports
+        self.__report_generate_cis_report(level)
+
+        if self.__obp_checks:
+            # Analyzing Data for OBP reports
+            self.__mbp_analyze_tenancy_data()
+            
+            self.__report_generate_obp_report()
         
+        if self.__output_raw_data:
+            self.__report_generate_raw_data_output()
 
     ##########################################################################
     # Print header centered
@@ -2907,6 +3087,9 @@ class CIS_Report:
         print('#' * chars)
         print("#" + name.center(chars - 2, " ") + "#")
         print('#' * chars)
+
+
+
 
 ##########################################################################
 # check service error to warn instead of error
@@ -3053,7 +3236,7 @@ def execute_report():
                         help='Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1')    
     parser.add_argument('--raw', action='store_true', default=False,
                             help='Outputs all resource data into CSV files')
-    parser.add_argument('--map', action='store_true', default=False,
+    parser.add_argument('--obp', action='store_true', default=False,
                             help='Checks for OCI best practices')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
@@ -3062,11 +3245,9 @@ def execute_report():
     cmd = parser.parse_args()
 
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.map)
-    report.report_generate_cis_report(int(cmd.level))
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp)
+    report.generate_reports(int(cmd.level))
 
-    if cmd.map:
-        report.report_generate_map_report()
 
 
 ##########################################################################

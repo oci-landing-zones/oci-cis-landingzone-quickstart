@@ -45,7 +45,7 @@ class CIS_Report:
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, map):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -1962,10 +1962,12 @@ class CIS_Report:
             self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
                 self.__tenancy.id).data.retention_period_days
         except Exception as e:
-            print(
-                "\tAccess to audit retention requires the user to be part of the Administrator group")
-            self.__audit_retention_period = -1
-
+            if "NotAuthorizedOrNotFound" in str(e):
+                self.__audit_retention_period = -1
+                print("\t***Access to audit retention requires the user to be part of the Administrator group")
+            else:
+                raise RuntimeError("Error in __audit_read__tenancy_audit_configuration " + str(e.args))
+            
         return self.__audit_retention_period
 
     ##########################################################################
@@ -1979,7 +1981,7 @@ class CIS_Report:
             return self.__cloud_guard_config
         except Exception as e:
             self.__cloud_guard_config = 'DISABLED'
-            print("Cloud Guard service requires a PayGo account")
+            print("***Cloud Guard service requires a PayGo account")
 
     ##########################################################################
     # Identity Password Policy
@@ -1991,8 +1993,12 @@ class CIS_Report:
                 self.__tenancy.id).data
 
         except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read__tenancy_password_policy " + str(e.args))
+            if "NotAuthorizedOrNotFound" in str(e):
+                self.__tenancy_password_policy = None
+                print("\t***Access to password policies in this tenancy requires elevated permissions.")
+            else:
+                raise RuntimeError(
+                "Error in __identity_read_tenancy_password_policy " + str(e.args))
 
     ##########################################################################
     # Oracle Notifications Services for Subscriptions
@@ -2223,8 +2229,11 @@ class CIS_Report:
 
 
         # 1.4 Check - Password Policy - Only in home region
-        if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
-            self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
+        if self.__tenancy_password_policy:
+            if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
+                self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
+        else:
+            self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
@@ -3113,7 +3122,7 @@ def check_service_error(code):
 ##########################################################################
 
 
-def create_signer(config_profile, is_instance_principals, is_delegation_token):
+def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token):
 
     # if instance principals authentications
     if is_instance_principals:
@@ -3165,9 +3174,10 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
     # config file authentication
     # -----------------------------
     else:
+         
         try:
             config = oci.config.from_file(
-                oci.config.DEFAULT_LOCATION,
+                file_location if file_location else oci.config.DEFAULT_LOCATION,
                 (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
             )
             signer = oci.signer.Signer(
@@ -3220,6 +3230,8 @@ def execute_report():
 
     # Get Command Line Parser
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', default="", dest='file_location',
+                        help='OCI config file location')
     parser.add_argument('-t', default="", dest='config_profile',
                         help='Config file section to use (tenancy profile) ')
     parser.add_argument('-p', default="", dest='proxy',
@@ -3244,9 +3256,15 @@ def execute_report():
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
     cmd = parser.parse_args()
 
+<<<<<<< HEAD
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp)
     report.generate_reports(int(cmd.level))
+=======
+    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw)
+    report.report_generate_cis_report(int(cmd.level))
+>>>>>>> release-2.5.0
 
 
 

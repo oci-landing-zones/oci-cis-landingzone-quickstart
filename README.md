@@ -53,7 +53,7 @@ The Landing Zone template creates a few compartments in the tenancy root compart
  - Security compartment: for all logging, key management, scanning, and notifications resources. 
  - Application Development compartment: for application development related services, including Compute, Storage, Functions, Streams, Kubernetes, API Gateway, etc. 
  - Database compartment: for all database resources. 
- - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud service, customers can choose between creating a specific compartment or using the Database compartment.   
+ - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud Service, customers can choose between creating a specific compartment or using the Database compartment.   
  - Enclosing compartment: a compartment at any level in the compartment hierarchy to hold the above compartments. 
 
 The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.

@@ -1,32 +1,31 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 variable "compartment_id" {
   type        = string
-  description = "The default compartment OCID to use for resources (unless otherwise specified)."
-  default     = ""
+  description = "The compartment OCID where the vault is managed."
 } 
 
-variable "vault_name" {
+variable "name" {
   type        = string
-  description = "Vault Name"
-  default     = ""
-} 
+  description = "The vault name."
+  default     = "lz-vault"
+}
 
-variable "vault_type" {
+variable "type" {
   type        = string
-  description = "Vault Type - DEFAULT (Shared)"
+  description = "The vault type - DEFAULT (Shared)"
   default     = "DEFAULT"
 }
 
 variable "defined_tags" {
   type        = map(string)
-  description = "Map of key-value pairs of defined tags. (Optional)"
+  description = "Map of key-value pairs of defined tags for all resources managed by this module."
   default     = null
 }
 
 variable "freeform_tags" {
   type        = map(string)
-  description = "Map of key-value pairs of freeform tags. (Optional)"
+  description = "Map of key-value pairs of freeform tags for all resources managed by this module."
   default     = null
 }

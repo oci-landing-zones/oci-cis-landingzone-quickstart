@@ -3256,15 +3256,9 @@ def execute_report():
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
     cmd = parser.parse_args()
 
-<<<<<<< HEAD
-    config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp)
     report.generate_reports(int(cmd.level))
-=======
-    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw)
-    report.report_generate_cis_report(int(cmd.level))
->>>>>>> release-2.5.0
 
 
 

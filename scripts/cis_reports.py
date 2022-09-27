@@ -2727,7 +2727,7 @@ class CIS_Report:
                 self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
 
 
-        if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] and not self.__service_connectors:
+        if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
         elif not self.__service_connectors:
             # If there are no service connectors then by default all subnets are not logged
@@ -2737,7 +2737,7 @@ class CIS_Report:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
 
         
-        if self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] and not self.__service_connectors:
+        if self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings']:
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
         elif not self.__service_connectors:
             # If there are no service connectors then by default all buckets are not logged
@@ -2747,7 +2747,7 @@ class CIS_Report:
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = True
 
         
-        if self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] and not self.__service_connectors:
+        if self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings']:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = False
         elif not self.__service_connectors:
             # If there are no service connectors then by default all buckets are not logged
@@ -2756,14 +2756,6 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
 
-
-        # print("Audit status is " + str(self.obp_foundations_checks['SIEM_Audit_Logging']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Audit_Logging']['Findings'])))        
-        
-        # print("VCN status is " + str(self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'])))
-
-        # print("Bucket Write status is " + str(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'])))
-
-        # print("Bucket Read status is " + str(self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status']) + " with " + str(len(self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'])))
 
 
     ##########################################################################

@@ -22,6 +22,7 @@ module "lz_security_zones" {
   source                 = "../modules/security/security-zones"
   providers              = { oci = oci.home }
   count                  = var.enable_security_zones ? 1 : 0
+  compartment_id         = var.tenancy_ocid
   cis_level              = var.cis_level
   security_policies      = var.sz_security_policies
   sz_target_compartments = local.security_zone_target_compartments

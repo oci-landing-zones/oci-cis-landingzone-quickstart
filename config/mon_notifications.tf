@@ -15,7 +15,7 @@ locals {
     notify_on_cloudguard_events_rule    = {key:"${var.service_label}-notify-on-cloudguard-events-rule",     name:"${var.service_label}-notify-on-cloudguard-events-rule"}
 
     default_database_events = ["com.oraclecloud.databaseservice.autonomous.database.critical","com.oraclecloud.databaseservice.dbsystem.critical"]
-    exainfra_events = ["com.oraclecloud.databaseservice.exadatainfrastructure.critical"]
+    exainfra_events = ["com.oraclecloud.databaseservice.exadatainfrastructure.critical","com.oraclecloud.databaseservice.autonomous.cloudautonomousvmcluster.critical"]
     database_events = var.deploy_exainfra_cmp == true ?  concat(local.default_database_events,local.exainfra_events) : local.default_database_events
     
     cloudguard_risk_levels = {

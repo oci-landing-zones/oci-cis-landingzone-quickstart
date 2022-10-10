@@ -236,7 +236,9 @@ class CIS_Report:
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
-        
+        self.__network_fastconnects = []
+        self.__network_cpes = []        
+
         # For Autonomous Database Checks
         self.__autonomous_databases = []
 
@@ -286,7 +288,7 @@ class CIS_Report:
 
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Updated June 30, 2022.")
+        print("Updated October 31, 2022.")
         print("oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -1301,6 +1303,154 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in __network_read_network_subnets " + str(e.args))
 
+    ##########################################################################
+    # Load Network FastConnect 
+    ##########################################################################
+    def __network_read_fastonnects(self):
+        print("Processing FastConnects...")
+        try:
+            for region_key, region_values in self.__regions.items():
+                # Looping through compartments in tenancy
+                for compartment in self.__compartments:
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        fastconnect_data = oci.pagination.list_call_get_all_results(
+                            region_values['network_client'].list_virtual_circuits,
+                            compartment_id=compartment.id,
+                            lifecycle_state="PROVISIONED"
+                        ).data
+                        # Looping through fastconnects in a compartment
+                        try:
+                            for fastconnect in fastconnect_data:
+                                record = {
+                                    "id": fastconnect.id,
+                                    "display_name" : fastconnect.display_name,
+                                    "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
+                                    "bgp_admin_state" : fastconnect.bgp_admin_state,
+                                    "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
+                                    "bgp_management" : fastconnect.bgp_management, 
+                                    "bgp_session_state" : fastconnect.bgp_session_state,
+                                    "compartment_id" : fastconnect.compartment_id,
+                                    "cross_connect_mappings" : fastconnect.cross_connect_mappings,
+                                    "customer_asn" : fastconnect.customer_asn,
+                                    "customer_bgp_asn" : fastconnect.customer_bgp_asn,
+                                    "gateway_id" : fastconnect.gateway_id,
+                                    "ip_mtu" : fastconnect.ip_mtu,
+                                    "is_bfd_enabled" : fastconnect.is_bfd_enabled,
+                                    "lifecycle_state" : fastconnect.lifecycle_state,
+                                    "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
+                                    "provider_name" : fastconnect.provider_name,
+                                    "provider_service_id" : fastconnect.provider_service_id,
+                                    "provider_service_key_name" : fastconnect.provider_service_key_name,
+                                    "provider_service_name" : fastconnect.provider_service_name,
+                                    "provider_state" : fastconnect.provider_state,
+                                    "public_prefixes" : fastconnect.public_prefixes,
+                                    "reference_comment" : fastconnect.reference_comment,
+                                    "fastconnect_region" : fastconnect.region,
+                                    "routing_policy" : fastconnect.routing_policy,
+                                    "service_type" : fastconnect.service_type,
+                                    "time_created" : fastconnect.time_created,
+                                    "type" : fastconnect.time_created,
+                                    "freeform_tags" : fastconnect.freeform_tags,
+                                    "define_tags" : fastconnect.defined_tags,
+                                    "region" : region_key,
+                                    "notes":""
+
+                                }
+                                # Adding fastconnect to fastconnect list
+                                self.__network_fastconnects.append(record)
+                        except Exception as e:
+                            record = {
+                                    "id": "",
+                                    "display_name" : "",
+                                    "bandwidth_shape_name" : "",
+                                    "bgp_admin_state" : "",
+                                    "bgp_ipv6_session_state" : "",
+                                    "bgp_management" : "", 
+                                    "bgp_session_state" : "",
+                                    "compartment_id" : "",
+                                    "cross_connect_mappings" : "",
+                                    "customer_asn" : "",
+                                    "customer_bgp_asn" : "",
+                                    "gateway_id" : "",
+                                    "ip_mtu" : "",
+                                    "is_bfd_enabled" : "",
+                                    "lifecycle_state" : "",
+                                    "oracle_bgp_asn" : "",
+                                    "provider_name" : "",
+                                    "provider_service_id" : "",
+                                    "provider_service_key_name" : "",
+                                    "provider_service_name" : "",
+                                    "provider_state" : "",
+                                    "public_prefixes" : "",
+                                    "reference_comment" : "",
+                                    "fastconnect_region" : "",
+                                    "routing_policy" : "",
+                                    "service_type" : "",
+                                    "time_created" : "",
+                                    "type" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+
+                            }
+                            self.__network_fastconnects.append(record)
+            print("\tProcessed " + str(len(self.__network_fastconnects)) + " FastConnects")                        
+            return self.__network_fastconnects
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __network_read_fastonnects " + str(e.args))
+
+    ##########################################################################
+    # Load Customer Premises Equipments  
+    ##########################################################################
+    def __network_read_cpes(self):
+        print("Processing Customer Premises Equipment...")
+        try:
+            for region_key, region_values in self.__regions.items():
+                # Looping through compartments in tenancy
+                for compartment in self.__compartments:
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        cpe_data = oci.pagination.list_call_get_all_results(
+                            region_values['network_client'].list_cpes,
+                            compartment_id=compartment.id,
+                        ).data
+                        # Looping through CPEs in a compartment
+                        try:
+                            for cpe in cpe_data:
+                                record = {
+                                    "id": cpe.id,
+                                    "display_name" : cpe.display_name,
+                                    "cpe_device_shape_id" : cpe.cpe_device_shape_id,
+                                    "ip_address" : cpe.ip_address,
+                                    "time_created" : cpe.time_created,
+                                    "freeform_tags" : cpe.freeform_tags,
+                                    "define_tags" : cpe.defined_tags,
+                                    "region" : region_key,
+                                    "notes":""
+
+                                }
+                                # Adding CPEs to CPE list
+                                self.__network_cpes.append(record)
+                        except Exception as e:
+                            record = {
+                                    "id": "",
+                                    "display_name" : "",
+                                    "cpe_device_shape_id" : "",
+                                    "ip_address" : "",
+                                    "time_created" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+
+                            }
+                            self.__network_cpes.append(record)
+            print("\tProcessed " + str(len(self.__network_cpes)) + " Customer Premises Devices")                        
+            return self.__network_cpes
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __network_read_cpes " + str(e.args))
 
      ############################################
      # Load Autonomous Databases
@@ -2847,13 +2997,13 @@ class CIS_Report:
         ######  Runs identity functions only in home region
         self.__identity_read_groups_and_membership()
         self.__identity_read_compartments()
-        self.__identity_read_users()
-        self.__identity_read_tenancy_password_policy()
-        self.__identity_read_dynamic_groups()
-        self.__audit_read__tenancy_audit_configuration()
-        self.__identity_read_tag_defaults()
-        self.__identity_read_tenancy_policies()
-        self.__cloud_guard_read_cloud_guard_configuration()
+        # self.__identity_read_users()
+        # self.__identity_read_tenancy_password_policy()
+        # self.__identity_read_dynamic_groups()
+        # self.__audit_read__tenancy_audit_configuration()
+        # self.__identity_read_tag_defaults()
+        # self.__identity_read_tenancy_policies()
+        # self.__cloud_guard_read_cloud_guard_configuration()
 
 
             
@@ -2861,26 +3011,29 @@ class CIS_Report:
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
             self.__regions.pop(self.__home_region)
 
-        self.__identity_read_availability_domains()
-        self.__search_resources_in_root_compartment()
-        self.__vault_read_vaults()
-        self.__os_read_buckets()
-        self.__logging_read_log_groups_and_logs()
-        self.__events_read_event_rules()
-        self.__ons_read_subscriptions()
-        self.__network_read_network_security_lists()
-        self.__network_read_network_security_groups_rules()
-        self.__network_read_network_subnets()
-        self.__adb_read_adbs()
-        self.__oic_read_oics()
-        self.__oac_read_oacs()
-        self.__block_volume_read_block_volumes()
-        self.__boot_volume_read_boot_volumes()
-        self.__fss_read_fsss()
+        # self.__identity_read_availability_domains()
+        # self.__search_resources_in_root_compartment()
+        # self.__vault_read_vaults()
+        # self.__os_read_buckets()
+        # self.__logging_read_log_groups_and_logs()
+        # self.__events_read_event_rules()
+        # self.__ons_read_subscriptions()
+        # self.__network_read_network_security_lists()
+        # self.__network_read_network_security_groups_rules()
+        # self.__network_read_network_subnets()
+        # self.__adb_read_adbs()
+        # self.__oic_read_oics()
+        # self.__oac_read_oacs()
+        # self.__block_volume_read_block_volumes()
+        # self.__boot_volume_read_boot_volumes()
+        # self.__fss_read_fsss()
 
         if self.__obp_checks:
-            self.__budget_read_budgets()
-            self.__sch_read_service_connectors()
+            self.__network_read_fastonnects()
+            self.__network_read_cpes()
+            exit()
+            # self.__budget_read_budgets()
+            # self.__sch_read_service_connectors()
 
     ##########################################################################
     # Generate Raw Data Output

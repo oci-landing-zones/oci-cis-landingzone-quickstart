@@ -2647,7 +2647,7 @@ def check_service_error(code):
 ##########################################################################
 
 
-def create_signer(config_profile, is_instance_principals, is_delegation_token):
+def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token):
 
     # if instance principals authentications
     if is_instance_principals:
@@ -2699,9 +2699,10 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
     # config file authentication
     # -----------------------------
     else:
+         
         try:
             config = oci.config.from_file(
-                oci.config.DEFAULT_LOCATION,
+                file_location if file_location else oci.config.DEFAULT_LOCATION,
                 (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
             )
             signer = oci.signer.Signer(
@@ -2754,6 +2755,8 @@ def execute_report():
 
     # Get Command Line Parser
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', default="", dest='file_location',
+                        help='OCI config file location')
     parser.add_argument('-t', default="", dest='config_profile',
                         help='Config file section to use (tenancy profile) ')
     parser.add_argument('-p', default="", dest='proxy',
@@ -2776,7 +2779,7 @@ def execute_report():
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
     cmd = parser.parse_args()
 
-    config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw)
     report.report_generate_cis_report(int(cmd.level))
 

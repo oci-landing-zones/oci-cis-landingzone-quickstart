@@ -4,6 +4,12 @@
 #---------------------------------------------------------------
 #--- Cloud Guard Security Zone Recipe variables ----------------
 #---------------------------------------------------------------
+
+variable "compartment_id" {
+  type = string
+  description = "The compartment OCID where default Security Zones recipes are defined. Typically, this is the tenancy OCID."
+}
+
 variable "sz_target_compartments" {
   type = map(object({
     sz_compartment_id = string

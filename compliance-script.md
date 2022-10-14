@@ -247,24 +247,22 @@ Num     Level   Compliant       Findings        Title
 ### Arguments
 ```
 % python3 cis_reports.py -h       
-usage: cis_reports.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET]
-                      [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN]
-                      [--level LEVEL] [--regions REGIONS] [--raw] [-ip] [-dt]
+usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL]
+                      [--regions REGIONS] [--raw] [-ip] [-dt]
 
 optional arguments:
   -h, --help            show this help message and exit
+  -c FILE_LOCATION      OCI config file location
   -t CONFIG_PROFILE     Config file section to use (tenancy profile)
   -p PROXY              Set Proxy (i.e. www-proxy-server.com:80)
   --output-to-bucket OUTPUT_BUCKET
                         Set Output bucket name (i.e. my-reporting-bucket)
   --report-directory REPORT_DIRECTORY
-                        Set Output report directory by default it is the current date (i.e.
-                        reports-date)
+                        Set Output report directory by default it is the current date (i.e. reports-date)
   --print-to-screen PRINT_TO_SCREEN
                         Set to False if you want to see only non-compliant findings (i.e. False)
   --level LEVEL         CIS Recommendation Level options are: 1 or 2. Set to 2 by default
-  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all
-                        regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
+  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
   --raw                 Outputs all resource data into CSV files
   -ip                   Use Instance Principals for Authentication
   -dt                   Use Delegation Token for Authentication in Cloud Shell
@@ -272,6 +270,24 @@ optional arguments:
 ```
 
 ### Usage Examples
+
+#### Executing on local machine with a specific OCI Config file
+
+To run on a local machine using a specific OCI Config file.
+```
+% python3 cis_reports.py -c <file_location>
+```
+where ```<file_location>``` is the fully qualified path to an OCI client config file (default location is `~/.oci/config`). An OCI config file contains profiles that define the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File).
+
+
+	[<Profile_Name>]
+	tenancy=<tenancy_ocid>
+	region=us-ashburn-1
+	user=<user_ocid>
+	fingerprint=<api_key_finger_print>
+	key_file=/path_to_my_private_key_file.pem
+
+
 #### Executing on local machine with a specific profile
 
 To run on a local machine using a specific profile in the an OCI Config file.

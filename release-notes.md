@@ -1,3 +1,18 @@
+#  October 14, 2022 Release Notes - 2.4.2
+1. [Compliance Checking Supports Custom OCI Config File Location](#2-4-2-script-config-file)
+1. [Custom Security Zone policies support for all OCI realms](#2-4-2-sz-all-realms)
+1. [Bug fixes](#2-4-2-bug-fixes)
+
+## <a name="2-4-2-script-config-file">Compliance Checking Supports Custom OCI Config File Location</a>
+The Compliance checking script adds a new flag `-c` that takes the location of an OCI config file. This flag allows users to specify which OCI config file to use instead of using the one in the default location (`~/.oci/config`).
+
+## <a name="2-4-2-sz-all-realms">Custom Security Zone policies support for all OCI realms</a>
+Custom Security Zone policies are now supported by CIS Landing Zone in all OCI realms where Custom Security Zones are available.
+
+## <a name="2-4-2-bug-fixes">Bug Fixes</a>
+- Incorrect *backups* resource-type replaced by *db-backups* for database admin grants in [iam_policies.tf](./config/iam_policies.tf).
+- Event types fixed for Exadata Cloud Service in [mon_notifications.tf](./config/mon_notifications.tf).
+
 # September 16, 2022 Release Notes - 2.4.1
 1. [Compliance Checking Report Identity Domain Fix](#2-4-1-script-fix)
 

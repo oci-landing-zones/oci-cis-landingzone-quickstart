@@ -67,6 +67,7 @@ module "lz_tags" {
 }
 
 module "lz_arch_center_tag" {
+  count = !var.extend_landing_zone_to_new_region ? 1 : 0
   source        = "../modules/monitoring/tags-arch-center"
   providers     = { oci = oci.home }
   tenancy_ocid  = var.tenancy_ocid

@@ -48,7 +48,7 @@ wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-qui
 2. Install setup venv and install OCI
 ```
 python3 -m venv python-venv
-source python_venv/bin/activate
+source python-venv/bin/activate
 pip3 install oci
 pip3 install pytz
 ```

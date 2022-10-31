@@ -28,3 +28,8 @@ moved {
   from = module.lz_scanning
   to   = module.lz_scanning[0]
 }
+
+moved {
+  from = module.lz_arch_center_tag
+  to   = module.lz_arch_center_tag[0]
+}

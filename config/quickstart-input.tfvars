@@ -60,7 +60,7 @@ cis_level            = "1"
 # ------------------------------------------------------
 # vcn_cidrs     = ["10.0.0.0/20","<cidr_2>","...","<cidr_n>"] # list of CIDRs to be used when creating the VCNs. One CIDR to one VCN. Default: ["10.0.0.0/20"].
 # vcn_names     = ["<name_1>,"<name_2>","...","<name_n>"] # list of VCN names to override default names with. One name to one CIDR, nth element to vcn_cidrs' nth element. 
-# subnets_name  = []
+# subnets_names = []
 # subnets_sizes = []
 
 # ------------------------------------------------------

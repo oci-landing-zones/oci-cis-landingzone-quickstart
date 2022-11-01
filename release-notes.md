@@ -1,5 +1,5 @@
 #  October 28, 2022 Release Notes - 2.4.3
-## Bug Fix
+## Bug Fixes
 - Arch Center tag module conditioned to Landing Zone not being extended. Fix in [mon_tags.tf](./config/mon_tags.tf).
 - CIS Compliance checking script was looking for attributes not available in list analytics and list integrations instances API calls. 
 #  October 14, 2022 Release Notes - 2.4.2

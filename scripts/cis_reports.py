@@ -1611,6 +1611,7 @@ class CIS_Report:
                                     "name": oac_instance.name,
                                     "description": oac_instance.description,
                                     "network_endpoint_details": oac_instance.network_endpoint_details,
+                                    "network_endpoint_type": oac_instance.network_endpoint_details.network_endpoint_type,
                                     "compartment_id": oac_instance.compartment_id,
                                     "lifecycle_state": oac_instance.lifecycle_state,
                                     "email_notification": oac_instance.email_notification,
@@ -1620,6 +1621,8 @@ class CIS_Report:
                                     "license_type": oac_instance.license_type,
                                     "time_created": oac_instance.time_created,
                                     "time_updated": oac_instance.time_updated,
+                                    # "defined_tags" : oac_instance.defined_tags,
+                                    # "freeform_tags" : oac_instance.freeform_tags,
                                     "region" : region_key,
                                     "notes":""
                                 }
@@ -2210,12 +2213,13 @@ class CIS_Report:
 
         # CIS 2.7 - Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a VCN
         for analytics_instance in self.__analytics_instances:
-            if not(analytics_instance['network_endpoint_details']):
-                self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
-                self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
+            if analytics_instance['network_endpoint_type'].upper() == 'PUBLIC':
+                if not(analytics_instance['network_endpoint_details'].whitelisted_ips):
+                    self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
                     analytics_instance)    
-            elif analytics_instance['network_endpoint_details']:
-                if "0.0.0.0/0" in str(analytics_instance['network_endpoint_details']):
+
+                elif "0.0.0.0/0" in analytics_instance['network_endpoint_details'].whitelisted_ips:
                     self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
                     self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
                         analytics_instance) 

@@ -12,11 +12,9 @@
 ##########################################################################
 
 from __future__ import print_function
-from gettext import find
 import sys
 import argparse
 import datetime
-from turtle import st
 import pytz
 import oci
 import json
@@ -242,6 +240,7 @@ class CIS_Report:
         self.__network_vcns = {}
         self.__network_fastconnects = {} # Indexed by DRG ID
         self.__network_drgs = {} # Indexed by DRG ID
+        self.__raw_network_drgs = []
 
         self.__network_cpes = []        
         self.__network_ipsec_connections = {} # Indexed by DRG ID
@@ -1421,11 +1420,12 @@ class CIS_Report:
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
-                                    "default_ipsec_tunnel_route_table" : str(drg.default_drg_route_tables.ipsec_tunnel),
-                                    "default_remote_peering_connection_route_table" : str(drg.default_drg_route_tables.remote_peering_connection),
-                                    "default_vcn_table" : str(drg.default_drg_route_tables.vcn),
-                                    "default_virtual_circuit_route_table" : str(drg.default_drg_route_tables.virtual_circuit),
-                                    "default_export_drg_route_distribution_id" : (drg.default_export_drg_route_distribution_id),
+                                    "default_drg_route_tables" : drg.default_drg_route_tables,
+                                    "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
+                                    "default_remote_peering_connection_route_table" : drg.default_drg_route_tables.remote_peering_connection,
+                                    "default_vcn_table" : drg.default_drg_route_tables.vcn,
+                                    "default_virtual_circuit_route_table" : drg.default_drg_route_tables.virtual_circuit,
+                                    "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
                                     "time_created" : drg.time_created,
@@ -1434,15 +1434,16 @@ class CIS_Report:
                                     "region" : region_key,
                                     "notes":""
                                 }
-                                # Adding DRGs to network_drgs
-                                self.__network_drgs[drg.id] = record
-
                             except:
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
-                                    "default_drg_route_tables" : str(drg.default_drg_route_tables),
-                                    "default_export_drg_route_distribution_id" : str(drg.default_export_drg_route_distribution_id),
+                                    "default_drg_route_tables" : drg.default_drg_route_tables,
+                                    "default_ipsec_tunnel_route_table" : "",
+                                    "default_remote_peering_connection_route_table" : "",
+                                    "default_vcn_table" : "",
+                                    "default_virtual_circuit_route_table" : "",
+                                    "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
                                     "time_created" : drg.time_created,
@@ -1452,7 +1453,10 @@ class CIS_Report:
                                     "notes":""
 
                                 }
-                                self.__network_drgs[drg.id] = record
+                            # for Raw Data
+                            self.__raw_network_drgs.append(record)
+                            # For Checks data
+                            self.__network_drgs[drg.id] = record
 
 
 
@@ -1643,8 +1647,9 @@ class CIS_Report:
                             compartment_id=compartment.id,
                         ).data
                         # Looping through IP SEC Connections in a compartment
-                        try:
-                            for ip_sec in ip_sec_connections_data:
+                        
+                        for ip_sec in ip_sec_connections_data:
+                            try:
                                 record = {
                                     "id": ip_sec.id,
                                     "display_name" : ip_sec.display_name,
@@ -1658,10 +1663,12 @@ class CIS_Report:
                                     "define_tags" : ip_sec.defined_tags,
                                     "region" : region_key,
                                     "tunnels" : [],
+                                    "number_tunnels_up" : 0,
                                     "tunnels_up" : True, # It is true unless I find out otherwise
                                     "notes":""
-
                                 }
+                                print("Good IPSec")
+                                # Getting Tunnel Data
                                 try:
                                     ip_sec_tunnels_data = oci.pagination.list_call_get_all_results(
                                         region_values['network_client'].list_ip_sec_connection_tunnels,
@@ -1669,94 +1676,39 @@ class CIS_Report:
                                     ).data
                                     for tunnel in ip_sec_tunnels_data:
                                         tunnel_record = {
-                                            "id" : tunnel.id,
-                                            "cpe_ip" : tunnel.cpe_ip,
-                                            "display_name" : tunnel.display_name,
-                                            "vpn_ip" : tunnel.vpn_ip,
-                                            "ike_version" : tunnel.ike_version,
-                                            "encryption_domain_config" : tunnel.encryption_domain_config,
-                                            "lifecycle_state" : tunnel.lifecycle_state,
-                                            "nat_translation_enabled" : tunnel.nat_translation_enabled,
-                                            "oracle_can_initiate" : tunnel.oracle_can_initiate,
-                                            "routing" : tunnel.routing,
-                                            "status" : tunnel.status,
-                                            "compartment_id" : tunnel.compartment_id,
-                                            "dpd_mode" : tunnel.dpd_mode,
-                                            "dpd_timeout_in_sec" : tunnel.dpd_timeout_in_sec,
-                                            "bgp_ipv6_state" : tunnel.bgp_session_info.bgp_ipv6_state,
-                                            "bgp_state" : tunnel.bgp_session_info.bgp_state,
-                                            "bgp_customer_bgp_asn" : tunnel.bgp_session_info.customer_bgp_asn,
-                                            "bgp_customer_interface_ip" : tunnel.bgp_session_info.customer_interface_ip,
-                                            "bgp_customer_interface_ipv6" : tunnel.bgp_session_info.customer_interface_ipv6,
-                                            "bgp_oracle_bgp_asn" : tunnel.bgp_session_info.oracle_bgp_asn,
-                                            "bgp_oracle_interface_ip" : tunnel.bgp_session_info.oracle_interface_ip,
-                                            "bgg_oracle_interface_ipv6" : tunnel.bgp_session_info.oracle_interface_ipv6,
-                                            "time_created" : tunnel.time_created,
-                                            "time_status_updated" : tunnel.time_status_updated,
-                                            "notes" : ""
-                                        }
+                                                "id" : tunnel.id,
+                                                "cpe_ip" : tunnel.cpe_ip,
+                                                "display_name" : tunnel.display_name,
+                                                "vpn_ip" : tunnel.vpn_ip,
+                                                "ike_version" : tunnel.ike_version,
+                                                "encryption_domain_config" : tunnel.encryption_domain_config,
+                                                "lifecycle_state" : tunnel.lifecycle_state,
+                                                "nat_translation_enabled" : tunnel.nat_translation_enabled,
+                                                "bgp_session_info" : tunnel.bgp_session_info,
+                                                "oracle_can_initiate" : tunnel.oracle_can_initiate,
+                                                "routing" : tunnel.routing,
+                                                "status" : tunnel.status,
+                                                "compartment_id" : tunnel.compartment_id,
+                                                "dpd_mode" : tunnel.dpd_mode,
+                                                "dpd_timeout_in_sec" : tunnel.dpd_timeout_in_sec,
+                                                "time_created" : tunnel.time_created,
+                                                "time_status_updated" : tunnel.time_status_updated,
+                                                "notes" : ""
+                                            }
+                                        if tunnel_record['status'].upper() == "UP":
+                                            record['number_tunnels_up'] += 1
+                                        else:
+                                            tunnel_record['tunnels_up'] = False
                                         record["tunnels"].append(tunnel_record)
-                                        #If one tunnel is down I set tunnel_status to false
-                                        for tunnel in record["tunnels"]:
-                                            if tunnel['status'].upper() == "DOWN":
-                                                record['tunnels_up'] = False
-                                                
-                                except Exception as e:
-                                        tunnel_record = {
-                                            "id" : "",
-                                            "cpe_ip" : "",
-                                            "display_name" : "",
-                                            "vpn_ip" : "",
-                                            "ike_version" : "",
-                                            "encryption_domain_config" : "",
-                                            "lifecycle_state" : "",
-                                            "nat_translation_enabled" : "",
-                                            "oracle_can_initiate" : "",
-                                            "routing" : "",
-                                            "status" : "",
-                                            "compartment_id" : compartment.id,
-                                            "dpd_mode" : "",
-                                            "dpd_timeout_in_sec" : "",
-                                            "bgp_ipv6_state" : "",
-                                            "bgp_state" : "",
-                                            "bgp_customer_bgp_asn" : "",
-                                            "bgp_customer_interface_ip" : "",
-                                            "bgp_customer_interface_ipv6" : "",
-                                            "bgp_oracle_bgp_asn" : "",
-                                            "bgp_oracle_interface_ip" : "",
-                                            "bgg_oracle_interface_ipv6" : "",
-                                            "time_created" : "",
-                                            "time_status_updated" : "",
-                                            "notes" : str(e)
-                                        }
-                                        record["tunnels"].append(tunnel_record)
-                                        # Not tunnels set tunnel status to false
-                                        record["tunnels_up"] = False
-                                
-                                # Adding IPSEC Connections to Connections list
-                                try:
-                                    self.__network_ipsec_connections[ip_sec.drg_id].append(record)
                                 except:
-                                    self.__network_ipsec_connections[ip_sec.drg_id] = []
-                                    self.__network_ipsec_connections[ip_sec.drg_id].append(record)
-                                count_of_ip_sec_connections += 1
-                        
-                        except Exception as e:
-                            record = {
-                                    "id": "",
-                                    "display_name" : "",
-                                    "cpe_id" : "",
-                                    "compartment_id" : compartment.id,
-                                    "cpe_local_identifier" : "",
-                                    "cpe_local_identifier_type" : "",
-                                    "lifecycle_state" : "",
-                                    "freeform_tags" : "",
-                                    "define_tags" : "",
-                                    "tunnels" : [],
-                                    "tunnels_up" : False,
-                                    "region" : region_key,
-                                    "notes": str(e)
-                            }
+                                    print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " " + ip_sec.id)
+                                    record['tunnels_up'] = False
+
+
+                            except:
+                                print("execption " * 10)
+                                print(ip_sec)
+
                             try:
                                 self.__network_ipsec_connections[ip_sec.drg_id].append(record)
                             except:
@@ -3294,7 +3246,6 @@ class CIS_Report:
                                 fast_connect_providers.add(virtual_circuit['provider_name'])
                                 number_of_valid_fast_connect_circuits += 1
 
-            print("DRG is: " + drg_id)
             record = {
                 "drg_id" : drg_id,
                 "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
@@ -3340,7 +3291,7 @@ class CIS_Report:
     ##########################################################################
 
     def __report_generate_cis_report(self, level):
-        # This function reports generates CSV reports
+        # This function reports generates CSV reportsffo
 
         # Creating summary report
         summary_report = []
@@ -3458,23 +3409,23 @@ class CIS_Report:
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
             self.__regions.pop(self.__home_region)
 
-        self.__identity_read_availability_domains()
-        self.__search_resources_in_root_compartment()
-        self.__vault_read_vaults()
-        self.__os_read_buckets()
-        self.__logging_read_log_groups_and_logs()
-        self.__events_read_event_rules()
-        self.__ons_read_subscriptions()
-        self.__network_read_network_security_lists()
-        self.__network_read_network_security_groups_rules()
+        # self.__identity_read_availability_domains()
+        # self.__search_resources_in_root_compartment()
+        # self.__vault_read_vaults()
+        # self.__os_read_buckets()
+        # self.__logging_read_log_groups_and_logs()
+        # self.__events_read_event_rules()
+        # self.__ons_read_subscriptions()
+        # self.__network_read_network_security_lists()
+        # self.__network_read_network_security_groups_rules()
         self.__network_read_network_subnets()
         self.__network_build_network_vcn_subnets()
-        self.__adb_read_adbs()
-        self.__oic_read_oics()
-        self.__oac_read_oacs()
-        self.__block_volume_read_block_volumes()
-        self.__boot_volume_read_boot_volumes()
-        self.__fss_read_fsss()
+        # self.__adb_read_adbs()
+        # self.__oic_read_oics()
+        # self.__oac_read_oacs()
+        # self.__block_volume_read_block_volumes()
+        # self.__boot_volume_read_boot_volumes()
+        # self.__fss_read_fsss()
 
         if self.__obp_checks:
             self.__network_read_fastonnects()
@@ -3606,10 +3557,9 @@ class CIS_Report:
         #         self.__report_directory, "raw_data", "network_drg_attachments", list(self.__network_drg_attachments.values()))
         # list_report_file_names.append(report_file_name)
 
-        # Converting a one to one dict to a list
-        # report_file_name = self.__print_to_csv_file(
-        #         self.__report_directory, "raw_data", "network_drgs", list(self.__network_drgs.values()))
-        # list_report_file_names.append(report_file_name)
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_drgs", self.__raw_network_drgs)
+        list_report_file_names.append(report_file_name)
 
         if self.__output_bucket:
             for raw_report in list_report_file_names:

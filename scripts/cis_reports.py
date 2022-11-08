@@ -12,6 +12,7 @@
 ##########################################################################
 
 from __future__ import print_function
+from curses import noecho
 import sys
 import argparse
 import datetime
@@ -107,11 +108,12 @@ class CIS_Report:
         # MAP Checks
         self.obp_foundations_checks = {
             'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'SIEM_Audit_Logging' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : ""}, 
+            'SIEM_Audit_Logging' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""}, 
             'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'Networking_Connectivity' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm" },
+            'Cloud_Guard_Configuration' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : "" },
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -266,6 +268,10 @@ class CIS_Report:
         self.__api_gateway_access_logs = []
         self.__api_gateway_error_logs = []
 
+        # Cloud Guard checks
+        self.__cloud_guard_targets = {}
+
+
         # For Storage Checks
         self.__buckets = []
         self.__boot_volumes = []
@@ -277,6 +283,7 @@ class CIS_Report:
 
         # For Region
         self.__regions = {}
+        self.__raw_regions = []
         self.__home_region = None
 
         # For ONS Subscriptions
@@ -366,7 +373,15 @@ class CIS_Report:
                     "region_name": region.region_name,
                     "status": region.status,
                     }
-  
+
+            record = {
+                    "is_home_region": region.is_home_region,
+                    "region_key": region.region_key,
+                    "region_name": region.region_name,
+                    "status": region.status,
+                }
+            self.__raw_regions.append(record)    
+
         
         # By Default it is today's date
         if report_directory:
@@ -1667,7 +1682,6 @@ class CIS_Report:
                                     "tunnels_up" : True, # It is true unless I find out otherwise
                                     "notes":""
                                 }
-                                print("Good IPSec")
                                 # Getting Tunnel Data
                                 try:
                                     ip_sec_tunnels_data = oci.pagination.list_call_get_all_results(
@@ -1701,7 +1715,7 @@ class CIS_Report:
                                             tunnel_record['tunnels_up'] = False
                                         record["tunnels"].append(tunnel_record)
                                 except:
-                                    print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " " + ip_sec.id)
+                                    print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)
                                     record['tunnels_up'] = False
 
 
@@ -2344,6 +2358,15 @@ class CIS_Report:
             ).data
             # Looping through Budgets to to get records
             for budget in budgets_data:
+                try:
+                    alerts_data = oci.pagination.list_call_get_all_results(
+                            self.__regions[self.__home_region]['budget_client'].list_alert_rules,
+                            budget_id=budget.id,
+                        ).data
+                except Exception as e:
+                    print("\tFailed to get Budget Data for Budget Name: " + budget.display_name + " id: " + budget.id)
+                    alerts_data = []
+                
                 record = {
                     "actual_spend" : budget.actual_spend,
                     "alert_rule_count" : budget.alert_rule_count,
@@ -2361,9 +2384,15 @@ class CIS_Report:
                     "tagerts" : budget.targets,
                     "time_created": budget.time_created,
                     "time_spend_computed": budget.time_spend_computed,
+                    "alerts" : []
                 }
+                
+                for alert in alerts_data:
+                    record['alerts'].append(alert)
+
                 # Append Budget to list of Budgets
                 self.__budgets.append(record)
+
             print("\tProcessed " + str(len(self.__budgets)) + " ")
             return self.__budgets
         except Exception as e:
@@ -2400,6 +2429,64 @@ class CIS_Report:
             return self.__cloud_guard_config
         except Exception as e:
             self.__cloud_guard_config = 'DISABLED'
+            print("***Cloud Guard service requires a PayGo account")
+
+
+    ##########################################################################
+    # Cloud Guard Configuration
+    ##########################################################################
+    def __cloud_guard_read_cloud_guard_targets(self):
+        print("Processing Cloud Guard Configuration...")
+        cloud_guard_targets = 0
+        try:
+            for compartment in self.__compartments:
+                if self.__if_not_managed_paas_compartment(compartment.name):
+                    # Getting a compartments target
+                    cg_targets = self.__regions[self.__home_region]['cloud_guard_client'].list_targets(
+                        compartment_id=compartment.id).data.items
+                    # Looping throufh targets to get target data
+                    for target in cg_targets:
+                        try:
+                            # Getting Target data like recipes 
+                            try:
+                                target_data = self.__regions[self.__home_region]['cloud_guard_client'].get_target(
+                                target_id=target.id).data
+                            except Exception as e:
+                                target_data = None
+                            
+                            record = {
+                                "compartment_id": target.compartment_id,
+                                "defined_tags": target.defined_tags,
+                                "display_name": target.display_name,
+                                "freeform_tags": target.freeform_tags,
+                                "id": target.id,
+                                "lifecycle_state": target.lifecycle_state,
+                                "lifecyle_details": target.lifecyle_details,
+                                "system_tags": target.system_tags,
+                                "recipe_count" : target.recipe_count,
+                                "target_resource_id": target.target_resource_id,
+                                "target_resource_type": target.target_resource_type,
+                                "time_created": target.time_created,
+                                "time_updated": target.time_updated,
+                                "inherited_by_compartments" : target_data.inherited_by_compartments if target_data else "",
+                                "description" : target_data.description if target_data else "",
+                                "system_tags" : target_data.system_tags if target_data else "",
+                                "target_details" : target_data.target_details if target_data else "",                            
+                                "target_resource_id" : target_data.target_resource_id if target_data else "",
+                                "target_detector_recipes" : target_data.target_detector_recipes if target_data else "",
+                                "target_responder_recipes" : target_data.target_responder_recipes if target_data else ""
+                            }
+                            # Indexing by compartment_id
+
+                            self.__cloud_guard_targets[compartment.id] = record
+
+                            cloud_guard_targets += 1
+                        except Exception as e:
+                            print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
+
+            print("\tProcessed " + str(cloud_guard_targets) + " Coud Guard Targets")                        
+            return self.__cloud_guard_targets
+        except Exception as e:
             print("***Cloud Guard service requires a PayGo account")
 
     ##########################################################################
@@ -3283,7 +3370,55 @@ class CIS_Report:
             
             self.obp_foundations_checks["Networking_Connectivity"]["Findings"] += region_values["Network_Connectivity"]["findings"]
             self.obp_foundations_checks["Networking_Connectivity"]["OBP"] += region_values["Network_Connectivity"]["drgs"]
-                
+
+        #######################################
+        ### Cloud Guard Checks
+        ####################################### 
+        cloud_guard_record = {
+            "cloud_guard_endable" :  True  if self.__cloud_guard_config == 'ENABLED' else False,
+            "target_at_root" : False,
+            "targert_configuration_detector" : False,
+            "target_activity_detector" : False,
+            "target_threat_detector" : False,
+            "target_responder_recipes" : False,
+            "target_responder_event_rule" : False,
+        }
+        
+        # Cloud Guard Target attached to the root compartment with activity, config, and threat detector plus a responder
+        if self.__cloud_guard_targets[self.__tenancy.id]:
+            
+            cloud_guard_record['target_at_root'] = True
+
+
+            if self.__cloud_guard_targets[self.__tenancy.id]:
+                if self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
+                    for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
+                        if recipe.detector.upper() == 'IAAS_CONFIGURATION_DETECTOR':
+                            cloud_guard_record['targert_configuration_detector'] = True
+                        elif recipe.detector.upper() == 'IAAS_ACTIVITY_DETECTOR':
+                            cloud_guard_record['target_activity_detector'] = True
+                        elif recipe.detector.upper() == 'IAAS_THREAT_DETECTOR':
+                            cloud_guard_record['target_threat_detector'] = True
+                if self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
+                    cloud_guard_record['target_responder_recipes'] = True
+                    for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
+                        for rule in recipe.effective_responder_rules:
+                            if rule.responder_rule_id.upper() == 'EVENT' and rule.details.is_enabled:
+                                cloud_guard_record['target_responder_event_rule'] = True
+        
+                cloud_guard_record['target_id'] = self.__cloud_guard_targets[self.__tenancy.id]['id']    
+                cloud_guard_record['target_name'] = self.__cloud_guard_targets[self.__tenancy.id]['display_name']             
+        
+        all_cloud_guard_checks = True
+        for key,value in cloud_guard_record.items():
+            if not(value):
+                all_cloud_guard_checks = False
+        
+        self.obp_foundations_checks['Cloud_Guard_Configuration']['Status'] = all_cloud_guard_checks
+        if all_cloud_guard_checks:
+            self.obp_foundations_checks['Cloud_Guard_Configuration']['OBP'].append(cloud_guard_record)
+        else:
+            self.obp_foundations_checks['Cloud_Guard_Configuration']['Findings'].append(cloud_guard_record)
 
 
     ##########################################################################
@@ -3400,9 +3535,11 @@ class CIS_Report:
         self.__identity_read_tenancy_policies()
         self.__cloud_guard_read_cloud_guard_configuration()
 
+
         # Budgets is global construct 
         if self.__obp_checks:
             self.__budget_read_budgets()
+            self.__cloud_guard_read_cloud_guard_targets()
 
             
         # The above checks are run in the home region 
@@ -3560,6 +3697,16 @@ class CIS_Report:
         report_file_name = self.__print_to_csv_file(
                 self.__report_directory, "raw_data", "network_drgs", self.__raw_network_drgs)
         list_report_file_names.append(report_file_name)
+
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "cloud_guard_target", list(self.__cloud_guard_targets.values()))
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "regions", self.__raw_regions)
+        list_report_file_names.append(report_file_name)
+
 
         if self.__output_bucket:
             for raw_report in list_report_file_names:

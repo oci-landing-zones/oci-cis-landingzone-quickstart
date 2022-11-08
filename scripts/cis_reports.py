@@ -12,7 +12,6 @@
 ##########################################################################
 
 from __future__ import print_function
-from curses import noecho
 import sys
 import argparse
 import datetime
@@ -2451,7 +2450,7 @@ class CIS_Report:
                         try:
                             # Getting Target data like recipes 
                             try:
-                                target_data = self.__regions[self.__home_region]['cloud_guard_client'].get_target(
+                                target_data = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].get_target(
                                 target_id=target.id).data
                             except Exception as e:
                                 target_data = None
@@ -3380,9 +3379,13 @@ class CIS_Report:
             "cloud_guard_endable" :  True  if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root" : False,
             "targert_configuration_detector" : False,
+            "targert_configuration_detector_customer_owned" : False,
             "target_activity_detector" : False,
+            "target_activity_detector_customer_owned" : False,
             "target_threat_detector" : False,
+            "target_threat_detector_customer_owned" : False,
             "target_responder_recipes" : False,
+            "target_responder_recipes_customer_owned" : False,
             "target_responder_event_rule" : False,
         }
         
@@ -3397,17 +3400,31 @@ class CIS_Report:
                     for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
                         if recipe.detector.upper() == 'IAAS_CONFIGURATION_DETECTOR':
                             cloud_guard_record['targert_configuration_detector'] = True
+                            if recipe.owner.upper() == "CUSTOMER":
+                                cloud_guard_record['targert_configuration_detector_customer_owned'] = True
+
+
                         elif recipe.detector.upper() == 'IAAS_ACTIVITY_DETECTOR':
                             cloud_guard_record['target_activity_detector'] = True
+                            if recipe.owner.upper() == "CUSTOMER":
+                                cloud_guard_record['target_activity_detector_customer_owned'] = True
+
                         elif recipe.detector.upper() == 'IAAS_THREAT_DETECTOR':
                             cloud_guard_record['target_threat_detector'] = True
+                            if recipe.owner.upper() == "CUSTOMER":
+                                cloud_guard_record['target_threat_detector_customer_owned'] = True
+
+
                 if self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
                     cloud_guard_record['target_responder_recipes'] = True
                     for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
+                        if recipe.owner.upper() == 'OWNER':
+                            cloud_guard_record['target_responder_recipes_customer_owned'] = True
+
                         for rule in recipe.effective_responder_rules:
                             if rule.responder_rule_id.upper() == 'EVENT' and rule.details.is_enabled:
                                 cloud_guard_record['target_responder_event_rule'] = True
-        
+
                 cloud_guard_record['target_id'] = self.__cloud_guard_targets[self.__tenancy.id]['id']    
                 cloud_guard_record['target_name'] = self.__cloud_guard_targets[self.__tenancy.id]['display_name']             
         
@@ -3497,7 +3514,7 @@ class CIS_Report:
         print('#' * 90)
         # Adding data to summary report
         for key, recommendation in self.obp_foundations_checks.items():
-            print(str(key) + "\t" + "\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])))
+            print(str(key) + "\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])))
             record = {
                 "Recommendation" : str(key),
                 "Compliant": ('Yes' if recommendation['Status'] else 'No'),
@@ -3542,6 +3559,7 @@ class CIS_Report:
         if self.__obp_checks:
             self.__budget_read_budgets()
             self.__cloud_guard_read_cloud_guard_targets()
+            self.__obp_analyze_tenancy_data()
 
             
         # The above checks are run in the home region 
@@ -3680,21 +3698,6 @@ class CIS_Report:
         report_file_name = self.__print_to_csv_file(
                 self.__report_directory, "raw_data", "network_ipsec_connections", list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())))
         list_report_file_names.append(report_file_name)
-
-        # Converting a dict that is one to a list to a flat list
-        # print("*" * 50)
-        # print(type(list(self.__network_drg_attachments.values())))
-        # for item in list(self.__network_drg_attachments.values()):
-        #     print(item)
-
-        # print("*" * 50)
-        # print(type(list(itertools.chain.from_iterable(self.__network_drg_attachments.values()))))
-        # for item in list(itertools.chain.from_iterable(self.__network_drg_attachments.values())):
-        #     print(item)
-
-        # report_file_name = self.__print_to_csv_file(
-        #         self.__report_directory, "raw_data", "network_drg_attachments", list(self.__network_drg_attachments.values()))
-        # list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(
                 self.__report_directory, "raw_data", "network_drgs", self.__raw_network_drgs)

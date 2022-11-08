@@ -223,6 +223,7 @@ class CIS_Report:
         # Tenancy Data
         self.__tenancy = None
         self.__cloud_guard_config = None
+        self.__cloud_guard_config_status = None
         self.__os_namespace = None
         
         # For IAM Checks
@@ -2425,10 +2426,11 @@ class CIS_Report:
         print("Processing Cloud Guard Configuration...")
         try:
             self.__cloud_guard_config = self.__regions[self.__home_region]['cloud_guard_client'].get_configuration(
-                self.__tenancy.id).data.status
-            return self.__cloud_guard_config
+                self.__tenancy.id).data
+            self.__cloud_guard_config_status = self.__cloud_guard_config.status
+            return self.__cloud_guard_config_status
         except Exception as e:
-            self.__cloud_guard_config = 'DISABLED'
+            self.__cloud_guard_config_status = 'DISABLED'
             print("***Cloud Guard service requires a PayGo account")
 
 
@@ -2442,7 +2444,7 @@ class CIS_Report:
             for compartment in self.__compartments:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     # Getting a compartments target
-                    cg_targets = self.__regions[self.__home_region]['cloud_guard_client'].list_targets(
+                    cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
                         compartment_id=compartment.id).data.items
                     # Looping throufh targets to get target data
                     for target in cg_targets:
@@ -2979,7 +2981,7 @@ class CIS_Report:
                     subnet)
 
         # CIS Check 3.15 - Cloud Guard enabled
-        if self.__cloud_guard_config == 'ENABLED':
+        if self.__cloud_guard_config_status == 'ENABLED':
             self.cis_foundations_benchmark_1_2['3.15']['Status'] = True
         else:
             self.cis_foundations_benchmark_1_2['3.15']['Status'] = False
@@ -3375,7 +3377,7 @@ class CIS_Report:
         ### Cloud Guard Checks
         ####################################### 
         cloud_guard_record = {
-            "cloud_guard_endable" :  True  if self.__cloud_guard_config == 'ENABLED' else False,
+            "cloud_guard_endable" :  True  if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root" : False,
             "targert_configuration_detector" : False,
             "target_activity_detector" : False,
@@ -3525,8 +3527,8 @@ class CIS_Report:
     def __collect_tenancy_data(self):
         
         ######  Runs identity functions only in home region
-        self.__identity_read_groups_and_membership()
         self.__identity_read_compartments()
+        self.__identity_read_groups_and_membership()
         self.__identity_read_users()
         self.__identity_read_tenancy_password_policy()
         self.__identity_read_dynamic_groups()

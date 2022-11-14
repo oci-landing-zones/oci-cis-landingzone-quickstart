@@ -12,6 +12,7 @@
 ##########################################################################
 
 from __future__ import print_function
+from concurrent.futures import thread
 import sys
 import argparse
 import datetime
@@ -21,6 +22,50 @@ import json
 import os
 import csv
 import itertools
+from threading import Thread
+import functools
+# try:
+#     import pandas as pd
+#     OUTPUT_TO_XLSX = True
+#     print("I have pandas")
+# except:
+#     OUTPUT_TO_XLSX = False
+
+
+# def print_to_xlsx(func):
+#     @functools.wraps(func)
+#     def output_to_xlsx(*args, **kwargs):
+#         if OUTPUT_TO_XLSX:
+#             print(f"Calling {func.__name__})")
+#             print("not running")
+#             return print_to_xlsx_file(*args, **kwargs)
+#         else:
+#             return func(*args, **kwargs)           
+#     return output_to_xlsx
+
+# def print_to_xlsx_file(self, report_directory, header, file_subject, data):
+    
+#     try:
+#         # Creating report directory
+#         if not os.path.isdir(report_directory):
+#             os.mkdir(report_directory)
+
+#     except Exception as e:
+#         raise Exception(
+#             "Error in creating report directory: " + str(e.args))
+
+#     try:
+#         # if no data
+#         if len(data) == 0:
+#             return None
+        
+#         # get the file name of the CSV
+        
+#         file_name = header + "_" + file_subject
+#         file_name = (file_name.replace(" ", "_")
+#                         ).replace(".", "-").replace("_-_","_") + ".csv"
+#         file_path = os.path.join(report_directory, file_name)
+#     print("Printing to an XLSX file")
 
 
 ##########################################################################
@@ -107,12 +152,13 @@ class CIS_Report:
         # MAP Checks
         self.obp_foundations_checks = {
             'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'SIEM_Audit_Logging' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""}, 
+            'SIEM_Audit_Log_All_Comps' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : ""}, # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp' : {'Status' : True,'Findings' : [], "OBP" : [], "Documentation" : "" }, # Assuming True 
             'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
             'Networking_Connectivity' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm" },
-            'Cloud_Guard_Configuration' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : "" },
+            'Cloud_Guard_Config' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : "" },
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -590,7 +636,6 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
-        print("Processing User Groups and Group Memberships...")
         try:
             # Getting all Groups in the Tenancy
             groups_data = oci.pagination.list_call_get_all_results(
@@ -624,7 +669,6 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        print("Processing Users...")
         try:
             # Getting all users in the Tenancy
             users_data = oci.pagination.list_call_get_all_results(
@@ -760,7 +804,6 @@ class CIS_Report:
     # Tenancy IAM Policies
     ##########################################################################
     def __identity_read_tenancy_policies(self):
-        print("Processing IAM Policies...")
         # Get all policy at the tenancy level
         try:
             for compartment in self.__compartments:
@@ -790,7 +833,6 @@ class CIS_Report:
     # Load Identity Dynamic Groups
     ############################################
     def __identity_read_dynamic_groups(self):
-        print("Processing IAM Dynamic Groups...")
         try:
             dynamic_groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
@@ -837,7 +879,6 @@ class CIS_Report:
     # Load Availlability Domains
     ############################################
     def __identity_read_availability_domains(self):
-        print("Processing Availability Domains...")
         try:
             for region_key, region_values in self.__regions.items():
                 region_values['availability_domains'] = oci.pagination.list_call_get_all_results(
@@ -855,10 +896,7 @@ class CIS_Report:
     ##########################################################################
     def __os_read_buckets(self):
         
-        # Getting OS Namespace
-
-        print("Processing Object Store Buckets...")
-        
+        # Getting OS Namespace        
         try:
             # looping through regions
             for region_key, region_values in self.__regions.items():
@@ -925,8 +963,6 @@ class CIS_Report:
     # Load Block Volumes
     ############################################
     def __block_volume_read_block_volumes(self):
-        print("Processing Block Volumes...")
-
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -995,7 +1031,6 @@ class CIS_Report:
     # Load Boot Volumes
     ############################################
     def __boot_volume_read_boot_volumes(self):
-        print("Processing Boot Volumes...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -1066,7 +1101,6 @@ class CIS_Report:
     # Load FSS
     ############################################
     def __fss_read_fsss(self):
-        print("Processing File Storage service...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -1129,7 +1163,6 @@ class CIS_Report:
     ##########################################################################
     def __network_read_network_security_groups_rules(self):
         self.__network_security_groups = []
-        print("Processing Network Security Groups...")
         # Loopig Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
@@ -1189,7 +1222,6 @@ class CIS_Report:
     # Network Security Lists
     ##########################################################################
     def __network_read_network_security_lists(self):
-        print("Processing Network Security Lists...")
         # Looping Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
@@ -1252,7 +1284,6 @@ class CIS_Report:
     # Network Subnets Lists
     ##########################################################################
     def __network_read_network_subnets(self):
-        print("Processing Network Subnets...")
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -1319,6 +1350,9 @@ class CIS_Report:
                             }
                             self.__network_subnets.append(record)
             print("\tProcessed " + str(len(self.__network_subnets)) + " Network Subnets")                        
+            
+            # Build a list of VCNs
+            self.__network_build_network_vcn_subnets,
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError(
@@ -1328,7 +1362,6 @@ class CIS_Report:
     # Build a Dictionary of VCN from the subnets indexed by vcn_id
     ##########################################################################
     def __network_build_network_vcn_subnets(self):
-        print("Processing Network Virtual Cloud Networks...")
         for subnet in self.__network_subnets:
             try:
                 self.__network_vcns[subnet['vcn_id']].append(subnet)
@@ -1344,7 +1377,6 @@ class CIS_Report:
     # Load DRG Attachments
     ##########################################################################
     def __network_read_drg_attachments(self):
-        print("Processing DRG Attachments...")
         count_of_drg_attachments = 0
         try:
             for region_key, region_values in self.__regions.items():
@@ -1419,7 +1451,6 @@ class CIS_Report:
     # Load DRGs  
     ##########################################################################
     def __network_read_drgs(self):
-        print("Processing Dynamic Routing Gateways...")
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -1485,7 +1516,6 @@ class CIS_Report:
     # Load Network FastConnect 
     ##########################################################################
     def __network_read_fastonnects(self):
-        print("Processing FastConnects...")
         count_of_fast_connects = 0
         try:
             for region_key, region_values in self.__regions.items():
@@ -1597,7 +1627,6 @@ class CIS_Report:
     # Load Customer Premises Equipments  
     ##########################################################################
     def __network_read_cpes(self):
-        print("Processing Customer Premises Equipment...")
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -1650,7 +1679,6 @@ class CIS_Report:
     # Load IP Sec Connections
     ##########################################################################
     def __network_read_ip_sec_connections(self):
-        print("Processing IP SEC Connections...")
         count_of_ip_sec_connections = 0
         try:
             for region_key, region_values in self.__regions.items():
@@ -1740,7 +1768,6 @@ class CIS_Report:
      # Load Autonomous Databases
      ############################################
     def __adb_read_adbs(self):
-        print("Processing Autonomous Databases...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments: 
@@ -2016,7 +2043,6 @@ class CIS_Report:
     # Load Oracle Integration Cloud
     ############################################
     def __oic_read_oics(self):
-        print("Processing Oracle Integration Instances...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -2081,7 +2107,6 @@ class CIS_Report:
     # Load Oracle Analytics Cloud
     ############################################
     def __oac_read_oacs(self):
-        print("Processing Oracle Analytics Instances...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -2143,7 +2168,6 @@ class CIS_Report:
     ##########################################################################
     def __events_read_event_rules(self):
         
-        print("Processing Event Rules...")
         try:
             for region_key, region_values in self.__regions.items():
                 for compartment in self.__compartments:
@@ -2177,8 +2201,6 @@ class CIS_Report:
     ##########################################################################
     def __logging_read_log_groups_and_logs(self):
         
-        print("Processing Log Groups and Logs...")
-
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments
@@ -2276,7 +2298,6 @@ class CIS_Report:
     ##########################################################################
     def __vault_read_vaults(self):
         self.__vaults = []
-        print("Processing Vaults and Keys...")
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterating through compartments
@@ -2348,7 +2369,6 @@ class CIS_Report:
     # OCI Budgets
     ##########################################################################
     def __budget_read_budgets(self):
-        print("Processing Budgets...")
         try:
             # Getting all budgets in tenancy of any type
             budgets_data = oci.pagination.list_call_get_all_results(
@@ -2393,7 +2413,7 @@ class CIS_Report:
                 # Append Budget to list of Budgets
                 self.__budgets.append(record)
 
-            print("\tProcessed " + str(len(self.__budgets)) + " ")
+            print("\tProcessed " + str(len(self.__budgets)) + " budgets")
             return self.__budgets
         except Exception as e:
             raise RuntimeError(
@@ -2405,7 +2425,6 @@ class CIS_Report:
     ##########################################################################
     def __audit_read_tenancy_audit_configuration(self):
         # Pulling the Audit Configuration
-        print("Processing Audit Configuration...")
         try:
             self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
                 self.__tenancy.id).data.retention_period_days
@@ -2416,17 +2435,19 @@ class CIS_Report:
             else:
                 raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
             
+        print("\tProcessed Audit Configuration.")
         return self.__audit_retention_period
 
     ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
-        print("Processing Cloud Guard Configuration...")
         try:
             self.__cloud_guard_config = self.__regions[self.__home_region]['cloud_guard_client'].get_configuration(
                 self.__tenancy.id).data
             self.__cloud_guard_config_status = self.__cloud_guard_config.status
+            
+            print("\tProcessed Cloud Guard Configuration.")
             return self.__cloud_guard_config_status
         except Exception as e:
             self.__cloud_guard_config_status = 'DISABLED'
@@ -2437,7 +2458,6 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_targets(self):
-        print("Processing Cloud Guard Configuration...")
         cloud_guard_targets = 0
         try:
             for compartment in self.__compartments:
@@ -2485,7 +2505,7 @@ class CIS_Report:
                         except Exception as e:
                             print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
 
-            print("\tProcessed " + str(cloud_guard_targets) + " Coud Guard Targets")                        
+            print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")                        
             return self.__cloud_guard_targets
         except Exception as e:
             print("***Cloud Guard service requires a PayGo account")
@@ -2494,11 +2514,12 @@ class CIS_Report:
     # Identity Password Policy
     ##########################################################################
     def __identity_read_tenancy_password_policy(self):
-        print("Processing Tenancy Password Policy...")
         try:
             self.__tenancy_password_policy = self.__regions[self.__home_region]['identity_client'].get_authentication_policy(
                 self.__tenancy.id).data
-
+            
+            print("\tProcessed Tenancy Password Policy...")
+            return self.__tenancy_password_policy
         except Exception as e:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__tenancy_password_policy = None
@@ -2511,7 +2532,6 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
-        print("Processing Subscriptions...")
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterate through compartments to get all subscriptions
@@ -2547,7 +2567,6 @@ class CIS_Report:
     # Identity Tag Default
     ##########################################################################
     def __identity_read_tag_defaults(self):
-        print("Processing Tag Defaults..")
         try:
             # Getting Tag Default for the Root Compartment - Only
             tag_defaults = oci.pagination.list_call_get_all_results(
@@ -2579,9 +2598,7 @@ class CIS_Report:
     # Get Service Connectors
     ##########################################################################
     def __sch_read_service_connectors(self):
-        
-        print("Processing Service Connectors...")
-        
+                
         try:
             # looping through regions
             for region_key, region_values in self.__regions.items():
@@ -2658,7 +2675,6 @@ class CIS_Report:
         # resources_in_root_data = []
         # record = []
         query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
-        print("Processing resources in the root compartment...")
         # resources_in_root_data = self.__search_run_structured_query(query)
 
         for region_key, region_values in self.__regions.items():
@@ -3097,7 +3113,7 @@ class CIS_Report:
 
         # Stores Regional Checks 
         for region_key, region_values in self.__regions.items():
-            self.__obp_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "compartments" : [], "findings" : []}, 
+            self.__obp_regional_checks[region_key] = {"Audit" : {"tenancy_level_audit" : False, "tenancy_level_include_sub_comps" : False, "compartments" : [], "findings" : []}, 
                                                "VCN" :  {"subnets" : [], "findings" : []}, 
                                                "Write_Bucket" : {"buckets" : [], "findings" : []},
                                                "Read_Bucket" : {"buckets" : [], "findings" : []},
@@ -3133,6 +3149,7 @@ class CIS_Report:
                     # Checking if a the compartment being logged is the Tenancy and it has all child compartments
                     if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                         self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
+                        self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
                     # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                     elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                         self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
@@ -3152,31 +3169,35 @@ class CIS_Report:
         
         ## Consolidating Audit findings into the OBP Checks
         for region_key, region_values in self.__obp_regional_checks.items():
+            # If this flag is set all compartments are not logged in region
             if not region_values['Audit']['tenancy_level_audit']:
-                self.obp_foundations_checks['SIEM_Audit_Logging']['Status'] = False
+                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Status'] = False
+            
+            # If this flag is set the region has the tenancy logging and all sub compartments flag checked
+            if not region_values['Audit']['tenancy_level_include_sub_comps']:
+                self.obp_foundations_checks['SIEM_Audit_Incl_Sub_Comp']['Status'] = False
+                self.obp_foundations_checks['SIEM_Audit_Incl_Sub_Comp']['Findings'].append({"region_name" : region_key})
+            else:
+                self.obp_foundations_checks['SIEM_Audit_Incl_Sub_Comp']['OBP'].append({"region_name" : region_key})
+
+            # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
                 finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
-                self.obp_foundations_checks['SIEM_Audit_Logging']['Findings'].append(finding)
+                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
+            # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
                 finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
-
-                self.obp_foundations_checks['SIEM_Audit_Logging']['OBP'].append(finding)
-            # else:
-            #     finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
-            #     finding['region'] = region_key
-            #     self.obp_foundations_checks['SIEM_Audit_Logging']['OBP'].append(finding)
+                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
 
         
         
         #######################################
         ### Subnet and Bucket Log Checks
         #######################################
-
         for sch_id, sch_values in self.__service_connectors.items():
             # Only Active SCH with a target that is configured
-
             ### Subnet Logs Checks
 
             for subnet_id, log_values in self.__subnet_logs.items():
@@ -3184,53 +3205,62 @@ class CIS_Report:
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
 
+                subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
+                subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
+
                 # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
-                if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
+                if subnet_log_in_sch:
                     self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
-                
-                # Checking if the Subnet's log Group in is in the service connector's log sources if so I will add it
-                elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
+                    
+                # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                elif  subnet_log_group_in_sch and not(subnet_log_group_in_sch[0]['log_id']):
                     self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
-    
+
                 else:
                     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
 
             ### Bucket Write Logs Checks
 
-                for bucket_name, log_values in self.__write_bucket_logs.items():
-                    
-                    log_id = log_values['log_id']
-                    log_group_id = log_values['log_group_id']
+            for bucket_name, log_values in self.__write_bucket_logs.items():
+                log_id = log_values['log_id']
+                log_group_id = log_values['log_group_id']
 
-                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                    if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
-                    
-                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                    elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))
 
-                    else:
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
+                # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                if bucket_log_in_sch:
+                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+
+                # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                elif bucket_log_group_in_sch and not(bucket_log_group_in_sch[0]['log_id']):
+                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                
+                else:
+                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
             
             ### Bucket Read Log Checks
 
-                for bucket_name, log_values in self.__read_bucket_logs.items():
-                    
-                    log_id = log_values['log_id']
-                    log_group_id = log_values['log_group_id']
+            for bucket_name, log_values in self.__read_bucket_logs.items():
 
-                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                    if list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] )):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                log_id = log_values['log_id']
+                log_group_id = log_values['log_group_id']
 
-                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                    elif list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] )):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))  
 
-                    else:
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['findings'].append(bucket_name)
+                # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                if bucket_log_in_sch:
+                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
+                # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                elif bucket_log_group_in_sch and not(bucket_log_group_in_sch[0]['log_id']):
+                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+
+                else:
+                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['findings'].append(bucket_name)
+
+        
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
             for finding in region_values['VCN']['findings']:
@@ -3249,47 +3279,69 @@ class CIS_Report:
 
             for finding in region_values['Write_Bucket']['findings']:
                 missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(missing_bucket[0])
+                if missing_bucket:
+                    self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(missing_bucket[0])
 
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(logged_bucket[0])
+                if logged_bucket:
+                    self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(logged_bucket[0])
 
-            for finding in region_values['Write_Bucket']['findings']:
+            for finding in region_values['Read_Bucket']['findings']:
                 missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
+                if missing_bucket:
+                    self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
 
-            for finding in region_values['Write_Bucket']['buckets']:
+            for finding in region_values['Read_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(logged_bucket[0])
+                if logged_bucket:
+                    self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(logged_bucket[0])
+
+        
+        ## Adding Findings Unlogged items 
+        self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] += self.cis_foundations_benchmark_1_2['3.17']['Findings']
+        unlogged_read_buckets = []
+        # Finding buckets that don't have read logging enable to add them to the findings
+        for bucket in self.__buckets:
+            if not(bucket['name'] in self.__read_bucket_logs):
+                unlogged_read_buckets.append(bucket)
+        self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] += unlogged_read_buckets
+        ### Adding in Merging in CIS Finding
+        self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] += self.cis_foundations_benchmark_1_2['3.14']['Findings']
 
 
+
+        # Setting VCN Flow Logs Findings
         if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
         elif not self.__service_connectors:
             # If there are no service connectors then by default all subnets are not logged
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] = self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] + self.__network_subnets
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] += self.__network_subnets
         else:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
 
-        
+        ## Setting Write Bucket Findings
         if self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings']:
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
+
         elif not self.__service_connectors:
             # If there are no service connectors then by default all buckets are not logged
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
-            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] = self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] + self.__buckets
+            self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] += self.__buckets
+
         else:
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = True
 
-        
+        ## Setting Read Bucket Findings
         if self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings']:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = False
+
+
         elif not self.__service_connectors:
             # If there are no service connectors then by default all buckets are not logged
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = False
-            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] = self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] + self.__buckets
+            self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] += self.__buckets
         else:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
 
@@ -3433,11 +3485,11 @@ class CIS_Report:
             if not(value):
                 all_cloud_guard_checks = False
         
-        self.obp_foundations_checks['Cloud_Guard_Configuration']['Status'] = all_cloud_guard_checks
+        self.obp_foundations_checks['Cloud_Guard_Config']['Status'] = all_cloud_guard_checks
         if all_cloud_guard_checks:
-            self.obp_foundations_checks['Cloud_Guard_Configuration']['OBP'].append(cloud_guard_record)
+            self.obp_foundations_checks['Cloud_Guard_Config']['OBP'].append(cloud_guard_record)
         else:
-            self.obp_foundations_checks['Cloud_Guard_Configuration']['Findings'].append(cloud_guard_record)
+            self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
 
     ##########################################################################
@@ -3510,11 +3562,12 @@ class CIS_Report:
         obp_summary_report = []
         # Screen output for CIS Summary Report
         self.__print_header("OCI Best Practices Findings")
-        print('Category' + "\t\t\t" + "Compliant" + "\t" + "Findings  ")
+        print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  ")
         print('#' * 90)
         # Adding data to summary report
         for key, recommendation in self.obp_foundations_checks.items():
-            print(str(key) + "\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])))
+            padding = str(key).ljust(25, " ")
+            print(padding + "\t\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])))
             record = {
                 "Recommendation" : str(key),
                 "Compliant": ('Yes' if recommendation['Status'] else 'No'),
@@ -3531,66 +3584,119 @@ class CIS_Report:
         if summary_report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, summary_report_file_name)
-
+        
+        ## Printing Findings to CSV
         for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file(
                     self.__report_directory, "obp", key + "_Findings", value['Findings'])
+
+        ## Printing OBPs to CSV
+        for key, value in self.obp_foundations_checks.items():
+            report_file_name = self.__print_to_csv_file(
+                    self.__report_directory, "obp", key + "_Best_Practices", value['OBP'])
 
             if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
 
-
+    ##########################################################################
+    # Coordinates calls of all the read function required for analyzing tenancy
+    ##########################################################################
     def __collect_tenancy_data(self):
         
         ######  Runs identity functions only in home region
-        self.__identity_read_compartments()
-        self.__identity_read_groups_and_membership()
-        self.__identity_read_users()
-        self.__identity_read_tenancy_password_policy()
-        self.__identity_read_dynamic_groups()
-        self.__audit_read_tenancy_audit_configuration()
-        self.__identity_read_tag_defaults()
-        self.__identity_read_tenancy_policies()
-        self.__cloud_guard_read_cloud_guard_configuration()
+        
+        thread_users =  Thread(target = self.__identity_read_users)
+        thread_users.start()
 
+        thread_compartments =  Thread(target = self.__identity_read_compartments)
+        thread_compartments.start()
+        thread_compartments.join()
+        
+        print("Processing Home Region resources...")
+
+
+        cis_home_region_functions = [
+            self.__identity_read_groups_and_membership,
+            self.__identity_read_tenancy_password_policy,
+            self.__identity_read_dynamic_groups,
+            self.__audit_read_tenancy_audit_configuration,
+            self.__identity_read_availability_domains,
+            self.__identity_read_tag_defaults,
+            self.__identity_read_tenancy_policies,
+        ]
 
         # Budgets is global construct 
         if self.__obp_checks:
-            self.__budget_read_budgets()
-            self.__cloud_guard_read_cloud_guard_targets()
-            self.__obp_analyze_tenancy_data()
+            self.__cloud_guard_read_cloud_guard_configuration()
+            obp_home_region_functions = [
+                self.__budget_read_budgets,
+                self.__cloud_guard_read_cloud_guard_targets
+            ]
+        else:
+            obp_home_region_functions = []
 
-            
+        # Threads for Home region checks
+        home_threads = []        
+        for home_func in cis_home_region_functions + obp_home_region_functions:
+            t = Thread(target = home_func)
+            t.start()
+            home_threads.append(t)
+        
+        for t in home_threads:
+            t.join()
+
         # The above checks are run in the home region 
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
             self.__regions.pop(self.__home_region)
+        
 
-        self.__identity_read_availability_domains()
-        self.__search_resources_in_root_compartment()
-        self.__vault_read_vaults()
-        self.__os_read_buckets()
-        self.__logging_read_log_groups_and_logs()
-        self.__events_read_event_rules()
-        self.__ons_read_subscriptions()
-        self.__network_read_network_security_lists()
-        self.__network_read_network_security_groups_rules()
-        self.__network_read_network_subnets()
-        self.__network_build_network_vcn_subnets()
-        self.__adb_read_adbs()
-        self.__oic_read_oics()
-        self.__oac_read_oacs()
-        self.__block_volume_read_block_volumes()
-        self.__boot_volume_read_boot_volumes()
-        self.__fss_read_fsss()
-
+        print("Processing regional resources...")
+        # Stores running threads
+        regional_threads = []
+        # List of functions for CIS 
+        cis_regional_functions = [
+            self.__search_resources_in_root_compartment,
+            self.__vault_read_vaults,
+            self.__os_read_buckets,
+            self.__logging_read_log_groups_and_logs,
+            self.__events_read_event_rules,
+            self.__ons_read_subscriptions,
+            self.__network_read_network_security_lists,
+            self.__network_read_network_security_groups_rules,
+            self.__network_read_network_subnets,
+            self.__adb_read_adbs,
+            self.__oic_read_oics,
+            self.__oac_read_oacs,
+            self.__block_volume_read_block_volumes,
+            self.__boot_volume_read_boot_volumes,
+            self.__fss_read_fsss,
+        ]
+        
+        # Oracle Best practice functions
         if self.__obp_checks:
-            self.__network_read_fastonnects()
-            # self.__network_read_cpes()
-            self.__network_read_ip_sec_connections()
-            self.__network_read_drgs()
-            self.__network_read_drg_attachments()
-            self.__sch_read_service_connectors()
+            obp_functions = [
+                self.__network_read_fastonnects,
+                # self.__network_read_cpes,
+                self.__network_read_ip_sec_connections,
+                self.__network_read_drgs,
+                self.__network_read_drg_attachments,
+                self.__sch_read_service_connectors,
+            ]
+        else: 
+            obp_functions = []
+
+        # Starting execution of functions
+        for func in cis_regional_functions + obp_functions:
+            t = Thread(target = func)
+            t.start()
+            regional_threads.append(t)
+
+        # Waiting for execution of functions
+        for t in regional_threads:
+            t.join()
+        
+        thread_users.join()
 
     ##########################################################################
     # Generate Raw Data Output
@@ -3812,6 +3918,9 @@ class CIS_Report:
         
         if self.__output_raw_data:
             self.__report_generate_raw_data_output()
+        
+        end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+        self.__print_header("Finished in: " + str(end_datetime - self.start_datetime))
 
     ##########################################################################
     # Print header centered

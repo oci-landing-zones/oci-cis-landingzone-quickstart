@@ -23,6 +23,8 @@ import os
 import csv
 import itertools
 from threading import Thread
+import hashlib
+import re
 import functools
 # try:
 #     import pandas as pd
@@ -87,11 +89,16 @@ class CIS_Report:
     api_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=_DAYS_OLD)
 
+    str_api_key_time_max_datetime = api_key_time_max_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    api_key_time_max_datetime = datetime.datetime.strptime(str_api_key_time_max_datetime, "%Y-%m-%d %H:%M:%S")
+    
     # For KMS check
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
+    str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, "%Y-%m-%d %H:%M:%S")
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -348,8 +355,9 @@ class CIS_Report:
 
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Updated October 31, 2022.")
-        print("oci-python-sdk version: " + str(oci.__version__))
+        print("Updated November 16, 2022.")
+        print("Tested oci-python-sdk version: 2.88.1")
+        print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
         self.__signer = signer
@@ -457,6 +465,8 @@ class CIS_Report:
         # Determining if OCI Best Practices will be checked and output
         self.__obp_checks = obp
 
+        # Determining if CSV report OCIDs will be redacted
+        self.__redact_output = redact_output
 
 
     ##########################################################################
@@ -602,7 +612,7 @@ class CIS_Report:
                     "inactive_status": compartment.inactive_status,
                     "is_accessible": compartment.is_accessible,
                     "lifecycle_state": compartment.lifecycle_state,
-                    "time_created": compartment.time_created,
+                    "time_created": compartment.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                     "region" : ""
                     }
                 self.__raw_compartment.append(record)
@@ -655,7 +665,7 @@ class CIS_Report:
                         "name": grp.name,
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
-                        "time_created": grp.time_created,
+                        "time_created": grp.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                         "user_id": member.user_id
                     }
                     # Adding a record per user to group
@@ -687,7 +697,7 @@ class CIS_Report:
                     'identity_provider_id': user.identity_provider_id,
                     'is_mfa_activated': user.is_mfa_activated,
                     'lifecycle_state': user.lifecycle_state,
-                    'time_created': user.time_created,
+                    'time_created': user.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                     'name': user.name,
                     'groups': []
                 }
@@ -727,8 +737,7 @@ class CIS_Report:
                     'fingerprint': api_key.fingerprint,
                     'inactive_status': api_key.inactive_status,
                     'lifecycle_state': api_key.lifecycle_state,
-                    # .strftime('%Y-%m-%d %H:%M:%S')
-                    'time_created': api_key.time_created,
+                    'time_created': api_key.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                 }
                 api_keys.append(record)
 
@@ -756,8 +765,8 @@ class CIS_Report:
                     'inactive_status': token.inactive_status,
                     'lifecycle_state': token.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
-                    'time_created': token.time_created,
-                    'time_expires': token.time_expires,
+                    'time_created': token.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                    'time_expires': str(token.time_expires),
                     'token': token.token
 
                 }
@@ -788,8 +797,8 @@ class CIS_Report:
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
-                    'time_created': key.time_created,
-                    'time_expires': key.time_expires,
+                    'time_created': key.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                    'time_expires': str(key.time_expires),
 
                 }
                 customer_secret_key.append(record)
@@ -845,7 +854,7 @@ class CIS_Report:
                         "name": dynamic_group.name,
                         "description": dynamic_group.description,
                         "matching_rule": dynamic_group.matching_rule,
-                        "time_created": dynamic_group.time_created,
+                        "time_created": dynamic_group.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                         "inactive_status": dynamic_group.inactive_status,
                         "lifecycle_state": dynamic_group.lifecycle_state,
                         "defined_tags": dynamic_group.defined_tags,
@@ -925,7 +934,7 @@ class CIS_Report:
                                     "replication_enabled": bucket_info.replication_enabled,
                                     "is_read_only": bucket_info.is_read_only,
                                     "storage_tier": bucket_info.storage_tier,
-                                    "time_created": bucket_info.time_created,
+                                    "time_created": bucket_info.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "versioning": bucket_info.versioning,
                                     "defined_tags" : bucket_info.defined_tags,
                                     "freeform_tags" : bucket_info.freeform_tags,
@@ -945,7 +954,7 @@ class CIS_Report:
                                     "replication_enabled": "",
                                     "is_read_only": "",
                                     "storage_tier": "",
-                                    "time_created": bucket.time_created,
+                                    "time_created": bucket.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "versioning": "",
                                     "defined_tags" : "",
                                     "freeform_tags" : "",
@@ -983,7 +992,7 @@ class CIS_Report:
                                     "size_in_gbs": volume.size_in_gbs,
                                     "size_in_mbs": volume.size_in_mbs,
                                     "source_details": volume.source_details,
-                                    "time_created": volume.time_created,
+                                    "time_created": volume.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "volume_group_id": volume.volume_group_id,
                                     "vpus_per_gb": volume.vpus_per_gb,
                                     "auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
@@ -1053,7 +1062,7 @@ class CIS_Report:
                                         "size_in_gbs": boot_volume.size_in_gbs,
                                         "size_in_mbs": boot_volume.size_in_mbs,
                                         "availability_domain": boot_volume.availability_domain,
-                                        "time_created": boot_volume.time_created,
+                                        "time_created": boot_volume.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                         "compartment_id": boot_volume.compartment_id,
                                         "auto_tuned_vpus_per_gb": boot_volume.auto_tuned_vpus_per_gb,
                                         "boot_volume_replicas": boot_volume.boot_volume_replicas,
@@ -1121,7 +1130,7 @@ class CIS_Report:
                                         "lifecycle_state": fss.lifecycle_state,
                                         "lifecycle_details": fss.lifecycle_details,
                                         "availability_domain": fss.availability_domain,
-                                        "time_created": fss.time_created,
+                                        "time_created": fss.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                         "compartment_id": fss.compartment_id,
                                         "is_clone_parent": fss.is_clone_parent,
                                         "is_hydrated": fss.is_hydrated,
@@ -1179,7 +1188,7 @@ class CIS_Report:
                                 "display_name": nsg.display_name,
                                 "id": nsg.id,
                                 "lifecycle_state": nsg.lifecycle_state,
-                                "time_created": nsg.time_created,
+                                "time_created": nsg.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "vcn_id": nsg.vcn_id,
                                 "freeform_tags" : nsg.freeform_tags,
                                 "defined_tags" : nsg.defined_tags,
@@ -1204,7 +1213,7 @@ class CIS_Report:
                                     "source": rule.source,
                                     "source_type": rule.source_type,
                                     "tcp_options": rule.tcp_options,
-                                    "time_created": rule.time_created,
+                                    "time_created": rule.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "udp_options": rule.udp_options,
 
                                 }
@@ -1238,7 +1247,7 @@ class CIS_Report:
                                 "display_name": security_list.display_name,
                                 "id": security_list.id,
                                 "lifecycle_state": security_list.lifecycle_state,
-                                "time_created": security_list.time_created,
+                                "time_created": security_list.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "vcn_id": security_list.vcn_id,
                                 "region" : region_key,
                                 "freeform_tags" : security_list.freeform_tags,
@@ -1312,7 +1321,7 @@ class CIS_Report:
                                     "route_table_id": subnet.route_table_id,
                                     "security_list_ids": subnet.security_list_ids,
                                     "subnet_domain_name": subnet.subnet_domain_name,
-                                    "time_created": subnet.time_created,
+                                    "time_created": subnet.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "vcn_id": subnet.vcn_id,
                                     "virtual_router_ip": subnet.virtual_router_ip,
                                     "virtual_router_mac": subnet.virtual_router_mac,
@@ -1340,7 +1349,7 @@ class CIS_Report:
                                 "route_table_id": subnet.route_table_id,
                                 "security_list_ids": subnet.security_list_ids,
                                 "subnet_domain_name": subnet.subnet_domain_name,
-                                "time_created": subnet.time_created,
+                                "time_created": subnet.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "vcn_id": subnet.vcn_id,
                                 "virtual_router_ip": subnet.virtual_router_ip,
                                 "virtual_router_mac": subnet.virtual_router_mac,
@@ -1406,7 +1415,7 @@ class CIS_Report:
                                 "network_type" : drg_attachment.network_details.type,
                                 "freeform_tags" : drg_attachment.freeform_tags,
                                 "define_tags" : drg_attachment.defined_tags,
-                                "time_created" : drg_attachment.time_created,
+                                "time_created" : drg_attachment.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "region" : region_key,
                                 "notes":""
 
@@ -1426,7 +1435,7 @@ class CIS_Report:
                                 "network_type" : "",
                                 "freeform_tags" : drg_attachment.freeform_tags,
                                 "define_tags" : drg_attachment.defined_tags,
-                                "time_created" : drg_attachment.time_created,
+                                "time_created" : drg_attachment.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "region" : region_key,
                                 "notes":""
                                 }
@@ -1474,7 +1483,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
-                                    "time_created" : drg.time_created,
+                                    "time_created" : drg.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
                                     "region" : region_key,
@@ -1492,7 +1501,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
-                                    "time_created" : drg.time_created,
+                                    "time_created" : drg.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
                                     "region" : region_key,
@@ -1557,8 +1566,8 @@ class CIS_Report:
                                     "fastconnect_region" : fastconnect.region,
                                     "routing_policy" : fastconnect.routing_policy,
                                     "service_type" : fastconnect.service_type,
-                                    "time_created" : fastconnect.time_created,
-                                    "type" : fastconnect.time_created,
+                                    "time_created" : fastconnect.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                    "type" : fastconnect.type,
                                     "freeform_tags" : fastconnect.freeform_tags,
                                     "define_tags" : fastconnect.defined_tags,
                                     "region" : region_key,
@@ -1645,7 +1654,7 @@ class CIS_Report:
                                     "cpe_device_shape_id" : cpe.cpe_device_shape_id,
                                     "ip_address" : cpe.ip_address,
                                     "compartment_id" : cpe.compartment_id,
-                                    "time_created" : cpe.time_created,
+                                    "time_created" : cpe.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                     "freeform_tags" : cpe.freeform_tags,
                                     "define_tags" : cpe.defined_tags,
                                     "region" : region_key,
@@ -1733,8 +1742,8 @@ class CIS_Report:
                                                 "compartment_id" : tunnel.compartment_id,
                                                 "dpd_mode" : tunnel.dpd_mode,
                                                 "dpd_timeout_in_sec" : tunnel.dpd_timeout_in_sec,
-                                                "time_created" : tunnel.time_created,
-                                                "time_status_updated" : tunnel.time_status_updated,
+                                                "time_created" : tunnel.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                                "time_status_updated" : str(tunnel.time_status_updated),
                                                 "notes" : ""
                                             }
                                         if tunnel_record['status'].upper() == "UP":
@@ -1844,20 +1853,20 @@ class CIS_Report:
                                                 "subnet_id": adb.subnet_id,
                                                 "supported_regions_to_clone_to": adb.supported_regions_to_clone_to,
                                                 "system_tags": adb.system_tags,
-                                                "time_created": adb.time_created,
-                                                "time_data_guard_role_changed": adb.time_data_guard_role_changed,
-                                                "time_deletion_of_free_autonomous_database": adb.time_deletion_of_free_autonomous_database,
-                                                "time_local_data_guard_enabled": adb.time_local_data_guard_enabled,
-                                                "time_maintenance_begin": adb.time_maintenance_begin,
-                                                "time_maintenance_end": adb.time_maintenance_end,
-                                                "time_of_last_failover": adb.time_of_last_failover,
-                                                "time_of_last_refresh": adb.time_of_last_refresh,
-                                                "time_of_last_refresh_point": adb.time_of_last_refresh_point,
-                                                "time_of_last_switchover": adb.time_of_last_switchover,
-                                                "time_of_next_refresh": adb.time_of_next_refresh,
-                                                "time_reclamation_of_free_autonomous_database": adb.time_reclamation_of_free_autonomous_database,
-                                                "time_until_reconnect_clone_enabled": adb.time_until_reconnect_clone_enabled,
-                                                "used_data_storage_size_in_tbs": adb.used_data_storage_size_in_tbs,
+                                                "time_created": adb.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                                "time_data_guard_role_changed": str(adb.time_data_guard_role_changed),
+                                                "time_deletion_of_free_autonomous_database": str(adb.time_deletion_of_free_autonomous_database),
+                                                "time_local_data_guard_enabled": str(adb.time_local_data_guard_enabled),
+                                                "time_maintenance_begin": str(adb.time_maintenance_begin),
+                                                "time_maintenance_end": str(adb.time_maintenance_end),
+                                                "time_of_last_failover": str(adb.time_of_last_failover),
+                                                "time_of_last_refresh": str(adb.time_of_last_refresh),
+                                                "time_of_last_refresh_point": str(adb.time_of_last_refresh_point),
+                                                "time_of_last_switchover": str(adb.time_of_last_switchover),
+                                                "time_of_next_refresh": str(adb.time_of_next_refresh),
+                                                "time_reclamation_of_free_autonomous_database": str(adb.time_reclamation_of_free_autonomous_database),
+                                                "time_until_reconnect_clone_enabled": str(adb.time_until_reconnect_clone_enabled),
+                                                "used_data_storage_size_in_tbs": str(adb.used_data_storage_size_in_tbs),
                                                 "vault_id": adb.vault_id,
                                                 "whitelisted_ips": adb.whitelisted_ips,
                                                 "region" : region_key,
@@ -2070,8 +2079,8 @@ class CIS_Report:
                                         "lifecycle_state": oic_instance.lifecycle_state,
                                         "message_packs": oic_instance.message_packs,
                                         "state_message": oic_instance.state_message,
-                                        "time_created": oic_instance.time_created,
-                                        "time_updated": oic_instance.time_updated,
+                                        "time_created": oic_instance.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                        "time_updated": str(oic_instance.time_updated),
                                         "region" : region_key,
                                         "notes": ""
                                     }
@@ -2130,8 +2139,8 @@ class CIS_Report:
                                     "service_url": oac_instance.service_url,
                                     "capacity": oac_instance.capacity,
                                     "license_type": oac_instance.license_type,
-                                    "time_created": oac_instance.time_created,
-                                    "time_updated": oac_instance.time_updated,
+                                    "time_created": oac_instance.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                    "time_updated": str(oac_instance.time_updated),
                                     # "defined_tags" : oac_instance.defined_tags,
                                     # "freeform_tags" : oac_instance.freeform_tags,
                                     "region" : region_key,
@@ -2186,7 +2195,7 @@ class CIS_Report:
                                 "id": event_rule.id,
                                 "is_enabled": event_rule.is_enabled,
                                 "lifecycle_state": event_rule.lifecycle_state,
-                                "time_created": event_rule.time_created,
+                                "time_created": event_rule.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                 "region" : region_key
                             }
                             self.__event_rules.append(record)
@@ -2219,8 +2228,8 @@ class CIS_Report:
                                 "description": log_group.description,
                                 "display_name": log_group.display_name,
                                 "id": log_group.id,
-                                "time_created": log_group.time_created,
-                                "time_last_modified": log_group.time_last_modified,
+                                "time_created": log_group.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                "time_last_modified": str(log_group.time_last_modified),
                                 "defined_tags" : log_group.defined_tags,
                                 "freeform_tags" : log_group.freeform_tags,
                                 "region" : region_key,
@@ -2241,8 +2250,8 @@ class CIS_Report:
                                     "log_group_id": log.log_group_id,
                                     "log_type": log.log_type,
                                     "retention_duration": log.retention_duration,
-                                    "time_created": log.time_created,
-                                    "time_last_modified": log.time_last_modified,
+                                    "time_created": log.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                    "time_last_modified": str(log.time_last_modified),
                                     "defined_tags" : log.defined_tags,
                                     "freeform_tags" : log.freeform_tags,
                                     "retention_duration" : log.retention_duration,
@@ -2316,8 +2325,8 @@ class CIS_Report:
                                 "id": vlt.id,
                                 "lifecycle_state": vlt.lifecycle_state,
                                 "management_endpoint": vlt.management_endpoint,
-                                "time_created": vlt.time_created,
-                                "vault_type": vlt.time_created,
+                                "time_created": vlt.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                "vault_type": vlt.vault_type,
                                 "freeform_tags": vlt.freeform_tags,
                                 "defined_tags": vlt.defined_tags,
                                 "region" : region_key,
@@ -2339,8 +2348,7 @@ class CIS_Report:
                                             "display_name": key.display_name,
                                             "id": key.id,
                                             "lifecycle_state": key.lifecycle_state,
-                                            # .strftime('%Y-%m-%d %H:%M:%S'),
-                                            "time_created": key.time_created,
+                                            "time_created": key.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                                         }
                                         # Getting Key Versions - Most current one is the first one in the list
                                         key_versions = oci.pagination.list_call_get_all_results(
@@ -2402,8 +2410,8 @@ class CIS_Report:
                     "target_compartment_id" : budget.target_compartment_id,
                     "target_type" : budget.target_type,
                     "tagerts" : budget.targets,
-                    "time_created": budget.time_created,
-                    "time_spend_computed": budget.time_spend_computed,
+                    "time_created": budget.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                    "time_spend_computed": str(budget.time_spend_computed),
                     "alerts" : []
                 }
                 
@@ -2487,8 +2495,8 @@ class CIS_Report:
                                 "recipe_count" : target.recipe_count,
                                 "target_resource_id": target.target_resource_id,
                                 "target_resource_type": target.target_resource_type,
-                                "time_created": target.time_created,
-                                "time_updated": target.time_updated,
+                                "time_created": target.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                "time_updated": str(target.time_updated),
                                 "inherited_by_compartments" : target_data.inherited_by_compartments if target_data else "",
                                 "description" : target_data.description if target_data else "",
                                 "system_tags" : target_data.system_tags if target_data else "",
@@ -2545,7 +2553,7 @@ class CIS_Report:
                             record = {
                                 "id": sub.id,
                                 "compartment_id": sub.compartment_id,
-                                "created_time": sub.created_time,
+                                "created_time": sub.created_time, # this is an INT
                                 "endpoint": sub.endpoint,
                                 "protocol": sub.protocol,
                                 "topic_id": sub.topic_id,
@@ -2578,7 +2586,7 @@ class CIS_Report:
                     "id": tag.id,
                     "compartment_id": tag.compartment_id,
                     "value": tag.value,
-                    "time_created": tag.time_created,
+                    "time_created": tag.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
                     "tag_definition_id": tag.tag_definition_id,
                     "tag_definition_name": tag.tag_definition_name,
                     "tag_namespace_id": tag.tag_namespace_id,
@@ -2627,8 +2635,8 @@ class CIS_Report:
                                     "lifecycle_state" : service_connector.lifecycle_state,
                                     "lifecycle_details": service_connector.lifecyle_details,
                                     "system_tags": service_connector.system_tags,
-                                    "time_created": service_connector.time_created,
-                                    "time_updated": service_connector.time_updated,
+                                    "time_created": service_connector.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                    "time_updated": str(service_connector.time_updated),
                                     "target_kind" : service_connector.target.kind,
                                     "log_sources" : [],
                                     "region" : region_key,
@@ -2652,8 +2660,8 @@ class CIS_Report:
                                     "lifecycle_state" : connector.lifecycle_state,
                                     "lifecycle_details": connector.lifecycle_details,
                                     "system_tags": "",
-                                    "time_created": connector.time_created,
-                                    "time_updated": connector.time_updated,
+                                    "time_created": connector.time_created.strftime("%m/%d/%Y, %H:%M:%S"),
+                                    "time_updated": str(connector.time_updated),
                                     "target_kind" : "",
                                     "log_sources" : [],
                                     "region" : region_key,
@@ -2769,7 +2777,7 @@ class CIS_Report:
         for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
-                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], "%m/%d/%Y, %H:%M:%S") and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_1_2['1.8']['Status'] = False
                         finding = {
                             "user_name": user['name'],
@@ -2788,7 +2796,7 @@ class CIS_Report:
         for user in self.__users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
-                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], "%m/%d/%Y, %H:%M:%S") and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_1_2['1.9']['Status'] = False
 
                         finding = {
@@ -2809,7 +2817,7 @@ class CIS_Report:
         for user in self.__users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
-                    if self.api_key_time_max_datetime >= key['time_created'] and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], "%m/%d/%Y, %H:%M:%S") and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_1_2['1.10']['Status'] = False
 
                         finding = {
@@ -3005,7 +3013,7 @@ class CIS_Report:
         # Generating list of keys
         for vault in self.__vaults:
             for key in vault['keys']:
-                if self.kms_key_time_max_datetime >= key['time_created']:
+                if self.kms_key_time_max_datetime >=  datetime.datetime.strptime(key['time_created'], "%m/%d/%Y, %H:%M:%S"):
                     self.cis_foundations_benchmark_1_2['3.16']['Status'] = False
                     self.cis_foundations_benchmark_1_2['3.16']['Findings'].append(
                         key)
@@ -3874,6 +3882,25 @@ class CIS_Report:
             result = [dict(item, extract_date=self.start_time_str)
                       for item in data]
 
+
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                redacted_result = []
+                for item in result:
+                    record = {}
+                    for key in item.keys():
+                        str_item = str(item[key])
+                        items_to_redact = re.findall('ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}',str_item)
+                        for redact_me in items_to_redact:
+                            str_item = str_item.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+                        
+                        record[key] = str_item
+
+                    redacted_result.append(record)
+                # Overriding result with redacted result
+                result = redacted_result
+            
+
             # generate fields
             fields = [key for key in result[0].keys()]
 
@@ -4085,6 +4112,8 @@ def execute_report():
                             help='Outputs all resource data into CSV files')
     parser.add_argument('--obp', action='store_true', default=False,
                             help='Checks for OCI best practices')
+    parser.add_argument('--redact_output', action='store_true', default=False,
+                            help='Redacts OCIDs in output CSV files')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -4092,7 +4121,7 @@ def execute_report():
     cmd = parser.parse_args()
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
     report.generate_reports(int(cmd.level))
 
 

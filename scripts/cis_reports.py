@@ -26,49 +26,23 @@ from threading import Thread
 import hashlib
 import re
 import functools
-# try:
-#     import pandas as pd
-#     OUTPUT_TO_XLSX = True
-#     print("I have pandas")
-# except:
-#     OUTPUT_TO_XLSX = False
+try:
+    import xlsxwriter
+    OUTPUT_TO_XLSX = True
+except:
+    OUTPUT_TO_XLSX = False
 
 
-# def print_to_xlsx(func):
-#     @functools.wraps(func)
-#     def output_to_xlsx(*args, **kwargs):
-#         if OUTPUT_TO_XLSX:
-#             print(f"Calling {func.__name__})")
-#             print("not running")
-#             return print_to_xlsx_file(*args, **kwargs)
-#         else:
-#             return func(*args, **kwargs)           
-#     return output_to_xlsx
-
-# def print_to_xlsx_file(self, report_directory, header, file_subject, data):
-    
-#     try:
-#         # Creating report directory
-#         if not os.path.isdir(report_directory):
-#             os.mkdir(report_directory)
-
-#     except Exception as e:
-#         raise Exception(
-#             "Error in creating report directory: " + str(e.args))
-
-#     try:
-#         # if no data
-#         if len(data) == 0:
-#             return None
-        
-#         # get the file name of the CSV
-        
-#         file_name = header + "_" + file_subject
-#         file_name = (file_name.replace(" ", "_")
-#                         ).replace(".", "-").replace("_-_","_") + ".csv"
-#         file_path = os.path.join(report_directory, file_name)
-#     print("Printing to an XLSX file")
-
+def print_to_xlsx_decorator(func):
+    @functools.wraps(func)
+    def output_to_xlsx(*args, **kwargs):
+        if OUTPUT_TO_XLSX:
+            print(f"Calling {func.__name__})")
+            print("not running")
+            return print_to_xlsx_file(*args, **kwargs)
+        else:
+            return func(*args, **kwargs)           
+    return output_to_xlsx
 
 ##########################################################################
 # CIS Reporting Class
@@ -81,22 +55,25 @@ class CIS_Report:
     __home_region = []
 
     
+    # Time Format
+    __iso_time_format = "%Y-%m-%dT%H:%M:%S"
+
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
-    start_time_str = str(start_datetime.strftime("%Y-%m-%d %H:%M:%S"))
-    report_datetime = str(start_datetime.strftime("%Y-%m-%d_%H-%M"))
+    start_time_str = str(start_datetime.strftime(__iso_time_format))
+    report_datetime = str(start_datetime.strftime(__iso_time_format))
     # For User based key checks
     api_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=_DAYS_OLD)
 
-    str_api_key_time_max_datetime = api_key_time_max_datetime.strftime("%Y-%m-%d %H:%M:%S")
-    api_key_time_max_datetime = datetime.datetime.strptime(str_api_key_time_max_datetime, "%Y-%m-%d %H:%M:%S")
+    str_api_key_time_max_datetime = api_key_time_max_datetime.strftime(__iso_time_format)
+    api_key_time_max_datetime = datetime.datetime.strptime(str_api_key_time_max_datetime, __iso_time_format)
     
     # For KMS check
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
-    str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime("%Y-%m-%d %H:%M:%S")
-    kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, "%Y-%m-%d %H:%M:%S")
+    str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
+    kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output):
 
@@ -2897,6 +2874,7 @@ class CIS_Report:
                                     sl)
                         except (AttributeError):
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
+                            print(" I am an excption " * 5)
                             self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
                                 sl)
@@ -3651,8 +3629,13 @@ class CIS_Report:
             t.start()
             home_threads.append(t)
         
+        # Waiting for home threads to complete
         for t in home_threads:
             t.join()
+
+        # Waiting for user thread to complete
+        thread_users.join()
+
 
         # The above checks are run in the home region 
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
@@ -3855,6 +3838,7 @@ class CIS_Report:
     ##########################################################################
     # Print to CSV
     ##########################################################################
+    @print_to_xlsx_decorator
     def __print_to_csv_file(self, report_directory, header, file_subject, data):
 
         try:

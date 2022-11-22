@@ -11,3 +11,4 @@
 **/vars_*.tfvars
 test/**
 *.csv
+*.xlsx

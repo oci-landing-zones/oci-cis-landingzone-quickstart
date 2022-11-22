@@ -27,7 +27,8 @@ import hashlib
 import re
 import functools
 try:
-    import xlsxwriter
+    import pandas as pd
+    from openpyxl import load_workbook
     OUTPUT_TO_XLSX = True
 except:
     OUTPUT_TO_XLSX = False
@@ -43,6 +44,65 @@ def print_to_xlsx_decorator(func):
         else:
             return func(*args, **kwargs)           
     return output_to_xlsx
+
+def print_to_xlsx_file(self, report_directory, header, file_subject, data):
+    try:
+        # Creating report directory
+        if not os.path.isdir(report_directory):
+            os.mkdir(report_directory)
+
+    except Exception as e:
+        raise Exception(
+            "Error in creating report directory: " + str(e.args))
+
+    if not(data):
+        return
+
+    worksheet_name = file_subject
+    if len(worksheet_name) > 30:
+        if 'Identity and Access Management' in worksheet_name:
+            worksheet_name = worksheet_name.replace('Identity and Access Management', 'IAM')
+        elif 'Storage - Object Storage' in worksheet_name:
+            worksheet_name = worksheet_name.replace('Storage - Object Storage', 'OS')
+        elif 'Logging and Monitoring' in worksheet_name:
+            worksheet_name = worksheet_name.replace('Logging and Monitoring', 'Logging')
+        elif 'File Storage Service' in worksheet_name:
+            worksheet_name = worksheet_name.replace('File Storage Service', 'FSS')
+
+    print("Worksheet name is " + worksheet_name)
+    file_name = (report_directory.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + "_report.xlsx"
+    
+    file_path = os.path.join(report_directory, file_name)
+    
+    # add report_datetime to each dictionary
+    result = [dict(item, extract_date=self.start_time_str)
+                for item in data]
+    results_df = pd.DataFrame(result)
+
+    # Checking if the excel report exists yet
+    if os.path.isfile(file_path):
+
+        report_file = load_workbook(file_path)
+        writer = pd.ExcelWriter(file_path, engine = 'openpyxl')
+        writer.book = report_file
+
+        try:
+            results_df.to_excel(writer, sheet_name = worksheet_name)
+        except Exception as e:
+            print(e)
+
+        writer.close()    
+    
+    else:
+        writer = pd.ExcelWriter(file_path, engine = 'xlsxwriter')
+
+        try:
+            results_df.to_excel(writer, sheet_name = worksheet_name)
+        except Exception as e:
+            print(e)
+
+        writer.close()
 
 ##########################################################################
 # CIS Reporting Class
@@ -61,7 +121,7 @@ class CIS_Report:
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(start_datetime.strftime(__iso_time_format))
-    report_datetime = str(start_datetime.strftime(__iso_time_format))
+    report_datetime = str(start_datetime.strftime("%Y-%m-%d_%H-%M-%S"))
     # For User based key checks
     api_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=_DAYS_OLD)
@@ -3427,45 +3487,49 @@ class CIS_Report:
             "target_responder_event_rule" : False,
         }
         
-        # Cloud Guard Target attached to the root compartment with activity, config, and threat detector plus a responder
-        if self.__cloud_guard_targets[self.__tenancy.id]:
-            
-            cloud_guard_record['target_at_root'] = True
-
-
+        try:
+            # Cloud Guard Target attached to the root compartment with activity, config, and threat detector plus a responder
             if self.__cloud_guard_targets[self.__tenancy.id]:
-                if self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
-                    for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
-                        if recipe.detector.upper() == 'IAAS_CONFIGURATION_DETECTOR':
-                            cloud_guard_record['targert_configuration_detector'] = True
-                            if recipe.owner.upper() == "CUSTOMER":
-                                cloud_guard_record['targert_configuration_detector_customer_owned'] = True
+                
+                cloud_guard_record['target_at_root'] = True
 
 
-                        elif recipe.detector.upper() == 'IAAS_ACTIVITY_DETECTOR':
-                            cloud_guard_record['target_activity_detector'] = True
-                            if recipe.owner.upper() == "CUSTOMER":
-                                cloud_guard_record['target_activity_detector_customer_owned'] = True
-
-                        elif recipe.detector.upper() == 'IAAS_THREAT_DETECTOR':
-                            cloud_guard_record['target_threat_detector'] = True
-                            if recipe.owner.upper() == "CUSTOMER":
-                                cloud_guard_record['target_threat_detector_customer_owned'] = True
+                if self.__cloud_guard_targets[self.__tenancy.id]:
+                    if self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
+                        for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
+                            if recipe.detector.upper() == 'IAAS_CONFIGURATION_DETECTOR':
+                                cloud_guard_record['targert_configuration_detector'] = True
+                                if recipe.owner.upper() == "CUSTOMER":
+                                    cloud_guard_record['targert_configuration_detector_customer_owned'] = True
 
 
-                if self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
-                    cloud_guard_record['target_responder_recipes'] = True
-                    for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
-                        if recipe.owner.upper() == 'OWNER':
-                            cloud_guard_record['target_responder_recipes_customer_owned'] = True
+                            elif recipe.detector.upper() == 'IAAS_ACTIVITY_DETECTOR':
+                                cloud_guard_record['target_activity_detector'] = True
+                                if recipe.owner.upper() == "CUSTOMER":
+                                    cloud_guard_record['target_activity_detector_customer_owned'] = True
 
-                        for rule in recipe.effective_responder_rules:
-                            if rule.responder_rule_id.upper() == 'EVENT' and rule.details.is_enabled:
-                                cloud_guard_record['target_responder_event_rule'] = True
+                            elif recipe.detector.upper() == 'IAAS_THREAT_DETECTOR':
+                                cloud_guard_record['target_threat_detector'] = True
+                                if recipe.owner.upper() == "CUSTOMER":
+                                    cloud_guard_record['target_threat_detector_customer_owned'] = True
 
-                cloud_guard_record['target_id'] = self.__cloud_guard_targets[self.__tenancy.id]['id']    
-                cloud_guard_record['target_name'] = self.__cloud_guard_targets[self.__tenancy.id]['display_name']             
+
+                    if self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
+                        cloud_guard_record['target_responder_recipes'] = True
+                        for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
+                            if recipe.owner.upper() == 'OWNER':
+                                cloud_guard_record['target_responder_recipes_customer_owned'] = True
+
+                            for rule in recipe.effective_responder_rules:
+                                if rule.responder_rule_id.upper() == 'EVENT' and rule.details.is_enabled:
+                                    cloud_guard_record['target_responder_event_rule'] = True
+
+                    cloud_guard_record['target_id'] = self.__cloud_guard_targets[self.__tenancy.id]['id']    
+                    cloud_guard_record['target_name'] = self.__cloud_guard_targets[self.__tenancy.id]['display_name']             
         
+        except:
+            pass
+
         all_cloud_guard_checks = True
         for key,value in cloud_guard_record.items():
             if not(value):

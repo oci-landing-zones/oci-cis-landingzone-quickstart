@@ -45,13 +45,7 @@ pip3 install pytz
 ```
 wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 ```
-2. Install setup venv and install OCI
-```
-python3 -m venv python-venv
-source python-venv/bin/activate
-pip3 install oci
-pip3 install pytz
-```
+All required python libraries are already available in the Cloud shell environment.
 
 
 ## <a name="output">Output

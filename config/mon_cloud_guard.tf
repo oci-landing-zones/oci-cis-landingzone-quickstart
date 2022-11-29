@@ -17,13 +17,13 @@ locals {
 }
 
 module "lz_cloud_guard" {
-  count                 = 1
+  count                 = var.cloud_guard_configuration_status ? 1 : 0
   depends_on            = [null_resource.wait_on_services_policy]
   source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }
   compartment_id        = var.tenancy_ocid
-  reporting_region      = local.regions_map[local.home_region_key]
-  status                = var.cloud_guard_configuration_status == "ENABLE" ? "ENABLED" : "DISABLED"
+  reporting_region      = var.cloud_guard_reporting_region != null ? var.cloud_guard_reporting_region : local.regions_map[local.home_region_key]
+  status                = var.cloud_guard_configuration_status ? "ENABLED" : "DISABLED"
   self_manage_resources = false
   defined_tags          = local.cloud_guard_target_defined_tags
   freeform_tags         = local.cloud_guard_target_freeform_tags

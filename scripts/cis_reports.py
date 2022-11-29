@@ -4114,7 +4114,6 @@ def execute_report():
                 # cloud guard targets are too large for a cell
                 continue
             elif len(worksheet_name) > 31:
-                print(worksheet_name)
                 worksheet_name = worksheet_name.replace("_","")
 
             worksheet = workbook.add_worksheet(worksheet_name)

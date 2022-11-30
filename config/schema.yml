@@ -667,13 +667,13 @@ variables:
   cloud_guard_configuration_status:
     type: boolean
     title: "Enable Cloud Guard Service"
-    description: "Determines whether the Cloud Guard service should be enabled. If selected, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If Cloud Guard is already enabled, unselect this option. Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, Cloud Guard is disabled and the managed target is destroyed."
+    description: "Determines whether the Cloud Guard service should be enabled. If selected, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If Cloud Guard is already enabled, unselect this option. Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on problem lifecycle, see <a href=\"https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle\">documentation</a>."
     required: true
       
   cloud_guard_reporting_region:
     type: oci:identity:region:name
     title: "Reporting Region"
-    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept."
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
     required: false
     visible: cloud_guard_configuration_status
 

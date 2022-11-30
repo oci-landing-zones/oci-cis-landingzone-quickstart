@@ -441,11 +441,11 @@ variable "notifications_advanced_options" {
 # ------------------------------------------------------
 variable "cloud_guard_configuration_status" {
   type = bool
-  description = "Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled, set this variable to false. Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, Cloud Guard is disabled and all the managed target is destroyed."
+  description = "Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are being moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on problem lifecycle, see https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle."
   default = true
 }
 variable "cloud_guard_reporting_region" {
-  description = "Cloud Guard reporting region."
+  description = "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
   type = string
   default = null
 }

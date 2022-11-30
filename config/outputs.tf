@@ -53,10 +53,6 @@ output "buckets" {
     value = local.display_outputs == true ? (length(module.lz_buckets) > 0 ? {for k, v in module.lz_buckets[0].buckets : k => {name: v.name, bucket_id: v.bucket_id, compartment_id: v.compartment_id, access_type: v.access_type, versioning: v.versioning, storage_tier: v.storage_tier}} : null) : null
 }
 
-output "cloud_guard_config" {
-    value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? module.lz_cloud_guard[0].cloud_guard_config : null) : null
-}
-
 output "cloud_guard_target" {
-    value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? module.lz_cloud_guard[0].cloud_guard_target : null) : null
+    value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? {"display_name" : module.lz_cloud_guard[0].target.display_name, "compartment_id" :  module.lz_cloud_guard[0].target.compartment_id} : null) : null
 }

@@ -25,17 +25,16 @@ resource "oci_cloud_guard_cloud_guard_configuration" "this" {
   #Required
   compartment_id        = var.compartment_id
   reporting_region      = var.reporting_region
-  status                = "ENABLED"
+  status                = var.enable_cloud_guard ? "ENABLED" : "DISABLED"
   self_manage_resources = var.self_manage_resources
 }
 
 resource "oci_cloud_guard_target" "this" {
-  depends_on = [ oci_cloud_guard_cloud_guard_configuration.this ]
-  count                = var.status == "ENABLED" ? 1 : 0
+  count                = oci_cloud_guard_cloud_guard_configuration.this.status == "ENABLED" ? 1 : 0
   compartment_id       = var.compartment_id
-  display_name         = var.default_target.name
-  target_resource_id   = var.default_target.id
-  target_resource_type = var.default_target.type
+  display_name         = var.target_name
+  target_resource_id   = var.target_id
+  target_resource_type = var.target_type
   defined_tags         = var.defined_tags
   freeform_tags        = var.freeform_tags
   dynamic "target_detector_recipes" {

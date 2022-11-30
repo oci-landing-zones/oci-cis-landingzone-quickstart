@@ -8,21 +8,38 @@ variable "reporting_region" {
   description = "Cloud Guard reporting region."
 }
 
-variable "status" {
-  type        = string
-  description = "Cloud Guard status."
-  default     = "ENABLED"
+variable "enable_cloud_guard" {
+  type        = bool
+  description = "Whether to enable Cloud Guard service."
+  default     = true
 }
 
 variable "self_manage_resources" {
   type        = bool
-  description = "Whether or not to self manage resources."
+  description = "Whether to self manage resources."
   default     = false
 }
 
-variable "default_target" {
-  type        = object({name=string, type=string, id=string})
-  description = "The default Cloud Guard target."
+variable "enable_target" {
+  description = "Whether to enable a Cloud Guard target."
+  type = bool
+  default = true
+}
+
+variable "target_type" {
+  description = "The Cloud Guard target type."
+  type        = string
+  default     = "COMPARTMENT"
+}
+
+variable "target_id" {
+  description = "The Cloud Guard target ocid."
+  type        = string
+}
+
+variable "target_name" {
+  description = "The Cloud Guard target name."
+  type        = string
 }
 
 variable "defined_tags" {

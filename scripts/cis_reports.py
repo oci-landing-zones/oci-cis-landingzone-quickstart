@@ -3440,7 +3440,7 @@ class CIS_Report:
                     if self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
                         cloud_guard_record['target_responder_recipes'] = True
                         for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_responder_recipes']:
-                            if recipe.owner.upper() == 'OWNER':
+                            if recipe.owner.upper() == 'CUSTOMER':
                                 cloud_guard_record['target_responder_recipes_customer_owned'] = True
 
                             for rule in recipe.effective_responder_rules:

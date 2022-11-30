@@ -34,7 +34,7 @@ locals {
 module "lz_cloud_guard" {
   count                 = var.cloud_guard_configuration_status ? 1 : 0
   depends_on            = [null_resource.wait_on_services_policy]
-  source                = "git@github.com:andrecorreaneto/terraform-oci-cis-landing-zone-cloud-guard.git"
+  source                = "github.com/andrecorreaneto/terraform-oci-cis-landing-zone-cloud-guard"
   providers             = { oci = oci.home }
   tenancy_id            = var.tenancy_ocid
   compartment_id        = var.tenancy_ocid

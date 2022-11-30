@@ -621,7 +621,7 @@ class CIS_Report:
             for grp in groups_data:
                 membership = oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
-                    self.__tenancy.id,
+                    compartment_id=self.__tenancy.id,
                     group_id=grp.id
                 ).data
                 for member in membership:
@@ -3579,18 +3579,24 @@ class CIS_Report:
         
         ######  Runs identity functions only in home region
         
-        thread_users =  Thread(target = self.__identity_read_users)
-        thread_users.start()
 
         thread_compartments =  Thread(target = self.__identity_read_compartments)
         thread_compartments.start()
-        thread_compartments.join()
+
+        thread_identity_groups = Thread( target = self.__identity_read_groups_and_membership)
+        thread_identity_groups.start()
         
+
+        thread_compartments.join()
+        thread_identity_groups.join()
+
+        
+
         print("Processing Home Region resources...")
 
 
         cis_home_region_functions = [
-            self.__identity_read_groups_and_membership,
+            self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
             self.__audit_read_tenancy_audit_configuration,
@@ -3619,9 +3625,6 @@ class CIS_Report:
         # Waiting for home threads to complete
         for t in home_threads:
             t.join()
-
-        # Waiting for user thread to complete
-        thread_users.join()
 
 
         # The above checks are run in the home region 
@@ -3674,7 +3677,6 @@ class CIS_Report:
         for t in regional_threads:
             t.join()
         
-        thread_users.join()
 
     ##########################################################################
     # Generate Raw Data Output
@@ -3697,7 +3699,7 @@ class CIS_Report:
         list_report_file_names.append(report_file_name)  
 
         report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "raw_data", "identity_dyanmic_groups", self.__dynamic_groups)
+                self.__report_directory, "raw_data", "identity_dynamic_groups", self.__dynamic_groups)
         list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(
@@ -3753,7 +3755,7 @@ class CIS_Report:
         list_report_file_names.append(report_file_name)
         
         report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "raw_data", "file_stroage_system", self.__file_storage_system)
+                self.__report_directory, "raw_data", "file_storage_system", self.__file_storage_system)
         list_report_file_names.append(report_file_name)
         
         report_file_name = self.__print_to_csv_file(

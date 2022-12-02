@@ -1298,7 +1298,7 @@ class CIS_Report:
                                 }
                                 # Adding subnet to subnet list
                                 self.__network_subnets.append(record)
-                        except:
+                        except Exception as e:
                             record = {
                                 "id": subnet.id,
                                 "availability_domain": subnet.availability_domain,
@@ -2215,9 +2215,7 @@ class CIS_Report:
                                     "time_created": log.time_created.strftime(self.__iso_time_format),
                                     "time_last_modified": str(log.time_last_modified),
                                     "defined_tags" : log.defined_tags,
-                                    "freeform_tags" : log.freeform_tags,
-                                    "retention_duration" : log.retention_duration,
-
+                                    "freeform_tags" : log.freeform_tags
                                 }
                                 try:
                                     if log.configuration:
@@ -2947,7 +2945,12 @@ class CIS_Report:
         for event in self.__event_rules:
             # Convert Event Condition to dict
             jsonable_str = event['condition'].lower().replace("'", "\"")
-            event_dict = json.loads(jsonable_str)
+            try:
+                event_dict = json.loads(jsonable_str)
+            except:
+                print("*** Invalid Event Condition for event: " + event['display_name'] + " ***")
+                event_dict = {}
+            
             if event_dict:
                 for key, changes in self.cis_monitoring_checks.items():
                     # Checking if all cis change list is a subset of event condition

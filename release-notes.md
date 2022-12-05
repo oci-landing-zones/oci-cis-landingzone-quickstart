@@ -1,4 +1,4 @@
-#  December XX, 2022 Release Notes - 2.5.0
+#  December 05, 2022 Release Notes - 2.5.0
 1. [OCI Best Practices Checks Added to CIS Compliance Script](#2-5-0-script-update)
 1. [Cloud Guard Improvements](#2-5-0-cloud-guard-improvements)
 

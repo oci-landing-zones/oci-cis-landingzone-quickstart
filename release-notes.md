@@ -8,7 +8,7 @@ Cloud Guard module has been updated with the following features:
 - Support for customer provided reporting region. If reporting region is not provided, the module defaults to home region.
 - Resource Manager user interface reflects above changes.
 
-See [Cloud Guard variables](./VARIABLES.md#a-namecloudguardvariablesacloud-guard-variables) for details.
+See [Cloud Guard variables](./VARIABLES.md#cloud-guard-variables) for details.
 
 #  October 28, 2022 Release Notes - 2.4.3
 ## Bug Fixes

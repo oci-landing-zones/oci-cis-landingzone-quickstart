@@ -1,3 +1,15 @@
+#  December XX, 2022 Release Notes - 2.5.0
+1. [Cloud Guard Improvements](#2-5-0-cloud-guard-improvements)
+
+## <a name="2-5-0-cloud-guard-improvements">Cloud Guard Improvements</a>
+Cloud Guard module has been updated with the following features:
+- Cloud Guard resources creation made optional, based on *enable_cloud_guard* input variable. Cloud Guard is enabled by default.
+- Support for cloned detector and responder recipes, based on *enable_cloud_guard_cloned_recipes* input variable. By default, for keeping backwards compatibility, the module uses Oracle managed recipes.
+- Support for customer provided reporting region. If reporting region is not provided, the module defaults to home region.
+- Resource Manager user interface reflects above changes.
+
+See [Cloud Guard variables](./VARIABLES.md#a-namecloudguardvariablesacloud-guard-variables) for details.
+
 #  October 28, 2022 Release Notes - 2.4.3
 ## Bug Fixes
 - Arch Center tag module conditioned to Landing Zone not being extended. Fix in [mon_tags.tf](./config/mon_tags.tf).

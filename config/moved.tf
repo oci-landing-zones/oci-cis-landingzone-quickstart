@@ -33,3 +33,8 @@ moved {
   from = module.lz_arch_center_tag
   to   = module.lz_arch_center_tag[0]
 }
+
+moved {
+  from = module.lz_cloud_guard
+  to   = module.lz_cloud_guard[0]
+}

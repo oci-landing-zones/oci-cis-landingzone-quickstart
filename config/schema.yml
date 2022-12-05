@@ -104,7 +104,9 @@ variableGroups:
 
   - title: "Cloud Guard"
     variables:
-      - "cloud_guard_configuration_status"
+      - "enable_cloud_guard"
+      - "enable_cloud_guard_cloned_recipes"
+      - "cloud_guard_reporting_region"
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
 
@@ -582,15 +584,6 @@ variables:
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
-  cloud_guard_admin_email_endpoints:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    title: "Cloud Guard Admin Email Endpoints"
-    required: false
-    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
-
   notifications_advanced_options:
     type: boolean
     title: "Additional Notification Endpoints"
@@ -672,20 +665,31 @@ variables:
       - RAW
     visible: notifications_advanced_options  
       
-  cloud_guard_configuration_status:
-    type: enum
-    title: "Cloud Guard Configuration Status"
-    description: "Determines whether a Cloud Guard target should be created for the Root compartment. If 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. Make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail. If there's a pre-existing Cloud Guard target for the Root compartment, use 'DISABLE'. In this case, any pre-existing Cloud Guard Root target is left intact. However, keep in mind that once you use 'ENABLE', the Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted."
+  enable_cloud_guard:
+    type: boolean
+    title: "Enable Cloud Guard Service? (Uncheck if Cloud Guard is already enabled and a target exists for the Root compartment)"
+    description: "If selected, Cloud Guard service is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see <a href=\"https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle\">documentation</a>. If Cloud Guard is already enabled and a target exists for the Root compartment, unselect this option."
     required: true
-    enum:
-      - ENABLE
-      - DISABLE
+
+  enable_cloud_guard_cloned_recipes:
+    type: boolean
+    title: "Enable Cloud Guard Cloned Recipes?"  
+    description: "Whether cloned recipes are attached to the managed Cloud Guard target. If not set, Oracle managed recipes are attached."
+    required: false
+    visible: enable_cloud_guard
       
+  cloud_guard_reporting_region:
+    type: oci:identity:region:name
+    title: "Reporting Region"
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
+    required: false
+    visible: enable_cloud_guard
+
   cloud_guard_risk_level_threshold:
     type: enum
     title: "Minimum Risk Level Threshold"
     description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
-    required: true
+    required: false
     default: High
     enum:
       - Critical
@@ -693,6 +697,17 @@ variables:
       - Medium
       - Minor
       - Low
+    visible: enable_cloud_guard  
+
+  cloud_guard_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Cloud Guard Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: enable_cloud_guard  
   
   # Security Zone - Variables
   enable_security_zones:

@@ -17,9 +17,15 @@ No modules.
 | Name | Type |
 |------|------|
 | [oci_cloud_guard_cloud_guard_configuration.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_cloud_guard_configuration) | resource |
+| [oci_cloud_guard_detector_recipe.activity_cloned](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_detector_recipe) | resource |
+| [oci_cloud_guard_detector_recipe.configuration_cloned](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_detector_recipe) | resource |
+| [oci_cloud_guard_detector_recipe.threat_cloned](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_detector_recipe) | resource |
+| [oci_cloud_guard_responder_recipe.responder_cloned](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_responder_recipe) | resource |
 | [oci_cloud_guard_target.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_target) | resource |
-| [oci_cloud_guard_detector_recipes.compartment_detector_recipes](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_detector_recipes) | data source |
-| [oci_cloud_guard_responder_recipes.compartment_responder_recipes](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_responder_recipes) | data source |
+| [oci_cloud_guard_detector_recipes.activity](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_detector_recipes) | data source |
+| [oci_cloud_guard_detector_recipes.configuration](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_detector_recipes) | data source |
+| [oci_cloud_guard_detector_recipes.threat](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_detector_recipes) | data source |
+| [oci_cloud_guard_responder_recipes.responder](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_responder_recipes) | data source |
 
 ## Inputs
 

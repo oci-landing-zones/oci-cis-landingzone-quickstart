@@ -1,14 +1,22 @@
 #  December XX, 2022 Release Notes - 2.5.0
+1. [OCI Best Practices Checks Added to CIS Compliance Script](#2-5-0-script-update)
 1. [Cloud Guard Improvements](#2-5-0-cloud-guard-improvements)
 
-## <a name="2-5-0-cloud-guard-improvements">Cloud Guard Improvements</a>
-Cloud Guard module has been updated with the following features:
-- Cloud Guard resources creation made optional, based on *enable_cloud_guard* input variable. Cloud Guard is enabled by default.
-- Support for cloned detector and responder recipes, based on *enable_cloud_guard_cloned_recipes* input variable. By default, for keeping backwards compatibility, the module uses Oracle managed recipes.
-- Support for customer provided reporting region. If reporting region is not provided, the module defaults to home region.
-- Resource Manager user interface reflects above changes.
 
-See [Cloud Guard variables](./VARIABLES.md#a-namecloudguardvariablesacloud-guard-variables) for details.
+
+## <a name="2-5-0-script-update">OCI Best Practices Checks Added to CIS Compliance Script</a>
+The CIS Compliance Checking script [.cis_reports.py](./scripts/cis_reports.py) has had the following enhancements:
+- CIS compliance checking script has added checking for OCI Best Practices (OBP).  The following OCI Best Practices in your tenancy:
+    - Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
+    - A Budget for cost track is created in your tenancy
+    - Network connectivity to on-premises is redundant 
+    - Cloud Guard is configured at the root compartment with detectors and responders 
+    
+- Redaction of OCIDs before data is written to CSVs using the `--redact` flag.  This uses a sha256 hashes of OCID to maintain OCID consistency across files.
+- Reduced script runtime by synchronously reading OCI resources.
+- CSV files will be consolidated into a single XLSX file if the python3 environment has `xlsxwriter` installed.  
+
+See [compliance-script.md](./compliance-script.md#usage) for usage.
 
 #  October 28, 2022 Release Notes - 2.4.3
 ## Bug Fixes

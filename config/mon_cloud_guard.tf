@@ -20,7 +20,7 @@ locals {
 module "lz_cloud_guard" {
   count                 = var.enable_cloud_guard ? 1 : 0
   depends_on            = [null_resource.wait_on_services_policy]
-  source                = "github.com/andrecorreaneto/terraform-oci-cis-landing-zone-cloud-guard"
+  source                = "../modules/monitoring/cloud-guard"
   providers             = { oci = oci.home }
   enable_cloud_guard    = var.enable_cloud_guard
   enable_cloned_recipes = var.enable_cloud_guard_cloned_recipes

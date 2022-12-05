@@ -54,5 +54,5 @@ output "buckets" {
 }
 
 output "cloud_guard_target" {
-    value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? {"display_name" : module.lz_cloud_guard[0].target.display_name, "compartment_id" :  module.lz_cloud_guard[0].target.compartment_id} : null) : null
+    value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? {"display_name" : module.lz_cloud_guard[0].cloud_guard_target.display_name, "compartment_id" :  module.lz_cloud_guard[0].cloud_guard_target.compartment_id} : null) : null
 }

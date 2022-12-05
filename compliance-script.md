@@ -51,7 +51,7 @@ pip3 install pytz
 ```
 wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 ```
-
+All required python libraries are already available in the Cloud shell environment.
 
 
 ## <a name="output">Output

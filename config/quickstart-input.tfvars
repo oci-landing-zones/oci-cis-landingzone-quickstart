@@ -117,7 +117,9 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # ------------------------------------------------------
 # ----- Cloud Guard
 # ------------------------------------------------------
-# cloud_guard_configuration_status  = "ENABLED"
+# enable_cloud_guard                = true
+# enable_cloud_guard_cloned_recipes = false
+# cloud_guard_reporting_region      = null # if null, defaults to home region. 
 # cloud_guard_risk_level_threshold  = "High" # Critical, High, Medium, Minor, Low. Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems.
 # cloud_guard_admin_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # List of email addresses for Cloud Guard related notifications.
 

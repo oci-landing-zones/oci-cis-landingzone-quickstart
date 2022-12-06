@@ -13,7 +13,7 @@ The Compliance Checking script checks a tenancy's configuration against the CIS 
 - Network connectivity to on-premises is redundant 
 - Cloud Guard is configured at the root compartment with detectors and responders 
 
-The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```us-ashburn-1-<tenancy_name>-2020-12-08```. 
+The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
 
 ## <a name="setup"></a>Setup 
 

@@ -227,14 +227,10 @@ data "oci_identity_tag_namespaces" "this" {
   compartment_id = var.tenancy_ocid
 }
 
-/*
-data "oci_ons_notification_topics" "iam" {
-  compartment_id = local.security_compartment_id
-  name = local.iam_topic_name
+data "oci_identity_compartments" "all" {
+  depends_on = [module.lz_compartments]
+  compartment_id = var.tenancy_ocid
+  compartment_id_in_subtree = true
+  access_level = "ACCESSIBLE"
+  state = "ACTIVE"
 }
-
-data "oci_events_rules" "iam" {
-  compartment_id  = var.tenancy_ocid
-  display_name = local.iam_events_rule_name
-}
-*/

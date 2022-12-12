@@ -9,6 +9,7 @@ locals {
   custom_service_connector_target_bucket_name = null
   custom_service_connector_target_object_name_prefix = null
   custom_service_connector_target_stream_name = null
+  custom_service_connector_target_log_group_name = null
   custom_service_connector_target_policy_name = null
 
   custom_service_connector_defined_tags = null
@@ -20,8 +21,8 @@ locals {
   custom_policy_defined_tags = null
   custom_policy_freeform_tags = null
 
-  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for k, v in module.lz_compartments.compartments : {
-    compartment_id = v.id
+  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for cmp in data.oci_identity_compartments.all.compartments : {
+    compartment_id = cmp.id
     log_group_id = "_Audit"
     log_id = ""
   }] : []
@@ -66,6 +67,8 @@ module "lz_service_connector" {
   target_stream = var.existing_service_connector_target_stream_id != null ? var.existing_service_connector_target_stream_id : local.service_connector_target_stream_name
 
   target_function_id = var.existing_service_connector_target_function_id
+
+  target_log_group_name = local.service_connector_target_log_group_name
 
   target_policy_name = local.service_connector_target_policy_name
 
@@ -120,6 +123,9 @@ locals {
 
   default_service_connector_target_stream_name = "${var.service_label}-service-connector-stream"
   service_connector_target_stream_name = local.custom_service_connector_target_stream_name != null ? local.custom_service_connector_target_stream_name : local.default_service_connector_target_stream_name
+  
+  default_service_connector_target_log_group_name = "${var.service_label}-service-connector-log-group"
+  service_connector_target_log_group_name = local.custom_service_connector_target_log_group_name != null ? local.custom_service_connector_target_log_group_name : local.default_service_connector_target_log_group_name
 
   default_service_connector_target_object_name_prefix = "sch"
   service_connector_target_object_name_prefix = local.custom_service_connector_target_object_name_prefix != null ? local.custom_service_connector_target_object_name_prefix : local.default_service_connector_target_object_name_prefix

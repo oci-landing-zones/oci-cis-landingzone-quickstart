@@ -1,3 +1,11 @@
+#  January XX, 2023 Release Notes - 2.5.1
+1. [Service Connector Hub Improvements](#2-5-1-sch-improvements)
+
+## <a name="2-5-1-sch-improvements">Service Connector Hub Improvements</a>
+Service Connector Hub functionality has been improved with the following:
+- Audit logs from all tenancy compartments are now captured.
+- Support for Logging Analytics as target. With this update, the following targets are supported: Object Storage, Streaming, Functions and Logging Analytics.
+
 #  December 05, 2022 Release Notes - 2.5.0
 1. [OCI Best Practices Checks Added to CIS Compliance Script](#2-5-0-script-update)
 1. [Cloud Guard Improvements](#2-5-0-cloud-guard-improvements)

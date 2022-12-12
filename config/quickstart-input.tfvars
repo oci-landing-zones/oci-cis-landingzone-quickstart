@@ -135,7 +135,7 @@ security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # l
 # ------------------------------------------------------
 # enable_service_connector                      = false # whether Service Connector Hub should be enabled. If true, all supporting resources are created, with Service Connector in INACTIVE state. To activate, set 'activate_service_connector' to true (costs may incur).
 # activate_service_connector                    = false # whether Service Connector Hub should be activated. If true, sets Service Connector to ACTIVE. Costs my incur due to usage of Object Storage bucket, Streaming or Function.
-# service_connector_target_kind                 = "objectstorage" # Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming' or 'functions'.
+# service_connector_target_kind                 = "objectstorage" # Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'.
 # existing_service_connector_bucket_vault_compartment_id = null # the OCID of an existing compartment for the vault with the key used in Object Storage bucket encryption used by Service Connector. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'
 # existing_service_connector_bucket_vault_id    = null # the OCID of an existing vault for the key used in Object Storage bucket encryption used by Service Connector. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'
 # existing_service_connector_bucket_key_id      = null # the OCID of an existing key used in Object Storage bucket encryption used by Service Connector. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'

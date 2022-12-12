@@ -9,6 +9,7 @@
  * If target kind is 'streaming, a Stream is either created or used, depending on what is provided in the target_stream variable. If a name is provided,
  * a stream is created. If an OCID is provided, the stream is used.
  * If target_kind is 'functions', a function OCID must be provided in target_function_id variable.
+ * If target_kind is 'logginganalytics', a log group is created and named by target_log_group_name variable.
  * The target resource is created in the compartment provided in compartment_id variable.
  * An IAM policy is created to allow the Service Connector Hub service to push data to the chosen target. 
  */
@@ -86,15 +87,25 @@ locals {
       EOF2
   ] : []
 
-  service_connector_grants = concat(local.oss_grants, local.stream_grants, local.functions_grants)
+  logging_analytics_grants = lower(var.target_kind) == "logginganalytics" ? [
+      <<EOF
+          allow any-user to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in compartment id ${var.compartment_id} where all {
+          request.principal.type='serviceconnector',
+          target.loganalytics-log-group.id='${oci_logging_log_group.logging_analytics_target[0].id}',
+          request.principal.compartment.id='${var.compartment_id}' }
+      EOF
+  ] : []
 
-  policy_compartment_id = lower(var.target_kind) == "objectstorage" ? data.oci_identity_compartment.this.compartment_id : lower(var.target_kind) == "streaming" ? local.stream_compartment_id : data.oci_functions_function.existing_function[0].compartment_id                   
+  service_connector_grants = concat(local.oss_grants, local.stream_grants, local.functions_grants, local.logging_analytics_grants)
+
+  policy_compartment_id = contains(["objectstorage","logginganalytics"], lower(var.target_kind)) ? data.oci_identity_compartment.this.compartment_id : lower(var.target_kind) == "streaming" ? local.stream_compartment_id : data.oci_functions_function.existing_function[0].compartment_id                   
 }
 
 resource "oci_sch_service_connector" "this" {
   provider = oci
   compartment_id = var.compartment_id
   display_name   = var.display_name
+  description    = "CIS Landing Zone Service Connector"
   defined_tags   = var.defined_tags
   freeform_tags  = var.freeform_tags
   source {
@@ -119,6 +130,7 @@ resource "oci_sch_service_connector" "this" {
     batch_rollover_time_in_ms  = lower(var.target_kind) == "objectstorage" ? var.target_object_store_batch_rollover_time_in_ms : null
     stream_id          = lower(var.target_kind) == "streaming" ? local.target_stream_id : null
     function_id        = lower(var.target_kind) == "functions" ? var.target_function_id : null
+    log_group_id       = lower(var.target_kind) == "logginganalytics" ?  oci_logging_log_group.logging_analytics_target[0].id : null   
   }
   state  = var.activate ? "ACTIVE" : "INACTIVE"
 }
@@ -148,6 +160,14 @@ resource "oci_streaming_stream" "this" {
   retention_in_hours = var.target_stream_retention_in_hours
 }
 
+resource "oci_logging_log_group" "logging_analytics_target" {
+  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
+  compartment_id = var.compartment_id
+  display_name   = var.target_log_group_name
+  description    = "CIS Landing Zone log group for Service Connector target (Logging Analytics)."
+  defined_tags   = var.target_defined_tags
+  freeform_tags  = var.target_freeform_tags
+}
 resource "oci_identity_policy" "service_connector" {
   provider       = oci.home
   name           = var.target_policy_name
@@ -156,4 +176,37 @@ resource "oci_identity_policy" "service_connector" {
   statements     = local.service_connector_grants
   defined_tags   = var.policy_defined_tags
   freeform_tags  = var.policy_freeform_tags
+}
+
+#-- Log group for bucket write access logs
+resource "oci_logging_log_group" "bucket" {
+  count = length(oci_objectstorage_bucket.this) > 0 ? 1 : 0
+  compartment_id = var.compartment_id
+  display_name   = "${oci_objectstorage_bucket.this[0].name}-log-group"
+  description    = "CIS Landing Zone Service Connector bucket log group."
+  defined_tags   = var.target_defined_tags
+  freeform_tags  = var.target_freeform_tags
+}
+
+#-- Log for bucket write access logs
+resource "oci_logging_log" "bucket" {
+  count = length(oci_logging_log_group.bucket) > 0 ? 1 : 0
+  display_name = "${oci_objectstorage_bucket.this[0].name}-log"
+  log_group_id = oci_logging_log_group.bucket[0].id
+  log_type     = "SERVICE"
+    
+  configuration {
+    source {
+      category    = "write"
+      resource    = oci_objectstorage_bucket.this[0].name
+      service     = "objectstorage"
+      source_type = "OCISERVICE"
+    }
+    compartment_id = var.compartment_id
+  }
+
+  is_enabled         = true
+  retention_duration = 30
+  defined_tags       = var.target_defined_tags
+  freeform_tags      = var.target_freeform_tags
 }

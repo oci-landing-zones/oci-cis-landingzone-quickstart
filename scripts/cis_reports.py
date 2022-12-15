@@ -4101,35 +4101,43 @@ def execute_report():
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
-    if OUTPUT_TO_XLSX:
-        workbook = Workbook(csv_report_directory + '/Consolidated_Report.xlsx', {'in_memory': True})
-        for csvfile in glob.glob(csv_report_directory + '/*.csv'):
-            worksheet_name = csvfile.split("/")[-1].replace(".csv","").replace("raw_data_","raw_").replace("Findings","fds").replace("Best_Practices","bps")
-            if "Identity_and_Access_Management" in worksheet_name:
-                worksheet_name = worksheet_name.replace("Identity_and_Access_Management", "IAM")
-            elif "Storage_Object_Storage" in worksheet_name:
-                worksheet_name = worksheet_name.replace("Storage_Object_Storage", "Object_Storage")
-            elif "raw_identity_groups_and_membership" in worksheet_name:
-                worksheet_name = worksheet_name.replace("raw_identity", "raw_iam")
-            elif "Cost_Tracking_Budgets_Best_Practices" in worksheet_name:
-                worksheet_name = worksheet_name.replace("Cost_Tracking_","")
-            elif "Storage_File_Storage_Service" in worksheet_name:
-                worksheet_name = worksheet_name.replace("Storage_File_Storage_Service", "FSS")
-            elif "raw_cloud_guard_target" in worksheet_name:
-                # cloud guard targets are too large for a cell
-                continue
-            elif len(worksheet_name) > 31:
-                worksheet_name = worksheet_name.replace("_","")
+    try:
+        if OUTPUT_TO_XLSX:
+            workbook = Workbook(csv_report_directory + '/Consolidated_Report.xlsx', {'in_memory': True})
+            for csvfile in glob.glob(csv_report_directory + '/*.csv'):
 
-            worksheet = workbook.add_worksheet(worksheet_name)
-            with open(csvfile, 'rt', encoding='utf8') as f:
-                reader = csv.reader(f)
-                for r, row in enumerate(reader):
-                    for c, col in enumerate(row):
-                        worksheet.write(r, c, col)
-        
-        workbook.close()
+                # Checking if Windows OS to determine which directory divider to use
+                if os.name == 'nt':
+                    worksheet_name = csvfile.split('\\')[-1].replace(".csv","").replace("raw_data_","raw_").replace("Findings","fds").replace("Best_Practices","bps")
+                else:
+                    worksheet_name = csvfile.split("/")[-1].replace(".csv","").replace("raw_data_","raw_").replace("Findings","fds").replace("Best_Practices","bps")
 
+                if "Identity_and_Access_Management" in worksheet_name:
+                    worksheet_name = worksheet_name.replace("Identity_and_Access_Management", "IAM")
+                elif "Storage_Object_Storage" in worksheet_name:
+                    worksheet_name = worksheet_name.replace("Storage_Object_Storage", "Object_Storage")
+                elif "raw_identity_groups_and_membership" in worksheet_name:
+                    worksheet_name = worksheet_name.replace("raw_identity", "raw_iam")
+                elif "Cost_Tracking_Budgets_Best_Practices" in worksheet_name:
+                    worksheet_name = worksheet_name.replace("Cost_Tracking_","")
+                elif "Storage_File_Storage_Service" in worksheet_name:
+                    worksheet_name = worksheet_name.replace("Storage_File_Storage_Service", "FSS")
+                elif "raw_cloud_guard_target" in worksheet_name:
+                    # cloud guard targets are too large for a cell
+                    continue
+                elif len(worksheet_name) > 31:
+                    worksheet_name = worksheet_name.replace("_","")
+
+                worksheet = workbook.add_worksheet(worksheet_name)
+                with open(csvfile, 'rt', encoding='utf8') as f:
+                    reader = csv.reader(f)
+                    for r, row in enumerate(reader):
+                        for c, col in enumerate(row):
+                            worksheet.write(r, c, col)
+            
+            workbook.close()
+    except Exception as e:
+        print("**Failed to output to excel. Please use CSV files.**")
 
 ##########################################################################
 # Main

@@ -561,7 +561,7 @@ class CIS_Report:
         try:
             self.__compartments = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_compartments,
-                self.__tenancy.id,
+                compartment_id = self.__tenancy.id,
                 compartment_id_in_subtree=True,
                 lifecycle_state = "ACTIVE"
             ).data
@@ -615,13 +615,13 @@ class CIS_Report:
             # Getting all Groups in the Tenancy
             groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_groups,
-                self.__tenancy.id
+                compartment_id = self.__tenancy.id
             ).data
             # For each group in the tenacy getting the group's membership
             for grp in groups_data:
                 membership = oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
-                    compartment_id=self.__tenancy.id,
+                    compartment_id = self.__tenancy.id,
                     group_id=grp.id
                 ).data
                 for member in membership:
@@ -648,7 +648,7 @@ class CIS_Report:
             # Getting all users in the Tenancy
             users_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_users,
-                self.__tenancy.id
+                compartment_id = self.__tenancy.id
             ).data
             # Adding record to the users
             for user in users_data:
@@ -693,7 +693,7 @@ class CIS_Report:
         try:
             user_api_keys_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_api_keys,
-                user_ocid
+                user_id = user_ocid
             ).data
 
             for api_key in user_api_keys_data:
@@ -720,7 +720,7 @@ class CIS_Report:
         try:
             auth_tokens_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_auth_tokens,
-                user_ocid
+                user_id = user_ocid
             ).data
 
             for token in auth_tokens_data:
@@ -752,7 +752,7 @@ class CIS_Report:
         try:
             customer_secret_key_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_customer_secret_keys,
-                user_ocid
+                user_id = user_ocid
             ).data
 
             for key in customer_secret_key_data:
@@ -784,7 +784,7 @@ class CIS_Report:
                 if self.__if_not_managed_paas_compartment(compartment.name):
                     policies_data = oci.pagination.list_call_get_all_results(
                         self.__regions[self.__home_region]['identity_client'].list_policies,
-                        compartment.id
+                        compartment_id = compartment.id
                     ).data
                     for policy in policies_data:
                         record = {
@@ -810,7 +810,7 @@ class CIS_Report:
         try:
             dynamic_groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
-                self.__tenancy.id
+                compartment_id = self.__tenancy.id
                 ).data
             for dynamic_group in dynamic_groups_data:
                 try:
@@ -857,7 +857,7 @@ class CIS_Report:
             for region_key, region_values in self.__regions.items():
                 region_values['availability_domains'] = oci.pagination.list_call_get_all_results(
                     region_values['identity_client'].list_availability_domains,
-                    self.__tenancy.id
+                    compartment_id = self.__tenancy.id
                 ).data
                 print("\tProcessed " + str(len(region_values['availability_domains'])) + " Availability Domains in " + region_key)                        
 
@@ -880,8 +880,8 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         buckets_data = oci.pagination.list_call_get_all_results(
                             region_values['os_client'].list_buckets,
-                            self.__os_namespace,
-                            compartment.id
+                            namespace_name = self.__os_namespace,
+                            compartment_id = compartment.id
                         ).data
                         # Getting Bucket Info
                         for bucket in buckets_data:
@@ -1083,8 +1083,8 @@ class CIS_Report:
                         for ad in region_values['availability_domains']:
                             fss_data = oci.pagination.list_call_get_all_results(
                                     region_values['fss_client'].list_file_systems,
-                                    compartment.id,
-                                    ad.name
+                                    compartment_id = compartment.id,
+                                    availability_domain = ad.name
                                 ).data
                             for fss in fss_data:
                                 try:
@@ -1162,7 +1162,7 @@ class CIS_Report:
                             }
                             nsg_rules = oci.pagination.list_call_get_all_results(
                                 region_values['network_client'].list_network_security_group_security_rules,
-                                nsg.id
+                                network_security_group_id = nsg.id
                             ).data
                             for rule in nsg_rules:
                                 rule_record = {
@@ -1203,7 +1203,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         security_lists_data = oci.pagination.list_call_get_all_results(
                             region_values['network_client'].list_security_lists,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
                         # Looping through Security Lists to to get
                         for security_list in security_lists_data:
@@ -1265,7 +1265,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         subnets_data = oci.pagination.list_call_get_all_results(
                             region_values['network_client'].list_subnets,
-                            compartment.id,
+                            compartment_id = compartment.id,
                             lifecycle_state="AVAILABLE"
                         ).data
                         # Looping through subnets in a compartment
@@ -1748,7 +1748,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         autonomous_databases = oci.pagination.list_call_get_all_results(
                         region_values['adb_client'].list_autonomous_databases, 
-                                compartment.id
+                                compartment_id = compartment.id
                             ).data
                         for adb in autonomous_databases:
                             try: 
@@ -2020,7 +2020,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         oic_instances = oci.pagination.list_call_get_all_results(
                             region_values['oic_client'].list_integration_instances,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
                         for oic_instance in oic_instances:
                             if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
@@ -2145,7 +2145,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         events_rules_data = oci.pagination.list_call_get_all_results(
                             region_values['events_client'].list_rules,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
 
                         for event_rule in events_rules_data:
@@ -2181,7 +2181,7 @@ class CIS_Report:
                         # Getting Log Groups in compartment
                         log_groups = oci.pagination.list_call_get_all_results(
                             region_values['logging_client'].list_log_groups,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
                         # Looping through log groups to get logs
                         for log_group in log_groups:
@@ -2274,7 +2274,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         vaults_data = oci.pagination.list_call_get_all_results(
                             region_values['vault_client'].list_vaults,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
                         # Get all Vaults in a compartment
                         for vlt in vaults_data:
@@ -2505,7 +2505,7 @@ class CIS_Report:
                     if self.__if_not_managed_paas_compartment(compartment.name):
                         subs_data = oci.pagination.list_call_get_all_results(
                             region_values['ons_subs_client'].list_subscriptions,
-                            compartment.id
+                            compartment_id = compartment.id
                         ).data
                         for sub in subs_data:
                             record = {

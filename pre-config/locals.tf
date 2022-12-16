@@ -35,4 +35,9 @@ locals {
 
   # Tags
   landing_zone_tags = {"cis-landing-zone" : "${var.unique_prefix}-quickstart"}
+
+  # Delay in seconds for slowing down resource creation
+  delay_in_secs = 70
+  
+  is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
 }

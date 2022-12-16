@@ -191,13 +191,15 @@ module "lz_provisioning_topcmp_dynamic_group_policy" {
 resource "null_resource" "slow_down_compartments" {
   depends_on = [module.lz_top_compartments]
   provisioner "local-exec" {
-    command = "sleep 30" # Wait 30 seconds for compartments to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }
 
 resource "null_resource" "slow_down_groups" {
   depends_on = [module.lz_groups, module.lz_provisioning_groups]
   provisioner "local-exec" {
-    command = "sleep 30" # Wait 30 seconds for compartments to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }

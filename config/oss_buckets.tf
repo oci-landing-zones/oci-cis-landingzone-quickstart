@@ -45,6 +45,7 @@ module "lz_buckets" {
 resource "null_resource" "wait_on_keys_policy" {
    depends_on = [ module.lz_keys ]
    provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
+     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
    }
 }

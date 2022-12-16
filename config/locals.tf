@@ -104,18 +104,22 @@ locals {
 
   # Tags
   landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
+
+  is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
 }
 
 resource "null_resource" "wait_on_compartments" {
   depends_on = [module.lz_compartments]
   provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }
 
 resource "null_resource" "wait_on_services_policy" {
   depends_on = [module.lz_services_policy]
   provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait for policies to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }

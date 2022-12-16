@@ -3118,16 +3118,19 @@ class CIS_Report:
             # Only Active SCH with a target that is configured
             if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for source in sch_values['log_sources']:
-                    # Checking if a the compartment being logged is the Tenancy and it has all child compartments
-                    if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
-                        self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
-                    # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
-                    elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                        self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
-                    elif source['log_group_id'].upper() == "_Audit".upper():
-                        self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
-        
+                    try:
+                        # Checking if a the compartment being logged is the Tenancy and it has all child compartments
+                        if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
+                        # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
+                        elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
+                        elif source['log_group_id'].upper() == "_Audit".upper():
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
+                    except:
+                        # There can be empty log groups
+                        pass
         ## Analyzing Service Connector Audit Logs to see if each region has all compartments
         for region_key, region_values in self.__obp_regional_checks.items():
             # Checking if I already found the tenancy ocid with all child compartments included

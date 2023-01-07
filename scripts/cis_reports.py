@@ -46,6 +46,10 @@ class CIS_Report:
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
 
+    # OCI Link 
+    __oci_cloud_url = "https://cloud.oracle.com"
+    __oci_identity = "/identity/users/"
+
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(start_datetime.strftime(__iso_time_format))
@@ -664,6 +668,7 @@ class CIS_Report:
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
                     'name': user.name,
+                    'link' : self.__oci_cloud_url + self.__oci_identity + user.id,
                     'groups': []
                 }
                 # Adding Groups to the user

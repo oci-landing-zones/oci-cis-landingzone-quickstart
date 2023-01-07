@@ -3519,6 +3519,9 @@ class CIS_Report:
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
         
+        self.__report_generate_html_report(
+            self.__report_directory, "cis", "html_summary_report", summary_report)
+                        
         # Outputting to a bucket if I have one
         if summary_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
@@ -3533,6 +3536,83 @@ class CIS_Report:
                         self.__output_bucket, report_file_name)
 
     
+    ##########################################################################
+    # Generates an HTML report
+    ##########################################################################
+    def __report_generate_html_report(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".html"
+            file_path = os.path.join(report_directory, file_name)
+
+            # add report_datetimeto each dictionary
+            result = [dict(item, extract_date=self.start_time_str)
+                      for item in data]
+
+
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                redacted_result = []
+                for item in result:
+                    record = {}
+                    for key in item.keys():
+                        str_item = str(item[key])
+                        items_to_redact = re.findall('ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}',str_item)
+                        for redact_me in items_to_redact:
+                            str_item = str_item.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+                        
+                        record[key] = str_item
+
+                    redacted_result.append(record)
+                # Overriding result with redacted result
+                result = redacted_result
+            
+
+            # generate fields
+            fields = [key for key in result[0].keys()]
+
+
+            with open(file_path, mode='w') as html_file:
+                # Creating table header
+                html_file.write('<html><table><tr>\n')
+                for th in fields:
+                    html_file.write("<th>" + th + "</th>\n")
+                html_file.write('</tr>\n')
+
+                for row in result:
+                    print(row)
+                    print(type(row))
+                    html_file.write("<tr>")
+                    for row_key, row_value in row.items():
+                        html_file.write("<td>" + str(row_value) + "</td>\n")
+                    #print(row)
+                    html_file.write("</tr>")
+                
+
+            print("HTML: " + file_subject.ljust(22) + " --> " + file_path)
+            # Used by Upload
+               
+            return file_path
+           
+        except Exception as e:
+            raise Exception("Error in print_to_csv_file: " + str(e.args))
+        
     ##########################################################################
     # Orchestrates analysis and report generation
     ##########################################################################

@@ -48,7 +48,15 @@ class CIS_Report:
 
     # OCI Link 
     __oci_cloud_url = "https://cloud.oracle.com"
-    __oci_identity = "/identity/users/"
+    __oci_users_uri = __oci_cloud_url + "/identity/users/"
+    __oci_policies_uri = __oci_cloud_url + "/identity/policies/"
+    __oci_groups_uri = __oci_cloud_url + "/identity/groups/"
+    __oci_dynamic_groups_uri = __oci_cloud_url + "/identity/dynamicgroups/"
+    __oci_buckets_uri = __oci_cloud_url + "/object-storage/buckets/"
+    __oci_boot_volumes_uri = __oci_cloud_url + "/block-storage/boot-volumes/"
+    __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
+    __oci_fss_uri = __oci_cloud_url + "/fss/file-systems/"
+    __oci_networking_uri = __oci_cloud_url +"/networking/vcns/"
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
@@ -325,7 +333,7 @@ class CIS_Report:
         # Start print time info
         self.__print_header("Running CIS Reports...")
         print("Updated November 16, 2022.")
-        print("Tested oci-python-sdk version: 2.88.1")
+        print("Tested oci-python-sdk version: 2.90.0")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -629,13 +637,15 @@ class CIS_Report:
                     group_id=grp.id
                 ).data
                 for member in membership:
+                    grp_deep_link = self.__oci_groups_uri + grp.id
+                    user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
-                        "id": grp.id,
+                        "id": self.__generate_csv_hyperlink(grp_deep_link, grp.id),
                         "name": grp.name,
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
                         "time_created": grp.time_created.strftime(self.__iso_time_format),
-                        "user_id": member.user_id
+                        "user_id": self.__generate_csv_hyperlink(user_deep_link,member.user_id)
                     }
                     # Adding a record per user to group
                     self.__groups_to_users.append(group_record)
@@ -656,8 +666,9 @@ class CIS_Report:
             ).data
             # Adding record to the users
             for user in users_data:
+                deep_link = self.__oci_users_uri + user.id
                 record = {
-                    'id': user.id,
+                    'id': self.__generate_csv_hyperlink(deep_link, user.id),
                     'defined_tags': user.defined_tags,
                     'description': user.description,
                     'email': user.email,
@@ -668,7 +679,6 @@ class CIS_Report:
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
                     'name': user.name,
-                    'link' : self.__oci_cloud_url + self.__oci_identity + user.id,
                     'groups': []
                 }
                 # Adding Groups to the user
@@ -792,13 +802,14 @@ class CIS_Report:
                         compartment_id = compartment.id
                     ).data
                     for policy in policies_data:
+                        deep_link = self.__oci_policies_uri + policy.id
                         record = {
-                            "id": policy.id,
+                            "id": self.__generate_csv_hyperlink(deep_link,policy.id),
                             "name": policy.name,
                             "compartment_id": policy.compartment_id,
                             "description": policy.description,
                             "lifecycle_state": policy.lifecycle_state,
-                            "statements": policy.statements
+                            "statements": policy.statements,
                         }
                         self.__policies.append(record)
             
@@ -819,8 +830,9 @@ class CIS_Report:
                 ).data
             for dynamic_group in dynamic_groups_data:
                 try:
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                     record = {
-                        "id": dynamic_group.id,
+                        "id": self.__generate_csv_hyperlink(deep_link, dynamic_group.id),
                         "name": dynamic_group.name,
                         "description": dynamic_group.description,
                         "matching_rule": dynamic_group.matching_rule,
@@ -893,8 +905,11 @@ class CIS_Report:
                             try:
                                 bucket_info = region_values['os_client'].get_bucket(
                                     self.__os_namespace, bucket.name).data
+                                
+                                deep_link = self.__oci_buckets_uri + bucket_info.namespace + \
+                                     "/" + bucket_info.name + "/objects?region=" + region_key
                                 record = {
-                                    "id": bucket_info.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, bucket_info.id),
                                     "name": bucket_info.name,
                                     "kms_key_id": bucket_info.kms_key_id,
                                     "namespace": bucket_info.namespace,
@@ -953,8 +968,9 @@ class CIS_Report:
                         # Getting Block Volume inf
                         for volume in volumes_data:
                             try:
+                                deep_link = self.__oci_block_volumes_uri + volume.id + "?region=" + region_key
                                 record = {
-                                    "id":volume.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link,volume.id),
                                     "display_name": volume.display_name,
                                     "kms_key_id": volume.kms_key_id,
                                     "lifecycle_state": volume.lifecycle_state,
@@ -1023,8 +1039,9 @@ class CIS_Report:
                                 ).data
                             for boot_volume in boot_volumes_data:
                                 try:
+                                    deep_link = self.__oci_boot_volumes_uri + boot_volume.id + "?region=" + region_key
                                     record = {
-                                        "id": boot_volume.id,
+                                        "id": self.__generate_csv_hyperlink(deep_link, boot_volume.id),
                                         "display_name": boot_volume.display_name,
                                         "image_id": boot_volume.image_id,
                                         "kms_key_id": boot_volume.kms_key_id,
@@ -1093,8 +1110,9 @@ class CIS_Report:
                                 ).data
                             for fss in fss_data:
                                 try:
+                                    deep_link = self.__oci_fss_uri + fss.id + "?region=" + region_key
                                     record = {
-                                        "id": fss.id,
+                                        "id": self.__generate_csv_hyperlink(url=deep_link, id=fss.id),
                                         "display_name": fss.display_name,
                                         "kms_key_id": fss.kms_key_id,
                                         "lifecycle_state": fss.lifecycle_state,
@@ -1153,10 +1171,12 @@ class CIS_Report:
                         ).data
                         # Looping through NSGs to to get
                         for nsg in nsgs_data:
+                            deep_link = self.__oci_networking_uri + nsg.vcn_id + \
+                                "/network-security-groups/" + nsg.id +  "?region=" + region_key
                             record = {
+                                "id": self.__generate_csv_hyperlink(url=deep_link, id=nsg.id),
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "id": nsg.id,
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -1171,12 +1191,11 @@ class CIS_Report:
                             ).data
                             for rule in nsg_rules:
                                 rule_record = {
-
+                                    "id": rule.id,
                                     "destination": rule.destination,
                                     "destination_type": rule.destination_type,
                                     "direction": rule.direction,
                                     "icmp_options": rule.icmp_options,
-                                    "id": rule.id,
                                     "is_stateless": rule.is_stateless,
                                     "is_valid": rule.is_valid,
                                     "protocol": rule.protocol,
@@ -1212,10 +1231,12 @@ class CIS_Report:
                         ).data
                         # Looping through Security Lists to to get
                         for security_list in security_lists_data:
+                            deep_link = self.__oci_networking_uri + security_list.vcn_id + \
+                                "/security-lists/" + security_list.id + "?region=" + region_key
                             record = {
+                                "id": self.__generate_csv_hyperlink(url=deep_link, id=security_list.id),
                                 "compartment_id": security_list.compartment_id,
                                 "display_name": security_list.display_name,
-                                "id": security_list.id,
                                 "lifecycle_state": security_list.lifecycle_state,
                                 "time_created": security_list.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": security_list.vcn_id,
@@ -1276,8 +1297,10 @@ class CIS_Report:
                         # Looping through subnets in a compartment
                         try:
                             for subnet in subnets_data:
+                                deep_link = self.__oci_networking_uri + subnet.vcn_id + \
+                                    "/subnets/" + subnet.id + "?region=" + region_key
                                 record = {
-                                    "id": subnet.id,
+                                    "id": self.__generate_csv_hyperlink(url=deep_link, id=subnet.id),
                                     "availability_domain": subnet.availability_domain,
                                     "cidr_block": subnet.cidr_block,
                                     "compartment_id": subnet.compartment_id,
@@ -1304,8 +1327,10 @@ class CIS_Report:
                                 # Adding subnet to subnet list
                                 self.__network_subnets.append(record)
                         except Exception as e:
+                            deep_link = self.__oci_networking_uri + subnet.vcn_id + \
+                                    "/subnet/" + subnet.id + "?region=" + region_key
                             record = {
-                                "id": subnet.id,
+                                "id": self.__generate_csv_hyperlink(url=deep_link, id=subnet.id),
                                 "availability_domain": subnet.availability_domain,
                                 "cidr_block": subnet.cidr_block,
                                 "compartment_id": subnet.compartment_id,
@@ -3601,8 +3626,6 @@ class CIS_Report:
                 html_file.write('</tr>\n')
 
                 for row in result:
-                    print(row)
-                    print(type(row))
                     html_file.write("<tr>")
                     for row_key, row_value in row.items():
                         html_file.write("<td>" + str(row_value) + "</td>\n")
@@ -4024,6 +4047,11 @@ class CIS_Report:
         print("#" + name.center(chars - 2, " ") + "#")
         print('#' * chars)
 
+    ##########################################################################
+    # Create CSV Hyperlink
+    ##########################################################################
+    def __generate_csv_hyperlink(self,url, id):
+        return '=HYPERLINK("' + url + '","' + id +'")'
 
 
 

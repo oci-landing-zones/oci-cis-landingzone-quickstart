@@ -91,7 +91,7 @@ locals {
       <<EOF
           allow any-user to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in compartment id ${var.compartment_id} where all {
           request.principal.type='serviceconnector',
-          target.loganalytics-log-group.id='${oci_logging_log_group.logging_analytics_target[0].id}',
+          target.loganalytics-log-group.id='${oci_log_analytics_log_analytics_log_group.sch_target[0].id}',
           request.principal.compartment.id='${var.compartment_id}' }
       EOF
   ] : []
@@ -101,6 +101,10 @@ locals {
   policy_compartment_id = contains(["objectstorage","logginganalytics"], lower(var.target_kind)) ? data.oci_identity_compartment.this.compartment_id : lower(var.target_kind) == "streaming" ? local.stream_compartment_id : data.oci_functions_function.existing_function[0].compartment_id                   
 }
 
+#--------------------------------------------------
+#--- SCH (Service Connector Hub) resource:
+#--- 1. oci_sch_service_connector
+#--------------------------------------------------
 resource "oci_sch_service_connector" "this" {
   provider = oci
   compartment_id = var.compartment_id
@@ -130,11 +134,17 @@ resource "oci_sch_service_connector" "this" {
     batch_rollover_time_in_ms  = lower(var.target_kind) == "objectstorage" ? var.target_object_store_batch_rollover_time_in_ms : null
     stream_id          = lower(var.target_kind) == "streaming" ? local.target_stream_id : null
     function_id        = lower(var.target_kind) == "functions" ? var.target_function_id : null
-    log_group_id       = lower(var.target_kind) == "logginganalytics" ?  oci_logging_log_group.logging_analytics_target[0].id : null   
+    log_group_id       = lower(var.target_kind) == "logginganalytics" ?  oci_log_analytics_log_analytics_log_group.sch_target[0].id : null   
   }
   state  = var.activate ? "ACTIVE" : "INACTIVE"
 }
 
+#--------------------------------------------------
+#--- SCH Object Storage bucket target resources:
+#--- 1. oci_objectstorage_bucket
+#--- 2. oci_logging_log_group
+#--- 3. oci_logging_log
+#--------------------------------------------------
 resource "oci_objectstorage_bucket" "this" {
   provider       = oci
   count          = lower(var.target_kind) == "objectstorage" ? 1 : 0
@@ -149,38 +159,10 @@ resource "oci_objectstorage_bucket" "this" {
   freeform_tags  = var.target_freeform_tags
 }
 
-resource "oci_streaming_stream" "this" {
-  provider       = oci
-  count          = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
-  name           = local.target_stream_name
-  partitions     = var.target_stream_partitions
-  compartment_id = var.compartment_id
-  defined_tags   = var.target_defined_tags
-  freeform_tags  = var.target_freeform_tags
-  retention_in_hours = var.target_stream_retention_in_hours
-}
-
-resource "oci_logging_log_group" "logging_analytics_target" {
-  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
-  compartment_id = var.compartment_id
-  display_name   = var.target_log_group_name
-  description    = "CIS Landing Zone log group for Service Connector target (Logging Analytics)."
-  defined_tags   = var.target_defined_tags
-  freeform_tags  = var.target_freeform_tags
-}
-resource "oci_identity_policy" "service_connector" {
-  provider       = oci.home
-  name           = var.target_policy_name
-  description    = "CIS Landing Zone policy for Service Connector Hub to push data to ${lower(var.target_kind)}."
-  compartment_id = local.policy_compartment_id
-  statements     = local.service_connector_grants
-  defined_tags   = var.policy_defined_tags
-  freeform_tags  = var.policy_freeform_tags
-}
-
 #-- Log group for bucket write access logs
 resource "oci_logging_log_group" "bucket" {
-  count = length(oci_objectstorage_bucket.this) > 0 ? 1 : 0
+  provider       = oci
+  count          = length(oci_objectstorage_bucket.this) > 0 ? 1 : 0
   compartment_id = var.compartment_id
   display_name   = "${oci_objectstorage_bucket.this[0].name}-log-group"
   description    = "CIS Landing Zone Service Connector bucket log group."
@@ -190,7 +172,8 @@ resource "oci_logging_log_group" "bucket" {
 
 #-- Log for bucket write access logs
 resource "oci_logging_log" "bucket" {
-  count = length(oci_logging_log_group.bucket) > 0 ? 1 : 0
+  provider     = oci
+  count        = length(oci_logging_log_group.bucket) > 0 ? 1 : 0
   display_name = "${oci_objectstorage_bucket.this[0].name}-log"
   log_group_id = oci_logging_log_group.bucket[0].id
   log_type     = "SERVICE"
@@ -209,4 +192,62 @@ resource "oci_logging_log" "bucket" {
   retention_duration = 30
   defined_tags       = var.target_defined_tags
   freeform_tags      = var.target_freeform_tags
+}
+
+#--------------------------------------------------
+#--- SCH Streaming target resource:
+#--- 1. oci_streaming_stream
+#--------------------------------------------------
+resource "oci_streaming_stream" "this" {
+  provider       = oci
+  count          = lower(var.target_kind) == "streaming" ? (length(regexall("^ocid1.streaming.oc.*$", var.target_stream)) > 0 ? 0 : 1) : 0
+  name           = local.target_stream_name
+  partitions     = var.target_stream_partitions
+  compartment_id = var.compartment_id
+  defined_tags   = var.target_defined_tags
+  freeform_tags  = var.target_freeform_tags
+  retention_in_hours = var.target_stream_retention_in_hours
+}
+
+#--------------------------------------------------------------
+#--- SCH Logging Analytics target resources:
+#--- 1. oci_log_analytics_namespace if not already onboarded
+#--- 2. oci_log_analytics_log_analytics_log_group
+#--------------------------------------------------------------
+data "oci_log_analytics_namespaces" "these" {
+  provider       = oci
+  compartment_id = var.tenancy_id
+}
+
+resource "oci_log_analytics_namespace" "this" {
+  provider     = oci
+  count        = lower(var.target_kind) == "logginganalytics" ? (data.oci_log_analytics_namespaces.these.namespace_collection[0].items[0].is_onboarded ? 0 : 1) : 0
+  namespace    = data.oci_objectstorage_namespace.this.namespace
+  is_onboarded = true
+  compartment_id = var.compartment_id
+}
+
+resource "oci_log_analytics_log_analytics_log_group" "sch_target" {
+  provider       = oci
+  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
+  compartment_id = var.compartment_id
+  display_name   = var.target_log_group_name
+  namespace      = data.oci_log_analytics_namespaces.these.namespace_collection[0].items[0].is_onboarded ? data.oci_log_analytics_namespaces.these.namespace_collection[0].items[0].namespace : oci_log_analytics_namespace.this[0].namespace
+  description    = "CIS Landing Zone log group for Service Connector target (Logging Analytics)."
+  defined_tags   = var.target_defined_tags
+  freeform_tags  = var.target_freeform_tags
+}
+
+#--------------------------------------------------
+#--- SCH policy resource:
+#--- 1. oci_identity_policy
+#--------------------------------------------------
+resource "oci_identity_policy" "service_connector" {
+  provider       = oci.home
+  name           = var.target_policy_name
+  description    = "CIS Landing Zone policy for Service Connector Hub to push data to ${lower(var.target_kind)}."
+  compartment_id = local.policy_compartment_id
+  statements     = local.service_connector_grants
+  defined_tags   = var.policy_defined_tags
+  freeform_tags  = var.policy_freeform_tags
 }

@@ -140,7 +140,7 @@ variable "target_function_id" {
 }
 
 variable "target_log_group_name" {
-    description = "The target log group name. Used when target_kind = loggingAnalytics."
+    description = "The target log group name. Used when target_kind = logginganalytics."
     type = string
     default = "lz-service-connector-log-group"
 }

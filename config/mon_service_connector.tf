@@ -82,7 +82,8 @@ module "lz_service_connector" {
 resource "null_resource" "wait_on_service_connector_keys_policy" {
    depends_on = [ module.lz_service_connector_keys ]
    provisioner "local-exec" {
-     command = "sleep ${local.delay_in_secs}" # Wait for keys policy to be available.
+     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
    }
 }
 

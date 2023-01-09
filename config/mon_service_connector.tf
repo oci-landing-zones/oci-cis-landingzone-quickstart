@@ -87,34 +87,28 @@ resource "null_resource" "wait_on_service_connector_keys_policy" {
 }
 
 locals {
-  ### DON'T TOUCH THESE ###
-  #---------------------------------------------
-  #--- Service Connector tags 
-  #---------------------------------------------
+#------------------------------------------------------------------------------------------------------
+#-- These variables are not meant to be overriden
+#------------------------------------------------------------------------------------------------------
+#-- Service Connector tags 
   default_service_connector_defined_tags = null
   default_service_connector_freeform_tags = local.landing_zone_tags
   service_connector_defined_tags = local.custom_service_connector_defined_tags != null ? merge(local.custom_service_connector_defined_tags, local.default_service_connector_defined_tags) : local.default_service_connector_defined_tags
   service_connector_freeform_tags = local.custom_service_connector_freeform_tags != null ? merge(local.custom_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector Target tags 
-  #---------------------------------------------
+#-- Service Connector Target tags 
   default_target_defined_tags = null
   default_target_freeform_tags = local.landing_zone_tags  
   target_defined_tags = local.custom_target_defined_tags != null ? merge(local.custom_target_defined_tags, local.default_target_defined_tags) : local.default_target_defined_tags
   target_freeform_tags = local.custom_target_freeform_tags != null ? merge(local.custom_target_freeform_tags, local.default_target_freeform_tags) : local.default_target_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector Policy tags 
-  #---------------------------------------------
+#-- Service Connector Policy tags 
   default_policy_defined_tags = null
   default_policy_freeform_tags = local.landing_zone_tags  
   policy_defined_tags = local.custom_policy_defined_tags != null ? merge(local.custom_policy_defined_tags, local.default_policy_defined_tags) : local.default_policy_defined_tags
   policy_freeform_tags = local.custom_policy_freeform_tags != null ? merge(local.custom_policy_freeform_tags, local.default_policy_freeform_tags) : local.default_policy_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector resources naming 
-  #---------------------------------------------
+#-- Service Connector resources naming 
   default_service_connector_name = "${var.service_label}-service-connector"
   service_connector_name = local.custom_service_connector_name != null ? local.custom_service_connector_name : local.default_service_connector_name
 

@@ -1,10 +1,22 @@
-#  January XX, 2023 Release Notes - 2.5.1
-1. [Service Connector Hub Improvements](#2-5-1-sch-improvements)
+#  January XX, 2023 Release Notes - 2.5.2
+1. [Service Connector Hub Improvements](#2-5-2-sch-improvements)
 
-## <a name="2-5-1-sch-improvements">Service Connector Hub Improvements</a>
+## <a name="2-5-2-sch-improvements">Service Connector Hub Improvements</a>
 Service Connector Hub functionality has been improved with the following:
 - Audit logs from all tenancy compartments are now captured.
 - Support for Logging Analytics as target. With this update, the following targets are supported: Object Storage, Streaming, Functions and Logging Analytics.
+
+#  December 16, 2022 Release Notes - 2.5.1
+1. [CIS Compliance Script fixes](#2-5-1-script-update)
+1. [Improved Terraform Windows Support](#2-5-1-terraform-windows)
+
+## <a name="2-5-1-script-update">CIS Compliance Script fixes</a>
+The CIS Compliance Checking script [.cis_reports.py](./scripts/cis_reports.py) has had the following fixes:
+- Fixed consolidated xlsx file generation on Windows command line and Powershell.
+- Converted from positional arguments in OCI API calls to named arguments.
+
+## <a name="2-5-1-terraform-windows">Improved Terraform Windows Support</a>
+Fixed support for deploying terraform via Windows. Closes [Issue](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/61).
 
 #  December 05, 2022 Release Notes - 2.5.0
 1. [OCI Best Practices Checks Added to CIS Compliance Script](#2-5-0-script-update)

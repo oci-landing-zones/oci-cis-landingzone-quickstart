@@ -120,61 +120,61 @@ class CIS_Report:
             '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12','Remediation':[]},
             '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]}
         }
-        #remediationreport
-        self.cis_remediation = {
-            '1.1': 'Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.',
-            '1.2': 'Remove any policy statement that allows any group other than Administrators or any service access to manage all resources in the tenancy.',
-            '1.3': 'Verify the results to ensure that the policy statements that grant access to use or manage users or groups in the tenancy have a condition that excludes access to Administrators group or to users in the Administrators group.',
-            '1.4': 'Update the password policy such as minimum length to 14, password must contain expected special characters and numeric characters.',
-            '1.5': 'Update the password policy by setting number of days configured in Expires after to 365',
-            '1.6': 'Update the number of remembered passwords in Previous passwords remembered setting to 24 in the password policy',
-            '1.7': 'Each user must enable MFA for themselves using a device they will have access to every time they sign in. An administrator cannot enable MFA for another user but can enforce MFA by identifying the list of non-complaint users, notifying them or disabling access by resetting password for non-complaint accounts',
-            '1.8': 'Delete any API Keys with a date of 90 days or older under the Created column of the API Key table',
-            '1.9': 'Delete any Access Keys with a date of 90 days or older under the Created column of the Customer Secret Keys',
-            '1.10': 'Delete any auth token with a date of 90 days or older under the Created column of the Auth Tokens',
-            '1.11': 'For each tenancy administrator user who has an API key,select API Keys from the menu and delete any associated keys from the API Keys table',
-            '1.12': 'Update the current email address in the email text box on exch non compliant user.',
-            '1.13': 'Create Dynamic group and Enter Matching Rules to that includes the instances accessing your OCI resources. Refer:"https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingdynamicgroups.htm"',
-            '1.14': 'Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service',
+        # Remediation Report
+        self.cis_remediations = {
+            '1.1': { 'summary' : 'Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.'},
+            '1.2': { 'summary' : 'Remove any policy statement that allows any group other than Administrators or any service access to manage all resources in the tenancy.'},
+            '1.3': { 'summary' : 'Verify the results to ensure that the policy statements that grant access to use or manage users or groups in the tenancy have a condition that excludes access to Administrators group or to users in the Administrators group.'},
+            '1.4': { 'summary' : 'Update the password policy such as minimum length to 14, password must contain expected special characters and numeric characters.'},
+            '1.5': { 'summary' : 'Update the password policy by setting number of days configured in Expires after to 365'},
+            '1.6': { 'summary' : 'Update the number of remembered passwords in Previous passwords remembered setting to 24 in the password policy'},
+            '1.7': { 'summary' : 'Each user must enable MFA for themselves using a device they will have access to every time they sign in. An administrator cannot enable MFA for another user but can enforce MFA by identifying the list of non-complaint users, notifying them or disabling access by resetting password for non-complaint accounts'},
+            '1.8': { 'summary' : 'Delete any API Keys with a date of 90 days or older under the Created column of the API Key table'},
+            '1.9': { 'summary' : 'Delete any Access Keys with a date of 90 days or older under the Created column of the Customer Secret Keys'},
+            '1.10': { 'summary' : 'Delete any auth token with a date of 90 days or older under the Created column of the Auth Tokens'},
+            '1.11': { 'summary' : 'For each tenancy administrator user who has an API key,select API Keys from the menu and delete any associated keys from the API Keys table'},
+            '1.12': { 'summary' : 'Update the current email address in the email text box on exch non compliant user.'},
+            '1.13': { 'summary' : 'Create Dynamic group and Enter Matching Rules to that includes the instances accessing your OCI resources. Refer:"https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingdynamicgroups.htm"'},
+            '1.14': { 'summary' : 'Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service'},
 
-            '2.1': 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',
-            '2.2': 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',
-            '2.3': 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',
-            '2.4': 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',
-            '2.5': 'Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22',
-            '2.6': 'For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive',
-            '2.7': 'For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required',
-            '2.8': 'For each ADB-S database in the returned results, select the ADB-S database name edit the Access Control Rules by clicking +Another Rule and add rules as required',
+            '2.1': { 'summary' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate'},
+            '2.2': { 'summary' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate'},
+            '2.3': { 'summary' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules'},
+            '2.4': { 'summary' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules'},
+            '2.5': { 'summary' : 'Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22'},
+            '2.6': { 'summary' : 'For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive'},
+            '2.7': { 'summary' : 'For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required'},
+            '2.8': { 'summary' : 'For each ADB-S database in the returned results, select the ADB-S database name edit the Access Control Rules by clicking +Another Rule and add rules as required'},
 
-            '3.1': 'Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365',
-            '3.2': 'Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of "${iam.principal.names}" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type',
-            '3.3': 'Create a Topic in the notifications service under the appropriate compartement and add the subscriptions with current email address and correct protocol',
-            '3.4': 'Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
-            '3.5': 'Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced',
-            '3.6': 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
-            '3.7': 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
-            '3.8': 'Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update',
-            '3.9': 'Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update',
-            '3.10': 'Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update',
-            '3.11': 'Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update',
-            '3.12': 'Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update',
-            '3.13': 'Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment',
-            '3.14': 'Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services',
-            '3.15': 'Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations',
-            '3.16': 'Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. ',
-            '3.17': 'To the relevent bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.',
+            '3.1': { 'summary' : 'Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365'},
+            '3.2': { 'summary' : 'Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of "${iam.principal.names}" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type'},
+            '3.3': { 'summary' : 'Create a Topic in the notifications service under the appropriate compartment and add the subscriptions with current email address and correct protocol'},
+            '3.4': { 'summary' : 'Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.'},
+            '3.5': { 'summary' : 'Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced'},
+            '3.6': { 'summary' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.'},
+            '3.7': { 'summary' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.'},
+            '3.8': { 'summary' : 'Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update'},
+            '3.9': { 'summary' : 'Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update'},
+            '3.10': { 'summary' : 'Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update'},
+            '3.11': { 'summary' : 'Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update'},
+            '3.12': { 'summary' : 'Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update'},
+            '3.13': { 'summary' : 'Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment'},
+            '3.14': { 'summary' : 'Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services'},
+            '3.15': { 'summary' : 'Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations'},
+            '3.16': { 'summary' : 'Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. '},
+            '3.17': { 'summary' : 'To the relevant bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.'},
 
-            '4.1.1': 'Edit the visbility into "private" for each Bucket',
-            '4.1.2': 'Assign Master encryption key to Encryption key in every Object storage under Buket name by clicking assign and select vault',
-            '4.1.3': 'Enable  Versioning by clicking on every bucket by editing the bucket configuration',
-            '4.2.1': 'For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
-            '4.2.2': 'For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
-            '4.3.1': 'For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
+            '4.1.1': { 'summary' : 'Edit the visibility into "private" for each Bucket'},
+            '4.1.2': { 'summary' : 'Assign Master encryption key to Encryption key in every Object storage under Bucket name by clicking assign and select vault'},
+            '4.1.3': { 'summary' : 'Enable  Versioning by clicking on every bucket by editing the bucket configuration'},
+            '4.2.1': { 'summary' : 'For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign'},
+            '4.2.2': { 'summary' : 'For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign'},
+            '4.3.1': { 'summary' : 'For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign'},
 
 
-            '5.1': 'Create the new compartment under the root compartment',
-            '5.2': 'For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resorces'
-        }
+            '5.1': { 'summary' : 'Create the new compartment under the root compartment'},
+            '5.2': { 'summary' : 'For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resources'}
+            }
 
         # MAP Checks
         self.obp_foundations_checks = {
@@ -3546,7 +3546,7 @@ class CIS_Report:
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
-                    "Remediation" : self.cis_remediation[key]
+                    "Remediation" : self.cis_remediations[key]['summary']
                 }
                 # Add record to summary report for CSV output
                 summary_report.append(record)

@@ -3512,15 +3512,18 @@ class CIS_Report:
         summary_report = []
         for key, recommendation in self.cis_foundations_benchmark_1_2.items():
             if recommendation['Level'] <= level:
+                report_filename = "cis" + " "+ recommendation['section'] + "_" + recommendation['recommendation_#']
+                report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_","_") + ".csv"
                 record = {
-                    "Recommendation #": key,
+                    "Recommendation #": key, 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": ('Yes' if recommendation['Status'] else 'No'),
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
-                    "CCCS Guard Rail": recommendation['CCCS Guard Rail']
+                    "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
+                    "Filename" : report_filename if not(recommendation['Status']) else " "
                 }
                 # Add record to summary report for CSV output
                 summary_report.append(record)
@@ -3628,7 +3631,10 @@ class CIS_Report:
                 for row in result:
                     html_file.write("<tr>")
                     for row_key, row_value in row.items():
-                        html_file.write("<td>" + str(row_value) + "</td>\n")
+                        if row_key == "Filename":
+                            html_file.write('<td><a href="./' + str(row_value) + '">' + row_value + '</a></td>\n')
+                        else:
+                            html_file.write("<td>" + str(row_value) + "</td>\n")
                     #print(row)
                     html_file.write("</tr>")
                 
@@ -3639,7 +3645,7 @@ class CIS_Report:
             return file_path
            
         except Exception as e:
-            raise Exception("Error in print_to_csv_file: " + str(e.args))
+            raise Exception("Error in report_generate_html_report: " + str(e.args))
         
     ##########################################################################
     # Orchestrates analysis and report generation
@@ -4036,6 +4042,11 @@ class CIS_Report:
         self.__print_header("Finished in: " + str(end_datetime - self.start_datetime))
 
         return self.__report_directory
+
+    def get_obp_checks(self):
+        self.__obp_checks = True
+        self.generate_reports()
+        return self.obp_foundations_checks
 
     ##########################################################################
     # Print header centered

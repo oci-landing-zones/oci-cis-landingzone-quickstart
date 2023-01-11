@@ -214,11 +214,15 @@ resource "oci_streaming_stream" "this" {
 #--- 1. oci_log_analytics_namespace if not already onboarded
 #--- 2. oci_log_analytics_log_analytics_log_group
 #--------------------------------------------------------------
+data "oci_log_analytics_namespaces" "these" {
+  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
+  compartment_id = var.tenancy_id
+}
 resource "oci_log_analytics_namespace" "this" {
   provider     = oci
-  count        = lower(var.target_kind) == "logginganalytics" ? (var.logging_analytics_namespace == null ? 1 : 0) : 0
+  count        = lower(var.target_kind) == "logginganalytics" ? 1 : 0
   namespace    = data.oci_objectstorage_namespace.this.namespace
-  is_onboarded = true
+  is_onboarded = data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].is_onboarded ? false : true
   compartment_id = var.tenancy_id
 }
 
@@ -227,7 +231,7 @@ resource "oci_log_analytics_log_analytics_log_group" "sch_target" {
   count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
   compartment_id = var.compartment_id
   display_name   = var.target_log_group_name
-  namespace      = var.logging_analytics_namespace != null ? var.logging_analytics_namespace : oci_log_analytics_namespace.this[0].namespace
+  namespace      = data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].is_onboarded ? data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].namespace : oci_log_analytics_namespace.this[0].namespace
   description    = "CIS Landing Zone log group for Service Connector target (Logging Analytics)."
   defined_tags   = var.target_defined_tags
   freeform_tags  = var.target_freeform_tags

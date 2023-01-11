@@ -221,7 +221,7 @@ data "oci_log_analytics_namespaces" "these" {
 
 resource "oci_log_analytics_namespace" "this" {
   provider     = oci
-  count        = lower(var.target_kind) == "logginganalytics" ? (data.oci_log_analytics_namespaces.these.namespace_collection[0].items[0].is_onboarded ? 0 : 1) : 0
+  count        = lower(var.target_kind) == "logginganalytics" ? 1 : 0
   namespace    = data.oci_objectstorage_namespace.this.namespace
   is_onboarded = true
   compartment_id = var.compartment_id

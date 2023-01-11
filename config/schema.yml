@@ -745,7 +745,7 @@ variables:
     type: enum
     required: false
     title: "Service Connector Target Kind"
-    description: "Service Connector target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream in 'Existing Target Stream' and that stream is used. If no stream is provided, a new stream is created. In case of 'functions', you MUST provide the existing function in 'Existing Target Function'. In case of 'logginganalytics', a log group is created."
+    description: "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
     default: objectstorage
     visible: enable_service_connector
     enum:

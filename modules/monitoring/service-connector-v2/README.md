@@ -8,7 +8,7 @@ If cis\_level = 2 and var.target\_bucket\_kms\_key\_id is not provided, the modu
 If target kind is 'streaming, a Stream is either created or used, depending on what is provided in the target\_stream variable. If a name is provided,
 a stream is created. If an OCID is provided, the stream is used.
 If target\_kind is 'functions', a function OCID must be provided in target\_function\_id variable.
-If target\_kind is 'logginganalytics', a log group is created and named by target\_log\_group\_name variable.
+If target\_kind is 'logginganalytics', aa log group for Logging Analytics service is created, named by target\_log\_group\_name variable. Logging Analytics service is enabled if not already.
 The target resource is created in the compartment provided in compartment\_id variable.
 An IAM policy is created to allow the Service Connector Hub service to push data to the chosen target.
 

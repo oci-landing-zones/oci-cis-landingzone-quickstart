@@ -506,7 +506,7 @@ variable "activate_service_connector" {
 variable "service_connector_target_kind" {
   type        = string
   default     = "objectstorage"
-  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'loggingAnalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. In case of 'logginganalytics', a log group is created."
+  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
   validation {
     condition     = contains(["objectstorage", "streaming", "functions", "logginganalytics"], var.service_connector_target_kind)
     error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming, functions or logginganalytics."

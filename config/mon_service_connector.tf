@@ -38,6 +38,11 @@ locals {
   }] 
 }  
 
+data "oci_log_analytics_namespaces" "these" {
+  count = var.service_connector_target_kind == "logginganalytics" ? 1 : 0
+  compartment_id = var.tenancy_ocid
+}
+
 module "lz_service_connector" {
   source         = "../modules/monitoring/service-connector-v2"
   providers      = {
@@ -58,6 +63,8 @@ module "lz_service_connector" {
     
   target_kind           = var.service_connector_target_kind
   target_compartment_id = local.security_compartment_id
+
+  logging_analytics_namespace = length(data.oci_log_analytics_namespaces.these) > 0 ? data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].namespace : null
 
   target_bucket_name        = local.service_connector_target_bucket_name
   target_bucket_namespace   = data.oci_objectstorage_namespace.this.namespace

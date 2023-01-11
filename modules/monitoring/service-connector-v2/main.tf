@@ -224,7 +224,7 @@ resource "oci_log_analytics_namespace" "this" {
   count        = lower(var.target_kind) == "logginganalytics" ? 1 : 0
   namespace    = data.oci_objectstorage_namespace.this.namespace
   is_onboarded = true
-  compartment_id = var.compartment_id
+  compartment_id = var.tenancy_id
 }
 
 resource "oci_log_analytics_log_analytics_log_group" "sch_target" {

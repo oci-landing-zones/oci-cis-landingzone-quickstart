@@ -9,7 +9,7 @@
  * If target kind is 'streaming, a Stream is either created or used, depending on what is provided in the target_stream variable. If a name is provided,
  * a stream is created. If an OCID is provided, the stream is used.
  * If target_kind is 'functions', a function OCID must be provided in target_function_id variable.
- * If target_kind is 'logginganalytics', a log group is created and named by target_log_group_name variable.
+ * If target_kind is 'logginganalytics', aa log group for Logging Analytics service is created, named by target_log_group_name variable. Logging Analytics service is enabled if not already.
  * The target resource is created in the compartment provided in compartment_id variable.
  * An IAM policy is created to allow the Service Connector Hub service to push data to the chosen target. 
  */
@@ -218,6 +218,7 @@ data "oci_log_analytics_namespaces" "these" {
   count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
   compartment_id = var.tenancy_id
 }
+#-- This effectively enables Logging Analytics for the tenancy (or onboards the tenancy with Logging Analytics service).
 resource "oci_log_analytics_namespace" "this" {
   provider     = oci
   count        = lower(var.target_kind) == "logginganalytics" ? 1 : 0

@@ -145,6 +145,12 @@ variable "target_log_group_name" {
     default = "lz-service-connector-log-group"
 }
 
+variable "logging_analytics_namespace" {
+    description = "Namespace for Logging Analytics."
+    type = string
+    default = null
+}
+
 #---------------------------------------------------------------
 #--- Policy variables 
 #---------------------------------------------------------------

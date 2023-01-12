@@ -8,5 +8,5 @@ output "service_connector" {
 
 output "service_connector_target" {
   description = "Managed Service Connector target."
-  value       = length(oci_objectstorage_bucket.this) > 0 ? oci_objectstorage_bucket.this[0] : length(oci_streaming_stream.this) > 0 ? oci_streaming_stream.this[0] : length(oci_log_analytics_log_analytics_log_group.sch_target) > 0 ? oci_log_analytics_log_analytics_log_group.sch_target[0] : null
+  value       = length(oci_objectstorage_bucket.this) > 0 ? oci_objectstorage_bucket.this[0] : length(oci_streaming_stream.this) > 0 ? oci_streaming_stream.this[0] : null
 }

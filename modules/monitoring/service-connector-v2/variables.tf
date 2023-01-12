@@ -139,10 +139,10 @@ variable "target_function_id" {
     default = null
 }
 
-variable "target_log_group_name" {
-    description = "The target log group name. Used when target_kind = logginganalytics."
+variable "target_log_group_id" {
+    description = "The target log group ocid. Used when target_kind = logginganalytics."
     type = string
-    default = "lz-service-connector-log-group"
+    default = null
 }
 
 #---------------------------------------------------------------

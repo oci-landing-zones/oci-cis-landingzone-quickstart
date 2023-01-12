@@ -68,8 +68,9 @@ module "lz_service_connector" {
 
   target_function_id = var.existing_service_connector_target_function_id
 
-  target_log_group_name = local.service_connector_target_log_group_name
-
+  #target_log_group_name = local.service_connector_target_log_group_name
+  target_log_group_id = length(module.lz_logging_analytics) > 0 ? module.lz_logging_analytics[0].log_group.id : null
+  
   target_policy_name = local.service_connector_target_policy_name
 
   target_defined_tags  = local.target_defined_tags

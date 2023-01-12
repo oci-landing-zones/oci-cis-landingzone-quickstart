@@ -34,8 +34,6 @@ No modules.
 | Name | Type |
 |------|------|
 | [oci_identity_policy.service_connector](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/identity_policy) | resource |
-| [oci_log_analytics_log_analytics_log_group.sch_target](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/log_analytics_log_analytics_log_group) | resource |
-| [oci_log_analytics_namespace.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/log_analytics_namespace) | resource |
 | [oci_logging_log.bucket](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/logging_log) | resource |
 | [oci_logging_log_group.bucket](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/logging_log_group) | resource |
 | [oci_objectstorage_bucket.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/objectstorage_bucket) | resource |
@@ -43,7 +41,6 @@ No modules.
 | [oci_streaming_stream.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/streaming_stream) | resource |
 | [oci_functions_function.existing_function](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/functions_function) | data source |
 | [oci_identity_compartment.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
-| [oci_log_analytics_namespaces.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/log_analytics_namespaces) | data source |
 | [oci_objectstorage_namespace.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/objectstorage_namespace) | data source |
 | [oci_streaming_stream.existing_stream](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/streaming_stream) | data source |
 
@@ -68,7 +65,7 @@ No modules.
 | <a name="input_target_freeform_tags"></a> [target\_freeform\_tags](#input\_target\_freeform\_tags) | The Service Connector target freeform tags. | `map(string)` | `null` | no |
 | <a name="input_target_function_id"></a> [target\_function\_id](#input\_target\_function\_id) | The target function ocid. | `string` | `null` | no |
 | <a name="input_target_kind"></a> [target\_kind](#input\_target\_kind) | The target kind. | `string` | `"objectstorage"` | no |
-| <a name="input_target_log_group_name"></a> [target\_log\_group\_name](#input\_target\_log\_group\_name) | The target log group name. Used when target\_kind = logginganalytics. | `string` | `"lz-service-connector-log-group"` | no |
+| <a name="input_target_log_group_id"></a> [target\_log\_group\_id](#input\_target\_log\_group\_id) | The target log group ocid. Used when target\_kind = logginganalytics. | `string` | `null` | no |
 | <a name="input_target_object_name_prefix"></a> [target\_object\_name\_prefix](#input\_target\_object\_name\_prefix) | The target Object Storage object name prefix. | `string` | `"lz-sch"` | no |
 | <a name="input_target_object_store_batch_rollover_size_in_mbs"></a> [target\_object\_store\_batch\_rollover\_size\_in\_mbs](#input\_target\_object\_store\_batch\_rollover\_size\_in\_mbs) | The batch rollover size in megabytes. | `number` | `100` | no |
 | <a name="input_target_object_store_batch_rollover_time_in_ms"></a> [target\_object\_store\_batch\_rollover\_time\_in\_ms](#input\_target\_object\_store\_batch\_rollover\_time\_in\_ms) | The batch rollover time in milliseconds. | `number` | `420000` | no |

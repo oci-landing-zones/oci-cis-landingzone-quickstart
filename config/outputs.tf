@@ -60,3 +60,7 @@ output "cloud_guard_target" {
 output "service_connector_target" {
     value = local.display_outputs == true ? (length(module.lz_service_connector) > 0 ? module.lz_service_connector[0].service_connector_target : null) : null
 }    
+
+output "logging_analytics_log_group" {
+    value = local.display_outputs == true ? (length(module.lz_logging_analytics) > 0 ? module.lz_logging_analytics[0].log_group : null) : null
+}

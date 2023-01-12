@@ -91,7 +91,7 @@ locals {
       <<EOF
           allow any-user to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in compartment id ${var.compartment_id} where all {
           request.principal.type='serviceconnector',
-          target.loganalytics-log-group.id='${oci_log_analytics_log_analytics_log_group.sch_target[0].id}',
+          target.loganalytics-log-group.id='${var.target_log_group_id}',
           request.principal.compartment.id='${var.compartment_id}' }
       EOF
   ] : []
@@ -134,7 +134,7 @@ resource "oci_sch_service_connector" "this" {
     batch_rollover_time_in_ms  = lower(var.target_kind) == "objectstorage" ? var.target_object_store_batch_rollover_time_in_ms : null
     stream_id          = lower(var.target_kind) == "streaming" ? local.target_stream_id : null
     function_id        = lower(var.target_kind) == "functions" ? var.target_function_id : null
-    log_group_id       = lower(var.target_kind) == "logginganalytics" ?  oci_log_analytics_log_analytics_log_group.sch_target[0].id : null   
+    log_group_id       = lower(var.target_kind) == "logginganalytics" ?  var.target_log_group_id : null   
   }
   state  = var.activate ? "ACTIVE" : "INACTIVE"
 }
@@ -207,35 +207,6 @@ resource "oci_streaming_stream" "this" {
   defined_tags   = var.target_defined_tags
   freeform_tags  = var.target_freeform_tags
   retention_in_hours = var.target_stream_retention_in_hours
-}
-
-#--------------------------------------------------------------
-#--- SCH Logging Analytics target resources:
-#--- 1. oci_log_analytics_namespace if not already onboarded
-#--- 2. oci_log_analytics_log_analytics_log_group
-#--------------------------------------------------------------
-data "oci_log_analytics_namespaces" "these" {
-  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
-  compartment_id = var.tenancy_id
-}
-#-- This effectively enables Logging Analytics for the tenancy (or onboards the tenancy with Logging Analytics service).
-resource "oci_log_analytics_namespace" "this" {
-  provider     = oci
-  count        = lower(var.target_kind) == "logginganalytics" ? 1 : 0
-  namespace    = data.oci_objectstorage_namespace.this.namespace
-  is_onboarded = data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].is_onboarded ? false : true
-  compartment_id = var.tenancy_id
-}
-
-resource "oci_log_analytics_log_analytics_log_group" "sch_target" {
-  provider       = oci
-  count          = lower(var.target_kind) == "logginganalytics" ? 1 : 0
-  compartment_id = var.compartment_id
-  display_name   = var.target_log_group_name
-  namespace      = data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].is_onboarded ? data.oci_log_analytics_namespaces.these[0].namespace_collection[0].items[0].namespace : oci_log_analytics_namespace.this[0].namespace
-  description    = "CIS Landing Zone log group for Service Connector target (Logging Analytics)."
-  defined_tags   = var.target_defined_tags
-  freeform_tags  = var.target_freeform_tags
 }
 
 #--------------------------------------------------

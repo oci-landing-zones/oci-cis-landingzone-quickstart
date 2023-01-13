@@ -1,3 +1,11 @@
+#  January XX, 2023 Release Notes - 2.5.2
+1. [CIS Level Setting Updates](#2-5-2-cis-level)
+
+## <a name="2-5-2-cis-level">CIS Level Setting Updates</a>
+Following updates were made regarding the CIS Level setting (*cis_level* variable):
+- Setting *cis_level* variable to "2" is enough for OCI Vault creation. Previously, the OCI Vault creation would also require a bucket and no provided existing vault.
+- Write logs for buckets are only created if *cis_level* variable is set to "2". Previously, bucket write logs were not impacted by CIS Level setting.
+
 #  December 16, 2022 Release Notes - 2.5.1
 1. [CIS Compliance Script fixes](#2-5-1-script-update)
 1. [Improved Terraform Windows Support](#2-5-1-terraform-windows)

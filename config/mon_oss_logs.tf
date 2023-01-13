@@ -5,7 +5,7 @@ locals {
   all_oss_defined_tags = {}
   all_oss_freeform_tags = {}
     
-  oss_bucket_logs = length(module.lz_buckets) > 0 ? {for bkt in module.lz_buckets[0].buckets : bkt.name => {
+  oss_bucket_logs = length(module.lz_buckets) > 0 && var.cis_level == "2" ? {for bkt in module.lz_buckets[0].buckets : bkt.name => {
     log_display_name              = "${bkt.name}-object-storage-log",
     log_type                      = "SERVICE",
     log_config_source_resource    = bkt.name,

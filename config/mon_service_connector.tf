@@ -80,7 +80,7 @@ resource "null_resource" "wait_on_service_connector_keys_policy" {
    depends_on = [ module.lz_service_connector_keys ]
    provisioner "local-exec" {
      interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
+     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs * 2}" : "sleep ${local.delay_in_secs * 2}"
    }
 }
 

@@ -57,6 +57,21 @@ class CIS_Report:
     __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
     __oci_fss_uri = __oci_cloud_url + "/fss/file-systems/"
     __oci_networking_uri = __oci_cloud_url +"/networking/vcns/"
+    __oci_adb_uri = __oci_cloud_url +"/db/adb/"
+    __oci_oicinstance_uri = __oci_cloud_url +"/oic/integration-instances/"
+    __oci_oacinstance_uri = __oci_cloud_url +"/analytics/instances/"
+    __oci_compartment_uri = __oci_cloud_url +"/identity/compartments/"
+    __oci_drg_uri = __oci_cloud_url +"/networking/drgs/"
+    __oci_cpe_uri = __oci_cloud_url +"/networking/cpes/"
+    __oci_ipsec_uri = __oci_cloud_url +"/networking/vpn-connections/"
+    __oci_events_uri = __oci_cloud_url +"/events/rules/"
+    __oci_loggroup_uri = __oci_cloud_url +"/logging/log-groups/"
+    __oci_vault_uri = __oci_cloud_url +"/security/kms/vaults/"
+    __oci_budget_uri = __oci_cloud_url +"/usage/budgets/"
+    __oci_cgtarget_uri = __oci_cloud_url +"/cloud-guard/targets/"
+    __oci_onssub_uri = __oci_cloud_url +"/notification/subscriptions/"
+    __oci_serviceconnector_uri = __oci_cloud_url +"/connector-hub/service-connectors/"
+    __oci_fastconnect_uri = __oci_cloud_url +"/networking/fast-connect/virtual-circuit/"
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
@@ -835,8 +850,9 @@ class CIS_Report:
             ).data
             # Need to convert for raw output
             for compartment in self.__compartments:
+                deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
-                    "id" : compartment.id,
+                    "id" : self.__generate_csv_hyperlink(deep_link, compartment.id),
                     "name" : compartment.name,
                     "compartment_id": compartment.compartment_id,
                     "defined_tags": compartment.defined_tags,
@@ -1060,7 +1076,7 @@ class CIS_Report:
                     for policy in policies_data:
                         deep_link = self.__oci_policies_uri + policy.id
                         record = {
-                            "id": self.__generate_csv_hyperlink(deep_link,policy.id),
+                            "id": self.__generate_csv_hyperlink(deep_link, policy.id),
                             "name": policy.name,
                             "compartment_id": policy.compartment_id,
                             "description": policy.description,
@@ -1086,7 +1102,7 @@ class CIS_Report:
                 ).data
             for dynamic_group in dynamic_groups_data:
                 try:
-                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id + "?region=" + region_key
                     record = {
                         "id": self.__generate_csv_hyperlink(deep_link, dynamic_group.id),
                         "name": dynamic_group.name,
@@ -1652,8 +1668,9 @@ class CIS_Report:
                         # Looping through DRG Attachments in a compartment
                         for drg_attachment in drg_attachment_data:
                             try:
+                                deep_link = self.__oci_drg_uri + drg.id + "/drg-attachment/" + drg_attachment.id + "?region=" + region_key
                                 record = {
-                                "id": drg_attachment.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, drg_attachment.id),
                                 "display_name" : drg_attachment.display_name,
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
@@ -1673,7 +1690,7 @@ class CIS_Report:
                             }
                             except:
                                 record = {
-                                "id": drg_attachment.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, drg_attachment.id),
                                 "display_name" : drg_attachment.display_name,
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
@@ -1723,8 +1740,9 @@ class CIS_Report:
                         # Looping through DRGs in a compartment
                         for drg in drg_data:
                             try:
+                                deep_link = self.__oci_drg_uri + drg.id + "?region=" + region_key
                                 record = {
-                                    "id": drg.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, drg.id),
                                     "display_name" : drg.display_name,
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
@@ -1742,7 +1760,7 @@ class CIS_Report:
                                 }
                             except:
                                 record = {
-                                    "id": drg.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, drg.id),
                                     "display_name" : drg.display_name,
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : "",
@@ -1790,8 +1808,9 @@ class CIS_Report:
                         # Looping through fastconnects in a compartment
                         try:
                             for fastconnect in fastconnect_data:
+                                deep_link = self.__oci_fastconnect_uri + fastconnect.id + "?region=" + region_key
                                 record = {
-                                    "id": fastconnect.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, fastconnect.id),
                                     "display_name" : fastconnect.display_name,
                                     "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
                                     "bgp_admin_state" : fastconnect.bgp_admin_state,
@@ -1899,8 +1918,9 @@ class CIS_Report:
                         # Looping through CPEs in a compartment
                         try:
                             for cpe in cpe_data:
+                                deep_link = self.__oci_cpe_uri + cpe.id+ "?region=" + region_key
                                 record = {
-                                    "id": cpe.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, cpe.id),
                                     "display_name" : cpe.display_name,
                                     "cpe_device_shape_id" : cpe.cpe_device_shape_id,
                                     "ip_address" : cpe.ip_address,
@@ -1953,8 +1973,9 @@ class CIS_Report:
                         
                         for ip_sec in ip_sec_connections_data:
                             try:
+                                deep_link = self.__oci_ipsec_uri + ip_sec.id + "?region=" + region_key
                                 record = {
-                                    "id": ip_sec.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, ip_sec.id),
                                     "display_name" : ip_sec.display_name,
                                     "cpe_id" : ip_sec.cpe_id,
                                     "drg_id" : ip_sec.drg_id,
@@ -1977,8 +1998,9 @@ class CIS_Report:
                                         ipsc_id=ip_sec.id,
                                     ).data
                                     for tunnel in ip_sec_tunnels_data:
+                                        deep_link = self.__oci_ipsec_uri + ip_sec.id + "/tunnels/" + tunnel.id + "?region=" + region_key
                                         tunnel_record = {
-                                                "id" : tunnel.id,
+                                                "id" : self.__generate_csv_hyperlink(deep_link, tunnel.id),
                                                 "cpe_ip" : tunnel.cpe_ip,
                                                 "display_name" : tunnel.display_name,
                                                 "vpn_ip" : tunnel.vpn_ip,
@@ -2038,10 +2060,11 @@ class CIS_Report:
                             ).data
                         for adb in autonomous_databases:
                             try: 
+                                deep_link = self.__oci_adb_uri + adb.id + "?region=" + region_key
                                 if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
                                     adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
                                     record = {
-                                                "id": adb.id,
+                                                "id": self.__generate_csv_hyperlink(url=deep_link, id=adb.id),
                                                 "display_name": adb.display_name,
                                                 "apex_details": adb.apex_details,
                                                 "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
@@ -2124,7 +2147,7 @@ class CIS_Report:
                                             }
                                 else:
                                     record = {
-                                                "id": adb.id,
+                                                "id": self.__generate_csv_hyperlink(url=deep_link, id=adb.id),
                                                 "display_name": adb.display_name,
                                                 "apex_details": "",
                                                 "are_primary_whitelisted_ips_used": "",
@@ -2311,8 +2334,9 @@ class CIS_Report:
                         for oic_instance in oic_instances:
                             if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
                                 try:
+                                    deep_link = self.__oci_oicinstance_uri+ oic_instance.id + "?region=" + region_key
                                     record = {
-                                        "id": oic_instance.id,
+                                        "id": self.__generate_csv_hyperlink(url=deep_link, id=oic_instance.id),
                                         "display_name": oic_instance.display_name,
                                         "network_endpoint_details": oic_instance.network_endpoint_details,
                                         "compartment_id": oic_instance.compartment_id,
@@ -2373,9 +2397,10 @@ class CIS_Report:
                             compartment_id=compartment.id
                         ).data
                         for oac_instance in oac_instances:
-                            try:  
+                            try:
+                                deep_link = self.__oci_oacinstance_uri+ oac_instance.id + "?region=" + region_key  
                                 record = {
-                                    "id": oac_instance.id,
+                                    "id": self.__generate_csv_hyperlink(url=deep_link, id=oac_instance.id),
                                     "name": oac_instance.name,
                                     "description": oac_instance.description,
                                     "network_endpoint_details": oac_instance.network_endpoint_details,
@@ -2435,12 +2460,13 @@ class CIS_Report:
                         ).data
 
                         for event_rule in events_rules_data:
+                            deep_link = self.__oci_events_uri + event_rule.id + "?region=" + region_key
                             record = {
                                 "compartment_id": event_rule.compartment_id,
                                 "condition": event_rule.condition,
                                 "description": event_rule.description,
                                 "display_name": event_rule.display_name,
-                                "id": event_rule.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, event_rule.id),
                                 "is_enabled": event_rule.is_enabled,
                                 "lifecycle_state": event_rule.lifecycle_state,
                                 "time_created": event_rule.time_created.strftime(self.__iso_time_format),
@@ -2471,11 +2497,12 @@ class CIS_Report:
                         ).data
                         # Looping through log groups to get logs
                         for log_group in log_groups:
+                            deep_link = self.__oci_loggroup_uri + log_group.id + "?region=" + region_key
                             record = {
                                 "compartment_id": log_group.compartment_id,
                                 "description": log_group.description,
                                 "display_name": log_group.display_name,
-                                "id": log_group.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, log_group.id),
                                 "time_created": log_group.time_created.strftime(self.__iso_time_format),
                                 "time_last_modified": str(log_group.time_last_modified),
                                 "defined_tags" : log_group.defined_tags,
@@ -2489,10 +2516,11 @@ class CIS_Report:
                                 log_group_id=log_group.id
                             ).data
                             for log in logs:
+                                deep_link = self.__oci_loggroup_uri + log_group.id + "/logs/" + log.id + "?region=" + region_key
                                 log_record = {
                                     "compartment_id": log.compartment_id,
                                     "display_name": log.display_name,
-                                    "id": log.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, log.id),
                                     "is_enabled": log.is_enabled,
                                     "lifecycle_state": log.lifecycle_state,
                                     "log_group_id": log.log_group_id,
@@ -2564,11 +2592,12 @@ class CIS_Report:
                         ).data
                         # Get all Vaults in a compartment
                         for vlt in vaults_data:
+                            deep_link = self.__oci_vault_uri + vlt.id + "?region=" + region_key
                             vault_record = {
                                 "compartment_id": vlt.compartment_id,
                                 "crypto_endpoint": vlt.crypto_endpoint,
                                 "display_name": vlt.display_name,
-                                "id": vlt.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, vlt.id),
                                 "lifecycle_state": vlt.lifecycle_state,
                                 "management_endpoint": vlt.management_endpoint,
                                 "time_created": vlt.time_created.strftime(self.__iso_time_format),
@@ -2589,10 +2618,11 @@ class CIS_Report:
                                     ).data
                                     # Iterrating through Keys in Vaults
                                     for key in keys:
+                                        deep_link = self.__oci_vault_uri + vlt.id + "/vaults/" + key.id + "?region=" + region_key
                                         key_record = {
                                             "compartment_id": key.compartment_id,
                                             "display_name": key.display_name,
-                                            "id": key.id,
+                                            "id": self.__generate_csv_hyperlink(deep_link, key.id),
                                             "lifecycle_state": key.lifecycle_state,
                                             "time_created": key.time_created.strftime(self.__iso_time_format),
                                         }
@@ -2640,7 +2670,7 @@ class CIS_Report:
                 except Exception as e:
                     print("\tFailed to get Budget Data for Budget Name: " + budget.display_name + " id: " + budget.id)
                     alerts_data = []
-                
+                deep_link = self.__oci_budget_uri + budget.id + "?region=" + region_key
                 record = {
                     "actual_spend" : budget.actual_spend,
                     "alert_rule_count" : budget.alert_rule_count,
@@ -2649,7 +2679,7 @@ class CIS_Report:
                     "compartment_id": budget.compartment_id,
                     "description" : budget.description,
                     "display_name": budget.display_name,
-                    "id": budget.id,
+                    "id": self.__generate_csv_hyperlink(deep_link, budget.id),
                     "lifecycle_state" : budget.lifecycle_state,
                     "processing_period_type" : budget.processing_period_type,
                     "reset_period" : budget.reset_period,
@@ -2728,13 +2758,13 @@ class CIS_Report:
                                 target_id=target.id).data
                             except Exception as e:
                                 target_data = None
-                            
+                            deep_link = self.__oci_cgtarget_uri + target.id + "?region=" + region_key
                             record = {
                                 "compartment_id": target.compartment_id,
                                 "defined_tags": target.defined_tags,
                                 "display_name": target.display_name,
                                 "freeform_tags": target.freeform_tags,
-                                "id": target.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, target.id),
                                 "lifecycle_state": target.lifecycle_state,
                                 "lifecyle_details": target.lifecyle_details,
                                 "system_tags": target.system_tags,
@@ -2794,8 +2824,9 @@ class CIS_Report:
                             compartment_id = compartment.id
                         ).data
                         for sub in subs_data:
+                            deep_link = self.__oci_onssub_uri + sub.id + "?region=" + region_key
                             record = {
-                                "id": sub.id,
+                                "id": self.__generate_csv_hyperlink(deep_link, sub.id),
                                 "compartment_id": sub.compartment_id,
                                 "created_time": sub.created_time, # this is an INT
                                 "endpoint": sub.endpoint,
@@ -2870,8 +2901,9 @@ class CIS_Report:
                                 service_connector = region_values['sch_client'].get_service_connector(
                                     service_connector_id=connector.id
                                     ).data
+                                deep_link = self.__oci_serviceconnector_uri + service_connector.id + "/logging" + "?region=" + region_key
                                 record = {
-                                    "id": service_connector.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, service_connector.id),
                                     "display_name": service_connector.display_name,
                                     "description": service_connector.description,
                                     "freeform_tags": service_connector.freeform_tags,

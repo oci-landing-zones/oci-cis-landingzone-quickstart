@@ -148,260 +148,290 @@ class CIS_Report:
             '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]}
         }
         # Remediation Report
-        self.cis_remediations = {
-            '1.1': { 'summary' : 'Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.',
+        self.cis_report_data = {
+            '1.1': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : ''},
-
-            
-            '1.2': { 'summary' : 'Remove any policy statement that allows any group other than Administrators or any service access to manage all resources in the tenancy.',
-                    'Description' : '''There is a built-in OCI IAM policy enabling the Administrators group to perform any action within a tenancy.
-                        Administrators should not allow any-other-group full access to the tenancy
-                        Permission to manage all resources in a tenancy should be limited to a small number of users in the Administrators group for break-glass situations and to set up users/groups/policies when a tenancy is created.''',
+                    'Rationale' : '',
+                    'Remediation' : 'Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.',},
+            '1.2': { 
+                    'Description' : '''There is a built-in OCI IAM policy enabling the Administrators group to perform any action within a tenancy. Administrators should not allow any-other-group full access to the tenancy Permission to manage all resources in a tenancy should be limited to a small number of users in the Administrators group for break-glass situations and to set up users/groups/policies when a tenancy is created.''',
+                      'Observation' : 'custom IAM policy that grants tenancy administrative access.',
                       'Recommendation' : '''Evaluate if tenancy-wide administrative access is needed for the identified policy and update it to be more restrictive.''',
                       'Rationale' : '''No group other than Administrators in a tenancy should need access to all resources in a tenancy, as this violates the enforcement of the least privilege principle.''',
-                      'Observation' : 'custom IAM policy that grants tenancy administrative access.'},
-            '1.3': { 'summary' : 'Verify the results to ensure that the policy statements that grant access to use or manage users or groups in the tenancy have a condition that excludes access to Administrators group or to users in the Administrators group.',
-                    'Description' : '''Tenancy administrators can create more users, groups, and policies to provide other service administrators access to OCI resources.
-                        For example, an IAM administrator will need to have access to manage resources like compartments, users, groups, dynamic-groups, policies, identity-providers, tenancy tag-namespaces, tag-definitions in the tenancy.
-                        The policy that gives IAM Administrators or any other group full access to 'groups' resources should not allow access to the tenancy 'Administrators' group. 
-                        ''',
-                    'Observation' : ' custom IAM policy that grants tenancy administrative access.', 
+                      'Remediation' : 'Remove any policy statement that allows any group other than Administrators or any service access to manage all resources in the tenancy.',},
+            '1.3': { 
+                    'Description' : '''Tenancy administrators can create more users, groups, and policies to provide other service administrators access to OCI resources. For example, an IAM administrator will need to have access to manage resources like compartments, users, groups, dynamic-groups, policies, identity-providers, tenancy tag-namespaces, tag-definitions in the tenancy. The policy that gives IAM Administrators or any other group full access to 'groups' resources should not allow access to the tenancy 'Administrators' group.''',
+                    'Observation' : 'custom IAM policy that grants tenancy administrative access.', 
                     'Recommendation' : 'Evaluate if tenancy-wide administrative access is needed for the identified policy and update it to be more restrictive.',
-                    'Rationale' : 'No group other than Administrators in a tenancy should need access to all resources in a tenancy, as this violates the enforcement of the least privilege principle.'},
-            '1.4': { 'summary' : 'Update the password policy such as minimum length to 14, password must contain expected special characters and numeric characters.',
+                    'Rationale' : 'No group other than Administrators in a tenancy should need access to all resources in a tenancy, as this violates the enforcement of the least privilege principle.',
+                    'Remediation' : 'Verify the results to ensure that the policy statements that grant access to use or manage users or groups in the tenancy have a condition that excludes access to Administrators group or to users in the Administrators group.',},
+            '1.4': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '1.5': { 'summary' : 'Update the password policy by setting number of days configured in Expires after to 365',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Update the password policy such as minimum length to 14, password must contain expected special characters and numeric characters.',},
+            '1.5': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '1.6': { 'summary' : 'Update the number of remembered passwords in Previous passwords remembered setting to 24 in the password policy',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Update the password policy by setting number of days configured in Expires after to 365',},
+            '1.6': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '1.7': { 'summary' : 'Each user must enable MFA for themselves using a device they will have access to every time they sign in. An administrator cannot enable MFA for another user but can enforce MFA by identifying the list of non-complaint users, notifying them or disabling access by resetting password for non-complaint accounts',
-                    'Description' : '''Multi-factor authentication is a method of authentication that requires the use of more than one factor to verify a user’s identity. 
-                                        With MFA enabled in the IAM service, when a user signs in to Oracle Cloud Infrastructure, they are prompted for their user name and password, which is the first factor (something that they know). The user is then prompted to provide a second verification code from a registered MFA device, which is the second factor (something that they have). The two factors work together, requiring an extra layer of security to verify the user’s identity and complete the sign-in process. 
-                                        OCI IAM supports two-factor authentication using a password (first factor) and a device that can generate a time-based one-time password (TOTP) (second factor). ''',
-                    'Observation' : ' users with Password access but not MFA.',
-                    'Recommendation': '''Evaluate if local users are required.
-                                        For Break Glass accounts ensure MFA is in place.''',
-                    'Rationale' : 'Multi factor authentication adds an extra layer of security during the login process and makes it harder for unauthorized users to gain access to OCI resources.'},
-            '1.8': { 'summary' : 'Delete any API Keys with a date of 90 days or older under the Created column of the API Key table',
-                    'Description' : '''API keys are used by administrators, developers, services and scripts for accessing OCI APIs directly or via SDKs/OCI CLI to search, create, update or delete OCI resources.
-                                    The API key is an RSA key pair. The private key is used for signing the API requests and the public key is associated with a local or synchronized user's profile.''',
-                    'Observation' : ' user(s) with APIs that have not been rotated with 90 days.',
-                    'Recommendation': '''Evaluate if APIs Keys are still used/required and rotate API Keys
-                                        It is important to secure and rotate an API key every 90 days or less as it provides the same level of access that a user it is associated with has. ''',
-                    'Rationale' : '''In addition to a security engineering best practice, this may be a compliance requirement. For example, PCI-DSS Section 3.6.4 states, "Verify that key-management procedures include a defined cryptoperiod for each key type in use and define a process for key changes at the end of the defined crypto period(s)."'''},
-            '1.9': { 'summary' : 'Delete any Access Keys with a date of 90 days or older under the Created column of the Customer Secret Keys',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Update the number of remembered passwords in Previous passwords remembered setting to 24 in the password policy',},
+            '1.7': { 
+                    'Description' : '''Multi-factor authentication is a method of authentication that requires the use of more than one factor to verify a user’s identity. With MFA enabled in the IAM service, when a user signs in to Oracle Cloud Infrastructure, they are prompted for their user name and password, which is the first factor (something that they know). The user is then prompted to provide a second verification code from a registered MFA device, which is the second factor (something that they have). The two factors work together, requiring an extra layer of security to verify the user’s identity and complete the sign-in process.  OCI IAM supports two-factor authentication using a password (first factor) and a device that can generate a time-based one-time password (TOTP) (second factor). ''',
+                    'Observation' : 'users with Password access but not MFA.',
+                    'Recommendation': '''Evaluate if local users are required. For Break Glass accounts ensure MFA is in place.''',
+                    'Rationale' : 'Multi factor authentication adds an extra layer of security during the login process and makes it harder for unauthorized users to gain access to OCI resources.',
+                    'Remediation' : 'Each user must enable MFA for themselves using a device they will have access to every time they sign in. An administrator cannot enable MFA for another user but can enforce MFA by identifying the list of non-complaint users, notifying them or disabling access by resetting password for non-complaint accounts',},
+            '1.8': { 
+                    'Description' : '''API keys are used by administrators, developers, services and scripts for accessing OCI APIs directly or via SDKs/OCI CLI to search, create, update or delete OCI resources. The API key is an RSA key pair. The private key is used for signing the API requests and the public key is associated with a local or synchronized user's profile.''',
+                    'Observation' : 'user(s) with APIs that have not been rotated with 90 days.',
+                    'Recommendation': '''Evaluate if APIs Keys are still used/required and rotate API Keys It is important to secure and rotate an API key every 90 days or less as it provides the same level of access that a user it is associated with has. ''',
+                    'Rationale' : '''In addition to a security engineering best practice, this may be a compliance requirement. For example, PCI-DSS Section 3.6.4 states, "Verify that key-management procedures include a defined cryptoperiod for each key type in use and define a process for key changes at the end of the defined crypto period(s)."''',
+                    'Remediation' : 'Delete any API Keys with a date of 90 days or older under the Created column of the API Key table',},
+            '1.9': { 
                     'Description' : '''Object Storage provides an API to enable interoperability with Amazon S3. To use this Amazon S3 Compatibility API, you need to generate the signing key required to authenticate with Amazon S3. This special signing key is an Access Key/Secret Key pair. Oracle provides the Access Key that is associated with your Console user login. You or your administrator generates the Customer Secret key to pair with the Access Key. ''',
-                    'Observation' : ' users with Customer Secret Keys that have not been rotated with 90 days.',
+                    'Observation' : 'users with Customer Secret Keys that have not been rotated with 90 days.',
                     'Recommendation': 'Evaluate if Customer Secret Keys are still used/required and rotate the Keys accordingly.',
-                    'Rationale' : 'It is important to secure and rotate customer secret keys every 90 days or less as it provides the same level of object storage access that a user is associated with has.'},
-            '1.10': { 'summary' : 'Delete any auth token with a date of 90 days or older under the Created column of the Auth Tokens',
+                    'Rationale' : 'It is important to secure and rotate customer secret keys every 90 days or less as it provides the same level of object storage access that a user is associated with has.',
+                    'Remediation' : 'Delete any Access Keys with a date of 90 days or older under the Created column of the Customer Secret Keys',},
+            '1.10': { 
                     'Description' : '''Auth tokens are authentication tokens generated by Oracle. You use auth tokens to authenticate with APIs that do not support the Oracle Cloud Infrastructure signature-based authentication. If the service requires an auth token, the service-specific documentation instructs you to generate one and how to use it.''',
-                    'Observation' : ' user(s) with auth tokens that have not been rotated in 90 days.',
+                    'Observation' : 'user(s) with auth tokens that have not been rotated in 90 days.',
                     'Recommendation': 'Evaluate if Auth Tokens are still used/required and rotate Auth tokens.',
-                    'Rationale' : 'It is important to secure and rotate an auth token every 90 days or less as it provides the same level of access to APIs that do not support the OCI signature-based authentication as the user associated to it.'},
-            '1.11': { 'summary' : 'For each tenancy administrator user who has an API key,select API Keys from the menu and delete any associated keys from the API Keys table',
+                    'Rationale' : 'It is important to secure and rotate an auth token every 90 days or less as it provides the same level of access to APIs that do not support the OCI signature-based authentication as the user associated to it.',
+                    'Remediation' : 'Delete any auth token with a date of 90 days or older under the Created column of the Auth Tokens',},
+            '1.11': {
                     'Description' : '''Tenancy administrator users have full access to the organization's OCI tenancy. API keys associated with user accounts are used for invoking the OCI APIs via custom programs or clients like CLI/SDKs. The clients are typically used for performing day-to-day operations and should never require full tenancy access. Service-level administrative users with API keys should be used instead.''',
-                    'Observation' : ' users with Administrator access and API Keys.',
+                    'Observation' : 'users with Administrator access and API Keys.',
                     'Recommendation': 'Evaluate if a user with API Keys requires Administrator access and use a least privilege approach.',
-                    'Rationale' : 'For performing day-to-day operations tenancy administrator access is not needed. Service-level administrative users with API keys should be used to apply privileged security principle.'},
-            '1.12': { 'summary' : 'Update the current email address in the email text box on exch non compliant user.',
-                    'Description' : '''All OCI IAM local user accounts have an email address field associated with the account. It is recommended to specify an email address that is valid and current.
-                                If you have an email address in your user profile, you can use the Forgot Password link on the sign on page to have a temporary password sent to you.''',
-                    'Observation' : ' without an email.',
+                    'Rationale' : 'For performing day-to-day operations tenancy administrator access is not needed. Service-level administrative users with API keys should be used to apply privileged security principle.',
+                     'Remediation' : 'For each tenancy administrator user who has an API key,select API Keys from the menu and delete any associated keys from the API Keys table',},
+            '1.12': { 
+                    'Description' : '''All OCI IAM local user accounts have an email address field associated with the account. It is recommended to specify an email address that is valid and current. If you have an email address in your user profile, you can use the Forgot Password link on the sign on page to have a temporary password sent to you.''',
+                    'Observation' : 'without an email.',
                     'Recommendation': 'Add emails to users to allow them to use the “Forgot Password” feature and uniquely identify the user. – For service accounts it could be a mail alias.',
-                    'Rationale' : 'Having a valid and current email address associated with an OCI IAM local user account allows you to tie the account to identity in your organization. It also allows that user to reset their password if it is forgotten or lost.'},
-            '1.13': { 'summary' : 'Create Dynamic group and Enter Matching Rules to that includes the instances accessing your OCI resources. Refer:"https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingdynamicgroups.htm"',
+                    'Rationale' : 'Having a valid and current email address associated with an OCI IAM local user account allows you to tie the account to identity in your organization. It also allows that user to reset their password if it is forgotten or lost.',
+                    'Remediation' : 'Update the current email address in the email text box on exch non compliant user.',},
+            '1.13': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '1.14': { 'summary' : 'Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create Dynamic group and Enter Matching Rules to that includes the instances accessing your OCI resources. Refer:"https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingdynamicgroups.htm"',},
+            '1.14': { 
                     'Description' : '''To apply the separation of duties security principle, one can restrict service-level administrators from being able to delete resources they are managing. It means service-level administrators can only manage resources of a specific service but not delete resources for that specific service.''',
-                    'Observation' : ' IAM Policies that give service administrator the ability to delete service resources.',
+                    'Observation' : 'IAM Policies that give service administrator the ability to delete service resources.',
                     'Recommendation': 'To apply a separation of duties security principle, it is recommended to restrict service-level administrators from being able to delete resources they are managing.',
-                    'Rationale' : 'Creating service-level administrators without the ability to delete the resource they are managing helps in tightly controlling access to Oracle Cloud Infrastructure (OCI) services by implementing the separation of duties security principle.'},
-
-            '2.1': { 'summary' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',
+                    'Rationale' : 'Creating service-level administrators without the ability to delete the resource they are managing helps in tightly controlling access to Oracle Cloud Infrastructure (OCI) services by implementing the separation of duties security principle.',
+                    'Remediation' : 'Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service',},
+            '2.1': { 
                     'Description' : '''Security lists provide stateful or stateless filtering of ingress/egress network traffic to OCI resources on a subnet level. It is recommended that no security group allows unrestricted ingress access to port 22.''',
-                    'Observation' : ' Security lists that allow internet access to port 22. (Note this does not necessarily mean external traffic can reach a compute instance).',
+                    'Observation' : 'Security lists that allow internet access to port 22. (Note this does not necessarily mean external traffic can reach a compute instance).',
                     'Recommendation': 'Review the security lists. If they are not used(attached to a subnet) they should be deleted if possible or empty. For attached security lists it is recommended to restrict the CIDR block to only allow access to Port 22 from known networks. ',
-                    'Rationale' : "Removing unfettered connectivity to remote console services, such as Secure Shell (SSH), reduces a server's exposure to risk."},
-            '2.2': { 'summary' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',
+                    'Rationale' : "Removing unfettered connectivity to remote console services, such as Secure Shell (SSH), reduces a server's exposure to risk.",
+                    'Remediation' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',},
+            '2.2': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '2.3': { 'summary' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate',},
+            '2.3': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '2.4': { 'summary' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',},
+            '2.4': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '2.5': { 'summary' : 'Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Using the details returned from the audit procedure either Remove the security rules or Update the security rules',},
+            '2.5': { 
                     'Description' : '''A default security list is created when a Virtual Cloud Network (VCN) is created. Security lists provide stateful filtering of ingress and egress network traffic to OCI resources. It is recommended no security list allows unrestricted ingress access to Secure Shell (SSH) via port 22.''',
-                    'Observation' : ' Default Security lists that allow more traffic then ICMP.',
+                    'Observation' : 'Default Security lists that allow more traffic then ICMP.',
                     'Recommendation': 'Create specific custom security lists with workload specific rules and attach to subnets.',
-                    'Rationale' : "Removing unfettered connectivity to remote console services, such as SSH on port 22, reduces a server's exposure to unauthorized access."},
-            '2.6': { 'summary' : 'For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive',
+                    'Rationale' : "Removing unfettered connectivity to remote console services, such as SSH on port 22, reduces a server's exposure to unauthorized access.",
+                    'Remediation' : 'Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22',},
+            '2.6': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '2.7': { 'summary' : 'For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive',},
+            '2.7': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '2.8': { 'summary' : 'For each ADB-S database in the returned results, select the ADB-S database name edit the Access Control Rules by clicking +Another Rule and add rules as required',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required',},
+            '2.8': { 
                     'Description' : '''Oracle Autonomous Database Shared (ADB-S) automates database tuning, security, backups, updates, and other routine management tasks traditionally performed by DBAs. ADB-S provide ingress filtering of network traffic or can be deployed within an existing Virtual Cloud Network (VCN). It is recommended that all new ADB-S databases be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing ADB-S databases.''',
-                    'Observation' : ' ADB-S Instances that allow unfiltered public ingress traffic (Authn & Authz is still required).',
+                    'Observation' : 'ADB-S Instances that allow unfiltered public ingress traffic (Authn & Authz is still required).',
                     'Recommendation': 'It is recommended that all new ADB-S databases be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing ADB-S databases.',
-                    'Rationale' : 'Restricting connectivity to ADB-S Databases reduces an ADB-S database’s exposure to risk.'},
+                    'Rationale' : 'Restricting connectivity to ADB-S Databases reduces an ADB-S database’s exposure to risk.',
+                    'Remediation' : 'For each ADB-S database in the returned results, select the ADB-S database name edit the Access Control Rules by clicking +Another Rule and add rules as required',},
+            '3.1': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365',},
+            '3.2': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of "${iam.principal.names}" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type',},
+            '3.3': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create a Topic in the notifications service under the appropriate compartment and add the subscriptions with current email address and correct protocol',},
+            '3.4': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',},
+            '3.5': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced',},
+            '3.6': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',},
+            '3.7': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',},
+            '3.8': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update',},
+            '3.9': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update',},
+            '3.10': {
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                     'Remediation' : 'Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update',},
+            '3.11': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update',},
+            '3.12': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update',},
+            '3.13': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment',},
+            '3.14': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services',},
+            '3.15': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations',},
+            '3.16': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. ',},
+            '3.17': { 
+                    'Description' : '''TBD''',
+                    'Observation' : 'TBD',
+                    'Recommendation': 'TBD',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'To the relevant bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.',},
 
-            '3.1': { 'summary' : 'Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365',
+            '4.1.1': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.2': { 'summary' : 'Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of "${iam.principal.names}" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Edit the visibility into "private" for each Bucket',},
+            '4.1.2': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.3': { 'summary' : 'Create a Topic in the notifications service under the appropriate compartment and add the subscriptions with current email address and correct protocol',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Assign Master encryption key to Encryption key in every Object storage under Bucket name by clicking assign and select vault',},
+            '4.1.3': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.4': { 'summary' : 'Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Enable  Versioning by clicking on every bucket by editing the bucket configuration',},
+            '4.2.1': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.5': { 'summary' : 'Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',},
+            '4.2.2': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.6': { 'summary' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',},
+            '4.3.1': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.7': { 'summary' : 'Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',},
+            '5.1': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.8': { 'summary' : 'Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update',
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'Create the new compartment under the root compartment'},
+            '5.2': { 
                     'Description' : '''TBD''',
                     'Observation' : 'TBD',
                     'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.9': { 'summary' : 'Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.10': { 'summary' : 'Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.11': { 'summary' : 'Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.12': { 'summary' : 'Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.13': { 'summary' : 'Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.14': { 'summary' : 'Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.15': { 'summary' : 'Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.16': { 'summary' : 'Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. ',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '3.17': { 'summary' : 'To the relevant bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-
-            '4.1.1': { 'summary' : 'Edit the visibility into "private" for each Bucket',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '4.1.2': { 'summary' : 'Assign Master encryption key to Encryption key in every Object storage under Bucket name by clicking assign and select vault',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '4.1.3': { 'summary' : 'Enable  Versioning by clicking on every bucket by editing the bucket configuration',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '4.2.1': { 'summary' : 'For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '4.2.2': { 'summary' : 'For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '4.3.1': { 'summary' : 'For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-
-
-            '5.1': { 'summary' : 'Create the new compartment under the root compartment',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
-            '5.2': { 'summary' : 'For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resources',
-                    'Description' : '''TBD''',
-                    'Observation' : 'TBD',
-                    'Recommendation': 'TBD',
-                    'Rationale' : 'TBD'},
+                    'Rationale' : 'TBD',
+                    'Remediation' : 'For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resources'},
             }
 
         # MAP Checks
@@ -3812,7 +3842,7 @@ class CIS_Report:
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
                     "Filename" : report_filename if not(recommendation['Status']) else " ",
-                    "Remediation" : self.cis_remediations[key]['summary']
+                    "Remediation" : self.cis_report_data[key]['Remediation']
                 }
                 # Add record to summary report for CSV output
                 summary_report.append(record)
@@ -3841,7 +3871,7 @@ class CIS_Report:
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
         
-        self.__report_generate_html_report(
+        self.__report_generate_html_summary_report(
             self.__report_directory, "cis", "html_summary_report", summary_report)
                         
         # Outputting to a bucket if I have one
@@ -3861,7 +3891,7 @@ class CIS_Report:
     ##########################################################################
     # Generates an HTML report
     ##########################################################################
-    def __report_generate_html_report(self, report_directory, header, file_subject, data):
+    def __report_generate_html_summary_report(self, report_directory, header, file_subject, data):
         try:
             # Creating report directory
             if not os.path.isdir(report_directory):
@@ -3917,16 +3947,40 @@ class CIS_Report:
                     html_file.write("<th>" + th + "</th>\n")
                 html_file.write('</tr>\n')
 
+                # Creating HTML Table of the summary report
+                html_appendix = []
                 for row in result:
+                    if row['Compliant'] == 'No':
+                        html_appendix.append(row['Recommendation #'].replace("'",""))
+                    
                     html_file.write("<tr>")
                     for row_key, row_value in row.items():
-                        if row_key == "Filename":
+                        if row_key == "Recommendation #":
+                            html_file.write('<td><a href="#' + str(row_value).replace("'","") + '">' + row_value + '</a></td>\n')
+                        elif row_key == "Filename":
                             html_file.write('<td><a href="./' + str(row_value) + '">' + row_value + '</a></td>\n')
                         else:
                             html_file.write("<td>" + str(row_value) + "</td>\n")
+                    
                     #print(row)
                     html_file.write("</tr>")
-                
+
+                html_file.write("</table>\n")
+
+                # Creating appendix for the report
+                for finding in html_appendix:
+                    # writing out Finding title
+                    html_file.write(f"<h3><a id='{finding}'> <u> {finding} - {self.cis_foundations_benchmark_1_2[finding]['Title']}</u></h3>\n")
+                    for item_key,item_value in self.cis_report_data[finding].items():
+
+                        html_file.write(f"<p><b> {item_key}:<b/><br>\n")
+                        if item_key == 'Observation':
+                            html_file.write(f"{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))} {item_value} </p>\n")
+                        else:
+                            html_file.write(f"{item_value} </p>\n")
+
+                # Closing HTML
+                html_file.write("</html>\n")
 
             print("HTML: " + file_subject.ljust(22) + " --> " + file_path)
             # Used by Upload

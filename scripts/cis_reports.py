@@ -1014,8 +1014,9 @@ class CIS_Report:
             ).data
 
             for api_key in user_api_keys_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
                 record = {
-                    'id': api_key.key_id,
+                    'id': self.__generate_csv_hyperlink(deep_link, api_key.key_id),
                     'fingerprint': api_key.fingerprint,
                     'inactive_status': api_key.inactive_status,
                     'lifecycle_state': api_key.lifecycle_state,
@@ -1041,8 +1042,9 @@ class CIS_Report:
             ).data
 
             for token in auth_tokens_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
                 record = {
-                    'id': token.id,
+                    'id': self.__generate_csv_hyperlink(deep_link, token.id),
                     'description': token.description,
                     'inactive_status': token.inactive_status,
                     'lifecycle_state': token.lifecycle_state,
@@ -1073,8 +1075,9 @@ class CIS_Report:
             ).data
 
             for key in customer_secret_key_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
                 record = {
-                    'id': key.id,
+                    'id': self.__generate_csv_hyperlink(deep_link, key.id),
                     'display_name': key.display_name,
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
@@ -2887,8 +2890,9 @@ class CIS_Report:
                 compartment_id=self.__tenancy.id
             ).data
             for tag in tag_defaults:
+                deep_link = self.__oci_compartment_uri + tag.compartment_id + "/tag-defaults"
                 record = {
-                    "id": tag.id,
+                    "id": self.__generate_csv_hyperlink(deep_link, tag.id),
                     "compartment_id": tag.compartment_id,
                     "value": tag.value,
                     "time_created": tag.time_created.strftime(self.__iso_time_format),

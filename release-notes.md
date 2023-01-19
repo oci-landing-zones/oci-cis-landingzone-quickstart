@@ -1,10 +1,17 @@
 #  January XX, 2023 Release Notes - 2.5.2
 1. [Service Connector Hub Improvements](#2-5-2-sch-improvements)
+1. [CIS Level Setting Updates](#2-5-2-cis-level)
 
 ## <a name="2-5-2-sch-improvements">Service Connector Hub Improvements</a>
 Service Connector Hub functionality has been improved with the following:
 - Audit logs from all tenancy compartments are now captured.
 - Support for Logging Analytics as target. With this update, the following targets are supported: Object Storage, Streaming, Functions and Logging Analytics.
+
+## <a name="2-5-2-cis-level">CIS Level Setting Updates</a>
+Following updates were made regarding the CIS Level setting (*cis_level* variable):
+- Setting *cis_level* variable to "2" is enough for OCI Vault creation. Previously, the OCI Vault creation would also require a bucket and no provided existing vault.
+- Write logs for buckets are only created if *cis_level* variable is set to "2". Previously, bucket write logs were not impacted by CIS Level setting.
+
 
 #  December 16, 2022 Release Notes - 2.5.1
 1. [CIS Compliance Script fixes](#2-5-1-script-update)

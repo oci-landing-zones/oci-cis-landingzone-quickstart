@@ -5,7 +5,7 @@
  * It manages a single Service Connector for all log sources provided in log_sources variable and a designated target provided in target_kind variable.
  * If target_kind is 'objectstorage', an Object Storage bucket is created. The bucket is encrypted with either an Oracle managed key or customer managed key.
  * For target_kind is 'objectstorage', if cis_level = 1 and var.target_bucket_kms_key_id is not provided, the bucket is encrypted with an Oracle managed key.
- * If cis_level = 2 and var.target_bucket_kms_key_id is not provided, the module produces an error.
+ * If cis_level = 2 and var.target_bucket_kms_key_id is not provided, the module produces an error. Write logs are enabled for the bucket only if cis_level = 2.
  * If target kind is 'streaming, a Stream is either created or used, depending on what is provided in the target_stream variable. If a name is provided,
  * a stream is created. If an OCID is provided, the stream is used.
  * If target_kind is 'functions', a function OCID must be provided in target_function_id variable.
@@ -173,7 +173,7 @@ resource "oci_logging_log_group" "bucket" {
 #-- Log for bucket write access logs
 resource "oci_logging_log" "bucket" {
   provider     = oci
-  count        = length(oci_logging_log_group.bucket) > 0 ? 1 : 0
+  count        = length(oci_logging_log_group.bucket) > 0 && var.cis_level == "2" ? 1 : 0
   display_name = "${oci_objectstorage_bucket.this[0].name}-log"
   log_group_id = oci_logging_log_group.bucket[0].id
   log_type     = "SERVICE"

@@ -882,10 +882,10 @@ class CIS_Report:
             for compartment in self.__compartments:
                 deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
-                    "id" : self.__generate_csv_hyperlink(deep_link, compartment.id),
-                    "name" : compartment.name,
-                    "compartment_id": compartment.compartment_id,
-                    "defined_tags": compartment.defined_tags,
+                    'id': compartment.id,
+                    'name' : self.__generate_csv_hyperlink(deep_link, compartment.name),
+                    'compartment_id': compartment.compartment_id,
+                    'defined_tags': compartment.defined_tags,
                     "description": compartment.description,
                     "freeform_tags": compartment.freeform_tags,
                     "inactive_status": compartment.inactive_status,
@@ -898,9 +898,10 @@ class CIS_Report:
             
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
+            deep_link = self.__oci_compartment_uri + compartment.id
             root_compartment = {
                 "id" : self.__tenancy.id,
-                "name" : self.__tenancy.name,
+                "name" : self.__generate_csv_hyperlink(deep_link, self.__tenancy.name),
                 "compartment_id": "(root)",
                 "defined_tags": self.__tenancy.defined_tags,
                 "description": self.__tenancy.description,
@@ -942,8 +943,8 @@ class CIS_Report:
                     grp_deep_link = self.__oci_groups_uri + grp.id
                     user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
-                        "id": self.__generate_csv_hyperlink(grp_deep_link, grp.id),
-                        "name": grp.name,
+                        "id": grp.id,
+                        "name": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
                         "time_created": grp.time_created.strftime(self.__iso_time_format),
@@ -970,7 +971,8 @@ class CIS_Report:
             for user in users_data:
                 deep_link = self.__oci_users_uri + user.id
                 record = {
-                    'id': self.__generate_csv_hyperlink(deep_link, user.id),
+                    'id': user.id,
+                    'name': self.__generate_csv_hyperlink(deep_link,user.name),
                     'defined_tags': user.defined_tags,
                     'description': user.description,
                     'email': user.email,
@@ -980,7 +982,6 @@ class CIS_Report:
                     'is_mfa_activated': user.is_mfa_activated,
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
-                    'name': user.name,
                     'groups': []
                 }
                 # Adding Groups to the user
@@ -1016,8 +1017,8 @@ class CIS_Report:
             for api_key in user_api_keys_data:
                 deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
                 record = {
-                    'id': self.__generate_csv_hyperlink(deep_link, api_key.key_id),
-                    'fingerprint': api_key.fingerprint,
+                    'id': api_key.key_id,
+                    'fingerprint': self.__generate_csv_hyperlink(deep_link, api_key.fingerprint),
                     'inactive_status': api_key.inactive_status,
                     'lifecycle_state': api_key.lifecycle_state,
                     'time_created': api_key.time_created.strftime(self.__iso_time_format),
@@ -1700,8 +1701,8 @@ class CIS_Report:
                         ).data
                         # Looping through DRG Attachments in a compartment
                         for drg_attachment in drg_attachment_data:
+                            deep_link = self.__oci_drg_uri + drg_attachment.drg_id + "/drg-attachment/" + drg_attachment.id + "?region=" + region_key
                             try:
-                                deep_link = self.__oci_drg_uri + drg.id + "/drg-attachment/" + drg_attachment.id + "?region=" + region_key
                                 record = {
                                 "id": self.__generate_csv_hyperlink(deep_link, drg_attachment.id),
                                 "display_name" : drg_attachment.display_name,
@@ -2703,7 +2704,7 @@ class CIS_Report:
                 except Exception as e:
                     print("\tFailed to get Budget Data for Budget Name: " + budget.display_name + " id: " + budget.id)
                     alerts_data = []
-                deep_link = self.__oci_budget_uri + budget.id + "?region=" + region_key
+                deep_link = self.__oci_budget_uri + budget.id
                 record = {
                     "actual_spend" : budget.actual_spend,
                     "alert_rule_count" : budget.alert_rule_count,
@@ -3509,12 +3510,19 @@ class CIS_Report:
 
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
-                finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                print(compartment)
+                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
+                finding = list(filter(lambda source: compartment in source['id'] , self.__raw_compartment ))[0]
+
+                print("8" * 40)
+                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))
+                print(finding)
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
-                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
+                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
+                finding = list(filter(lambda source: compartment in source['id'] , self.__raw_compartment ))[0]
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
 

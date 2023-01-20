@@ -1078,8 +1078,8 @@ class CIS_Report:
             for key in customer_secret_key_data:
                 deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
                 record = {
-                    'id': self.__generate_csv_hyperlink(deep_link, key.id),
-                    'display_name': key.display_name,
+                    'id': key.id,
+                    'display_name': self.__generate_csv_hyperlink(deep_link, key.display_name),
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
@@ -1110,8 +1110,8 @@ class CIS_Report:
                     for policy in policies_data:
                         deep_link = self.__oci_policies_uri + policy.id
                         record = {
-                            "id": self.__generate_csv_hyperlink(deep_link, policy.id),
-                            "name": policy.name,
+                            "id": policy.id,
+                            "name": self.__generate_csv_hyperlink(deep_link, policy.name),
                             "compartment_id": policy.compartment_id,
                             "description": policy.description,
                             "lifecycle_state": policy.lifecycle_state,
@@ -1138,8 +1138,8 @@ class CIS_Report:
                 try:
                     deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id + "?region=" + region_key
                     record = {
-                        "id": self.__generate_csv_hyperlink(deep_link, dynamic_group.id),
-                        "name": dynamic_group.name,
+                        "id": dynamic_group.id,
+                        "name": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
                         "description": dynamic_group.description,
                         "matching_rule": dynamic_group.matching_rule,
                         "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
@@ -1215,8 +1215,8 @@ class CIS_Report:
                                 deep_link = self.__oci_buckets_uri + bucket_info.namespace + \
                                      "/" + bucket_info.name + "/objects?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, bucket_info.id),
-                                    "name": bucket_info.name,
+                                    "id": bucket_info.id,
+                                    "name": self.__generate_csv_hyperlink(deep_link, bucket_info.name),
                                     "kms_key_id": bucket_info.kms_key_id,
                                     "namespace": bucket_info.namespace,
                                     "compartment_id": bucket_info.compartment_id,
@@ -1236,7 +1236,7 @@ class CIS_Report:
                             except Exception as e:
                                 record = {
                                     "id": "",
-                                    "name": bucket.name,
+                                    "name": self.__generate_csv_hyperlink(deep_link, bucket_info.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,
@@ -1276,8 +1276,8 @@ class CIS_Report:
                             try:
                                 deep_link = self.__oci_block_volumes_uri + volume.id + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link,volume.id),
-                                    "display_name": volume.display_name,
+                                    "id": volume.id,
+                                    "display_name": self.__generate_csv_hyperlink(deep_link,volume.display_name),
                                     "kms_key_id": volume.kms_key_id,
                                     "lifecycle_state": volume.lifecycle_state,
                                     "compartment_id": volume.compartment_id,
@@ -1347,8 +1347,8 @@ class CIS_Report:
                                 try:
                                     deep_link = self.__oci_boot_volumes_uri + boot_volume.id + "?region=" + region_key
                                     record = {
-                                        "id": self.__generate_csv_hyperlink(deep_link, boot_volume.id),
-                                        "display_name": boot_volume.display_name,
+                                        "id": boot_volume.id,
+                                        "display_name": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
                                         "image_id": boot_volume.image_id,
                                         "kms_key_id": boot_volume.kms_key_id,
                                         "lifecycle_state": boot_volume.lifecycle_state,
@@ -1418,8 +1418,8 @@ class CIS_Report:
                                 try:
                                     deep_link = self.__oci_fss_uri + fss.id + "?region=" + region_key
                                     record = {
-                                        "id": self.__generate_csv_hyperlink(url=deep_link, id=fss.id),
-                                        "display_name": fss.display_name,
+                                        "id": fss.id,
+                                        "display_name": self.__generate_csv_hyperlink(url=deep_link, name=fss.display_name),
                                         "kms_key_id": fss.kms_key_id,
                                         "lifecycle_state": fss.lifecycle_state,
                                         "lifecycle_details": fss.lifecycle_details,
@@ -1480,9 +1480,9 @@ class CIS_Report:
                             deep_link = self.__oci_networking_uri + nsg.vcn_id + \
                                 "/network-security-groups/" + nsg.id +  "?region=" + region_key
                             record = {
-                                "id": self.__generate_csv_hyperlink(url=deep_link, id=nsg.id),
+                                "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
-                                "display_name": nsg.display_name,
+                                "display_name": self.__generate_csv_hyperlink(url=deep_link, name=nsg.display_name),
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -1496,8 +1496,10 @@ class CIS_Report:
                                 network_security_group_id = nsg.id
                             ).data
                             for rule in nsg_rules:
+                                deep_link = self.__oci_networking_uri + nsg.vcn_id + \
+                                "/network-security-groups/" + nsg.id + "/nsg-rules" + "?region=" + region_key
                                 rule_record = {
-                                    "id": rule.id,
+                                    "id": self.__generate_csv_hyperlink(deep_link, rule.id),
                                     "destination": rule.destination,
                                     "destination_type": rule.destination_type,
                                     "direction": rule.direction,
@@ -1540,9 +1542,9 @@ class CIS_Report:
                             deep_link = self.__oci_networking_uri + security_list.vcn_id + \
                                 "/security-lists/" + security_list.id + "?region=" + region_key
                             record = {
-                                "id": self.__generate_csv_hyperlink(url=deep_link, id=security_list.id),
+                                "id": security_list.id,
                                 "compartment_id": security_list.compartment_id,
-                                "display_name": security_list.display_name,
+                                "display_name": self.__generate_csv_hyperlink(url=deep_link, name=security_list.display_name),
                                 "lifecycle_state": security_list.lifecycle_state,
                                 "time_created": security_list.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": security_list.vcn_id,
@@ -1606,12 +1608,12 @@ class CIS_Report:
                                 deep_link = self.__oci_networking_uri + subnet.vcn_id + \
                                     "/subnets/" + subnet.id + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(url=deep_link, id=subnet.id),
+                                    "id": subnet.id,
                                     "availability_domain": subnet.availability_domain,
                                     "cidr_block": subnet.cidr_block,
                                     "compartment_id": subnet.compartment_id,
                                     "dhcp_options_id": subnet.dhcp_options_id,
-                                    "display_name": subnet.display_name,
+                                    "display_name": self.__generate_csv_hyperlink(url=deep_link, name=subnet.display_name),
                                     "dns_label": subnet.dns_label,
                                     "ipv6_cidr_block": subnet.ipv6_cidr_block,
                                     "ipv6_virtual_router_ip": subnet.ipv6_virtual_router_ip,
@@ -1636,12 +1638,12 @@ class CIS_Report:
                             deep_link = self.__oci_networking_uri + subnet.vcn_id + \
                                     "/subnet/" + subnet.id + "?region=" + region_key
                             record = {
-                                "id": self.__generate_csv_hyperlink(url=deep_link, id=subnet.id),
+                                "id": subnet.id,
                                 "availability_domain": subnet.availability_domain,
                                 "cidr_block": subnet.cidr_block,
                                 "compartment_id": subnet.compartment_id,
                                 "dhcp_options_id": subnet.dhcp_options_id,
-                                "display_name": subnet.display_name,
+                                "display_name": self.__generate_csv_hyperlink(url=deep_link, name=subnet.display_name),
                                 "dns_label": subnet.dns_label,
                                 "ipv6_cidr_block": "",
                                 "ipv6_virtual_router_ip": "",
@@ -1704,8 +1706,8 @@ class CIS_Report:
                             deep_link = self.__oci_drg_uri + drg_attachment.drg_id + "/drg-attachment/" + drg_attachment.id + "?region=" + region_key
                             try:
                                 record = {
-                                "id": self.__generate_csv_hyperlink(deep_link, drg_attachment.id),
-                                "display_name" : drg_attachment.display_name,
+                                "id": drg_attachment.id,
+                                "display_name" : self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
                                 "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
@@ -1724,8 +1726,8 @@ class CIS_Report:
                             }
                             except:
                                 record = {
-                                "id": self.__generate_csv_hyperlink(deep_link, drg_attachment.id),
-                                "display_name" : drg_attachment.display_name,
+                                "id": drg_attachment.id,
+                                "display_name" : self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
                                 "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
@@ -1776,8 +1778,8 @@ class CIS_Report:
                             try:
                                 deep_link = self.__oci_drg_uri + drg.id + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, drg.id),
-                                    "display_name" : drg.display_name,
+                                    "id": drg.id,
+                                    "display_name" : self.__generate_csv_hyperlink(deep_link, drg.display_name),
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
                                     "default_remote_peering_connection_route_table" : drg.default_drg_route_tables.remote_peering_connection,
@@ -1794,8 +1796,8 @@ class CIS_Report:
                                 }
                             except:
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, drg.id),
-                                    "display_name" : drg.display_name,
+                                    "id": drg.id,
+                                    "display_name" : self.__generate_csv_hyperlink(deep_link, drg.display_name),
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : "",
                                     "default_remote_peering_connection_route_table" : "",
@@ -1844,8 +1846,8 @@ class CIS_Report:
                             for fastconnect in fastconnect_data:
                                 deep_link = self.__oci_fastconnect_uri + fastconnect.id + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, fastconnect.id),
-                                    "display_name" : fastconnect.display_name,
+                                    "id": fastconnect.id,
+                                    "display_name" : self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
                                     "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
                                     "bgp_admin_state" : fastconnect.bgp_admin_state,
                                     "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
@@ -1954,8 +1956,8 @@ class CIS_Report:
                             for cpe in cpe_data:
                                 deep_link = self.__oci_cpe_uri + cpe.id+ "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, cpe.id),
-                                    "display_name" : cpe.display_name,
+                                    "id": cpe.id,
+                                    "display_name" : self.__generate_csv_hyperlink(deep_link, cpe.display_name),
                                     "cpe_device_shape_id" : cpe.cpe_device_shape_id,
                                     "ip_address" : cpe.ip_address,
                                     "compartment_id" : cpe.compartment_id,
@@ -2009,8 +2011,8 @@ class CIS_Report:
                             try:
                                 deep_link = self.__oci_ipsec_uri + ip_sec.id + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, ip_sec.id),
-                                    "display_name" : ip_sec.display_name,
+                                    "id": ip_sec.id,
+                                    "display_name" : self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
                                     "cpe_id" : ip_sec.cpe_id,
                                     "drg_id" : ip_sec.drg_id,
                                     "compartment_id" : ip_sec.compartment_id,
@@ -2034,9 +2036,9 @@ class CIS_Report:
                                     for tunnel in ip_sec_tunnels_data:
                                         deep_link = self.__oci_ipsec_uri + ip_sec.id + "/tunnels/" + tunnel.id + "?region=" + region_key
                                         tunnel_record = {
-                                                "id" : self.__generate_csv_hyperlink(deep_link, tunnel.id),
+                                                "id" : tunnel.id,
                                                 "cpe_ip" : tunnel.cpe_ip,
-                                                "display_name" : tunnel.display_name,
+                                                "display_name" : self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
                                                 "vpn_ip" : tunnel.vpn_ip,
                                                 "ike_version" : tunnel.ike_version,
                                                 "encryption_domain_config" : tunnel.encryption_domain_config,
@@ -2098,8 +2100,8 @@ class CIS_Report:
                                 if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
                                     adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
                                     record = {
-                                                "id": self.__generate_csv_hyperlink(url=deep_link, id=adb.id),
-                                                "display_name": adb.display_name,
+                                                "id": adb.id,
+                                                "display_name": self.__generate_csv_hyperlink(url=deep_link, name=adb.display_name),
                                                 "apex_details": adb.apex_details,
                                                 "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
                                                 "autonomous_container_database_id": adb.autonomous_container_database_id,
@@ -2181,8 +2183,8 @@ class CIS_Report:
                                             }
                                 else:
                                     record = {
-                                                "id": self.__generate_csv_hyperlink(url=deep_link, id=adb.id),
-                                                "display_name": adb.display_name,
+                                                "id": adb.id,
+                                                "display_name": self.__generate_csv_hyperlink(url=deep_link, name=adb.display_name),
                                                 "apex_details": "",
                                                 "are_primary_whitelisted_ips_used": "",
                                                 "autonomous_container_database_id": "",
@@ -2370,8 +2372,8 @@ class CIS_Report:
                                 try:
                                     deep_link = self.__oci_oicinstance_uri+ oic_instance.id + "?region=" + region_key
                                     record = {
-                                        "id": self.__generate_csv_hyperlink(url=deep_link, id=oic_instance.id),
-                                        "display_name": oic_instance.display_name,
+                                        "id": oic_instance.id,
+                                        "display_name": self.__generate_csv_hyperlink(url=deep_link, name=oic_instance.display_name),
                                         "network_endpoint_details": oic_instance.network_endpoint_details,
                                         "compartment_id": oic_instance.compartment_id,
                                         "alternate_custom_endpoints": oic_instance.alternate_custom_endpoints,
@@ -2434,8 +2436,8 @@ class CIS_Report:
                             try:
                                 deep_link = self.__oci_oacinstance_uri+ oac_instance.id + "?region=" + region_key  
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(url=deep_link, id=oac_instance.id),
-                                    "name": oac_instance.name,
+                                    "id": oac_instance.id,
+                                    "name": self.__generate_csv_hyperlink(url=deep_link, name=oac_instance.name),
                                     "description": oac_instance.description,
                                     "network_endpoint_details": oac_instance.network_endpoint_details,
                                     "network_endpoint_type": oac_instance.network_endpoint_details.network_endpoint_type,
@@ -2499,8 +2501,8 @@ class CIS_Report:
                                 "compartment_id": event_rule.compartment_id,
                                 "condition": event_rule.condition,
                                 "description": event_rule.description,
-                                "display_name": event_rule.display_name,
-                                "id": self.__generate_csv_hyperlink(deep_link, event_rule.id),
+                                "display_name": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),
+                                "id": event_rule.id,
                                 "is_enabled": event_rule.is_enabled,
                                 "lifecycle_state": event_rule.lifecycle_state,
                                 "time_created": event_rule.time_created.strftime(self.__iso_time_format),
@@ -2535,8 +2537,8 @@ class CIS_Report:
                             record = {
                                 "compartment_id": log_group.compartment_id,
                                 "description": log_group.description,
-                                "display_name": log_group.display_name,
-                                "id": self.__generate_csv_hyperlink(deep_link, log_group.id),
+                                "display_name": self.__generate_csv_hyperlink(deep_link, log_group.display_name),
+                                "id": log_group.id,
                                 "time_created": log_group.time_created.strftime(self.__iso_time_format),
                                 "time_last_modified": str(log_group.time_last_modified),
                                 "defined_tags" : log_group.defined_tags,
@@ -2553,8 +2555,8 @@ class CIS_Report:
                                 deep_link = self.__oci_loggroup_uri + log_group.id + "/logs/" + log.id + "?region=" + region_key
                                 log_record = {
                                     "compartment_id": log.compartment_id,
-                                    "display_name": log.display_name,
-                                    "id": self.__generate_csv_hyperlink(deep_link, log.id),
+                                    "display_name": self.__generate_csv_hyperlink(deep_link, log.display_name),
+                                    "id": log.id,
                                     "is_enabled": log.is_enabled,
                                     "lifecycle_state": log.lifecycle_state,
                                     "log_group_id": log.log_group_id,
@@ -2630,8 +2632,8 @@ class CIS_Report:
                             vault_record = {
                                 "compartment_id": vlt.compartment_id,
                                 "crypto_endpoint": vlt.crypto_endpoint,
-                                "display_name": vlt.display_name,
-                                "id": self.__generate_csv_hyperlink(deep_link, vlt.id),
+                                "display_name": self.__generate_csv_hyperlink(deep_link, vlt.display_name),
+                                "id": vlt.id,
                                 "lifecycle_state": vlt.lifecycle_state,
                                 "management_endpoint": vlt.management_endpoint,
                                 "time_created": vlt.time_created.strftime(self.__iso_time_format),
@@ -2655,8 +2657,8 @@ class CIS_Report:
                                         deep_link = self.__oci_vault_uri + vlt.id + "/vaults/" + key.id + "?region=" + region_key
                                         key_record = {
                                             "compartment_id": key.compartment_id,
-                                            "display_name": key.display_name,
-                                            "id": self.__generate_csv_hyperlink(deep_link, key.id),
+                                            "display_name": self.__generate_csv_hyperlink(deep_link, key.display_name),
+                                            "id": key.id,
                                             "lifecycle_state": key.lifecycle_state,
                                             "time_created": key.time_created.strftime(self.__iso_time_format),
                                         }
@@ -2712,8 +2714,8 @@ class CIS_Report:
                     "budget_processing_period_start_offset" : budget.budget_processing_period_start_offset,
                     "compartment_id": budget.compartment_id,
                     "description" : budget.description,
-                    "display_name": budget.display_name,
-                    "id": self.__generate_csv_hyperlink(deep_link, budget.id),
+                    "display_name": self.__generate_csv_hyperlink(deep_link, budget.display_name),
+                    "id": budget.id,
                     "lifecycle_state" : budget.lifecycle_state,
                     "processing_period_type" : budget.processing_period_type,
                     "reset_period" : budget.reset_period,
@@ -2796,9 +2798,9 @@ class CIS_Report:
                             record = {
                                 "compartment_id": target.compartment_id,
                                 "defined_tags": target.defined_tags,
-                                "display_name": target.display_name,
+                                "display_name": self.__generate_csv_hyperlink(deep_link, target.display_name),
                                 "freeform_tags": target.freeform_tags,
-                                "id": self.__generate_csv_hyperlink(deep_link, target.id),
+                                "id": target.id,
                                 "lifecycle_state": target.lifecycle_state,
                                 "lifecyle_details": target.lifecyle_details,
                                 "system_tags": target.system_tags,
@@ -2893,9 +2895,9 @@ class CIS_Report:
             for tag in tag_defaults:
                 deep_link = self.__oci_compartment_uri + tag.compartment_id + "/tag-defaults"
                 record = {
-                    "id": self.__generate_csv_hyperlink(deep_link, tag.id),
+                    "id": tag.id,
                     "compartment_id": tag.compartment_id,
-                    "value": tag.value,
+                    "value": self.__generate_csv_hyperlink(deep_link, tag.value),
                     "time_created": tag.time_created.strftime(self.__iso_time_format),
                     "tag_definition_id": tag.tag_definition_id,
                     "tag_definition_name": tag.tag_definition_name,
@@ -2938,8 +2940,8 @@ class CIS_Report:
                                     ).data
                                 deep_link = self.__oci_serviceconnector_uri + service_connector.id + "/logging" + "?region=" + region_key
                                 record = {
-                                    "id": self.__generate_csv_hyperlink(deep_link, service_connector.id),
-                                    "display_name": service_connector.display_name,
+                                    "id": service_connector.id,
+                                    "display_name": self.__generate_csv_hyperlink(deep_link, service_connector.display_name),
                                     "description": service_connector.description,
                                     "freeform_tags": service_connector.freeform_tags,
                                     "defined_tags" : service_connector.defined_tags,
@@ -2964,7 +2966,7 @@ class CIS_Report:
                             except Exception as e:
                                 record = {
                                     "id": connector.id,
-                                    "display_name": connector.display_name,
+                                    "display_name": self.__generate_csv_hyperlink(deep_link, connector.display_name),
                                     "description": connector.description,
                                     "freeform_tags": connector.freeform_tags,
                                     "defined_tags" : connector.defined_tags,
@@ -4416,8 +4418,8 @@ class CIS_Report:
     ##########################################################################
     # Create CSV Hyperlink
     ##########################################################################
-    def __generate_csv_hyperlink(self,url, id):
-        return '=HYPERLINK("' + url + '","' + id +'")'
+    def __generate_csv_hyperlink(self,url, name):
+        return '=HYPERLINK("' + url + '","' + name +'")'
 
 
 

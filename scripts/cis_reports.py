@@ -633,8 +633,8 @@ class CIS_Report:
 
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Updated November 16, 2022.")
-        print("Tested oci-python-sdk version: 2.90.0")
+        print("Updated January 24, 2023.")
+        print("Tested oci-python-sdk version: 2.90.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -1045,8 +1045,8 @@ class CIS_Report:
             for token in auth_tokens_data:
                 deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
                 record = {
-                    'id': self.__generate_csv_hyperlink(deep_link, token.id),
-                    'description': token.description,
+                    'id': token.id,
+                    'description': self.__generate_csv_hyperlink(deep_link, token.description),
                     'inactive_status': token.inactive_status,
                     'lifecycle_state': token.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
@@ -1216,7 +1216,8 @@ class CIS_Report:
                                      "/" + bucket_info.name + "/objects?region=" + region_key
                                 record = {
                                     "id": bucket_info.id,
-                                    "name": self.__generate_csv_hyperlink(deep_link, bucket_info.name),
+                                    "name": bucket_info.name,
+                                    "name_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),                                    
                                     "kms_key_id": bucket_info.kms_key_id,
                                     "namespace": bucket_info.namespace,
                                     "compartment_id": bucket_info.compartment_id,
@@ -3030,7 +3031,7 @@ class CIS_Report:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                     and not("to manage all-resources in tenancy".upper() in statement.upper()) \
-                        and policy['name'].upper() != "Tenant Admin Policy".upper():
+                        and "Tenant Admin Policy".upper() not in policy['name'].upper():
                     policy_counter += 1
             if policy_counter < 3:
                 self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
@@ -3042,7 +3043,7 @@ class CIS_Report:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                         and "to manage all-resources in tenancy".upper() in statement.upper() \
-                        and policy['name'].upper() != "Tenant Admin Policy".upper():
+                        and "Tenant Admin Policy".upper() not in policy['name'].upper():
 
                     self.cis_foundations_benchmark_1_2['1.2']['Status'] = False
                     self.cis_foundations_benchmark_1_2['1.2']['Findings'].append(
@@ -3050,7 +3051,7 @@ class CIS_Report:
         
         # 1.3 Check - May want to add a service check
         for policy in self.__policies:
-          if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
+          if "Tenant Admin Policy".upper() not in policy['name'].upper() and policy['name'].upper() != "PSM-root-policy":
                 for statement in policy['statements']:
                     if ("allow group".upper() in statement.upper() and "tenancy".upper() in statement.upper() and \
                          ("to manage ".upper() in statement.upper() or "to use".upper() in statement.upper()) and \
@@ -3512,19 +3513,12 @@ class CIS_Report:
 
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
-                print(compartment)
-                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
-                finding = list(filter(lambda source: compartment in source['id'] , self.__raw_compartment ))[0]
-
-                print("8" * 40)
-                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))
-                print(finding)
+                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
-                # finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
-                finding = list(filter(lambda source: compartment in source['id'] , self.__raw_compartment ))[0]
+                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
 
@@ -3968,11 +3962,14 @@ class CIS_Report:
                         html_appendix.append(row['Recommendation #'].replace("'",""))
                     
                     html_file.write("<tr>")
+                    # Used for formating
                     for row_key, row_value in row.items():
                         if row_key == "Recommendation #":
                             html_file.write('<td><a href="#' + str(row_value).replace("'","") + '">' + row_value + '</a></td>\n')
                         elif row_key == "Filename":
                             html_file.write('<td><a href="./' + str(row_value) + '">' + row_value + '</a></td>\n')
+                        elif row_key == "Compliant" and row_value == "No":
+                            html_file.write('<td> <b style="color:red;">' + str(row_value) + "</b></td>\n")
                         else:
                             html_file.write("<td>" + str(row_value) + "</td>\n")
                     

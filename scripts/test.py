@@ -14,33 +14,33 @@ script_files = {
     'cis_Identity_and_Access_Management_1-1.csv': { 'columns' : [0],  'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-2.csv': { 'columns' : [0],  'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-3.csv': { 'columns' : [0],  'exists' : None, 'pass' : None},
-    'cis_Identity_and_Access_Management_1-10.csv': { 'columns' : [1,2], 'exists' : None, 'pass' : None},
+    'cis_Identity_and_Access_Management_1-10.csv': { 'columns' : [2], 'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-11.csv': { 'columns' : [0,3],  'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-12.csv':{ 'columns' : [0],  'exists' : None, 'pass' : None},
-    'cis_Identity_and_Access_Management_1-14.csv':  { 'columns' : [0],  'exists' : None, 'pass' : None},
+    'cis_Identity_and_Access_Management_1-14.csv':  { 'columns' : [2],  'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-2.csv':  {'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-3.csv':   { 'exists' : None, 'pass' : None},
     'cis_Identity_and_Access_Management_1-7.csv':  { 'columns' : [0], 'exists' : None, 'pass' : None},
-    'cis_Identity_and_Access_Management_1-8.csv':  { 'columns' : [1,2], 'exists' : None, 'pass' : None},
-    'cis_Identity_and_Access_Management_1-9.csv':  { 'columns' : [0,1,2], 'exists' : None, 'pass' : None},
+    'cis_Identity_and_Access_Management_1-8.csv':  { 'columns' : [2], 'exists' : None, 'pass' : None},
+    'cis_Identity_and_Access_Management_1-9.csv':  { 'columns' : [2], 'exists' : None, 'pass' : None},
     'cis_Logging_and_Monitoring_3-14.csv' : { 'columns' : [0],  'exists' : None, 'pass' : None},
-    'cis_Logging_and_Monitoring_3-16.csv' :   { 'columns' : [0,1,2], 'exists' : None, 'pass' : None},
+    'cis_Logging_and_Monitoring_3-16.csv' :   { 'columns' : [2], 'exists' : None, 'pass' : None},
     'cis_Logging_and_Monitoring_3-17.csv' :  { 'exists' : None, 'pass' : None},
-    'cis_Networking_2-1.csv' :  { 'columns' : [2], 'exists' : None, 'pass' : None},
-    'cis_Networking_2-2.csv' :   { 'columns' : [2],'exists' : None, 'pass' : None},
-    'cis_Networking_2-3.csv' :   { 'columns' : [2],'exists' : None, 'pass' : None},
-    'cis_Networking_2-4.csv' :  { 'columns' : [2], 'exists' : None, 'pass' : None},
-    'cis_Networking_2-5.csv' :   { 'columns' : [2],'exists' : None, 'pass' : None},
+    'cis_Networking_2-1.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_Networking_2-2.csv' :   { 'columns' : [0],'exists' : None, 'pass' : None},
+    'cis_Networking_2-3.csv' :   { 'columns' : [0],'exists' : None, 'pass' : None},
+    'cis_Networking_2-4.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_Networking_2-5.csv' :   { 'columns' : [0],'exists' : None, 'pass' : None},
     'cis_Networking_2-6.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
     'cis_Networking_2-7.csv' :   { 'columns' : [0],'exists' : None, 'pass' : None},
     'cis_Networking_2-8.csv' :   { 'columns' : [0], 'exists' : None, 'pass' : None},
-    'cis_Storage_Block_Volumes_4-2-1.csv' :{ 'columns' : [0,1],  'exists' : None, 'pass' : None},
-    'cis_Storage_Block_Volumes_4-2-2.csv' :  { 'columns' : [0,1],'exists' : None, 'pass' : None},
-    'cis_Storage_File_Storage_Service_4-3-1.csv' : { 'columns' : [0,1], 'exists' : None, 'pass' : None},
-    'cis_Storage_Object_Storage_4-1-1.csv' : { 'columns' : [0,1], 'exists' : None, 'pass' : None},
-    'cis_Storage_Object_Storage_4-1-2.csv' : { 'columns' : [0,1], 'exists' : None, 'pass' : None},
-    'cis_Storage_Object_Storage_4-1-3.csv' : { 'columns' : [0,1], 'exists' : None, 'pass' : None},
-    'cis_summary_report.csv' :    { 'columns' : [0,4],'exists' : None, 'pass' : None},
+    'cis_Storage_Block_Volumes_4-2-1.csv' :{ 'columns' : [0],  'exists' : None, 'pass' : None},
+    'cis_Storage_Block_Volumes_4-2-2.csv' :  { 'columns' : [0],'exists' : None, 'pass' : None},
+    'cis_Storage_File_Storage_Service_4-3-1.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_Storage_Object_Storage_4-1-1.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_Storage_Object_Storage_4-1-2.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_Storage_Object_Storage_4-1-3.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'cis_summary_report.csv' :    { 'columns' : [4],'exists' : None, 'pass' : None},
     'obp_SIEM_Audit_Incl_Sub_Comp_Best_Practices.csv' : {'columns' : [0], 'exists' : None, 'pass' : None},
     'obp_SIEM_Audit_Log_All_Comps_Best_Practices.csv' : {'columns' : [0,2], 'exists' : None, 'pass' : None},
     'obp_SIEM_Audit_Incl_Sub_Comp_Findings.csv' : {'columns' : [0], 'exists' : None, 'pass' : None},
@@ -66,15 +66,13 @@ script_files = {
     'raw_data_analytics_instances.csv'  :  { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_block_volumes.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_boot_volumes.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
-    'raw_data_file_stroage_system.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},     # remove after  1/1/2023
-    # 'raw_data_file_storage_system.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'raw_data_file_storage_system.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_event_rules.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_cloud_guard_target.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
 
     'raw_data_identity_groups_and_membership.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_identity_compartments.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
-    'raw_data_identity_dyanmic_groups.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},     # remove after  1/1/2023
-    # 'raw_data_identity_dynamic_groups.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
+    'raw_data_identity_dynamic_groups.csv' :  { 'columns' : [0], 'exists' : None, 'pass' : None},
 
     'raw_data_identity_policies.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
     'raw_data_identity_tags.csv' : { 'columns' : [0], 'exists' : None, 'pass' : None},
@@ -106,7 +104,7 @@ def set_parser_arguments():
     parser.add_argument(
         '--dir1',
         dest='dir1',
-        help="First CSV file for comparison"
+        help="Directory to CSV file for comparison"
     )
     parser.add_argument(
         '--dir2',
@@ -124,6 +122,7 @@ def set_parser_arguments():
 
 def compare_csvs(file_name1, file_name2, interesting_cols):
     true_tracker = None
+    # print(f"Comparing {file_name1} and {file_name2} on columns {str(interesting_cols)}" )
     with open(file_name1, 'r') as file1,\
         open(file_name2, 'r') as file2:
 
@@ -173,7 +172,7 @@ def execute():
 
 
 
-    status = True
+    status = None
     for file, values in script_files.items():
         if values['pass'] is False :
             print("This file did not pass: " + file + " " + str(values))

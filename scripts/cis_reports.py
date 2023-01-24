@@ -153,7 +153,7 @@ class CIS_Report:
             "Rationale":"Creating service-level administrators helps in tightly controlling access to Oracle Cloud Infrastructure (OCI) services to implement the least-privileged security principle.",
             "Impact":"",
             "Remediation":"Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.",
-            "Recommendation":"TBD",
+            "Recommendation":"",
             "Observation":"custom IAM policy that grants tenancy administrative access."
             },
             "1.2":{ "Description":"There is a built-in OCI IAM policy enabling the Administrators group to perform any action within a tenancy. In the OCI IAM console, this policy reads:\n\n```\nAllow group Administrators to manage all-resources in tenancy\n```\n\nAdministrators create more users, groups, and policies to provide appropriate access to other groups.\n\nAdministrators should not allow any-other-group full access to the tenancy by writing a policy like this - \n\n```\nAllow group any-other-group to manage all-resources in tenancy\n```\n\nThe access should be narrowed down to ensure the least-privileged principle is applied.",
@@ -286,15 +286,15 @@ class CIS_Report:
             "Rationale":"Restricting connectivity to OIC Instances reduces an OIC instance’s exposure to risk.",
             "Impact":"When updating ingress filters for an existing environment, care should be taken to ensure that IP addresses and VCNs currently used by administrators, users, and services to access your OIC instances are included in the updated filters.",
             "Remediation":"For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"It is recommended that OIC Network Access is restricted to your corporate IP Addresses or VCNs for OIC Instances.",
+            "Observation":"OIC Instances that allow unfiltered public ingress traffic (Authn & Authz is still required)."
             },
             "2.7":{ "Description":"Oracle Analytics Cloud (OAC) is a scalable and secure public cloud service that provides a full set of capabilities to explore and perform collaborative analytics for you, your workgroup, and your enterprise. OAC instances provide ingress filtering of network traffic or can be deployed with in an existing Virtual Cloud Network VCN. It is recommended that all new OAC instances be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing OAC instances.",
             "Rationale":"Restricting connectivity to Oracle Analytics Cloud instances reduces an OAC instance’s exposure to risk.",
             "Impact":"When updating ingress filters for an existing environment, care should be taken to ensure that IP addresses and VCNs currently used by administrators, users, and services to access your OAC instances are included in the updated filters. Also, these changes will temporarily bring the OAC instance offline.",
             "Remediation":"For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"It is recommended that all new OAC instances be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing OAC instances.",
+            "Observation":"OAC Instances that allow unfiltered public ingress traffic (Authn & Authz is still required)."
             },
             "2.8":{ "Description":"Oracle Autonomous Database Shared (ADB-S) automates database tuning, security, backups, updates, and other routine management tasks traditionally performed by DBAs. ADB-S provide ingress filtering of network traffic or can be deployed within an existing Virtual Cloud Network (VCN). It is recommended that all new ADB-S databases be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing ADB-S databases.",
             "Rationale":"Restricting connectivity to ADB-S Databases reduces an ADB-S database’s exposure to risk.",
@@ -307,176 +307,176 @@ class CIS_Report:
             "Rationale":"Log retention controls how long activity logs should be retained. Studies have shown that The Mean Time to Detect(MTTD) a cyber breach is anywhere from 30 days in some sectors to up to 206 days in others. Retaining logs for at least 365 days or more will provide the ability to respond to incidents",
             "Impact":"There is no performance impact when enabling the above described features but additional audit data will be retained.",
             "Remediation":"Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.2":{ "Description":"Using default tags is a way to ensure all resources that support tags are tagged during creation. Tags can be based on static values or based on computed values. It is recommended to setup default tags early on to ensure all created resources will get tagged.\nTags are scoped to Compartments and are inherited by Child Compartments. The recommendation is to create default tags like “CreatedBy” at the Root Compartment level to ensure all resources get tagged.\nWhen using Tags it is important to ensure that Tag Namespaces are protected by IAM Policies otherwise this will allow users to change tags or tag values.\nDepending on the age of the OCI Tenancy there may already be Tag defaults setup at the Root Level and no need for further action to implement this action.",
             "Rationale":"In the case of an incident having default tags like “CreatedBy” applied will provide info on who created the resource without having to search the Audit logs.",
             "Impact":"There is no performance impact when enabling the above described features",
             "Remediation":"Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of \"${iam.principal.names}\" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.3":{ "Description":"Notifications provide a multi-channel messaging service that allow users and applications to be notified of events of interest occurring within OCI. Messages can be sent via eMail, HTTPs, PagerDuty, Slack or the OCI Function service. Some channels, such as eMail require confirmation of the subscription before it becomes active.",
             "Rationale":"Creating one or more notification topics allow administrators to be notified of relevant changes made to OCI infrastructure.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Create a Topic in the notifications service under the appropriate compartment and add the subscriptions with current email address and correct protocol",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.4":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Identity Providers are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
             "Rationale":"OCI Identity Providers allow management of User ID / passwords in external systems and use of those credentials to access OCI resources. Identity Providers allow users to single sign-on to OCI console and have other OCI credentials like API Keys.\nMonitoring and alerting on changes to Identity Providers will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.5":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Identity Provider Group Mappings are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level",
             "Rationale":"IAM Policies govern access to all resources within an OCI Tenancy. IAM Policies use OCI Groups for assigning the privileges. Identity Provider Groups could be mapped to OCI Groups to assign privileges to federated users in OCI. Monitoring and alerting on changes to Identity Provider Group mappings will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.6":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"IAM Groups control access to all resources within an OCI Tenancy. \nMonitoring and alerting on changes to IAM Groups will help in identifying changes to satisfy least privilege principle.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.7":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Policies are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"IAM Policies govern access to all resources within an OCI Tenancy. \nMonitoring and alerting on changes to IAM policies will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.8":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Users are created, updated, deleted, capabilities updated, or state updated. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Users use or manage Oracle Cloud Infrastructure resources. \nMonitoring and alerting on changes to Users will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.9":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Virtual Cloud Networks are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Virtual Cloud Networks (VCNs) closely resembles a traditional network. \nMonitoring and alerting on changes to VCNs will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.10":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when route tables are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Route tables control traffic flowing to or from Virtual Cloud Networks and Subnets. \nMonitoring and alerting on changes to route tables will help in identifying changes these traffic flows.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.11":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when security lists are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Security Lists control traffic flowing into and out of Subnets within a Virtual Cloud Network. \nMonitoring and alerting on changes to Security Lists will help in identifying changes to these security controls.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.12":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when network security groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Network Security Groups control traffic flowing between Virtual Network Cards attached to Compute instances. \nMonitoring and alerting on changes to Network Security Groups will help in identifying changes these security controls.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.13":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
             "Rationale":"Network Gateways act as routers between VCNs and the Internet, Oracle Services Networks, other VCNS, and on-premise networks. \nMonitoring and alerting on changes to Network Gateways will help in identifying changes to the security posture.",
             "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
             "Remediation":"Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.14":{ "Description":"VCN flow logs record details about traffic that has been accepted or rejected based on the security list rule.",
             "Rationale":"Enabling VCN flow logs enables you to monitor traffic flowing within your virtual network and can be used to detect anomalous traffic.",
             "Impact":"Enabling VCN flow logs will not affect the performance of your virtual network but it will generate additional use of object storage that should be controlled via object lifecycle management.\n\nBy default, VCN flow logs are stored for 30 days in object storage. Users can specify a longer retention period.",
             "Remediation":"Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.15":{ "Description":"Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard can suggest, assist, or take corrective actions to mitigate these issues. Cloud Guard should be enabled in the root compartment of your tenancy with the default configuration, activity detectors and responders.",
             "Rationale":"Cloud Guard provides an automated means to monitor a tenancy for resources that are configured in an insecure manner as well as risky network activity from these resources.",
             "Impact":"There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
             "Remediation":"Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.16":{ "Description":"Oracle Cloud Infrastructure Vault securely stores master encryption keys that protect your encrypted data. You can use the Vault service to rotate keys to generate new cryptographic material. Periodically rotating keys limits the amount of data encrypted by one key version.",
             "Rationale":"Rotating keys annually limits the data encrypted under one key version. Key rotation thereby reduces the risk in case a key is ever compromised.",
             "Impact":"",
             "Remediation":"Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. ",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "3.17":{ "Description":"Object Storage write logs will log all write requests made to objects in a bucket.",
             "Rationale":"Enabling an Object Storage write log, the `requestAction` property would contain values of `PUT`, `POST`, or `DELETE`. This will provide you more visibility into changes to objects in your buckets.",
             "Impact":"There is no performance impact when enabling the above described features, but will generate additional use of object storage that should be controlled via object lifecycle management. \n\nBy default, Object Storage logs are stored for 30 days in object storage. Users can specify a longer retention period.",
             "Remediation":"To the relevant bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.1.1":{ "Description":"A bucket is a logical container for storing objects. It is associated with a single compartment that has policies that determine what action a user can perform on a bucket and on all the objects in the bucket. It is recommended that no bucket be publicly accessible.",
             "Rationale":"Removing unfettered reading of objects in a bucket reduces an organization's exposure to data loss.",
             "Impact":"For updating an existing bucket, care should be taken to ensure objects in the bucket can be accessed through either IAM policies or pre-authenticated requests.",
             "Remediation":"Edit the visibility into \"private\" for each Bucket",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.1.2":{ "Description":"Oracle Object Storage buckets support encryption with a Customer Managed Key (CMK). By default, Object Storage buckets are encrypted with an Oracle managed key.",
             "Rationale":"Encryption of Object Storage buckets with a Customer Managed Key (CMK) provides an additional level of security on your data by allowing you to manage your own encryption key lifecycle management for the bucket.",
             "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize Object Storage service to use keys on your behalf.\n\nRequired Policy:\n```\nAllow service objectstorage-<region_name>, to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n\n```",
             "Remediation":"Assign Master encryption key to Encryption key in every Object storage under Bucket name by clicking assign and select vault",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.1.3":{ "Description":"A bucket is a logical container for storing objects. Object versioning is enabled at the bucket level and is disabled by default upon creation. Versioning directs Object Storage to automatically create an object version each time a new object is uploaded, an existing object is overwritten, or when an object is deleted. You can enable object versioning at bucket creation time or later.",
             "Rationale":"Versioning object storage buckets provides for additional integrity of your data. Management of data integrity is critical to protecting and accessing protected data. Some customers want to identify object storage buckets without versioning in order to apply their own data lifecycle protection and management policy.",
             "Impact":"",
             "Remediation":"Enable  Versioning by clicking on every bucket by editing the bucket configuration",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.2.1":{ "Description":"Oracle Cloud Infrastructure Block Volume service lets you dynamically provision and manage block storage volumes. By default, the Oracle service manages the keys that encrypt this block volume. Block Volumes can also be encrypted using a customer managed key.",
             "Rationale":"Encryption of block volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify block volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain volumes and then apply their own key lifecycle management to the selected block volumes.",
             "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Block Volume service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service blockstorage to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
             "Remediation":"For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.2.2":{ "Description":"When you launch a virtual machine (VM) or bare metal instance based on a platform image or custom image, a new boot volume for the instance is created in the same compartment. That boot volume is associated with that instance until you terminate the instance. By default, the Oracle service manages the keys that encrypt this boot volume. Boot Volumes can also be encrypted using a customer managed key.",
             "Rationale":"Encryption of boot volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify boot volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain boot volumes and then apply their own key lifecycle management to the selected boot volumes.",
             "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Boot Volume service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service Bootstorage to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
             "Remediation":"For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "4.3.1":{ "Description":"Oracle Cloud Infrastructure File Storage service (FSS) provides a durable, scalable, secure, enterprise-grade network file system. By default, the Oracle service manages the keys that encrypt FSS file systems. FSS file systems can also be encrypted using a customer managed key.",
             "Rationale":"Encryption of FSS systems provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify FSS file systems that are encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain FSS file systems and then apply their own key lifecycle management to the selected FSS file systems.",
             "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the File Storage service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service FssOc1Prod to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
             "Remediation":"For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "5.1":{ "Description":"When you sign up for Oracle Cloud Infrastructure, Oracle creates your tenancy, which is the root compartment that holds all your cloud resources. You then create additional compartments within the tenancy (root compartment) and corresponding policies to control access to the resources in each compartment. \n\nCompartments allow you to organize and control access to your cloud resources. A compartment is a collection of related resources (such as instances, databases, virtual cloud networks, block volumes) that can be accessed only by certain groups that have been given permission by an administrator.",
             "Rationale":"Compartments are a logical group that adds an extra layer of isolation, organization and authorization making it harder for unauthorized users to gain access to OCI resources.",
             "Impact":"Once the compartment is created an OCI IAM policy must be created to allow a group to resources in the compartment otherwise only group with tenancy access will have access.",
             "Remediation":"Create the new compartment under the root compartment",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             },
             "5.2":{ "Description":"When you create a cloud resource such as an instance, block volume, or cloud network, you must specify to which compartment you want the resource to belong. Placing resources in the root compartment makes it difficult to organize and isolate those resources.",
             "Rationale":"Placing resources into a compartment will allow you to organize and have more granular access controls to your cloud resources.",
             "Impact":"Placing a resource in a compartment will impact how you write policies to manage access and organize that resource.",
             "Remediation":"For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resources",
-            "Recommendation":"TBD",
-            "Observation":"TBD"
+            "Recommendation":"",
+            "Observation":""
             }
         }
 
@@ -4008,7 +4008,7 @@ class CIS_Report:
                         html_appendix.append(row['Recommendation #'].replace("'",""))
                     
                     html_file.write("<tr>")
-                    # Used for formating
+                    # Used for formating Summary Report Data
                     for row_key, row_value in row.items():
                         if row_key == "Recommendation #":
                             html_file.write('<td><a href="#' + str(row_value).replace("'","") + '">' + row_value + '</a></td>\n')
@@ -4018,7 +4018,7 @@ class CIS_Report:
                             html_file.write('<td> <b style="color:red;">' + str(row_value) + "</b></td>\n")
                         else:
                             html_file.write("<td>" + str(row_value) + "</td>\n")
-                    
+
                     #print(row)
                     html_file.write("</tr>")
 
@@ -4029,12 +4029,12 @@ class CIS_Report:
                     # writing out Finding title
                     html_file.write(f"<h3><a id='{finding}'> <u> {finding} - {self.cis_foundations_benchmark_1_2[finding]['Title']}</u></h3>\n")
                     for item_key,item_value in self.cis_report_data[finding].items():
-
-                        html_file.write(f"<p><b> {item_key}:<b/><br>\n")
-                        if item_key == 'Observation':
-                            html_file.write(f"{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))} {item_value} </p>\n")
-                        else:
-                            html_file.write(f"{item_value} </p>\n")
+                        if item_value != "":
+                            html_file.write(f"<p><b> {item_key}:<b/><br>\n")
+                            if item_key == 'Observation':
+                                html_file.write(f"{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))} {item_value} </p>\n")
+                            else:
+                                html_file.write(f"{item_value} </p>\n")
 
                 # Closing HTML
                 html_file.write("</html>\n")

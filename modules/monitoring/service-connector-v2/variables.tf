@@ -58,8 +58,8 @@ variable "target_kind" {
     type = string
     default = "objectstorage"
     validation {
-        condition     = contains(["objectstorage", "streaming", "functions"], var.target_kind)
-        error_message = "Validation failed for target_kind: valid values are objectstorage, streaming or functions."
+        condition     = contains(["objectstorage", "streaming", "functions", "logginganalytics"], var.target_kind)
+        error_message = "Validation failed for target_kind: valid values are objectstorage, streaming, functions or logginganalytics."
     }
 }
 
@@ -135,6 +135,12 @@ variable "target_stream_retention_in_hours" {
 
 variable "target_function_id" {
     description = "The target function ocid."
+    type = string
+    default = null
+}
+
+variable "target_log_group_id" {
+    description = "The target log group ocid. Used when target_kind = logginganalytics."
     type = string
     default = null
 }

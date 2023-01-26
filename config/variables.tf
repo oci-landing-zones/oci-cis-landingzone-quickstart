@@ -32,7 +32,7 @@ variable "service_label" {
 variable "cis_level" {
   type = string
   default = "2"
-  description = "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability."
+  description = "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones."
 }
 variable "env_advanced_options" {
   type = bool
@@ -506,10 +506,10 @@ variable "activate_service_connector" {
 variable "service_connector_target_kind" {
   type        = string
   default     = "objectstorage"
-  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming' or 'functions'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'."
+  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
   validation {
-    condition     = contains(["objectstorage", "streaming", "functions"], var.service_connector_target_kind)
-    error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming or functions."
+    condition     = contains(["objectstorage", "streaming", "functions", "logginganalytics"], var.service_connector_target_kind)
+    error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming, functions or logginganalytics."
   }
 }
 variable "existing_service_connector_bucket_vault_compartment_id" {

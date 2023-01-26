@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Secure Landing Zone Quick Start Configuration"
@@ -12,10 +12,11 @@ variableGroups:
     variables:
       - "region"
       - "service_label"
-      - "env_advanced_options"
-      - "extend_landing_zone_to_new_region"
+      - "cis_level"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
+      - "env_advanced_options"
+      - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
@@ -27,21 +28,21 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_storage_admin_group_name"
       - "existing_security_fun_dyn_group_name"
       - "existing_appdev_fun_dyn_group_name"
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name"
  
-  - title: "Networking"
+  - title: "Networking - Generic VCNs"
     variables:
       - "vcn_cidrs"
       - "net_advanced_options"
       - "vcn_names"
       - "subnets_names"
       - "subnets_sizes"
-
     
-  - title: "Exadata Cloud Service"
+  - title: "Networking - Exadata Cloud Service VCNs"
     variables:
       - "exacs_vcn_cidrs"
       - "exa_advanced_options"
@@ -50,27 +51,41 @@ variableGroups:
       - "exacs_backup_subnet_cidrs"
       - "deploy_exainfra_cmp"
     
-  - title: "Connectivity"
+  - title: "Networking - Hub/Spoke"
     variables:
-      - "is_vcn_onprem_connected"
-      - "onprem_cidrs"
-      - "onprem_src_ssh_cidrs"
       - "hub_spoke_architecture"
-      - "connectivity_advanced_options"
+      - "hs_advanced_options"
       - "dmz_vcn_cidr"
       - "dmz_for_firewall"
       - "dmz_number_of_subnets"
       - "dmz_subnet_size"
+      
+  - title: "Networking - Public Connectivity"
+    variables:
       - "no_internet_access"
-      - "existing_drg_id"
       - "public_src_bastion_cidrs"
       - "public_src_lbr_cidrs"
-      - "public_dst_cidrs"
+      - "public_dst_cidrs"    
 
+  - title: "Networking - Connectivity to On-Premises"
+    variables:
+      - "is_vcn_onprem_connected"
+      - "onprem_cidrs"
+      - "onprem_src_ssh_cidrs"
+  
+  - title: "Networking - DRG (Dynamic Routing Gateway)"
+    variables:
+      - "existing_drg_id"  
+    visible: 
+     or:
+       - is_vcn_onprem_connected
+       - hub_spoke_architecture   
+      
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
       - "security_admin_email_endpoints"
+      - "notifications_advanced_options"
       - "compute_admin_email_endpoints"
       - "storage_admin_email_endpoints"
       - "database_admin_email_endpoints"
@@ -80,37 +95,47 @@ variableGroups:
       - "create_events_as_enabled"
       - "alarm_message_format"
 
+  - title: "Object Storage"
+    variables:
+      - "enable_oss_bucket"
+      - "existing_bucket_vault_compartment_id"
+      - "existing_bucket_vault_id"
+      - "existing_bucket_key_id"
+
   - title: "Cloud Guard"
     variables:
-      - "cloud_guard_configuration_status"
+      - "enable_cloud_guard"
+      - "enable_cloud_guard_cloned_recipes"
+      - "cloud_guard_reporting_region"
+      - "cloud_guard_risk_level_threshold"
+      - "cloud_guard_admin_email_endpoints"
 
-  - title: "Logging Consolidation: Service Connector Hub For Audit Logs"
+  - title: "Security Zones"
     variables:
-      - "create_service_connector_audit"
-      - "service_connector_audit_target"
-      - "service_connector_audit_state"
-      - "service_connector_audit_target_OCID"
-      - "service_connector_audit_target_cmpt_OCID"
-      - "sch_audit_target_rollover_MBs"
-      - "sch_audit_target_rollover_MSs"
-      - "sch_audit_objStore_objNamePrefix"
-  
-  - title: "Logging Consolidation: Service Connector Hub For VCN Flow Logs"
+    - "enable_security_zones"
+    - "sz_security_policies"
+
+  - title: "Logging Consolidation: Service Connector Hub"
     variables:
-      - "create_service_connector_vcnFlowLogs"
-      - "service_connector_vcnFlowLogs_target"
-      - "service_connector_vcnFlowLogs_state"
-      - "service_connector_vcnFlowLogs_target_OCID"
-      - "service_connector_vcnFlowLogs_target_cmpt_OCID"
-      - "sch_vcnFlowLogs_target_rollover_MBs"
-      - "sch_vcnFlowLogs_target_rollover_MSs"
-      - "sch_vcnFlowLogs_objStore_objNamePrefix"  
+      - "enable_service_connector"
+      - "activate_service_connector"
+      - "service_connector_target_kind"
+      - "existing_service_connector_bucket_vault_compartment_id"
+      - "existing_service_connector_bucket_vault_id"
+      - "existing_service_connector_bucket_key_id"
+      - "existing_service_connector_target_stream_id"
+      - "existing_service_connector_target_function_id"
   
   - title: "Vulnerability Scanning"
     variables:
       - "vss_create"
       - "vss_scan_schedule"
       - "vss_scan_day"
+      - "vss_port_scan_level"
+      - "vss_agent_scan_level"
+      - "vss_agent_cis_benchmark_settings_scan_level"
+      - "vss_enable_file_scan"
+      - "vss_folders_to_scan"
 
   - title: "Cost Management"
     variables:
@@ -144,6 +169,15 @@ variables:
     description: "A unique label that gets prepended to all resources created by the Landing Zone."
     required: true
 
+  cis_level:
+    type: enum
+    title: CIS Level
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    enum:
+      - "1"
+      - "2"
+    required: true  
+
   region:
     type: oci:identity:region:name
     title: "Region"
@@ -155,7 +189,13 @@ variables:
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
     default: false
-    visible: env_advanced_options
+  
+  existing_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing enclosing compartment"
+    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the Root compartment."
+    required: false 
+    visible: use_enclosing_compartment
 
   extend_landing_zone_to_new_region:
     type: boolean
@@ -164,16 +204,6 @@ variables:
     default: false
     visible: env_advanced_options
   
-  existing_enclosing_compartment_ocid:
-    type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "The enclosing compartment where Landing Zone compartments will be created. If not provided and \"Use enclosing compartment?\" is checked, an enclosing compartment is created under the root compartment."
-    required: false 
-    visible:  
-      and:
-        - env_advanced_options
-        - use_enclosing_compartment
-
   policies_in_root_compartment:
     type: enum
     title: "CREATE or USE policies in the root compartment?"
@@ -186,65 +216,93 @@ variables:
     visible: env_advanced_options
 
   existing_iam_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing IAM admin group name"
     description: "Existing group to which IAM management policies will be granted to."
     visible: env_advanced_options 
         
   existing_cred_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing credentials admin group name"
     description: "Existing group to which credentials management policies will be granted to."
     visible: env_advanced_options
       
   existing_security_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing security admin group name"
     description: "Existing group to which security management policies will be granted to."
     visible: env_advanced_options
       
   existing_network_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing network admin group name"
     description: "Existing group to which network management policies will be granted to."
     visible: env_advanced_options
       
   existing_appdev_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing application development admin group name"
     description: "Existing group to which application development management policies will be granted to."
     visible: env_advanced_options
       
   existing_database_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing database admin group name"
     description: "Existing group to which database management policies will be granted to."
     visible: env_advanced_options
   
   existing_exainfra_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing admin group name for Exadata infrastructure"
     description: "Existing group to which Exadata infrastructure management policies will be granted to."
     visible: env_advanced_options      
   
   existing_auditor_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing auditors group name"
     description: "Existing group to which auditing policies will be granted to."
     visible: env_advanced_options
       
   existing_announcement_reader_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing announcement readers group name"
     description: "Existing group to which announcement reading policies will be granted to."
     visible: env_advanced_options  
   
   existing_cost_admin_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
-    visible: env_advanced_options 
+    visible: env_advanced_options
 
+  existing_storage_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Storage Admin group name"
+    description: "Existing group to which Storage management policies will be granted to."
+    visible: env_advanced_options  
+ 
   existing_security_fun_dyn_group_name:
     type: string
     title: "Existing security dynamic group name"
@@ -275,10 +333,10 @@ variables:
     description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
     default: false
   
-  connectivity_advanced_options:
+  hs_advanced_options:
     type: boolean
     title: "Advanced Options"
-    description: "Advanced options for Networking. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
+    description: "Advanced options for Hub/Spoke. It allows for creating a DMZ VCN. For details please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md\">VARIABLES.md</a>."
     default: false
 
   vcn_cidrs:
@@ -290,7 +348,7 @@ variables:
     maxItems: 9
     minItems: 1
     title: "VCNs CIDR Blocks"
-    description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub & Spoke Architecture?' is selected under 'Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
+    description: "CIDR blocks for the VCNs in CIDR notation. Each CIDR block corresponds to one VCN. When 'Deploy Hub/Spoke Architecture?' is selected under 'Advanced Options', these VCNs are turned into spoke VCNs. (Type the name and hit enter to enter multiple values, up to a maximum of 9)"
     default: ["10.0.0.0/20"]
 
   vcn_names:
@@ -326,32 +384,31 @@ variables:
     required: false
     visible: net_advanced_options
     default: []  
-  
+
   is_vcn_onprem_connected:
     type: boolean
     title: "Connect Landing Zone VCN(s) to on-premises network?"
-    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
+    description: "Whether the VCNs are connected to the on-premises network, in which case a DRG is attached to the VCNs. If checked, either a new  DRG is deployed or an existing DRG can be reused (if you provide its OCID in 'Existing DRG OCID' field below. You must click the check box for the field to appear.) Required if 'Existing DRG OCID' is not provided and 'Block Internet Access?' is checked."
     default: false
-  #  visible: net_advanced_options
-
+  
   public_src_bastion_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound SSH and RDP CIDR Blocks"
+    title: "Bastion Inbound SSH and RDP CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make SSH and RDP inbound connections to bastion servers that are eventually deployed in public subnets. 0.0.0.0/0 is not allowed in the list. (Type the name and hit enter to enter multiple values)"
     default: []
-
+    
   public_src_lbr_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true  
-    title: "Inbound HTTPS CIDR Blocks"
+    title: "Load Balancer Inbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation allowed to make HTTPS inbound connections to a Load Balancer that is eventually deployed. (Type the name and hit enter to enter multiple values)"
     default: []
 
   public_dst_cidrs:
@@ -359,16 +416,15 @@ variables:
     items:
       type: string
     uniqueItems: true  
-    title: "Outbound HTTPS CIDR Blocks"
+    title: "NAT Outbound HTTPS CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of external IP ranges in CIDR notation for HTTPS outbound connections. (Type the name and hit enter to enter multiple values)"
+    description: "List of external IP ranges in CIDR notation for HTTPS outbound connections. Applies to connections made over NAT Gateway. (Type the name and hit enter to enter multiple values)"
     default: []  
 
   existing_drg_id:
     type: string
     title: "Existing DRG OCID"
-    #description: "The OCID of an existing DRG. If provided, no DRG is created even if 'Connect Landing Zone VCN(s) to on-premises network?' is checked."
-    description: "The OCID of an existing DRG. If provided, no DRG is created."
+    description: "The OCID of an existing DRG, used in Hub/Spoke and when connecting to On-Premises network. Provide a value if you do NOT want the Landing Zone to deploy a DRG."
     default: ""
     visible: 
       or:
@@ -382,7 +438,7 @@ variables:
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. Required if 'Block Internet Access?' is checked."
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. The blocks are added to route rules and NSGs. If 'Block Internet Access?' is checked, it's advised to provide values here, or your OCI network will not have any entry points."
     visible: is_vcn_onprem_connected
     
   onprem_src_ssh_cidrs:
@@ -392,21 +448,20 @@ variables:
     uniqueItems: true  
     title: "On-premises network CIDR Blocks Allowed to Connect over SSH and RDP"
     #pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to make SSH and RDP inbound connections. It must be a subset of 'On-premises network CIDR blocks'."
+    description: "List of on-premises IP ranges allowed to make SSH and RDP inbound connections."
     visible: is_vcn_onprem_connected
     
   no_internet_access:
     type: boolean
     title: "Block Internet Access?"
-    description: "Determines if the VCNs are directly connected to the Internet. If unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created and it becomes required to check 'Connect Landing Zone VCN(s) to on-premises network?' in the Networking section above."
+    description: "Determines if the VCNs are directly connected to the Internet. If left unchecked, an Internet Gateway and NAT Gateway are created for Internet connectivity. If checked, Internet Gateway and NAT Gateway are NOT created. In this case, it is recommended to check 'Connect Landing Zone VCN(s) to on-premises network?' and provide values to 'On-premises Network CIDR Blocks' in the 'Networking - Connectivity to On-Premises' section below, or your OCI network will not have any entry points."
     default: false
 
   hub_spoke_architecture:
     type: boolean
-    title: "Deploy Hub & Spoke Architecture?"
-    description: "Determines if a Hub & Spoke network architecture is to be deployed.  Allows for inter-spoke routing."
+    title: "Deploy Hub/Spoke Architecture?"
+    description: "Determines if Hub/Spoke network architecture is to be deployed.  Allows for inter-spoke routing through a DRG. If checked, either a new DRG is deployed or an existing DRG can be reused (if you provide its OCID in 'Existing DRG OCID' field below. You must click the check box for the field to appear.) With Hub/Spoke, all VCNs (generic and ExaCS) are peered through the DRG."
     required: false
-    #visible: net_advanced_options
   
   dmz_vcn_cidr:
     type: string
@@ -416,7 +471,7 @@ variables:
     required: ${hub_spoke_architecture}
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   dmz_for_firewall:
@@ -426,7 +481,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
         
   dmz_number_of_subnets:
@@ -436,7 +491,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   dmz_subnet_size: 
@@ -446,7 +501,7 @@ variables:
     required: false
     visible: 
      and:
-       - connectivity_advanced_options
+       - hs_advanced_options
        - hub_spoke_architecture
 
   exacs_vcn_cidrs:
@@ -503,7 +558,7 @@ variables:
     title: "CIDR Blocks for Exadata Backup Subnets (Must not overlap with 192.168.128.0/20)"
     description: "List of CIDR blocks for the backup subnets of Exadata Cloud Service VCNs, in CIDR notation. Each provided CIDR value relates to one and only one VCN, the 'nth' value applying to the 'nth' value in 'CIDR blocks for Exadata VCNs'. (Type the CIDR and hit enter to enter multiple values, up to a maximum of 9)"
     visible: exa_advanced_options
-    
+
   deploy_exainfra_cmp:
     type: boolean
     title: "Create Compartment for Exadata Infrastructure?"
@@ -529,6 +584,12 @@ variables:
     required: true
     description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
 
+  notifications_advanced_options:
+    type: boolean
+    title: "Additional Notification Endpoints"
+    description: "Allows for notifications that are not required by CIS Benchmark."
+    default: false
+  
   compute_admin_email_endpoints:
     type: array
     items:
@@ -537,6 +598,7 @@ variables:
     title: "Compute Admin Email Endpoints"
     required: false
     description: "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   storage_admin_email_endpoints:
     type: array
@@ -546,6 +608,7 @@ variables:
     title: "Storage Admin Email Endpoints"
     required: false
     description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   database_admin_email_endpoints:
     type: array
@@ -555,6 +618,7 @@ variables:
     title: "Database Admin Email Endpoints"
     required: false
     description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   exainfra_admin_email_endpoints:
     type: array
@@ -563,7 +627,8 @@ variables:
     uniqueItems: true
     title: "Exadata Infrastructure Admin Email Endpoints"
     required: false
-    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"  
+    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options  
 
   budget_admin_email_endpoints:
     type: array
@@ -573,18 +638,21 @@ variables:
     title: "Budget Admin Email Endpoints"
     required: false
     description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   create_alarms_as_enabled:
     type: boolean
     title: "Create alarms as enabled?"
     description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
     default: false
+    visible: notifications_advanced_options
     
   create_events_as_enabled:
     type: boolean
     title: "Create events as enabled?"
     description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
     default: false
+    visible: notifications_advanced_options
 
   alarm_message_format:
     type: enum
@@ -595,181 +663,182 @@ variables:
       - PRETTY_JSON
       - ONS_OPTIMIZED
       - RAW
+    visible: notifications_advanced_options  
       
-  cloud_guard_configuration_status:
-    type: enum
-    title: "Cloud Guard Configuration Status"
-    description: "Determines whether Cloud Guard should be enabled in the tenancy. If 'ENABLE', a target is created for the Root compartment."
+  enable_cloud_guard:
+    type: boolean
+    title: "Enable Cloud Guard Service? (Uncheck if Cloud Guard is already enabled and a target exists for the Root compartment)"
+    description: "If selected, Cloud Guard service is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see <a href=\"https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle\">documentation</a>. If Cloud Guard is already enabled and a target exists for the Root compartment, unselect this option."
     required: true
+
+  enable_cloud_guard_cloned_recipes:
+    type: boolean
+    title: "Enable Cloud Guard Cloned Recipes?"  
+    description: "Whether cloned recipes are attached to the managed Cloud Guard target. If not set, Oracle managed recipes are attached."
+    required: false
+    visible: enable_cloud_guard
+      
+  cloud_guard_reporting_region:
+    type: oci:identity:region:name
+    title: "Reporting Region"
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
+    required: false
+    visible: enable_cloud_guard
+
+  cloud_guard_risk_level_threshold:
+    type: enum
+    title: "Minimum Risk Level Threshold"
+    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
+    required: false
+    default: High
     enum:
-      - ENABLE
-      - DISABLE
+      - Critical
+      - High
+      - Medium
+      - Minor
+      - Low
+    visible: enable_cloud_guard  
+
+  cloud_guard_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Cloud Guard Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: enable_cloud_guard  
   
+  # Security Zone - Variables
+  enable_security_zones:
+    type: boolean
+    title: Enable Security Zones
+    description: "Determines if Security Zones are enabled in Landing Zone compartments."
+    default: false
+
+  sz_security_policies:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: Security Zone policies
+    description: "List of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id your-tenancy-ocid"
+    visible: 
+      and:
+        - ${enable_security_zones}
+
   # Service Connector Hub For Audit Logs - Variables
-  create_service_connector_audit:
+  enable_service_connector:
     type: boolean
     required: true
-    title: "Create Service Connector Hub for Audit Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for Audit logs. Costs associated are due to storing objects in Object Storage, Streaming or Function invocations."
-    default: false
-
-  service_connector_audit_target:
+    title: "Enable Service Connector?"
+    description: "Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur)."
+  
+  activate_service_connector:
+    type: boolean
+    required: true
+    title: "Activate Service Connector? (This might incur some cost)"
+    description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+    visible: enable_service_connector
+  
+  service_connector_target_kind:
     type: enum
     required: false
-    title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for Audit Logs. Select one of objectstorage, streaming or functions."
+    title: "Service Connector Target Kind"
+    description: "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
     default: objectstorage
-    visible: create_service_connector_audit
+    visible: enable_service_connector
     enum:
       - objectstorage
       - streaming
       - functions
+      - logginganalytics
 
-  service_connector_audit_state:
-    type: enum
+  existing_service_connector_bucket_vault_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used to encrypt Service Connector target Object Storage bucket."
     required: false
-    title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for Audit logs."
-    default: INACTIVE
-    visible: create_service_connector_audit
-    enum:
-      - INACTIVE
-      - ACTIVE
-
-  service_connector_audit_target_OCID:
-    type: string
-    required: false
-    title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for Audit logs."
-    visible: 
+    visible:
       and:
-        - ${create_service_connector_audit}
-        - or:
-          - eq:
-            - service_connector_audit_target
-            - "streaming"
-          - eq:
-            - service_connector_audit_target
-            - "functions"
-
-  service_connector_audit_target_cmpt_OCID:
-    type: string
-    required: false
-    title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for Audit logs."
-    visible: 
-      and:
-        - ${create_service_connector_audit}
-        - or:
-          - eq:
-            - service_connector_audit_target
-            - "streaming"
-          - eq:
-            - service_connector_audit_target
-            - "functions"
-
-  sch_audit_objStore_objNamePrefix:
-    type: string
-    required: false
-    title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for Audit logs."
-    default: "sch-audit"
-    visible: 
-      and:
-        - ${create_service_connector_audit}
+        - ${enable_service_connector}
         - eq:
-          - service_connector_audit_target
+          - service_connector_target_kind
           - "objectstorage"
-
-
-  # Service Connector Hub For VCN Flow Logs - Variables
-  create_service_connector_vcnFlowLogs:
-    type: boolean
-    required: true
-    title: "Create Service Connector Hub for VCN Flow Logs (This might incur some cost)"
-    description: "Create Service Connector Hub for VCN Flow logs. Costs associated are due to storing objects in Object Storage, Streaming or Function invocations."
-    default: false
-
-  service_connector_vcnFlowLogs_target:
-    type: enum
-    required: false
-    title: "Service Connector Hub Target"
-    description: "Destination for Service Connector Hub for VCN Flow Logs. Select one of - objectstorage, streaming or functions."
-    default: objectstorage
-    visible: create_service_connector_vcnFlowLogs
-    enum:
-      - objectstorage
-      - streaming
-      - functions
-
-  service_connector_vcnFlowLogs_state:
-    type: enum
-    required: false
-    title: "Service Connector Hub State"
-    description: "State in which to create the Service Connector Hub for VCN Flow logs."
-    default: INACTIVE
-    visible: create_service_connector_vcnFlowLogs
-    enum:
-      - INACTIVE
-      - ACTIVE
-
-  service_connector_vcnFlowLogs_target_OCID:
-    type: string
-    required: false
-    title: "Target Stream/Function OCID"
-    description: "Applicable only for streaming/functions target types. OCID of stream/function target for the Service Connector Hub for VCN Flow logs."
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
-        - or:
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "streaming"
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "functions"
-
-  service_connector_vcnFlowLogs_target_cmpt_OCID:
-    type: string
-    required: false
-    title: "Target Stream/Function Compartment OCID"
-    description: "Applicable only for streaming/functions target types. OCID of compartment containing the stream/function target for the Service Connector Hub for VCN Flow logs."
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
-        - or:
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "streaming"
-          - eq:
-            - service_connector_vcnFlowLogs_target
-            - "functions"
-
-  sch_vcnFlowLogs_objStore_objNamePrefix:
-    type: string
-    required: false
-    title: "Object Name Prefix for Object Storage Target"
-    description: "Applicable only for objectstorage target type. The prefix for the objects for VCN Flow logs."
-    default: "sch-vcnFlowLogs"
-    visible: 
-      and:
-        - ${create_service_connector_vcnFlowLogs}
         - eq:
-          - service_connector_vcnFlowLogs_target
+          - cis_level
+          - "2"  
+
+  existing_service_connector_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
           - "objectstorage"
-    
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
+      vaultId: ${existing_service_connector_bucket_vault_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_target_stream_id:
+    type: string
+    required: false
+    title: "Existing Target Stream"
+    description: "An existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "streaming"
+
+  existing_service_connector_target_function_id:
+    type: string
+    required: false
+    title: "Existing Target Function"
+    description: "An existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "functions"
+
   # Vulnerability Scanning
   vss_create:
     type: boolean
     title: "Enable Vulnerability Scanning?"
-    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is created and scanning targets are created for each Landing Zone compartment."
-    default: true
-
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment."
+  
   vss_scan_schedule:
     type: enum
     title: "Scanning Schedule"
     description: "When to scan. WEEKLY or DAILY."
-    default: WEEKLY
+    #default: WEEKLY
     visible: vss_create
     enum:
       - WEEKLY
@@ -779,7 +848,7 @@ variables:
     type: enum
     title: "Scanning Day"
     description: "The day when to scan. Applies to weekly scans only."
-    default: SUNDAY
+    #default: SUNDAY
     enum:
       - SUNDAY
       - MONDAY
@@ -795,6 +864,116 @@ variables:
           - vss_scan_schedule
           - "WEEKLY"
 
+  vss_port_scan_level:
+    type: enum
+    title: "Port Scan Level"
+    description : "Checks for open ports using a network mapper that searches your public IP addresses. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+    enum:
+      - STANDARD
+      - LIGHT
+      - NONE  
+    visible: vss_create
+
+  vss_agent_scan_level:
+    type: enum
+    title: "Agent Scan Level"
+    description : "Checks for open ports on both public and private IP addresses, OS vulnerabilities; compliance with industry benchmarks, vulnerabilities in third-party application files (for application files scanning, check 'Enable File Scanning' below)."
+    enum:
+      - STANDARD
+      - NONE  
+    visible: vss_create   
+
+  vss_agent_cis_benchmark_settings_scan_level:
+    type: enum
+    title: "Agent CIS Benchmark Settings Scan Level"
+    description : "Checks targets for compliance with industry-standard benchmarks published by the Center for Internet Security (CIS)"
+    enum:
+      - STRICT
+      - MEDIUM
+      - LIGHTWEIGTH
+      - NONE
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_enable_file_scan:
+    type: boolean
+    title: "Enable File Scanning?"
+    description: "Whether file scanning is enabled."
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_folders_to_scan:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Folders to Scan"
+    required: false
+    description: "List of file system folders to scan. Required if 'Enable Folder Scanning?' is selected. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell (Type a value and hit enter to enter multiple values)."
+    visible: 
+      and:
+        - ${vss_create}
+        - ${vss_enable_file_scan}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+# Object Storage
+  enable_oss_bucket:
+    type: boolean
+    title: "Enable Object Storage bucket?"
+    description: "Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment. Providing an encryption key is optional. If a key is not provided and 'CIS Level' is set to 2, the Landing Zone will manage the key."
+    required: false
+
+  existing_bucket_vault_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used in Object Storage bucket encryption."
+    required: false
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used in Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_vault_compartment_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used for Object Storage bucket encryption."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_bucket_vault_compartment_id}
+      vaultId: ${existing_bucket_vault_id}
+    visible: 
+      and: 
+        - enable_oss_bucket
+        - eq:
+          - cis_level
+          - "2"
+          
 # Cost Management
   create_budget:
     type: boolean

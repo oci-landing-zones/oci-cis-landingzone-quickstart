@@ -1,3 +1,243 @@
+#  January 26, 2023 Release Notes - 2.5.2
+1. [Service Connector Hub Improvements](#2-5-2-sch-improvements)
+1. [CIS Level Setting Updates](#2-5-2-cis-level)
+
+## <a name="2-5-2-sch-improvements">Service Connector Hub Improvements</a>
+Service Connector Hub functionality has been improved with the following:
+- Audit logs from all tenancy compartments are now captured.
+- Support for Logging Analytics as target. With this update, the following targets are supported: Object Storage, Streaming, Functions and Logging Analytics.
+
+## <a name="2-5-2-cis-level">CIS Level Setting Updates</a>
+Following updates were made regarding the CIS Level setting (*cis_level* variable):
+- Setting *cis_level* variable to "2" is enough for OCI Vault creation. Previously, the OCI Vault creation would also require a bucket and no provided existing vault.
+- Write logs for buckets are only created if *cis_level* variable is set to "2". Previously, bucket write logs were not impacted by CIS Level setting.
+
+
+#  December 16, 2022 Release Notes - 2.5.1
+1. [CIS Compliance Script fixes](#2-5-1-script-update)
+1. [Improved Terraform Windows Support](#2-5-1-terraform-windows)
+
+## <a name="2-5-1-script-update">CIS Compliance Script fixes</a>
+The CIS Compliance Checking script [.cis_reports.py](./scripts/cis_reports.py) has had the following fixes:
+- Fixed consolidated xlsx file generation on Windows command line and Powershell.
+- Converted from positional arguments in OCI API calls to named arguments.
+
+## <a name="2-5-1-terraform-windows">Improved Terraform Windows Support</a>
+Fixed support for deploying terraform via Windows. Closes [Issue](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/61).
+
+#  December 05, 2022 Release Notes - 2.5.0
+1. [OCI Best Practices Checks Added to CIS Compliance Script](#2-5-0-script-update)
+1. [Cloud Guard Improvements](#2-5-0-cloud-guard-improvements)
+
+## <a name="2-5-0-script-update">OCI Best Practices Checks Added to CIS Compliance Script</a>
+The CIS Compliance Checking script [.cis_reports.py](./scripts/cis_reports.py) has had the following enhancements:
+- CIS compliance checking script has added checking for OCI Best Practices (OBP).  The following OCI Best Practices in your tenancy:
+    - Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
+    - A Budget for cost track is created in your tenancy
+    - Network connectivity to on-premises is redundant 
+    - Cloud Guard is configured at the root compartment with detectors and responders 
+    
+- Redaction of OCIDs before data is written to CSVs using the `--redact` flag.  This uses a sha256 hashes of OCID to maintain OCID consistency across files.
+- Reduced script runtime by synchronously reading OCI resources.
+- CSV files will be consolidated into a single XLSX file if the python3 environment has `xlsxwriter` installed.  
+
+See [compliance-script.md](./compliance-script.md#usage) for usage.
+
+## <a name="2-5-0-cloud-guard-improvements">Cloud Guard Improvements</a>
+Cloud Guard module has been updated with the following features:
+- Cloud Guard resources creation made optional, based on *enable_cloud_guard* input variable. Cloud Guard is enabled by default.
+- Support for cloned detector and responder recipes, based on *enable_cloud_guard_cloned_recipes* input variable. By default, for keeping backwards compatibility, the module uses Oracle managed recipes.
+- Support for customer provided reporting region. If reporting region is not provided, the module defaults to home region.
+- Resource Manager user interface reflects above changes.
+
+See [Cloud Guard variables](./VARIABLES.md#cloud-guard-variables) for details.
+
+#  October 28, 2022 Release Notes - 2.4.3
+## Bug Fixes
+- Arch Center tag module conditioned to Landing Zone not being extended. Fix in [mon_tags.tf](./config/mon_tags.tf).
+- CIS Compliance checking script was looking for attributes not available in list analytics and list integrations instances API calls. 
+#  October 14, 2022 Release Notes - 2.4.2
+1. [Compliance Checking Supports Custom OCI Config File Location](#2-4-2-script-config-file)
+1. [Custom Security Zone policies support for all OCI realms](#2-4-2-sz-all-realms)
+1. [Bug fixes](#2-4-2-bug-fixes)
+
+## <a name="2-4-2-script-config-file">Compliance Checking Supports Custom OCI Config File Location</a>
+The Compliance checking script adds a new flag `-c` that takes the location of an OCI config file. This flag allows users to specify which OCI config file to use instead of using the one in the default location (`~/.oci/config`).
+
+## <a name="2-4-2-sz-all-realms">Custom Security Zone policies support for all OCI realms</a>
+Custom Security Zone policies are now supported by CIS Landing Zone in all OCI realms where Custom Security Zones are available.
+
+## <a name="2-4-2-bug-fixes">Bug Fixes</a>
+- Incorrect *backups* resource-type replaced by *db-backups* for database admin grants in [iam_policies.tf](./config/iam_policies.tf).
+- Event types fixed for Exadata Cloud Service in [mon_notifications.tf](./config/mon_notifications.tf).
+
+# September 16, 2022 Release Notes - 2.4.1
+1. [Compliance Checking Report Identity Domain Fix](#2-4-1-script-fix)
+
+## <a name="2-4-1-script-fix">Compliance Checking Report Identity Domain Fix</a>
+Until this update, a user in the CIS Landing Zone Auditor group would not have been able to successfully run the compliance checking script in tenancies with Identity Domains.  The reason is tenancies with Identity Domains require elevated privileges to check the tenancies password policy.  With release 2.4.1 if the user doesn't have permissions to check password policy the script will continue running and just print an alert.
+
+# September 09, 2022 Release Notes - 2.4.0
+1. [Terraform Requirements](#2-4-0-tf-reqs)
+1. [CIS OCI Benchmark Configuration Profiles](#2-4-0-cis-level)
+1. [Custom Security Zones](#2-4-0-csz)
+1. [Service Connector Hub Improved Configuration](#2-4-0-sch-update)
+1. [Vulnerability Scanning Improved Configuration](#2-4-0-vss-update)
+1. [Application Bucket Improved Configuration](#2-4-0-appdev-bucket-update)
+1. [Data Safe Permissions](#2-4-0-datasafe-perms)
+
+## <a name="2-4-0-tf-reqs">Terraform Requirements</a>
+**The Terraform features in this release and future releases of the CIS Landing Zone will require Terraform binary 1.1.0 or higher**, where the *moved* block feature is available. The *moved* block provides a transparent way for preserving backwards compatibility in face of required code changes. We have consolidated all *moved* blocks in [moved.tf](./config/moved.tf). For details on this feature, please see: [Terraform's documentation on refactoring](https://www.terraform.io/language/modules/develop/refactoring).
+
+## <a name="2-4-0-cis-level">CIS OCI Benchmark Configuration Profiles</a>
+CIS Landing Zone introduces the ability to choose the CIS OCI configuration profile defined in the Benchmark. 
+
+When deploying CIS Landing Zone, users can now specify the CIS configuration profile level using the variable *cis_level* and it defines the configuration of some Landing Zone managed resources. For this release, the affected resources are Object Storage Buckets and Security Zones. The *cis_level* setting drives how buckets are encrypted and the minimum set of policies in a Security Zone.
+
+## <a name="2-4-0-csz">Security Zones</a>
+CIS Landing Zone adds to the overall tenancy security posture with the support for [Security Zones](https://docs.oracle.com/en-us/iaas/security-zone/using/security-zones.htm). Landing Zone users can now enable Security Zones for Landing Zone managed compartments and specify which policies to apply. These policies are the preventive controls that make sure a tenancy stays within the defined track as it evolves over time.  
+
+Aligning with the [CIS OCI Benchmark Configuration Profile](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the provided Security Zone policies are aligned to the CIS OCI Benchmark configuration profile Level 1. If *cis_level* is set to 2, the provided Security Zone policies are aligned to the CIS OCI Benchmark configuration profile Level 2. Below are the Security Zone policies to configuration profile level.
+
+| CIS Recommendation | CIS Level | Security Zone Policy Name               | Security Zone Policy Description                                                                                                                                               |
+| ------------------ | --------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 4.1.1              | 1         | deny public\_buckets                    | Object Storage buckets in a security zone can't be public.                                                                                                                     |
+| 2.8.0              | 1         | deny db\_instance\_public\_access       | Databases in a security zone can't be assigned to public subnets. They must use private subnets.                                                                               |
+| 4.2.1              | 2         | deny block\_volume\_without\_vault\_key | Block volumes in a security zone must use a customer-managed master encryption key in the Vault service. They can't use the default encryption key managed by Oracle.          |
+| 4.2.2              | 2         | deny boot\_volume\_without\_vault\_key  | Boot volumes in a security zone must use a customer-managed master encryption key in the Vault service. They can't use the default encryption key managed by Oracle.           |
+| 4.1.2              | 2         | deny buckets\_without\_vault\_key       | Object Storage buckets in a security zone must use a customer-managed master encryption key in the Vault service. They can't use the default encryption key managed by Oracle. |
+| 4.3.1              | 2         | deny file\_system\_without\_vault\_key  | File systems in the security zone must use a customer-managed master encryption key in the Vault service. They can't use the default encryption key managed by Oracle.         |
+
+## <a name="2-4-0-sch-update">Service Connector Hub Improved Configuration</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) as announced in [Updated Logging Architecture](#2-3-6-updated-logging) has been updated to optionally deploy Service Connector Hub related resources. As a result, existing users need to set *enable_service_connector* and *activate_service_connector* variables to *true* for Service Connector Hub resources to be created and to activate the service. For details, look at *enable_service_connector* and *activate_service_connector* variables in [VARIABLES.md](./VARIABLES.md#logging_variables).
+
+When deploying an Object Storage bucket as Service Connector target, users can now bring an existing key for bucket encryption. For details, look at *existing_service_connector_bucket_vault_compartment_id*, *existing_service_connector_bucket_vault_id* and *existing_service_connector_bucket_key_id* variables in [VARIABLES.md](./VARIABLES.md#logging_variables). Aligning with the [CIS Profile Levels](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the bucket is encrypted with an Oracle-managed key; if *cis_level* is set to 2, a customer-managed key (either provided or managed by Landing Zone) is used for bucket encryption.
+
+## <a name="2-4-0-vss-update">Vulnerability Scanning Improved Configuration</a>
+Users have more control on Landing Zone Vulnerability Scanning recipes. It is now possible to specify the levels for port scan, agent-based scan and CIS setting for agent-based scans. Additionally, users can enable file scanning for Linux systems and specify the folders to scan. Variables are described in [VARIABLES.md](./VARIABLES.md#vss_variables).
+
+Vulnerability Scanning is now disabled by default in CIS Landing Zone. Moving forward, the intent is enabling by default only those services that are required by CIS Benchmark. Existing users who are managing Vulnerability Scanning resources with Landing Zone should simply enable it back, by setting *vss_create* variable to true.
+
+A bug preventing Vulnerability Scanning target creation in default enclosing compartment has been fixed.
+
+## <a name="2-4-0-appdev-bucket-update">Application Bucket Improved Configuration</a>
+Previous to this release, CIS Landing Zone would manage a sample bucket in the Application compartment (a.k.a AppDev) and encrypt it with a customer-managed key. This has changed. Now the bucket creation is optional, and when deployed, the user has a choice to bring an existing key for encryption. Aligning with the [CIS Profile Levels](#2-4-0-cis-level) feature, if *cis_level* is set to 1, the bucket is encrypted with an Oracle-managed key; if *cis_level* is set to 2, a customer-managed key (either provided or managed by Landing Zone) is used for bucket encryption.
+
+## <a name="2-4-0-datasafe-perms">Data Safe Permissions</a>
+In the config directory, management permission for the Data Safe family has been added to the Database Administrators and Exadata Infrastructure Administrators groups. Read permission for the Data Safe family has been added to the Auditors group.
+
+In the pre-config directory, read permission for the Data Safe family has been added to the Database Administrators and Auditors groups.
+
+##
+
+# July 11, 2022 Release Notes - 2.3.6
+1. [Cloud Guard Events](#2-3-6-cg-events)
+1. [Updated Logging Architecture](#2-3-6-updated-logging)
+1. [Terraform OCI Provider Moved to oracle/oci](#2-3-6-provider-switch)
+1. [Architecture Center Tag](#2-3-6-arch-center-tag)
+1. [CIS Compliance Checking Script Update](#2-3-6-cis-script-update)
+
+## <a name="2-3-6-cg-events">Cloud Guard Events</a>
+Cloud Guard events have been added to Landing Zone notifications framework. Now users can be notified about Cloud Guard problems that exceeds a user provided criticality threshold.  To support this two new variables have been added to the Cloud Guard Section: `cloud_guard_risk_level_threshold` and `cloud_guard_admin_email_endpoints`. The risk_level_threshold determines what problems will trigger the event rule and send an email to the subscription in the new topic. A level of 'High' will include any problems with a risk level of High or above. This would include High and Critical problems. The event rule looks at any of the 3 Cloud Guard events: Problem Detected, Problem Dismissed and Problem Remediated.
+
+## <a name="2-3-6-updated-logging">Updated Logging Architecture</a>
+The [Service Connector Hub module](./config/mon_service_connector.tf) has been updated to align with the [best practice architecture for third-party SIEM tools](https://github.com/oracle-quickstart/oci-arch-logging-splunk).
+Now there is a single Landing Zone Service Connector that ingests three log sources (Audit logs, VCN flow logs and Object Storage logs) into a target resource of choice: Object Storage Bucket, Stream or Function.
+Landing Zone creates the Bucket and can either create the Stream or use an existing one. If a Function is the target, it must be provided as an input.
+
+## <a name="2-3-6-provider-switch">Terraform OCI Provider Moved to oracle/oci</a>
+Landing Zone has been updated with the new home for Terraform OCI provider. It has moved to oracle/oci from hashicorp/oci. 
+- Existing Landing Zone customers who use Terraform CLI are required to replace the provider in the state file. To update the state file, run the command below in the folder where the state file is present:
+
+        > terraform state replace-provider hashicorp/oci oracle/oci
+
+- Existing Landing Zone customers who use OCI Resource Manager do not need to do anything, as Resource Manager will update the state file based on the new Landing Zone configuration. 
+
+As part of this move, we have introduced provider requirements expressed in [provider.tf](./config/provider.tf):
+- Terraform required version >= 1.0.0
+- OCI provider version >= 4.78.0
+
+## <a name="2-3-6-arch-center-tag">Architecture Center Tag</a>
+A [defined tag](./config/mon_tags.tf) to track Landing Zone deployments through [OCI Architecture Center](https://docs.oracle.com/solutions/) has been added.
+
+## <a name="2-3-6-cis-script-update">CIS Compliance Checking Script Update</a>
+The CIS Compliance checking script now consolidates regional output.  There is a single directory which contains the summary report and findings reports in a directory, the name includes the tenancy name and datetime ex. `<tenancy-name>-2022-MM-DD_HH-MM/`.  The findings CSV in that directory now have a region column to tell you which region the resource is located. 
+
+In addition two new flags have been added:
+- `--region` - pass an OCI region name(s) ex. `--region us-ashburn-1,eu-frankfurt-1` and the script will check that region's resources for CIS compliance 
+- `--raw` - will output all OCI resource data collected into CSV files with the OCI Service name 
+
+For more details on these flags [compliance-script.md](./compliance-script.md)
+
+# June 13, 2022 Release Notes - Stable 2.3.5
+1. [CIS Compliance Checking Script 1.2 update](#2-3-5-script-update)
+1. [CIS 1.2 OCI IAM Policy Updates and Storage Admin](#2-3-5-storage_admin)
+1. [Connectivity Section Usability Improvements in Resource Manager](#2-3-5-conn_usage)
+1. [Removed Public RDP Access](#2-3-5-rdp-public-removal)
+
+
+## <a name="2-3-5-script-update">CIS Compliance Checking Script 1.2 update</a>
+The CIS reports script ([cis_reports.py](./scripts/cis_reports.py)) has been updated to check a tenancy’s compliance with the [CIS OCI Foundations Benchmark 1.2.0]( https://www.cisecurity.org/benchmark/oracle_cloud).  In addition to the new compliance checks, we have streamlined the checks in non-home regions to exclude the IAM since it is redundant.  We also added a new flag `--level` which allows you to run all the CIS OCI Foundations Benchmark 1.2 checks or only those checks associated with Level 1.  The [documentation](./compliance-script.md) for the CIS reports script has been updated to reflect this release.
+
+You can learn about what was added to version 1.2 of the benchmark [here](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update). 
+
+
+## <a name="2-3-5-storage_admin">CIS 1.2 OCI IAM Policy Updates and Storage Admin</a>
+We have introduced a group for storage management, entitled to delete OCI storage resources across Landing Zone compartments. The feature implements the recommendation 1.14 of CIS OCI Foundations Benchmark v1.2.0 that states *Ensure storage service-level admins cannot delete resources they manage*, ensuring segregation of duties from service-level administrators, who cannot delete resources they are managing.
+
+Our recommendation for using this group is to place users in it when they must delete an OCI storage resource and then remove their access once that resource is deleted.
+
+In addition we reviewed our policy for consistency.
+
+## <a name="2-3-5-conn_usage">Connectivity Section Usability Improvements</a>
+The *Connectivity* variables group in [schema.yml](./config/schema.yml) for OCI Resource Manager UI have been split for improved usability. Now we have separate sections for Hub/Spoke, Public Connectivity, Connectivity to on-premises and DRG. Some section titles and variables descriptions have also been updated.
+
+## <a name="2-3-5-rdp-public-removal">Removed Public RDP Access</a>
+We no longer grant RDP access to the bastion NSGs for `public_src_bastion_cidrs` CIDR addresses thus preventing public access to RDP.
+
+# May 11, 2022 Release Notes - Stable 2.3.4
+1. [Configurable Cloud Guard Alerting](#cg_alerting)
+1. [Advanced Options Check Preservation in Resource Manager](#orm_adv_options)
+1. [Notification Endpoints not Required by CIS Not Shown By Default](#hidden_endpoints)
+1. [ExaCS VCN Route Table Fix](#exacs_vcn_rt_fix)
+
+## <a name="cg_alerting">Configurable Cloud Guard Alerting based on Problem Risk Level</a>
+Cloud Guard Alerting can optionally be configured by the Landing Zone. Two new variables have been added to the Cloud Guard Section: cloud_guard_risk_level_threshold and cloud_guard_admin_email_endpoints. A new topic and new Event rule will be created only if a valid Email Endpoint is provided. The risk_level_threshold determines what problems will trigger the event rule and send an email to the subscription in the new topic. A level of 'High' will include any problems with a risk level of High or above. This would include High and Critical problems. The event rule looks at any of the 3 Cloud Guard events: Problem Detected, Problem Dismissed and Problem Remediated.
+
+## <a name="orm_adv_options">Advanced Options Check Preservation for Resource Manager</a>
+CIS Landing Zone interface for Resource Manager has check boxes allowing for advanced input options, hiding or showing groups of variables. The state of these options used to be reset when users needed to update the variables in the UI, hiding options chosen previously. Now the state is saved and no longer reset. Changes made in [config/variables.tf](./config/variables.tf).
+
+## <a name="hidden_endpoints">Notification Endpoints not Required by CIS Not Displayed By Default</a>
+Except for Security and Network notifications, all other endpoints are no longer displayed by default in [config/schema.yml](./config/schema.yml) for OCI Resource Manager. A new _Additional Notification Endpoints_ check box displays them when checked. 
+
+## <a name="exacs_vcn_rt_fix">ExaCS VCN Route Table Fix</a>
+A fix in the [route table of the Client subnet](./config/net_exacs_vcns.tf) allows for proper on-premises routing with or without a DMZ VCN. If a DMZ VCN is deployed, traffic to an on-premises IP address goes through the VCN. Otherwise, traffic goes to on-premises directly through the DRG.
+
+# April 6, 2022 Release Notes - Stable 2.3.3
+1. [Cloud Guard Updates](#cg_updates)
+1. [VSS Policy Update](#vss_update)
+1. [Code Examples Aligned with Deployment Guide](#code_examples)
+
+## <a name="cg_updates">Cloud Guard Updates</a>
+- [Cloud Guard policy](./config/iam_service_policies.tf) has been simplified with *Allow service cloudguard to read all-resources in tenancy*. This way no policy changes are needed as new services are integrated with Cloud Guard.
+- [Cloud Guard enablement](./config/mon_cloud_guard.tf) and [target creation logic](./modules/monitoring/cloud-guard/main.tf) have been updated, but still based on *cloud_guard_configuration_status* variable. When the variable is set to 'ENABLE', Cloud Guard is enabled and a target is created for the Root compartment. **Customers need to make sure there is no pre-existing Cloud Guard target for the Root compartment or target creation will fail**. If there is a **pre-existing** Cloud Guard target for the Root compartment, set the variable to 'DISABLE'. In this case, any **pre-existing** Cloud Guard Root target is left intact. However, keep in mind that once you set the variable to 'ENABLE', Cloud Guard Root target becomes managed by Landing Zone. If later on you switch to 'DISABLE', Cloud Guard remains enabled but the Root target is deleted.
+
+## <a name="vss_update">VSS Policy Update</a>
+[Policy update](./config/iam_service_policies.tf) allowing Vulnerability Scanning Service (VSS) to scan containers in OCI Registry: *Allow service vulnerability-scanning-service to read repos in tenancy*.
+
+## <a name="code_examples">Code Examples Aligned with Deployment Guide</a>
+An [examples](./examples/) folder has been added showcasing input variables for the various deployment samples provided in the [deployment guide](DEPLOYMENT-GUIDE.md). The examples follow Oracle documentation guidelines for acceptable company name.
+
+# March 18, 2022 Release Notes - Stable 2.3.2
+1. [Deployment Guide](#deployment_guide)
+1. [Reviewed IAM Admin Policies](#iam_policies_review)
+
+## <a name="deployment_guide">Deployment Guide</a>
+A compreehensive [deployment guide](DEPLOYMENT-GUIDE.md) for CIS Landing Zone is now available. It covers key deployment considerations, the architecture, major deployment scenarios, customization guidance, detailed steps how to deploy using Terraform CLI and with Resource Manager UI/CLI as well as various deployment configuration samples.
+
+## <a name="iam_policies_review">Reviewed IAM Admin Policies</a>
+IAM admin policy has been updated to not allow IAM administrators to manage compartments and policies at the Root compartment, thus avoiding privilege escalation.
+
 # February 25, 2022 Release Notes - Stable 2.3.1
 1. [Configurable Spoke Subnet Names and Subnet Sizes](#spoke_config)
 1. [Updated Compute Dynamic Group to support OS Management](#dg_osms)

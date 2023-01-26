@@ -7,8 +7,6 @@ Within the config folder, the Terraform files are named after the use cases they
 
 The variables in each root module are described in [Config Module Input Variables](VARIABLES.md#config_input_variables) and [Pre-Config Module Input Variables](VARIABLES.md#pre_config_input_variables).
 
-**Note**: The code has been written and tested with Terraform version 0.13.5 and OCI provider version 4.23.0.
-
 ## How to Execute the Code Using Terraform CLI
 Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
 
@@ -29,7 +27,7 @@ There are a few different ways of running Terraform code in OCI Resource Manager
 - creating an ORM stack by uploading a zip file to ORM;
 - creating an ORM stack by integrating with GitLab. 
 
-A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not be contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
+A stack is the ORM term for a Terraform configuration. Regardless of the chosen method, **an ORM stack must not contain any state file or *.terraform* folder in Terraform working folder (the *config* folder in this setup)**.
 
 For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
 

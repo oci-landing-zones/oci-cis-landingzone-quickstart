@@ -12,13 +12,23 @@ locals {
     notify_on_exainfra_changes_rule     = {key:"${var.service_label}-notify-on-exainfra-changes-rule",      name:"${var.service_label}-notify-on-exainfra-changes-rule"}
     notify_on_budget_changes_rule       = {key:"${var.service_label}-notify-on-budget-changes-rule",        name:"${var.service_label}-notify-on-budget-changes-rule"}
     notify_on_compute_changes_rule      = {key:"${var.service_label}-notify-on-compute-changes-rule",       name:"${var.service_label}-notify-on-compute-changes-rule"}
+    notify_on_cloudguard_events_rule    = {key:"${var.service_label}-notify-on-cloudguard-events-rule",     name:"${var.service_label}-notify-on-cloudguard-events-rule"}
 
-    exainfra_events = "\"com.oraclecloud.databaseservice.autonomous.exadata.infrastructure.critical\", \"com.oraclecloud.databaseservice.cloudexadatainfrastructure.critical\""
-    default_database_events = "\"com.oraclecloud.databaseservice.autonomous.database.critical\",\"com.oraclecloud.databaseservice.dbsystem.critical\""
-    database_events = var.deploy_exainfra_cmp == true ?  local.default_database_events: "${local.exainfra_events},${local.default_database_events}"
+    default_database_events = ["com.oraclecloud.databaseservice.autonomous.database.critical","com.oraclecloud.databaseservice.dbsystem.critical"]
+    exainfra_events = ["com.oraclecloud.databaseservice.exadatainfrastructure.critical","com.oraclecloud.databaseservice.autonomous.cloudautonomousvmcluster.critical"]
+    database_events = var.deploy_exainfra_cmp == true ?  concat(local.default_database_events,local.exainfra_events) : local.default_database_events
     
-  home_region_notifications = {
-   for i in [1] :     (local.notify_on_iam_changes_rule.key) => {
+    cloudguard_risk_levels = {
+    critical = ["CRITICAL"]
+    high     = ["CRITICAL","HIGH"]
+    medium   = ["CRITICAL","HIGH","MEDIUM"]
+    minor    = ["CRITICAL","HIGH","MEDIUM","MINOR"]
+    low      = ["CRITICAL","HIGH","MEDIUM","MINOR","LOW"]
+  }
+    
+    
+  home_region_notifications = merge(
+   {for i in [1] :     (local.notify_on_iam_changes_rule.key) => {
       compartment_id      = var.tenancy_ocid
       description         = "Landing Zone CIS related events rule to detect when IAM resources are created, updated or deleted."
       is_enabled          = true
@@ -52,7 +62,24 @@ locals {
       defined_tags        = local.notifications_defined_tags
       freeform_tags       = local.notifications_freeform_tags
     } if var.extend_landing_zone_to_new_region == false
-  }
+   },
+   {for i in [1] : (local.notify_on_cloudguard_events_rule.key) => {
+      compartment_id      = var.tenancy_ocid
+      description         = "Landing Zone events rule to notify when Cloud Guard problems are Detected, Dismissed or Resolved."
+      is_enabled          = true
+      condition           = jsonencode(
+           {"eventType":["com.oraclecloud.cloudguard.problemdetected","com.oraclecloud.cloudguard.problemdismissed","com.oraclecloud.cloudguard.problemremediated"],
+            "data":{"additionalDetails": {"riskLevel":local.cloudguard_risk_levels[lower(var.cloud_guard_risk_level_threshold)]}}
+           }
+      )
+      actions_action_type = "ONS"
+      actions_is_enabled  = true
+      actions_description = "Sends notification via ONS"
+      topic_id            = local.cloudguard_topic.id != null ? local.cloudguard_topic.id : module.lz_home_region_topics.topics[local.cloudguard_topic.key].id
+      defined_tags        = local.notifications_defined_tags
+      freeform_tags       = local.notifications_freeform_tags
+    } if (var.extend_landing_zone_to_new_region == false && length(var.cloud_guard_admin_email_endpoints)  > 0) }
+  )
   regional_notifications =  merge (
     {for i in [1] : (local.notify_on_network_changes_rule.key) => {
       compartment_id      = var.tenancy_ocid
@@ -136,18 +163,14 @@ locals {
       compartment_id      = local.database_topic.cmp_id       
       description         = "Landing Zone events rule to detect when database resources are created, updated or deleted in the database compartment."
       is_enabled          = var.create_events_as_enabled
-      condition           = <<EOT
-            {"eventType": 
-            [${local.database_events}]
-            }
-            EOT
+      condition           = jsonencode({"eventType": local.database_events})
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"
       topic_id            = local.database_topic.id == null ? module.lz_topics.topics[local.database_topic.key].id : local.database_topic.id
       defined_tags        = local.notifications_defined_tags
       freeform_tags       = local.notifications_freeform_tags
-    } if length(var.database_admin_email_endpoints)  > 0},
+    } if length(var.database_admin_email_endpoints) > 0},
 
      
      {for i in [1] : (local.notify_on_exainfra_changes_rule.key) => {     
@@ -218,21 +241,14 @@ locals {
 
 
 module "lz_notifications" {
-  depends_on = [null_resource.slow_down_notifications]
+  depends_on = [null_resource.wait_on_compartments]
   source     = "../modules/monitoring/notifications"
   rules = local.regional_notifications
 }
 
 module "lz_home_region_notifications" {
-  depends_on = [null_resource.slow_down_notifications]
+  depends_on = [null_resource.wait_on_compartments]
   source     = "../modules/monitoring/notifications"
   providers  = { oci = oci.home }
   rules = local.home_region_notifications
-}
-
-resource "null_resource" "slow_down_notifications" {
-  depends_on = [module.lz_compartments]
-  provisioner "local-exec" {
-    command = "sleep ${local.delay_in_secs}" # Wait for compartments to be available.
-  }
 }

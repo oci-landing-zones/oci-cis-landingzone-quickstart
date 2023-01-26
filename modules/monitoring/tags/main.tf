@@ -4,6 +4,14 @@
 ### This module creates a tag namespace, tags and tag defaults 
 ### only if tag defaults for tags in the oracle default tag namespace (typically 'Oracle-Tags') do not exist in the informed compartment.
 
+terraform {
+  required_providers {
+    oci = {
+      source = "oracle/oci"
+    }
+  }
+}
+
 locals {
     actual_tags = {for k, v in var.tags : k => v 
                             if !contains(data.oci_identity_tag_defaults.default.tag_defaults[*].tag_definition_name,k)} 
@@ -53,7 +61,7 @@ resource "oci_identity_tag" "these" {
         tag_namespace_id = oci_identity_tag_namespace.namespace[0].id 
         name             = each.key
         description      = each.value.tag_description
-	defined_tags     = each.value.tag_defined_tags
+	    defined_tags     = each.value.tag_defined_tags
         is_cost_tracking = each.value.tag_is_cost_tracking
         is_retired       = each.value.tag_is_retired
 }

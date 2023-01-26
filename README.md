@@ -20,9 +20,10 @@
 1. [Known Issues](#known-issues)
 1. [Contribute](#CONTRIBUTING.md)
 1. [Frequently Asked Questions](FAQ.md)
+1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 
 ## <a name="overview"></a>Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.1](https://www.cisecurity.org/benchmark/oracle_cloud/).    
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.2](https://www.cisecurity.org/benchmark/oracle_cloud/).    
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
 
@@ -52,7 +53,7 @@ The Landing Zone template creates a few compartments in the tenancy root compart
  - Security compartment: for all logging, key management, scanning, and notifications resources. 
  - Application Development compartment: for application development related services, including Compute, Storage, Functions, Streams, Kubernetes, API Gateway, etc. 
  - Database compartment: for all database resources. 
- - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud service, customers can choose between creating a specific compartment or using the Database compartment.   
+ - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud Service, customers can choose between creating a specific compartment or using the Database compartment.   
  - Enclosing compartment: a compartment at any level in the compartment hierarchy to hold the above compartments. 
 
 The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
@@ -95,17 +96,20 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Compliance Checking](compliance-script.md)
 
 ## <a name="documentation"></a>Documentation
-- [Deploy a secure landing zone that meets the CIS Foundations Benchmark for Oracle Cloud](https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html#GUID-4572A461-E54D-41E8-89E8-9576B8EBA7D8)
+- [Deploy a Secure Landing Zone that Meets the CIS Foundations Benchmark for Oracle Cloud](https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html#GUID-4572A461-E54D-41E8-89E8-9576B8EBA7D8)
 - [CIS OCI Landing Zone Quick Start Template Version 2](https://www.ateam-oracle.com/cis-oci-landing-zone-quick-start-template-version-2)
 - [Deployment Modes for CIS OCI Landing Zone](https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone)
 - [Tenancy Pre Configuration For Deploying CIS OCI Landing Zone as a non-Administrator](https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator)
-- [Strong Security posture monitoring with Cloud Guard](https://www.ateam-oracle.com/cloud-guard-support-in-cis-oci-landing-zone)
-- [Logging consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
+- [Strong Security Posture Monitoring with Cloud Guard](https://www.ateam-oracle.com/cloud-guard-support-in-cis-oci-landing-zone)
+- [Logging Consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
 - [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
 - [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service)
 - [Operational Monitoring and Alerting in the CIS Landing Zone](https://www.ateam-oracle.com/operational-monitoring-and-alerting-in-the-cis-landing-zone)
 - [How to Deploy Landing Zone for a Security Partner Network Appliance](https://www.ateam-oracle.com/post/how-to-deploy-landing-zone-for-a-security-partner-network-appliance)
 - [Adding Our Security Partners to a CIS OCI Landing Zone](https://blogs.oracle.com/cloud-infrastructure/post/adding-our-security-partners-to-a-cis-oci-landing-zone)
+- [Advanced Configuration using Terraform Overrides](https://www.ateam-oracle.com/post/oci-cis-landing-zone-advanced-configuration-using-terraform-overrides)
+- [Creating a Secure Multi-Region Landing Zone](https://www.ateam-oracle.com/post/creating-a-secure-multi-region-landing-zone)
+- [The Center for Internet Security Oracle Cloud Infrastructure Foundations Benchmark 1.2 Release update](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update)
 
 ## <a name="acknowledgements"></a>Acknowledgements
 - Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
@@ -155,22 +159,10 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
     * Enabling *no_internet_access* on currently deployed stack fails to apply due to timeout.  This is due to OCI Terraform provider not being able remove Internet Gateway(s) and and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
 
 
-* **Warning: Provider oci is undefined**
-    * This issue is related to changes in Terraform 1.0. It does not impact a deployment.  
-    ```
-    ╷
-    │ Warning: Provider oci is undefined
-    │ 
-    │   on iam_compartments.tf line 9, in module "lz_top_compartment":
-    │    9:   providers = { oci = oci.home }
-    │ 
-    │ Module module.lz_top_compartment does not declare a provider named oci.
-    │ If you wish to specify a provider configuration for the module, add an entry for oci in the required_providers block within the module.
-    │ 
-    │ (and 15 more similar warnings elsewhere)
-    ```
-
 * **Resource Manager does not allow elements with same value in array type** 
     * This impacts the ability to deploy custom subnets with the same size, as subnets_sizes is an array of strings. If you need custom subnets sizes, do not use Resource Manager UI. Deploy with either Terraform CLI or Resource Manager APIs.
 
     ![ORM Array Issue](images/orm_array_issue.png)
+
+* **Support for free tier tenancies***
+    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available.  If you want to try the Landing Zone please upgrade your account to a pay-go. 

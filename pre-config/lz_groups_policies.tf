@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### Landing Zone tenancy level provisioning policy
@@ -31,9 +31,10 @@ module "lz_provisioning_tenancy_group_policy" {
         "Allow group ${each.value.group_name} to inspect compartments in tenancy",                      # for events: access to resources in compartments to select rules actions
         "Allow group ${each.value.group_name} to manage cloud-guard-family in tenancy",                 # ability to enable Cloud Guard, which can be done only at the tenancy level
         "Allow group ${each.value.group_name} to read groups in tenancy",                               # for groups lookup 
+        "Allow group ${each.value.group_name} to read dynamic-groups in tenancy",                       # for dynamic-groups lookup        
         "Allow group ${each.value.group_name} to inspect tenancies in tenancy",                         # for home region lookup
         "Allow group ${each.value.group_name} to manage usage-budgets in tenancy",                      # for budget creation   
-        "Allow group ${each.value.group_name} to inspect users in tenancy"]                               # for users lookup
+        "Allow group ${each.value.group_name} to inspect users in tenancy"]                             # for users lookup
     }
   }
 }
@@ -73,6 +74,7 @@ module "lz_groups_mgmt_policy" {
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage tag-defaults in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage cloud-guard-family in tenancy",
+        "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to read threat-intel-family in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.security_admin_group_name_suffix} to manage repos in tenancy",
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to manage users in tenancy where any {request.operation = 'ListApiKeys', request.operation = 'ListAuthTokens', request.operation = 'ListCustomerSecretKeys', request.operation = 'UploadApiKey', request.operation = 'DeleteApiKey', request.operation = 'UpdateAuthToken', request.operation = 'CreateAuthToken', request.operation = 'DeleteAuthToken', request.operation = 'CreateSecretKey', request.operation = 'UpdateCustomerSecretKey', request.operation = 'DeleteCustomerSecretKey', request.operation = 'UpdateUserCapabilities'}",
@@ -132,6 +134,7 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to use cloud-shell in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-budgets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read usage-reports in tenancy",                        
+        "Allow group ${each.value.group_name_prefix}${local.database_admin_group_name_suffix} to read data-safe-family in tenancy",
         # Cred admin
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect users in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.cred_admin_group_name_suffix} to inspect groups in tenancy",
@@ -142,7 +145,18 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to inspect identity-providers in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to read audit-events in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.iam_admin_group_name_suffix} to use cloud-shell in tenancy",
+        # Announcement reader
+        "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
+      "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy", ]
+    }
+    "${each.key}-auditor-root-policy" = {
+      compartment_id = var.tenancy_ocid
+      description    = "CIS Landing Zone groups auditor root policy."
+      defined_tags   = local.groups_policies_defined_tags
+      freeform_tags  = local.groups_policies_freeform_tags
+      statements = [
         # Auditor
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to inspect all-resources in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read repos in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read objectstorage-namespaces in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read app-catalog-listing in tenancy",
@@ -152,9 +166,8 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to use cloud-shell in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-budgets in tenancy",
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-reports in tenancy",                        
-        # Announcement reader
-        "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to read announcements in tenancy",
-      "Allow group ${each.value.group_name_prefix}${local.announcement_reader_group_name_suffix} to use cloud-shell in tenancy", ]
+        "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read data-safe-family in tenancy"
+      ]
     }
   }
 }
@@ -178,13 +191,15 @@ module "lz_provisioning_topcmp_dynamic_group_policy" {
 resource "null_resource" "slow_down_compartments" {
   depends_on = [module.lz_top_compartments]
   provisioner "local-exec" {
-    command = "sleep 30" # Wait 30 seconds for compartments to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }
 
 resource "null_resource" "slow_down_groups" {
   depends_on = [module.lz_groups, module.lz_provisioning_groups]
   provisioner "local-exec" {
-    command = "sleep 30" # Wait 30 seconds for compartments to be available.
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
   }
 }

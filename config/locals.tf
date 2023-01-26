@@ -27,16 +27,21 @@ locals {
   exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment.key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
   
   # Group names
-  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0 ? "${var.service_label}-security-admin-group" : data.oci_identity_groups.existing_security_admin_group.groups[0].name
-  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0 ? "${var.service_label}-network-admin-group" : data.oci_identity_groups.existing_network_admin_group.groups[0].name
-  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0 ? "${var.service_label}-database-admin-group" : data.oci_identity_groups.existing_database_admin_group.groups[0].name
-  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0 ? "${var.service_label}-appdev-admin-group" : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name
-  iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? "${var.service_label}-iam-admin-group" : data.oci_identity_groups.existing_iam_admin_group.groups[0].name
-  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0 ? "${var.service_label}-cred-admin-group" : data.oci_identity_groups.existing_cred_admin_group.groups[0].name
-  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0 ? "${var.service_label}-auditor-group" : data.oci_identity_groups.existing_auditor_group.groups[0].name
-  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? "${var.service_label}-announcement-reader-group" : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name
-  exainfra_admin_group_name      = length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? "${var.service_label}-exainfra-admin-group" : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name
-  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0 ? "${var.service_label}-cost-admin-group" : data.oci_identity_groups.existing_cost_admin_group.groups[0].name
+  # The logic for group names is the following: 
+  # if an existing group isn't provided, create a name for the group.
+  # If an existing group **ocid** is provided (and this is used in Resource Manager groups drop down UI control), retrieve the group name using oci_identity_group data source.
+  # If an existing group **name** is provided, use oci_identity_groups (notice the 's') data source to make sure the group exists. 
+  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0      ? "${var.service_label}-security-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : data.oci_identity_groups.existing_security_admin_group.groups[0].name)
+  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0       ? "${var.service_label}-network-admin-group"       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : data.oci_identity_groups.existing_network_admin_group.groups[0].name)
+  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0      ? "${var.service_label}-database-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : data.oci_identity_groups.existing_database_admin_group.groups[0].name)
+  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0        ? "${var.service_label}-appdev-admin-group"        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : data.oci_identity_groups.existing_appdev_admin_group.groups[0].name)
+  iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0           ? "${var.service_label}-iam-admin-group"           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : data.oci_identity_groups.existing_iam_admin_group.groups[0].name)
+  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0          ? "${var.service_label}-cred-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : data.oci_identity_groups.existing_cred_admin_group.groups[0].name)
+  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0             ? "${var.service_label}-auditor-group"             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : data.oci_identity_groups.existing_auditor_group.groups[0].name)
+  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? "${var.service_label}-announcement-reader-group" : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name)
+  exainfra_admin_group_name      = length(trimspace(var.existing_exainfra_admin_group_name)) == 0      ? "${var.service_label}-exainfra-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0      ? data.oci_identity_group.existing_exainfra_admin_group.name      : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name)
+  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? "${var.service_label}-cost-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : data.oci_identity_groups.existing_cost_admin_group.groups[0].name)
+  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? "${var.service_label}-storage-admin-group"       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : data.oci_identity_groups.existing_storage_admin_group.groups[0].name)
   
   # Policy names
   security_admin_policy_name      = "${var.service_label}-security-admin-policy"
@@ -56,6 +61,7 @@ locals {
   announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
   exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
+  storage_admin_policy_name       = "${var.service_label}-storage-admin-policy"
 
   ### Network
   anywhere                    = "0.0.0.0/0"
@@ -75,9 +81,6 @@ locals {
     name = "${var.service_label}-dmz-vcn"
     cidr = var.dmz_vcn_cidr
   } : {}
-
-  ### Object Storage
-  bucket_name  = "${var.service_label}-bucket"
 
   # Bastion
   bastion_name = "${var.service_label}-bastion"
@@ -101,4 +104,22 @@ locals {
 
   # Tags
   landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
+
+  is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
+}
+
+resource "null_resource" "wait_on_compartments" {
+  depends_on = [module.lz_compartments]
+  provisioner "local-exec" {
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
+  }
+}
+
+resource "null_resource" "wait_on_services_policy" {
+  depends_on = [module.lz_services_policy]
+  provisioner "local-exec" {
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
+  }
 }

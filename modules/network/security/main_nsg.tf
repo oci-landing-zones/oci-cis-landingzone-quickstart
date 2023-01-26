@@ -2,7 +2,6 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ## Network Security Group(s) - NSGs
-
 locals {
   nsgs = { for nsg in oci_core_network_security_group.these : nsg.display_name => nsg }
   ingress_rules = flatten([

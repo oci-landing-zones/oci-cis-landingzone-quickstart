@@ -1,4 +1,4 @@
-#  January XX, 2023 Release Notes - 2.5.2
+#  January 26, 2023 Release Notes - 2.5.2
 1. [Service Connector Hub Improvements](#2-5-2-sch-improvements)
 1. [CIS Level Setting Updates](#2-5-2-cis-level)
 

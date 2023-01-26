@@ -9,6 +9,7 @@ locals {
   custom_service_connector_target_bucket_name = null
   custom_service_connector_target_object_name_prefix = null
   custom_service_connector_target_stream_name = null
+  custom_service_connector_target_log_group_name = null
   custom_service_connector_target_policy_name = null
 
   custom_service_connector_defined_tags = null
@@ -20,8 +21,8 @@ locals {
   custom_policy_defined_tags = null
   custom_policy_freeform_tags = null
 
-  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for k, v in module.lz_compartments.compartments : {
-    compartment_id = v.id
+  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for cmp in data.oci_identity_compartments.all.compartments : {
+    compartment_id = cmp.id
     log_group_id = "_Audit"
     log_id = ""
   }] : []
@@ -67,6 +68,9 @@ module "lz_service_connector" {
 
   target_function_id = var.existing_service_connector_target_function_id
 
+  #target_log_group_name = local.service_connector_target_log_group_name
+  target_log_group_id = length(module.lz_logging_analytics) > 0 ? module.lz_logging_analytics[0].log_group.id : null
+  
   target_policy_name = local.service_connector_target_policy_name
 
   target_defined_tags  = local.target_defined_tags
@@ -80,39 +84,33 @@ resource "null_resource" "wait_on_service_connector_keys_policy" {
    depends_on = [ module.lz_service_connector_keys ]
    provisioner "local-exec" {
      interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
+     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs * 2}" : "sleep ${local.delay_in_secs * 2}"
    }
 }
 
 locals {
-  ### DON'T TOUCH THESE ###
-  #---------------------------------------------
-  #--- Service Connector tags 
-  #---------------------------------------------
+#------------------------------------------------------------------------------------------------------
+#-- These variables are not meant to be overriden
+#------------------------------------------------------------------------------------------------------
+#-- Service Connector tags 
   default_service_connector_defined_tags = null
   default_service_connector_freeform_tags = local.landing_zone_tags
   service_connector_defined_tags = local.custom_service_connector_defined_tags != null ? merge(local.custom_service_connector_defined_tags, local.default_service_connector_defined_tags) : local.default_service_connector_defined_tags
   service_connector_freeform_tags = local.custom_service_connector_freeform_tags != null ? merge(local.custom_service_connector_freeform_tags, local.default_service_connector_freeform_tags) : local.default_service_connector_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector Target tags 
-  #---------------------------------------------
+#-- Service Connector Target tags 
   default_target_defined_tags = null
   default_target_freeform_tags = local.landing_zone_tags  
   target_defined_tags = local.custom_target_defined_tags != null ? merge(local.custom_target_defined_tags, local.default_target_defined_tags) : local.default_target_defined_tags
   target_freeform_tags = local.custom_target_freeform_tags != null ? merge(local.custom_target_freeform_tags, local.default_target_freeform_tags) : local.default_target_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector Policy tags 
-  #---------------------------------------------
+#-- Service Connector Policy tags 
   default_policy_defined_tags = null
   default_policy_freeform_tags = local.landing_zone_tags  
   policy_defined_tags = local.custom_policy_defined_tags != null ? merge(local.custom_policy_defined_tags, local.default_policy_defined_tags) : local.default_policy_defined_tags
   policy_freeform_tags = local.custom_policy_freeform_tags != null ? merge(local.custom_policy_freeform_tags, local.default_policy_freeform_tags) : local.default_policy_freeform_tags
 
-  #---------------------------------------------
-  #--- Service Connector resources naming 
-  #---------------------------------------------
+#-- Service Connector resources naming 
   default_service_connector_name = "${var.service_label}-service-connector"
   service_connector_name = local.custom_service_connector_name != null ? local.custom_service_connector_name : local.default_service_connector_name
 
@@ -121,6 +119,9 @@ locals {
 
   default_service_connector_target_stream_name = "${var.service_label}-service-connector-stream"
   service_connector_target_stream_name = local.custom_service_connector_target_stream_name != null ? local.custom_service_connector_target_stream_name : local.default_service_connector_target_stream_name
+  
+  default_service_connector_target_log_group_name = "${var.service_label}-service-connector-log-group"
+  service_connector_target_log_group_name = local.custom_service_connector_target_log_group_name != null ? local.custom_service_connector_target_log_group_name : local.default_service_connector_target_log_group_name
 
   default_service_connector_target_object_name_prefix = "sch"
   service_connector_target_object_name_prefix = local.custom_service_connector_target_object_name_prefix != null ? local.custom_service_connector_target_object_name_prefix : local.default_service_connector_target_object_name_prefix

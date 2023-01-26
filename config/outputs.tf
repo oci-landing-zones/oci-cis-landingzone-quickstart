@@ -56,3 +56,11 @@ output "buckets" {
 output "cloud_guard_target" {
     value = local.display_outputs == true ? (length(module.lz_cloud_guard) > 0 ? {"display_name" : module.lz_cloud_guard[0].cloud_guard_target.display_name, "compartment_id" :  module.lz_cloud_guard[0].cloud_guard_target.compartment_id} : null) : null
 }
+
+output "service_connector_target" {
+    value = local.display_outputs == true ? (length(module.lz_service_connector) > 0 ? module.lz_service_connector[0].service_connector_target : null) : null
+}    
+
+output "logging_analytics_log_group" {
+    value = local.display_outputs == true ? (length(module.lz_logging_analytics) > 0 ? module.lz_logging_analytics[0].log_group : null) : null
+}

@@ -997,7 +997,8 @@ class CIS_Report:
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
                         "time_created": grp.time_created.strftime(self.__iso_time_format),
-                        "user_id": self.__generate_csv_hyperlink(user_deep_link,member.user_id)
+                        "user_id": member.user_id,
+                        "user_id_link": self.__generate_csv_hyperlink(user_deep_link,member.user_id)
                     }
                     # Adding a record per user to group
                     self.__groups_to_users.append(group_record)
@@ -2746,10 +2747,10 @@ class CIS_Report:
                                     for key in keys:
                                         deep_link = self.__oci_vault_uri + vlt.id + "/vaults/" + key.id + "?region=" + region_key
                                         key_record = {
-                                            "compartment_id": key.compartment_id,
+                                            "id": key.id,
                                             "display_name": key.display_name,
                                             "deep_link": self.__generate_csv_hyperlink(deep_link, key.display_name),
-                                            "id": key.id,
+                                            "compartment_id": key.compartment_id,
                                             "lifecycle_state": key.lifecycle_state,
                                             "time_created": key.time_created.strftime(self.__iso_time_format),
                                         }
@@ -2886,7 +2887,7 @@ class CIS_Report:
                                 target_id=target.id).data
                             except Exception as e:
                                 target_data = None
-                            deep_link = self.__oci_cgtarget_uri + target.id + "?region=" + region_key
+                            deep_link = self.__oci_cgtarget_uri + target.id
                             record = {
                                 "compartment_id": target.compartment_id,
                                 "defined_tags": target.defined_tags,
@@ -3127,7 +3128,7 @@ class CIS_Report:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                     and not("to manage all-resources in tenancy".upper() in statement.upper()) \
-                        and "Tenant Admin Policy".upper() not in policy['name'].upper():
+                        and policy['name'].upper() != "Tenant Admin Policy".upper():
                     policy_counter += 1
             if policy_counter < 3:
                 self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
@@ -3139,7 +3140,7 @@ class CIS_Report:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                         and "to manage all-resources in tenancy".upper() in statement.upper() \
-                        and "Tenant Admin Policy".upper() not in policy['name'].upper():
+                        and policy['name'].upper() != "Tenant Admin Policy".upper():
 
                     self.cis_foundations_benchmark_1_2['1.2']['Status'] = False
                     self.cis_foundations_benchmark_1_2['1.2']['Findings'].append(
@@ -3147,7 +3148,7 @@ class CIS_Report:
         
         # 1.3 Check - May want to add a service check
         for policy in self.__policies:
-          if "Tenant Admin Policy".upper() not in policy['name'].upper() and policy['name'].upper() != "PSM-root-policy":
+          if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
                 for statement in policy['statements']:
                     if ("allow group".upper() in statement.upper() and "tenancy".upper() in statement.upper() and \
                          ("to manage ".upper() in statement.upper() or "to use".upper() in statement.upper()) and \
@@ -3609,7 +3610,7 @@ class CIS_Report:
 
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
-                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
+                finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
             # Compartment logs that are not missed in the region
@@ -3921,6 +3922,7 @@ class CIS_Report:
             self.obp_foundations_checks['Cloud_Guard_Config']['OBP'].append(cloud_guard_record)
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
+
 
 
     ##########################################################################

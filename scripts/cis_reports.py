@@ -993,7 +993,7 @@ class CIS_Report:
                     group_record = {
                         "id": grp.id,
                         "name": grp.name,
-                        "deep_link": self.__generate_csv_hyperlink(deep_link, grp.name),
+                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
                         "time_created": grp.time_created.strftime(self.__iso_time_format),
@@ -3122,19 +3122,17 @@ class CIS_Report:
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
         
-        # 1.1 Check - checking if there are additional policies
-        policy_counter = 0
+        # 1.1 Check - Checking for policy statements that are not restricted to a service
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
-                    and not("to manage all-resources in tenancy".upper() in statement.upper()) \
+                    and ("to manage all-resources".upper() in statement.upper()) \
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
-                    policy_counter += 1
-            if policy_counter < 3:
-                self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
-                self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(
-                    policy)
-
+                    # If there are more than manage all-resources in you don't meet this rule
+                    self.cis_foundations_benchmark_1_2['1.1']['Status'] = False 
+                    self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(policy)
+                    break
+  
         # 1.2 Check
         for policy in self.__policies:
             for statement in policy['statements']:

@@ -1,4 +1,4 @@
-#   February 2, 2023 Release Notes - 2.5.3
+#   February 1, 2023 Release Notes - 2.5.3
 1. [HTML CIS Summary Report](#2-5-3-script-html)
 1. [Resource Deep Links in CSV](#2-5-3-deep-link)
 1. [Improved CIS IAM 1.1 Check](#2-5-3-cis-logic)

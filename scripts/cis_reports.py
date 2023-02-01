@@ -29,7 +29,6 @@ try:
     from xlsxwriter.workbook import Workbook    
     import glob
     OUTPUT_TO_XLSX = True
-    print("Print to Excel " * 5)
 except:
     OUTPUT_TO_XLSX = False
 

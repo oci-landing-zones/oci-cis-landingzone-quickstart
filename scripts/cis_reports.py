@@ -29,6 +29,7 @@ try:
     from xlsxwriter.workbook import Workbook    
     import glob
     OUTPUT_TO_XLSX = True
+    print("Print to Excel " * 5)
 except:
     OUTPUT_TO_XLSX = False
 
@@ -45,6 +46,33 @@ class CIS_Report:
     
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
+
+    # OCI Link 
+    __oci_cloud_url = "https://cloud.oracle.com"
+    __oci_users_uri = __oci_cloud_url + "/identity/users/"
+    __oci_policies_uri = __oci_cloud_url + "/identity/policies/"
+    __oci_groups_uri = __oci_cloud_url + "/identity/groups/"
+    __oci_dynamic_groups_uri = __oci_cloud_url + "/identity/dynamicgroups/"
+    __oci_buckets_uri = __oci_cloud_url + "/object-storage/buckets/"
+    __oci_boot_volumes_uri = __oci_cloud_url + "/block-storage/boot-volumes/"
+    __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
+    __oci_fss_uri = __oci_cloud_url + "/fss/file-systems/"
+    __oci_networking_uri = __oci_cloud_url +"/networking/vcns/"
+    __oci_adb_uri = __oci_cloud_url +"/db/adb/"
+    __oci_oicinstance_uri = __oci_cloud_url +"/oic/integration-instances/"
+    __oci_oacinstance_uri = __oci_cloud_url +"/analytics/instances/"
+    __oci_compartment_uri = __oci_cloud_url +"/identity/compartments/"
+    __oci_drg_uri = __oci_cloud_url +"/networking/drgs/"
+    __oci_cpe_uri = __oci_cloud_url +"/networking/cpes/"
+    __oci_ipsec_uri = __oci_cloud_url +"/networking/vpn-connections/"
+    __oci_events_uri = __oci_cloud_url +"/events/rules/"
+    __oci_loggroup_uri = __oci_cloud_url +"/logging/log-groups/"
+    __oci_vault_uri = __oci_cloud_url +"/security/kms/vaults/"
+    __oci_budget_uri = __oci_cloud_url +"/usage/budgets/"
+    __oci_cgtarget_uri = __oci_cloud_url +"/cloud-guard/targets/"
+    __oci_onssub_uri = __oci_cloud_url +"/notification/subscriptions/"
+    __oci_serviceconnector_uri = __oci_cloud_url +"/connector-hub/service-connectors/"
+    __oci_fastconnect_uri = __oci_cloud_url +"/networking/fast-connect/virtual-circuit/"
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
@@ -67,58 +95,390 @@ class CIS_Report:
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
-            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3'},
-            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3'},
-            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3'},
-            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3'},
-            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3'},
-            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3'},
-            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4'},
-            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7'},
-            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7'},
-            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7'},
-            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7'},
-            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3'},
-            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7'},
-            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3'},
+            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4','Remediation':[]},
+            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
 
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
-            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9'},
+            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
 
-            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11'},
-            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : ''},
-            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11'},
-            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for  changes to route tables', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for  security list changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for  network security group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for  changes to network gateways', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11'},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2,''8.5','13.6'], 'CCCS Guard Rail' : ''},
-            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3'},
-            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7'},
-            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : ''},
+            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for  changes to route tables', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for  security list changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for  network security group changes', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for  changes to network gateways', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2,''8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : '','Remediation':[]},
 
-            '4.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : ''},
-            '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
             '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
             '4.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
 
 
-            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12'},
-            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3'}
+            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12','Remediation':[]},
+            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]}
+        }
+        # Remediation Report
+        self.cis_report_data = {
+            "1.1":{ "Description":"To apply least-privilege security principle, one can create service-level administrators in corresponding groups and assigning specific users to each service-level administrative group in a tenancy. This limits administrative access in a tenancy. \n\nIt means service-level administrators can only manage resources of a specific service.\n\nExample policies for global/tenant level service-administrators\n```\nAllow group VolumeAdmins to manage volume-family in tenancy\nAllow group ComputeAdmins to manage instance-family in tenancy\nAllow group NetworkAdmins to manage virtual-network-family in tenancy\n```\nOrganizations have various ways of defining service-administrators. Some may prefer creating service administrators at a tenant level and some per department or per project or even per application environment ( dev/test/production etc.). Either approach works so long as the policies are written to limit access given to the service-administrators.\n\n Example policies for compartment level service-administrators \n\n```\nAllow group NonProdComputeAdmins to manage instance-family in compartment dev\nAllow group ProdComputeAdmins to manage instance-family in compartment production\nAllow group A-Admins to manage instance-family in compartment Project-A\nAllow group A-Admins to manage volume-family in compartment Project-A\n```",
+            "Rationale":"Creating service-level administrators helps in tightly controlling access to Oracle Cloud Infrastructure (OCI) services to implement the least-privileged security principle.",
+            "Impact":"",
+            "Remediation":"Refer to the policy syntax document and create new policies if the audit results indicate that the required policies are missing.",
+            "Recommendation":"",
+            "Observation":"custom IAM policy that grants tenancy administrative access."
+            },
+            "1.2":{ "Description":"There is a built-in OCI IAM policy enabling the Administrators group to perform any action within a tenancy. In the OCI IAM console, this policy reads:\n\n```\nAllow group Administrators to manage all-resources in tenancy\n```\n\nAdministrators create more users, groups, and policies to provide appropriate access to other groups.\n\nAdministrators should not allow any-other-group full access to the tenancy by writing a policy like this - \n\n```\nAllow group any-other-group to manage all-resources in tenancy\n```\n\nThe access should be narrowed down to ensure the least-privileged principle is applied.",
+            "Rationale":"Permission to manage all resources in a tenancy should be limited to a small number of users in the `Administrators` group for break-glass situations and to set up users/groups/policies when a tenancy is created.\n\nNo group other than `Administrators` in a tenancy should need access to all resources in a tenancy, as this violates the enforcement of the least privilege principle.",
+            "Impact":"",
+            "Remediation":"Remove any policy statement that allows any group other than Administrators or any service access to manage all resources in the tenancy.",
+            "Recommendation":"Evaluate if tenancy-wide administrative access is needed for the identified policy and update it to be more restrictive.",
+            "Observation":"custom IAM policy that grants tenancy administrative access."
+            },
+            "1.3":{ "Description":"Tenancy administrators can create more users, groups, and policies to provide other service administrators access to OCI resources.\n\nFor example, an IAM administrator will need to have access to manage \nresources like compartments, users, groups, dynamic-groups, policies, identity-providers, tenancy tag-namespaces, tag-definitions in the tenancy.\n\nThe policy that gives IAM-Administrators or any other group full access to 'groups' resources should not allow access to the tenancy 'Administrators' group.\n\nThe policy statements would look like -\n\n```\nAllow group IAMAdmins to inspect users in tenancy\nAllow group IAMAdmins to use users in tenancy where target.group.name != 'Administrators'\nAllow group IAMAdmins to inspect groups in tenancy\nAllow group IAMAdmins to use groups in tenancy where target.group.name != 'Administrators'\n```\n\n**Note:** You must include separate statements for 'inspect' access, because the target.group.name variable is not used by the ListUsers and ListGroups operations",
+            "Rationale":"These policy statements ensure that no other group can manage tenancy administrator users or the membership to the 'Administrators' group thereby gain or remove tenancy administrator access.",
+            "Impact":"",
+            "Remediation":"Verify the results to ensure that the policy statements that grant access to use or manage users or groups in the tenancy have a condition that excludes access to Administrators group or to users in the Administrators group.",
+            "Recommendation":"Evaluate if tenancy-wide administrative access is needed for the identified policy and update it to be more restrictive.",
+            "Observation":"custom IAM policy that grants tenancy administrative access."
+            },
+            "1.4":{ "Description":"Password policies are used to enforce password complexity requirements. IAM password policies can be used to ensure password are at least a certain length and are composed of certain characters. \n\nIt is recommended the password policy require a minimum password length 14 characters and contain 1 non-alphabetic\ncharacter (Number or “Special Character”).",
+            "Rationale":"In keeping with the overall goal of having users create a password that is not overly weak, an eight-character minimum password length is recommended for an MFA account, and 14 characters for a password only account. In addition, maximum password length should be made as long as possible based on system/software capabilities and not restricted by policy.\n\nIn general, it is true that longer passwords are better (harder to crack), but it is also true that forced password length requirements can cause user behavior that is predictable and undesirable. For example, requiring users to have a minimum 16-character password may cause them to choose repeating patterns like fourfourfourfour or passwordpassword that meet the requirement but aren’t hard to guess. Additionally, length requirements increase the chances that users will adopt other insecure practices, like writing them down, re-using them or storing them unencrypted in their documents. \n\nPassword composition requirements are a poor defense against guessing attacks. Forcing users to choose some combination of upper-case, lower-case, numbers, and special characters has a negative impact. It places an extra burden on users and many\nwill use predictable patterns (for example, a capital letter in the first position, followed by lowercase letters, then one or two numbers, and a “special character” at the end). Attackers know this, so dictionary attacks will often contain these common patterns and use the most common substitutions like, $ for s, @ for a, 1 for l, 0 for o.\n\nPasswords that are too complex in nature make it harder for users to remember, leading to bad practices. In addition, composition requirements provide no defense against common attack types such as social engineering or insecure storage of passwords.",
+            "Impact":"",
+            "Remediation":"Update the password policy such as minimum length to 14, password must contain expected special characters and numeric characters.",
+            "Recommendation":"It is recommended the password policy require a minimum password length 14 characters and contain 1 non-alphabetic character (Number or “Special Character”).",
+            "Observation":"password policy/policies that do not enforce sufficient password complexity requirements"
+            },
+            "1.5":{ "Description":"IAM password policies can require passwords to be rotated or expired after a given number of days. It is recommended that the password policy expire passwords after 365 and are changed immediately based on events.",
+            "Rationale":"Excessive password expiration requirements do more harm than good, because these requirements make users select predictable passwords, composed of sequential words and numbers that are closely related to each other.10 In these cases, the next password can be predicted based on the previous one (incrementing a number used in the password for example). Also, password expiration requirements offer no containment benefits because attackers will often use credentials as soon as they compromise them. Instead, immediate password changes should be based on key events including, but not\nlimited to:\n\n1. Indication of compromise\n1. Change of user roles\n1. When a user leaves the organization.\n\nNot only does changing passwords every few weeks or months frustrate the user, it’s been suggested that it does more harm than good, because it could lead to bad practices by the user such as adding a character to the end of their existing password.\n\nIn addition, we also recommend a yearly password change. This is primarily because for all their good intentions users will share credentials across accounts. Therefore, even if a breach is publicly identified, the user may not see this notification, or forget they have an account on that site. This could leave a shared credential vulnerable indefinitely. Having an organizational policy of a 1-year (annual) password expiration is a reasonable compromise to mitigate this with minimal user burden.",
+            "Impact":"",
+            "Remediation":"Update the password policy by setting number of days configured in Expires after to 365",
+            "Recommendation":"Evaluate password rotation policies are inline with your organizational standard.",
+            "Observation":"password policy/policies that do not require rotation."
+            },
+            "1.6":{ "Description":"IAM password policies can prevent the reuse of a given password by the same user. It is recommended the password policy prevent the reuse of passwords.",
+            "Rationale":"Enforcing password history ensures that passwords are not reused in for a certain period of time by the same user. If a user is not allowed to use last 24 passwords, that window of time is greater. This helps maintain the effectiveness of password security.",
+            "Impact":"",
+            "Remediation":"Update the number of remembered passwords in previous passwords remembered setting to 24 in the password policy",
+            "Recommendation":"Evaluate password reuse policies are inline with your organizational standard.",
+            "Observation":"password policy/policies that do not prevent reuse."
+            },
+            "1.7":{ "Description":"Multi-factor authentication is a method of authentication that requires the use of more than one factor to verify a user’s identity.\n\nWith MFA enabled in the IAM service, when a user signs in to Oracle Cloud Infrastructure, they are prompted for their user name and password, which is the first factor (something that they know). The user is then prompted to provide a second verification code from a registered MFA device, which is the second factor (something that they have). The two factors work together, requiring an extra layer of security to verify the user’s identity and complete the sign-in process.\n\nOCI IAM supports two-factor authentication using a password (first factor) and a device that can generate a time-based one-time password (TOTP) (second factor).\n\nSee [OCI documentation](https://docs.cloud.oracle.com/en-us/iaas/Content/Identity/Tasks/usingmfa.htm) for more details.",
+            "Rationale":"Multi factor authentication adds an extra layer of security during the login process and makes it harder for unauthorized users to gain access to OCI resources.",
+            "Impact":"",
+            "Remediation":"Each user must enable MFA for themselves using a device they will have access to every time they sign in. An administrator cannot enable MFA for another user but can enforce MFA by identifying the list of non-complaint users, notifying them or disabling access by resetting password for non-complaint accounts",
+            "Recommendation":"Evaluate if local users are required. For Break Glass accounts ensure MFA is in place.",
+            "Observation":"users with Password access but not MFA."
+            },
+            "1.8":{ "Description":"API keys are used by administrators, developers, services and scripts for accessing OCI APIs directly or via SDKs/OCI CLI to search, create, update or delete OCI resources.\n\nThe API key is an RSA key pair. The private key is used for signing the API requests and the public key is associated with a local or synchronized user's profile.",
+            "Rationale":"It is important to secure and rotate an API key every 90 days or less as it provides the same level of access that a user it is associated with has.\n\nIn addition to a security engineering best practice, this is also a compliance requirement. For example, PCI-DSS Section 3.6.4 states, \"Verify that key-management procedures include a defined cryptoperiod for each key type in use and define a process for key changes at the end of the defined crypto period(s).",
+            "Impact":"",
+            "Remediation":"Delete any API Keys with a date of 90 days or older under the Created column of the API Key table",
+            "Recommendation":"Evaluate if APIs Keys are still used/required and rotate API Keys It is important to secure and rotate an API key every 90 days or less as it provides the same level of access that a user it is associated with has. ",
+            "Observation":"user(s) with APIs that have not been rotated with 90 days."
+            },
+            "1.9":{ "Description":"Object Storage provides an API to enable interoperability with Amazon S3. To use this Amazon S3 Compatibility API, you need to generate the signing key required to authenticate with Amazon S3.\n\nThis special signing key is an Access Key/Secret Key pair. Oracle generates the Customer Secret key to pair with the Access Key.",
+            "Rationale":"It is important to secure and rotate an customer secret key every 90 days or less as it provides the same level of object storage access that a user is associated with has.",
+            "Impact":"",
+            "Remediation":"Delete any Access Keys with a date of 90 days or older under the Created column of the Customer Secret Keys",
+            "Recommendation":"Evaluate if Customer Secret Keys are still used/required and rotate the Keys accordingly.",
+            "Observation":"users with Customer Secret Keys that have not been rotated with 90 days."
+            },
+            "1.10":{ "Description":"Auth tokens are authentication tokens generated by Oracle. You use auth tokens to authenticate with APIs that do not support the Oracle Cloud Infrastructure signature-based authentication. If the service requires an auth token, the service-specific documentation instructs you to generate one and how to use it.",
+            "Rationale":"It is important to secure and rotate an auth token every 90 days or less as it provides the same level of access to APIs that do not support the OCI signature-based authentication as the user associated to it.",
+            "Impact":"",
+            "Remediation":"Delete any auth token with a date of 90 days or older under the Created column of the Auth Tokens",
+            "Recommendation":"Evaluate if Auth Tokens are still used/required and rotate Auth tokens.",
+            "Observation":"user(s) with auth tokens that have not been rotated in 90 days."
+            },
+            "1.11":{ "Description":"Tenancy administrator users have full access to the organization's OCI tenancy. API keys associated with user accounts are used for invoking the OCI APIs via custom programs or clients like CLI/SDKs. The clients are typically used for performing day-to-day operations and should never require full tenancy access. Service-level administrative users with API keys should be used instead.",
+            "Rationale":"For performing day-to-day operations tenancy administrator access is not needed.\nService-level administrative users with API keys should be used to apply privileged security principle.",
+            "Impact":"",
+            "Remediation":"For each tenancy administrator user who has an API key,select API Keys from the menu and delete any associated keys from the API Keys table",
+            "Recommendation":"Evaluate if a user with API Keys requires Administrator access and use a least privilege approach.",
+            "Observation":"users with Administrator access and API Keys."
+            },
+            "1.12":{ "Description":"All OCI IAM local user accounts have an email address field associated with the account. It is recommended to specify an email address that is valid and current.\n\nIf you have an email address in your user profile, you can use the Forgot Password link on the sign on page to have a temporary password sent to you.",
+            "Rationale":"Having a valid and current email address associated with an OCI IAM local user account allows you to tie the account to identity in your organization. It also allows that user to reset their password if it is forgotten or lost.",
+            "Impact":"",
+            "Remediation":"Update the current email address in the email text box on exch non compliant user.",
+            "Recommendation":"Add emails to users to allow them to use the “Forgot Password” feature and uniquely identify the user. – For service accounts it could be a mail alias.",
+            "Observation":"without an email."
+            },
+            "1.13":{ "Description":"OCI instances, OCI database and OCI functions can access other OCI resources either via an OCI API key associated to a user or by being including in a Dynamic Group that has an IAM policy granting it the required access. Access to OCI Resources refers to making API calls to another OCI resource like Object Storage, OCI Vaults, etc.",
+            "Rationale":"Dynamic Groups reduces the risks related to hard coded credentials. Hard coded API keys can be shared and require rotation which can open them up to being compromised. Compromised credentials could allow access to OCI services outside of the expected radius.",
+            "Impact":"For an OCI instance that contains embedded credential audit the scripts and environment variables to ensure that none of them contain OCI API Keys or credentials.",
+            "Remediation":"Create Dynamic group and Enter Matching Rules to that includes the instances accessing your OCI resources. Refer:\"https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingdynamicgroups.htm\"",
+            "Recommendation":"Evaluate how your instances, functions, and autonomous database interact with other OCI services",
+            "Observation":"Dynamic Groups reduces the risks related to hard coded credentials. Hard coded API keys can be shared and require rotation which can open them up to being compromised. Compromised credentials could allow access to OCI services outside of the expected radius."
+            },
+            "1.14":{ "Description":"To apply the separation of duties security principle, one can restrict service-level administrators from being able to delete resources they are managing. It means service-level administrators can only manage resources of a specific service but not delete resources for that specific service.\n\nExample policies for global/tenant level for block volume service-administrators:\n```\nAllow group VolumeUsers to manage volumes in tenancy where request.permission!='VOLUME_DELETE' \nAllow group VolumeUsers to manage volume-backups in tenancy where request.permission!='VOLUME_BACKUP_DELETE'\n```\n\nExample policies for global/tenant level for file storage system service-administrators:\n```\nAllow group FileUsers to manage file-systems in tenancy where request.permission!='FILE_SYSTEM_DELETE'\nAllow group FileUsers to manage mount-targets in tenancy where request.permission!='MOUNT_TARGET_DELETE'\nAllow group FileUsers to manage export-sets in tenancy where request.permission!='EXPORT_SET_DELETE'\n```\n\nExample policies for global/tenant level for object storage system service-administrators:\n```\nAllow group BucketUsers to manage objects in tenancy where request.permission!='OBJECT_DELETE' \nAllow group BucketUsers to manage buckets in tenancy where request.permission!='BUCKET_DELETE'\n```",
+            "Rationale":"Creating service-level administrators without the ability to delete the resource they are managing helps in tightly controlling access to Oracle Cloud Infrastructure (OCI) services by implementing the separation of duties security principle.",
+            "Impact":"",
+            "Remediation":"Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service",
+            "Recommendation":"To apply a separation of duties security principle, it is recommended to restrict service-level administrators from being able to delete resources they are managing.",
+            "Observation":"IAM Policies that give service administrator the ability to delete service resources."
+            },
+            "2.1":{ "Description":"Security lists provide stateful or stateless filtering of ingress/egress network traffic to OCI resources on a subnet level. It is recommended that no security group allows unrestricted ingress access to port 22.",
+            "Rationale":"Removing unfettered connectivity to remote console services, such as Secure Shell (SSH), reduces a server's exposure to risk.",
+            "Impact":"For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another network security group or security list.",
+            "Remediation":"For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate",
+            "Recommendation":"Review the security lists. If they are not used(attached to a subnet) they should be deleted if possible or empty. For attached security lists it is recommended to restrict the CIDR block to only allow access to Port 22 from known networks. ",
+            "Observation":"Security lists that allow internet access to port 22. (Note this does not necessarily mean external traffic can reach a compute instance)."
+            },
+            "2.2":{ "Description":"Security lists provide stateful or stateless filtering of ingress/egress network traffic to OCI resources on a subnet level. It is recommended that no security group allows unrestricted ingress access to port 3389.",
+            "Rationale":"Removing unfettered connectivity to remote console services, such as Remote Desktop Protocol (RDP), reduces a server's exposure to risk.",
+            "Impact":"For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another network security group or security list.",
+            "Remediation":"For each security list in the returned results, click the security list name.Either edit the ingress rule to be more restrictive, delete the ingress rule or click on the VCN and terminate the security list as appropriate",
+            "Recommendation":"Review the security lists. If they are not used(attached to a subnet) they should be deleted if possible or empty. For attached security lists it is recommended to restrict the CIDR block to only allow access to Port 3389 from known networks. ",
+            "Observation":"Security lists that allow internet access to port 3389. (Note this does not necessarily mean external traffic can reach a compute instance)."
+            },
+            "2.3":{ "Description":"Network security groups provide stateful filtering of ingress/egress network traffic to OCI resources. It is recommended that no security group allows unrestricted ingress access to port 22.",
+            "Rationale":"Removing unfettered connectivity to remote console services, such as Secure Shell (SSH), reduces a server's exposure to risk.",
+            "Impact":"For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another network security group or security list.",
+            "Remediation":"Using the details returned from the audit procedure either Remove the security rules or Update the security rules",
+            "Recommendation":"Review the network security groups. If they are not used(attached to a subnet) they should be deleted if possible or empty. For attached security lists it is recommended to restrict the CIDR block to only allow access to Port 3389 from known networks. ",
+            "Observation":"Network security groups that allow internet access to port 22. (Note this does not necessarily mean external traffic can reach a compute instance)."
+            },
+            "2.4":{ "Description":"Network security groups provide stateful filtering of ingress/egress network traffic to OCI resources. It is recommended that no security group allows unrestricted ingress access to port 3389.",
+            "Rationale":"Removing unfettered connectivity to remote console services, such as Remote Desktop Protocol (RDP), reduces a server's exposure to risk.",
+            "Impact":"For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another network security group or security list.",
+            "Remediation":"Using the details returned from the audit procedure either Remove the security rules or Update the security rules",
+            "Recommendation":"Review the network security groups. If they are not used(attached to a subnet) they should be deleted if possible or empty. For attached network security groups it is recommended to restrict the CIDR block to only allow access to Port 3389 from known networks. ",
+            "Observation":"Network security groups that allow internet access to port 3389. (Note this does not necessarily mean external traffic can reach a compute instance)."
+            },
+            "2.5":{ "Description":"A default security list is created when a Virtual Cloud Network (VCN) is created. Security lists provide stateful filtering of ingress and egress network traffic to OCI resources. It is recommended no security list allows unrestricted ingress access to Secure Shell (SSH) via port 22.",
+            "Rationale":"Removing unfettered connectivity to remote console services, such as SSH on port 22, reduces a server's exposure to unauthorized access.",
+            "Impact":"For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another security group.",
+            "Remediation":"Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22",
+            "Recommendation":"Create specific custom security lists with workload specific rules and attach to subnets.",
+            "Observation":"Default Security lists that allow more traffic then ICMP."
+            },
+            "2.6":{ "Description":"Oracle Integration (OIC) is a complete, secure, but lightweight integration solution that enables you to connect your applications in the cloud. It simplifies connectivity between your applications and connects both your applications that live in the cloud and your applications that still live on premises. Oracle Integration provides secure, enterprise-grade connectivity regardless of the applications you are connecting or where they reside. OIC instances are created within an Oracle managed secure private network with each having a public endpoint. The capability to configure ingress filtering of network traffic to protect your OIC instances from unauthorized network access is included. It is recommended that network access to your OIC instances be restricted to your approved corporate IP Addresses or Virtual Cloud Networks (VCN)s.",
+            "Rationale":"Restricting connectivity to OIC Instances reduces an OIC instance’s exposure to risk.",
+            "Impact":"When updating ingress filters for an existing environment, care should be taken to ensure that IP addresses and VCNs currently used by administrators, users, and services to access your OIC instances are included in the updated filters.",
+            "Remediation":"For each OIC instance in the returned results, select the OIC Instance name,edit the Network Access to be more restrictive",
+            "Recommendation":"It is recommended that OIC Network Access is restricted to your corporate IP Addresses or VCNs for OIC Instances.",
+            "Observation":"OIC Instances that allow unfiltered public ingress traffic (Authn & Authz is still required)."
+            },
+            "2.7":{ "Description":"Oracle Analytics Cloud (OAC) is a scalable and secure public cloud service that provides a full set of capabilities to explore and perform collaborative analytics for you, your workgroup, and your enterprise. OAC instances provide ingress filtering of network traffic or can be deployed with in an existing Virtual Cloud Network VCN. It is recommended that all new OAC instances be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing OAC instances.",
+            "Rationale":"Restricting connectivity to Oracle Analytics Cloud instances reduces an OAC instance’s exposure to risk.",
+            "Impact":"When updating ingress filters for an existing environment, care should be taken to ensure that IP addresses and VCNs currently used by administrators, users, and services to access your OAC instances are included in the updated filters. Also, these changes will temporarily bring the OAC instance offline.",
+            "Remediation":"For each OAC instance in the returned results, select the OAC Instance name edit the Access Control Rules by clicking +Another Rule and add rules as required",
+            "Recommendation":"It is recommended that all new OAC instances be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing OAC instances.",
+            "Observation":"OAC Instances that allow unfiltered public ingress traffic (Authn & Authz is still required)."
+            },
+            "2.8":{ "Description":"Oracle Autonomous Database Shared (ADB-S) automates database tuning, security, backups, updates, and other routine management tasks traditionally performed by DBAs. ADB-S provide ingress filtering of network traffic or can be deployed within an existing Virtual Cloud Network (VCN). It is recommended that all new ADB-S databases be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing ADB-S databases.",
+            "Rationale":"Restricting connectivity to ADB-S Databases reduces an ADB-S database’s exposure to risk.",
+            "Impact":"When updating ingress filters for an existing environment, care should be taken to ensure that IP addresses and VCNs currently used by administrators, users, and services to access your ADB-S instances are included in the updated filters.",
+            "Remediation":"For each ADB-S database in the returned results, select the ADB-S database name edit the Access Control Rules by clicking +Another Rule and add rules as required",
+            "Recommendation":"It is recommended that all new ADB-S databases be deployed within a VCN and that the Access Control Rules are restricted to your corporate IP Addresses or VCNs for existing ADB-S databases.",
+            "Observation":"ADB-S Instances that allow unfiltered public ingress traffic (Authn & Authz is still required)."
+            },
+            "3.1":{ "Description":"Ensuring audit logs are kept for 365 days.",
+            "Rationale":"Log retention controls how long activity logs should be retained. Studies have shown that The Mean Time to Detect(MTTD) a cyber breach is anywhere from 30 days in some sectors to up to 206 days in others. Retaining logs for at least 365 days or more will provide the ability to respond to incidents",
+            "Impact":"There is no performance impact when enabling the above described features but additional audit data will be retained.",
+            "Remediation":"Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.2":{ "Description":"Using default tags is a way to ensure all resources that support tags are tagged during creation. Tags can be based on static values or based on computed values. It is recommended to setup default tags early on to ensure all created resources will get tagged.\nTags are scoped to Compartments and are inherited by Child Compartments. The recommendation is to create default tags like “CreatedBy” at the Root Compartment level to ensure all resources get tagged.\nWhen using Tags it is important to ensure that Tag Namespaces are protected by IAM Policies otherwise this will allow users to change tags or tag values.\nDepending on the age of the OCI Tenancy there may already be Tag defaults setup at the Root Level and no need for further action to implement this action.",
+            "Rationale":"In the case of an incident having default tags like “CreatedBy” applied will provide info on who created the resource without having to search the Audit logs.",
+            "Impact":"There is no performance impact when enabling the above described features",
+            "Remediation":"Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of \"${iam.principal.names}\" and a Tag Key Status of Active. Also cretae a Tag key definition by providing a Tag Key, Description and selecting “Static Value” for Tag Value Type",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.3":{ "Description":"Notifications provide a multi-channel messaging service that allow users and applications to be notified of events of interest occurring within OCI. Messages can be sent via eMail, HTTPs, PagerDuty, Slack or the OCI Function service. Some channels, such as eMail require confirmation of the subscription before it becomes active.",
+            "Rationale":"Creating one or more notification topics allow administrators to be notified of relevant changes made to OCI infrastructure.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Create a Topic in the notifications service under the appropriate compartment and add the subscriptions with current email address and correct protocol",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.4":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Identity Providers are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"OCI Identity Providers allow management of User ID / passwords in external systems and use of those credentials to access OCI resources. Identity Providers allow users to single sign-on to OCI console and have other OCI credentials like API Keys.\nMonitoring and alerting on changes to Identity Providers will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.5":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Identity Provider Group Mappings are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level",
+            "Rationale":"IAM Policies govern access to all resources within an OCI Tenancy. IAM Policies use OCI Groups for assigning the privileges. Identity Provider Groups could be mapped to OCI Groups to assign privileges to federated users in OCI. Monitoring and alerting on changes to Identity Provider Group mappings will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Find and click the Rule that handles Idp Group Mapping Changes .Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete and Idp Group Mapping – Update  and confirm  Action Type contains: Notifications and that a valid Topic is referenced",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.6":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"IAM Groups control access to all resources within an OCI Tenancy. \nMonitoring and alerting on changes to IAM Groups will help in identifying changes to satisfy least privilege principle.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update .In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.7":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Policies are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"IAM Policies govern access to all resources within an OCI Tenancy. \nMonitoring and alerting on changes to IAM policies will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.8":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when IAM Users are created, updated, deleted, capabilities updated, or state updated. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Users use or manage Oracle Cloud Infrastructure resources. \nMonitoring and alerting on changes to Users will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types:User – Create,User – Delete,User – Update,User Capabilities – Update,User State – Update",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.9":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Virtual Cloud Networks are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Virtual Cloud Networks (VCNs) closely resembles a traditional network. \nMonitoring and alerting on changes to VCNs will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete and VCN – Update",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.10":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when route tables are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Route tables control traffic flowing to or from Virtual Cloud Networks and Subnets. \nMonitoring and alerting on changes to route tables will help in identifying changes these traffic flows.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete and Route Table – Update",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.11":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when security lists are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Security Lists control traffic flowing into and out of Subnets within a Virtual Cloud Network. \nMonitoring and alerting on changes to Security Lists will help in identifying changes to these security controls.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete and Security List – Update",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.12":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when network security groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Network Security Groups control traffic flowing between Virtual Network Cards attached to Compute instances. \nMonitoring and alerting on changes to Network Security Groups will help in identifying changes these security controls.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles Network Security Group Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete and Network Security Group – Update",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.13":{ "Description":"It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
+            "Rationale":"Network Gateways act as routers between VCNs and the Internet, Oracle Services Networks, other VCNS, and on-premise networks. \nMonitoring and alerting on changes to Network Gateways will help in identifying changes to the security posture.",
+            "Impact":"There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
+            "Remediation":"Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create -Delete -Update,DRG Attachment – Create,– Delete -Update, Internet Gateway – Create,– Delete -Update – Change Compartment,Local Peering Gateway – Create – Delete -Update – Change Compartment,NAT Gateway – Create– Delete -Update – Change Compartment",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.14":{ "Description":"VCN flow logs record details about traffic that has been accepted or rejected based on the security list rule.",
+            "Rationale":"Enabling VCN flow logs enables you to monitor traffic flowing within your virtual network and can be used to detect anomalous traffic.",
+            "Impact":"Enabling VCN flow logs will not affect the performance of your virtual network but it will generate additional use of object storage that should be controlled via object lifecycle management.\n\nBy default, VCN flow logs are stored for 30 days in object storage. Users can specify a longer retention period.",
+            "Remediation":"Enable Flow Logs (all records) on Virtual Cloud Networks (subnets) under the relevant resource compartment.Before hand create Log group if not exist in the Log services",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.15":{ "Description":"Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard can suggest, assist, or take corrective actions to mitigate these issues. Cloud Guard should be enabled in the root compartment of your tenancy with the default configuration, activity detectors and responders.",
+            "Rationale":"Cloud Guard provides an automated means to monitor a tenancy for resources that are configured in an insecure manner as well as risky network activity from these resources.",
+            "Impact":"There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
+            "Remediation":"Enable the cloud guard by selecting the services in the menu and provide appropriate Reporting region and other configurations",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.16":{ "Description":"Oracle Cloud Infrastructure Vault securely stores master encryption keys that protect your encrypted data. You can use the Vault service to rotate keys to generate new cryptographic material. Periodically rotating keys limits the amount of data encrypted by one key version.",
+            "Rationale":"Rotating keys annually limits the data encrypted under one key version. Key rotation thereby reduces the risk in case a key is ever compromised.",
+            "Impact":"",
+            "Remediation":"Select the security service and select vault.Ensure the date of each Master Encryption key under the Created column of the Master Encryption key is no more than 365 days old. ",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "3.17":{ "Description":"Object Storage write logs will log all write requests made to objects in a bucket.",
+            "Rationale":"Enabling an Object Storage write log, the `requestAction` property would contain values of `PUT`, `POST`, or `DELETE`. This will provide you more visibility into changes to objects in your buckets.",
+            "Impact":"There is no performance impact when enabling the above described features, but will generate additional use of object storage that should be controlled via object lifecycle management. \n\nBy default, Object Storage logs are stored for 30 days in object storage. Users can specify a longer retention period.",
+            "Remediation":"To the relevant bucket enable log by providing Write Access Events from the Log Category.Beforehand crete log group if required.",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.1.1":{ "Description":"A bucket is a logical container for storing objects. It is associated with a single compartment that has policies that determine what action a user can perform on a bucket and on all the objects in the bucket. It is recommended that no bucket be publicly accessible.",
+            "Rationale":"Removing unfettered reading of objects in a bucket reduces an organization's exposure to data loss.",
+            "Impact":"For updating an existing bucket, care should be taken to ensure objects in the bucket can be accessed through either IAM policies or pre-authenticated requests.",
+            "Remediation":"Edit the visibility into \"private\" for each Bucket",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.1.2":{ "Description":"Oracle Object Storage buckets support encryption with a Customer Managed Key (CMK). By default, Object Storage buckets are encrypted with an Oracle managed key.",
+            "Rationale":"Encryption of Object Storage buckets with a Customer Managed Key (CMK) provides an additional level of security on your data by allowing you to manage your own encryption key lifecycle management for the bucket.",
+            "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize Object Storage service to use keys on your behalf.\n\nRequired Policy:\n```\nAllow service objectstorage-<region_name>, to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n\n```",
+            "Remediation":"Assign Master encryption key to Encryption key in every Object storage under Bucket name by clicking assign and select vault",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.1.3":{ "Description":"A bucket is a logical container for storing objects. Object versioning is enabled at the bucket level and is disabled by default upon creation. Versioning directs Object Storage to automatically create an object version each time a new object is uploaded, an existing object is overwritten, or when an object is deleted. You can enable object versioning at bucket creation time or later.",
+            "Rationale":"Versioning object storage buckets provides for additional integrity of your data. Management of data integrity is critical to protecting and accessing protected data. Some customers want to identify object storage buckets without versioning in order to apply their own data lifecycle protection and management policy.",
+            "Impact":"",
+            "Remediation":"Enable  Versioning by clicking on every bucket by editing the bucket configuration",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.2.1":{ "Description":"Oracle Cloud Infrastructure Block Volume service lets you dynamically provision and manage block storage volumes. By default, the Oracle service manages the keys that encrypt this block volume. Block Volumes can also be encrypted using a customer managed key.",
+            "Rationale":"Encryption of block volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify block volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain volumes and then apply their own key lifecycle management to the selected block volumes.",
+            "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Block Volume service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service blockstorage to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
+            "Remediation":"For each block volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.2.2":{ "Description":"When you launch a virtual machine (VM) or bare metal instance based on a platform image or custom image, a new boot volume for the instance is created in the same compartment. That boot volume is associated with that instance until you terminate the instance. By default, the Oracle service manages the keys that encrypt this boot volume. Boot Volumes can also be encrypted using a customer managed key.",
+            "Rationale":"Encryption of boot volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify boot volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain boot volumes and then apply their own key lifecycle management to the selected boot volumes.",
+            "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Boot Volume service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service Bootstorage to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
+            "Remediation":"For each boot volumes from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "4.3.1":{ "Description":"Oracle Cloud Infrastructure File Storage service (FSS) provides a durable, scalable, secure, enterprise-grade network file system. By default, the Oracle service manages the keys that encrypt FSS file systems. FSS file systems can also be encrypted using a customer managed key.",
+            "Rationale":"Encryption of FSS systems provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify FSS file systems that are encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain FSS file systems and then apply their own key lifecycle management to the selected FSS file systems.",
+            "Impact":"Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the File Storage service to use the keys you create.\nRequired IAM Policy:\n```\nAllow service FssOc1Prod to use keys in compartment <compartment-id> where target.key.id = '<key_OCID>'\n```",
+            "Remediation":"For each file storage system from the result,Assign the encryption key by Selecting the Vault Compartment and Vault,Select the Master Encryption Key Compartment and Master Encryption key, click assign",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "5.1":{ "Description":"When you sign up for Oracle Cloud Infrastructure, Oracle creates your tenancy, which is the root compartment that holds all your cloud resources. You then create additional compartments within the tenancy (root compartment) and corresponding policies to control access to the resources in each compartment. \n\nCompartments allow you to organize and control access to your cloud resources. A compartment is a collection of related resources (such as instances, databases, virtual cloud networks, block volumes) that can be accessed only by certain groups that have been given permission by an administrator.",
+            "Rationale":"Compartments are a logical group that adds an extra layer of isolation, organization and authorization making it harder for unauthorized users to gain access to OCI resources.",
+            "Impact":"Once the compartment is created an OCI IAM policy must be created to allow a group to resources in the compartment otherwise only group with tenancy access will have access.",
+            "Remediation":"Create the new compartment under the root compartment",
+            "Recommendation":"",
+            "Observation":""
+            },
+            "5.2":{ "Description":"When you create a cloud resource such as an instance, block volume, or cloud network, you must specify to which compartment you want the resource to belong. Placing resources in the root compartment makes it difficult to organize and isolate those resources.",
+            "Rationale":"Placing resources into a compartment will allow you to organize and have more granular access controls to your cloud resources.",
+            "Impact":"Placing a resource in a compartment will impact how you write policies to manage access and organize that resource.",
+            "Remediation":"For each item in the returned results,select Move Resource or More Actions then Move Resource and select compartment except root and choose new then move resources",
+            "Recommendation":"",
+            "Observation":""
+            }
         }
 
         # MAP Checks
@@ -320,8 +680,8 @@ class CIS_Report:
 
         # Start print time info
         self.__print_header("Running CIS Reports...")
-        print("Updated November 16, 2022.")
-        print("Tested oci-python-sdk version: 2.88.1")
+        print("Updated January 24, 2023.")
+        print("Tested oci-python-sdk version: 2.90.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -567,11 +927,13 @@ class CIS_Report:
             ).data
             # Need to convert for raw output
             for compartment in self.__compartments:
+                deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
-                    "id" : compartment.id,
-                    "name" : compartment.name,
-                    "compartment_id": compartment.compartment_id,
-                    "defined_tags": compartment.defined_tags,
+                    'id': compartment.id,
+                    'name' : compartment.name,
+                    "deep_link": self.__generate_csv_hyperlink(deep_link, compartment.name),
+                    'compartment_id': compartment.compartment_id,
+                    'defined_tags': compartment.defined_tags,
                     "description": compartment.description,
                     "freeform_tags": compartment.freeform_tags,
                     "inactive_status": compartment.inactive_status,
@@ -584,9 +946,11 @@ class CIS_Report:
             
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
+            deep_link = self.__oci_compartment_uri + compartment.id
             root_compartment = {
                 "id" : self.__tenancy.id,
                 "name" : self.__tenancy.name,
+                "deep_link": self.__generate_csv_hyperlink(deep_link, self.__tenancy.name),
                 "compartment_id": "(root)",
                 "defined_tags": self.__tenancy.defined_tags,
                 "description": self.__tenancy.description,
@@ -625,13 +989,17 @@ class CIS_Report:
                     group_id=grp.id
                 ).data
                 for member in membership:
+                    grp_deep_link = self.__oci_groups_uri + grp.id
+                    user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
                         "id": grp.id,
                         "name": grp.name,
+                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
                         "description": grp.description,
                         "lifecycle_state": grp.lifecycle_state,
                         "time_created": grp.time_created.strftime(self.__iso_time_format),
-                        "user_id": member.user_id
+                        "user_id": member.user_id,
+                        "user_id_link": self.__generate_csv_hyperlink(user_deep_link,member.user_id)
                     }
                     # Adding a record per user to group
                     self.__groups_to_users.append(group_record)
@@ -652,8 +1020,11 @@ class CIS_Report:
             ).data
             # Adding record to the users
             for user in users_data:
+                deep_link = self.__oci_users_uri + user.id
                 record = {
                     'id': user.id,
+                    'name': user.name,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
                     'defined_tags': user.defined_tags,
                     'description': user.description,
                     'email': user.email,
@@ -663,7 +1034,6 @@ class CIS_Report:
                     'is_mfa_activated': user.is_mfa_activated,
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
-                    'name': user.name,
                     'groups': []
                 }
                 # Adding Groups to the user
@@ -697,9 +1067,11 @@ class CIS_Report:
             ).data
 
             for api_key in user_api_keys_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
                 record = {
                     'id': api_key.key_id,
                     'fingerprint': api_key.fingerprint,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, api_key.fingerprint),
                     'inactive_status': api_key.inactive_status,
                     'lifecycle_state': api_key.lifecycle_state,
                     'time_created': api_key.time_created.strftime(self.__iso_time_format),
@@ -724,9 +1096,11 @@ class CIS_Report:
             ).data
 
             for token in auth_tokens_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
                 record = {
                     'id': token.id,
                     'description': token.description,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, token.description),
                     'inactive_status': token.inactive_status,
                     'lifecycle_state': token.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
@@ -756,9 +1130,11 @@ class CIS_Report:
             ).data
 
             for key in customer_secret_key_data:
+                deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
                 record = {
                     'id': key.id,
                     'display_name': key.display_name,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, key.display_name),
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
                     # .strftime('%Y-%m-%d %H:%M:%S'),
@@ -787,13 +1163,15 @@ class CIS_Report:
                         compartment_id = compartment.id
                     ).data
                     for policy in policies_data:
+                        deep_link = self.__oci_policies_uri + policy.id
                         record = {
                             "id": policy.id,
                             "name": policy.name,
+                            'deep_link': self.__generate_csv_hyperlink(deep_link, policy.name),
                             "compartment_id": policy.compartment_id,
                             "description": policy.description,
                             "lifecycle_state": policy.lifecycle_state,
-                            "statements": policy.statements
+                            "statements": policy.statements,
                         }
                         self.__policies.append(record)
             
@@ -814,9 +1192,11 @@ class CIS_Report:
                 ).data
             for dynamic_group in dynamic_groups_data:
                 try:
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id + "?region=" + region_key
                     record = {
                         "id": dynamic_group.id,
                         "name": dynamic_group.name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
                         "description": dynamic_group.description,
                         "matching_rule": dynamic_group.matching_rule,
                         "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
@@ -831,6 +1211,7 @@ class CIS_Report:
                     record = {
                         "id": "",
                         "name": "",
+                        "deep_link": "",
                         "description": "",
                         "matching_rule": "",
                         "time_created": "",
@@ -888,9 +1269,13 @@ class CIS_Report:
                             try:
                                 bucket_info = region_values['os_client'].get_bucket(
                                     self.__os_namespace, bucket.name).data
+                                
+                                deep_link = self.__oci_buckets_uri + bucket_info.namespace + \
+                                     "/" + bucket_info.name + "/objects?region=" + region_key
                                 record = {
                                     "id": bucket_info.id,
                                     "name": bucket_info.name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),                                    
                                     "kms_key_id": bucket_info.kms_key_id,
                                     "namespace": bucket_info.namespace,
                                     "compartment_id": bucket_info.compartment_id,
@@ -910,7 +1295,8 @@ class CIS_Report:
                             except Exception as e:
                                 record = {
                                     "id": "",
-                                    "name": bucket.name,
+                                    "name":  bucket_info.name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,
@@ -948,9 +1334,11 @@ class CIS_Report:
                         # Getting Block Volume inf
                         for volume in volumes_data:
                             try:
+                                deep_link = self.__oci_block_volumes_uri + volume.id + "?region=" + region_key
                                 record = {
-                                    "id":volume.id,
+                                    "id": volume.id,
                                     "display_name": volume.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
                                     "kms_key_id": volume.kms_key_id,
                                     "lifecycle_state": volume.lifecycle_state,
                                     "compartment_id": volume.compartment_id,
@@ -975,6 +1363,7 @@ class CIS_Report:
                                 record = {
                                     "id":"",
                                     "display_name": "",
+                                    "deep_link": "",
                                     "kms_key_id": "",
                                     "lifecycle_state": "",
                                     "compartment_id": "",
@@ -1018,9 +1407,11 @@ class CIS_Report:
                                 ).data
                             for boot_volume in boot_volumes_data:
                                 try:
+                                    deep_link = self.__oci_boot_volumes_uri + boot_volume.id + "?region=" + region_key
                                     record = {
                                         "id": boot_volume.id,
                                         "display_name": boot_volume.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
                                         "image_id": boot_volume.image_id,
                                         "kms_key_id": boot_volume.kms_key_id,
                                         "lifecycle_state": boot_volume.lifecycle_state,
@@ -1045,6 +1436,7 @@ class CIS_Report:
                                     record = {
                                         "id": "",
                                         "display_name": "",
+                                        "deep_link": "",
                                         "image_id": "",
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
@@ -1088,9 +1480,11 @@ class CIS_Report:
                                 ).data
                             for fss in fss_data:
                                 try:
+                                    deep_link = self.__oci_fss_uri + fss.id + "?region=" + region_key
                                     record = {
                                         "id": fss.id,
                                         "display_name": fss.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
                                         "kms_key_id": fss.kms_key_id,
                                         "lifecycle_state": fss.lifecycle_state,
                                         "lifecycle_details": fss.lifecycle_details,
@@ -1110,6 +1504,7 @@ class CIS_Report:
                                     record = {
                                         "id": "",
                                         "display_name": "",
+                                        "deep_link": "",
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
                                         "lifecycle_details": "",
@@ -1148,10 +1543,13 @@ class CIS_Report:
                         ).data
                         # Looping through NSGs to to get
                         for nsg in nsgs_data:
+                            deep_link = self.__oci_networking_uri + nsg.vcn_id + \
+                                "/network-security-groups/" + nsg.id +  "?region=" + region_key
                             record = {
+                                "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "id": nsg.id,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -1165,13 +1563,15 @@ class CIS_Report:
                                 network_security_group_id = nsg.id
                             ).data
                             for rule in nsg_rules:
+                                deep_link = self.__oci_networking_uri + nsg.vcn_id + \
+                                "/network-security-groups/" + nsg.id + "/nsg-rules" + "?region=" + region_key
                                 rule_record = {
-
+                                    "id": rule.id,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, rule.id),
                                     "destination": rule.destination,
                                     "destination_type": rule.destination_type,
                                     "direction": rule.direction,
                                     "icmp_options": rule.icmp_options,
-                                    "id": rule.id,
                                     "is_stateless": rule.is_stateless,
                                     "is_valid": rule.is_valid,
                                     "protocol": rule.protocol,
@@ -1207,10 +1607,13 @@ class CIS_Report:
                         ).data
                         # Looping through Security Lists to to get
                         for security_list in security_lists_data:
+                            deep_link = self.__oci_networking_uri + security_list.vcn_id + \
+                                "/security-lists/" + security_list.id + "?region=" + region_key
                             record = {
+                                "id": security_list.id,
                                 "compartment_id": security_list.compartment_id,
                                 "display_name": security_list.display_name,
-                                "id": security_list.id,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, security_list.display_name),
                                 "lifecycle_state": security_list.lifecycle_state,
                                 "time_created": security_list.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": security_list.vcn_id,
@@ -1271,6 +1674,8 @@ class CIS_Report:
                         # Looping through subnets in a compartment
                         try:
                             for subnet in subnets_data:
+                                deep_link = self.__oci_networking_uri + subnet.vcn_id + \
+                                    "/subnets/" + subnet.id + "?region=" + region_key
                                 record = {
                                     "id": subnet.id,
                                     "availability_domain": subnet.availability_domain,
@@ -1278,6 +1683,7 @@ class CIS_Report:
                                     "compartment_id": subnet.compartment_id,
                                     "dhcp_options_id": subnet.dhcp_options_id,
                                     "display_name": subnet.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
                                     "dns_label": subnet.dns_label,
                                     "ipv6_cidr_block": subnet.ipv6_cidr_block,
                                     "ipv6_virtual_router_ip": subnet.ipv6_virtual_router_ip,
@@ -1299,6 +1705,8 @@ class CIS_Report:
                                 # Adding subnet to subnet list
                                 self.__network_subnets.append(record)
                         except Exception as e:
+                            deep_link = self.__oci_networking_uri + subnet.vcn_id + \
+                                    "/subnet/" + subnet.id + "?region=" + region_key
                             record = {
                                 "id": subnet.id,
                                 "availability_domain": subnet.availability_domain,
@@ -1306,6 +1714,7 @@ class CIS_Report:
                                 "compartment_id": subnet.compartment_id,
                                 "dhcp_options_id": subnet.dhcp_options_id,
                                 "display_name": subnet.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
                                 "dns_label": subnet.dns_label,
                                 "ipv6_cidr_block": "",
                                 "ipv6_virtual_router_ip": "",
@@ -1365,10 +1774,12 @@ class CIS_Report:
                         ).data
                         # Looping through DRG Attachments in a compartment
                         for drg_attachment in drg_attachment_data:
+                            deep_link = self.__oci_drg_uri + drg_attachment.drg_id + "/drg-attachment/" + drg_attachment.id + "?region=" + region_key
                             try:
                                 record = {
                                 "id": drg_attachment.id,
                                 "display_name" : drg_attachment.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
                                 "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
@@ -1389,6 +1800,7 @@ class CIS_Report:
                                 record = {
                                 "id": drg_attachment.id,
                                 "display_name" : drg_attachment.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
                                 "drg_id" : drg_attachment.drg_id,
                                 "vcn_id" : drg_attachment.vcn_id,
                                 "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
@@ -1437,9 +1849,11 @@ class CIS_Report:
                         # Looping through DRGs in a compartment
                         for drg in drg_data:
                             try:
+                                deep_link = self.__oci_drg_uri + drg.id + "?region=" + region_key
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
                                     "default_remote_peering_connection_route_table" : drg.default_drg_route_tables.remote_peering_connection,
@@ -1458,6 +1872,7 @@ class CIS_Report:
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
                                     "default_drg_route_tables" : drg.default_drg_route_tables,
                                     "default_ipsec_tunnel_route_table" : "",
                                     "default_remote_peering_connection_route_table" : "",
@@ -1504,9 +1919,11 @@ class CIS_Report:
                         # Looping through fastconnects in a compartment
                         try:
                             for fastconnect in fastconnect_data:
+                                deep_link = self.__oci_fastconnect_uri + fastconnect.id + "?region=" + region_key
                                 record = {
                                     "id": fastconnect.id,
                                     "display_name" : fastconnect.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
                                     "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
                                     "bgp_admin_state" : fastconnect.bgp_admin_state,
                                     "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
@@ -1551,6 +1968,7 @@ class CIS_Report:
                             record = {
                                     "id": "",
                                     "display_name" : "",
+                                    "deep_link": "",
                                     "bandwidth_shape_name" : "",
                                     "bgp_admin_state" : "",
                                     "bgp_ipv6_session_state" : "",
@@ -1613,9 +2031,11 @@ class CIS_Report:
                         # Looping through CPEs in a compartment
                         try:
                             for cpe in cpe_data:
+                                deep_link = self.__oci_cpe_uri + cpe.id+ "?region=" + region_key
                                 record = {
                                     "id": cpe.id,
                                     "display_name" : cpe.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, cpe.display_name),
                                     "cpe_device_shape_id" : cpe.cpe_device_shape_id,
                                     "ip_address" : cpe.ip_address,
                                     "compartment_id" : cpe.compartment_id,
@@ -1632,6 +2052,7 @@ class CIS_Report:
                             record = {
                                     "id": "",
                                     "display_name" : "",
+                                    "deep_link": "",
                                     "cpe_device_shape_id" : "",
                                     "ip_address" : "",
                                     "compartment_id" : compartment.id,
@@ -1667,9 +2088,11 @@ class CIS_Report:
                         
                         for ip_sec in ip_sec_connections_data:
                             try:
+                                deep_link = self.__oci_ipsec_uri + ip_sec.id + "?region=" + region_key
                                 record = {
                                     "id": ip_sec.id,
                                     "display_name" : ip_sec.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
                                     "cpe_id" : ip_sec.cpe_id,
                                     "drg_id" : ip_sec.drg_id,
                                     "compartment_id" : ip_sec.compartment_id,
@@ -1691,10 +2114,12 @@ class CIS_Report:
                                         ipsc_id=ip_sec.id,
                                     ).data
                                     for tunnel in ip_sec_tunnels_data:
+                                        deep_link = self.__oci_ipsec_uri + ip_sec.id + "/tunnels/" + tunnel.id + "?region=" + region_key
                                         tunnel_record = {
                                                 "id" : tunnel.id,
                                                 "cpe_ip" : tunnel.cpe_ip,
                                                 "display_name" : tunnel.display_name,
+                                                "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
                                                 "vpn_ip" : tunnel.vpn_ip,
                                                 "ike_version" : tunnel.ike_version,
                                                 "encryption_domain_config" : tunnel.encryption_domain_config,
@@ -1752,11 +2177,13 @@ class CIS_Report:
                             ).data
                         for adb in autonomous_databases:
                             try: 
+                                deep_link = self.__oci_adb_uri + adb.id + "?region=" + region_key
                                 if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
                                     adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
                                     record = {
                                                 "id": adb.id,
                                                 "display_name": adb.display_name,
+                                                "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
                                                 "apex_details": adb.apex_details,
                                                 "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
                                                 "autonomous_container_database_id": adb.autonomous_container_database_id,
@@ -1840,6 +2267,7 @@ class CIS_Report:
                                     record = {
                                                 "id": adb.id,
                                                 "display_name": adb.display_name,
+                                                "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
                                                 "apex_details": "",
                                                 "are_primary_whitelisted_ips_used": "",
                                                 "autonomous_container_database_id": "",
@@ -1923,6 +2351,7 @@ class CIS_Report:
                                 record = {
                                             "id":"",
                                             "display_name": "",
+                                            "deep_link": "",
                                             "apex_details": "",
                                             "are_primary_whitelisted_ips_used": "",
                                             "autonomous_container_database_id": "",
@@ -2025,9 +2454,11 @@ class CIS_Report:
                         for oic_instance in oic_instances:
                             if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
                                 try:
+                                    deep_link = self.__oci_oicinstance_uri+ oic_instance.id + "?region=" + region_key
                                     record = {
                                         "id": oic_instance.id,
                                         "display_name": oic_instance.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
                                         "network_endpoint_details": oic_instance.network_endpoint_details,
                                         "compartment_id": oic_instance.compartment_id,
                                         "alternate_custom_endpoints": oic_instance.alternate_custom_endpoints,
@@ -2050,6 +2481,7 @@ class CIS_Report:
                                     record = {
                                         "id": "",
                                         "display_name": "",
+                                        "deep_link": "",
                                         "network_endpoint_details": "",
                                         "compartment_id": "",
                                         "alternate_custom_endpoints": "",
@@ -2087,10 +2519,12 @@ class CIS_Report:
                             compartment_id=compartment.id
                         ).data
                         for oac_instance in oac_instances:
-                            try:  
+                            try:
+                                deep_link = self.__oci_oacinstance_uri+ oac_instance.id + "?region=" + region_key  
                                 record = {
                                     "id": oac_instance.id,
                                     "name": oac_instance.name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
                                     "description": oac_instance.description,
                                     "network_endpoint_details": oac_instance.network_endpoint_details,
                                     "network_endpoint_type": oac_instance.network_endpoint_details.network_endpoint_type,
@@ -2112,6 +2546,7 @@ class CIS_Report:
                                 record = {
                                     "name": "",
                                     "description": "",
+                                    "deep_link": "",
                                     "network_endpoint_details": "",
                                     "compartment_id": "",
                                     "lifecycle_state": "",
@@ -2149,11 +2584,13 @@ class CIS_Report:
                         ).data
 
                         for event_rule in events_rules_data:
+                            deep_link = self.__oci_events_uri + event_rule.id + "?region=" + region_key
                             record = {
                                 "compartment_id": event_rule.compartment_id,
                                 "condition": event_rule.condition,
                                 "description": event_rule.description,
                                 "display_name": event_rule.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),
                                 "id": event_rule.id,
                                 "is_enabled": event_rule.is_enabled,
                                 "lifecycle_state": event_rule.lifecycle_state,
@@ -2185,10 +2622,12 @@ class CIS_Report:
                         ).data
                         # Looping through log groups to get logs
                         for log_group in log_groups:
+                            deep_link = self.__oci_loggroup_uri + log_group.id + "?region=" + region_key
                             record = {
                                 "compartment_id": log_group.compartment_id,
                                 "description": log_group.description,
                                 "display_name": log_group.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, log_group.display_name),
                                 "id": log_group.id,
                                 "time_created": log_group.time_created.strftime(self.__iso_time_format),
                                 "time_last_modified": str(log_group.time_last_modified),
@@ -2203,9 +2642,11 @@ class CIS_Report:
                                 log_group_id=log_group.id
                             ).data
                             for log in logs:
+                                deep_link = self.__oci_loggroup_uri + log_group.id + "/logs/" + log.id + "?region=" + region_key
                                 log_record = {
                                     "compartment_id": log.compartment_id,
                                     "display_name": log.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, log.display_name),
                                     "id": log.id,
                                     "is_enabled": log.is_enabled,
                                     "lifecycle_state": log.lifecycle_state,
@@ -2278,10 +2719,12 @@ class CIS_Report:
                         ).data
                         # Get all Vaults in a compartment
                         for vlt in vaults_data:
+                            deep_link = self.__oci_vault_uri + vlt.id + "?region=" + region_key
                             vault_record = {
                                 "compartment_id": vlt.compartment_id,
                                 "crypto_endpoint": vlt.crypto_endpoint,
                                 "display_name": vlt.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, vlt.display_name),
                                 "id": vlt.id,
                                 "lifecycle_state": vlt.lifecycle_state,
                                 "management_endpoint": vlt.management_endpoint,
@@ -2303,10 +2746,12 @@ class CIS_Report:
                                     ).data
                                     # Iterrating through Keys in Vaults
                                     for key in keys:
+                                        deep_link = self.__oci_vault_uri + vlt.id + "/vaults/" + key.id + "?region=" + region_key
                                         key_record = {
-                                            "compartment_id": key.compartment_id,
-                                            "display_name": key.display_name,
                                             "id": key.id,
+                                            "display_name": key.display_name,
+                                            "deep_link": self.__generate_csv_hyperlink(deep_link, key.display_name),
+                                            "compartment_id": key.compartment_id,
                                             "lifecycle_state": key.lifecycle_state,
                                             "time_created": key.time_created.strftime(self.__iso_time_format),
                                         }
@@ -2354,7 +2799,7 @@ class CIS_Report:
                 except Exception as e:
                     print("\tFailed to get Budget Data for Budget Name: " + budget.display_name + " id: " + budget.id)
                     alerts_data = []
-                
+                deep_link = self.__oci_budget_uri + budget.id
                 record = {
                     "actual_spend" : budget.actual_spend,
                     "alert_rule_count" : budget.alert_rule_count,
@@ -2363,6 +2808,7 @@ class CIS_Report:
                     "compartment_id": budget.compartment_id,
                     "description" : budget.description,
                     "display_name": budget.display_name,
+                    "deep_link": self.__generate_csv_hyperlink(deep_link, budget.display_name),
                     "id": budget.id,
                     "lifecycle_state" : budget.lifecycle_state,
                     "processing_period_type" : budget.processing_period_type,
@@ -2442,11 +2888,12 @@ class CIS_Report:
                                 target_id=target.id).data
                             except Exception as e:
                                 target_data = None
-                            
+                            deep_link = self.__oci_cgtarget_uri + target.id
                             record = {
                                 "compartment_id": target.compartment_id,
                                 "defined_tags": target.defined_tags,
                                 "display_name": target.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, target.display_name),
                                 "freeform_tags": target.freeform_tags,
                                 "id": target.id,
                                 "lifecycle_state": target.lifecycle_state,
@@ -2508,8 +2955,10 @@ class CIS_Report:
                             compartment_id = compartment.id
                         ).data
                         for sub in subs_data:
+                            deep_link = self.__oci_onssub_uri + sub.id + "?region=" + region_key
                             record = {
                                 "id": sub.id,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, sub.id),
                                 "compartment_id": sub.compartment_id,
                                 "created_time": sub.created_time, # this is an INT
                                 "endpoint": sub.endpoint,
@@ -2540,10 +2989,12 @@ class CIS_Report:
                 compartment_id=self.__tenancy.id
             ).data
             for tag in tag_defaults:
+                deep_link = self.__oci_compartment_uri + tag.compartment_id + "/tag-defaults"
                 record = {
                     "id": tag.id,
                     "compartment_id": tag.compartment_id,
                     "value": tag.value,
+                    "deep_link": self.__generate_csv_hyperlink(deep_link, tag.value),
                     "time_created": tag.time_created.strftime(self.__iso_time_format),
                     "tag_definition_id": tag.tag_definition_id,
                     "tag_definition_name": tag.tag_definition_name,
@@ -2584,9 +3035,11 @@ class CIS_Report:
                                 service_connector = region_values['sch_client'].get_service_connector(
                                     service_connector_id=connector.id
                                     ).data
+                                deep_link = self.__oci_serviceconnector_uri + service_connector.id + "/logging" + "?region=" + region_key
                                 record = {
                                     "id": service_connector.id,
                                     "display_name": service_connector.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, service_connector.display_name),
                                     "description": service_connector.description,
                                     "freeform_tags": service_connector.freeform_tags,
                                     "defined_tags" : service_connector.defined_tags,
@@ -2612,6 +3065,7 @@ class CIS_Report:
                                 record = {
                                     "id": connector.id,
                                     "display_name": connector.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, connector.display_name),
                                     "description": connector.description,
                                     "freeform_tags": connector.freeform_tags,
                                     "defined_tags" : connector.defined_tags,
@@ -2669,19 +3123,17 @@ class CIS_Report:
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
         
-        # 1.1 Check - checking if there are additional policies
-        policy_counter = 0
+        # 1.1 Check - Checking for policy statements that are not restricted to a service
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
-                    and not("to manage all-resources in tenancy".upper() in statement.upper()) \
+                    and ("to manage all-resources".upper() in statement.upper()) \
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
-                    policy_counter += 1
-            if policy_counter < 3:
-                self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
-                self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(
-                    policy)
-
+                    # If there are more than manage all-resources in you don't meet this rule
+                    self.cis_foundations_benchmark_1_2['1.1']['Status'] = False 
+                    self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(policy)
+                    break
+  
         # 1.2 Check
         for policy in self.__policies:
             for statement in policy['statements']:
@@ -3471,6 +3923,7 @@ class CIS_Report:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
 
+
     ##########################################################################
     # Orchestrates data collection and CIS report generation
     ##########################################################################
@@ -3482,15 +3935,19 @@ class CIS_Report:
         summary_report = []
         for key, recommendation in self.cis_foundations_benchmark_1_2.items():
             if recommendation['Level'] <= level:
+                report_filename = "cis" + " "+ recommendation['section'] + "_" + recommendation['recommendation_#']
+                report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_","_") + ".csv"
                 record = {
-                    "Recommendation #": key,
+                    "Recommendation #": f"'{key}'", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": ('Yes' if recommendation['Status'] else 'No'),
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
-                    "CCCS Guard Rail": recommendation['CCCS Guard Rail']
+                    "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
+                    "Filename" : report_filename if not(recommendation['Status']) else " ",
+                    "Remediation" : self.cis_report_data[key]['Remediation']
                 }
                 # Add record to summary report for CSV output
                 summary_report.append(record)
@@ -3519,6 +3976,9 @@ class CIS_Report:
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
         
+        self.__report_generate_html_summary_report(
+            self.__report_directory, "cis", "html_summary_report", summary_report)
+                        
         # Outputting to a bucket if I have one
         if summary_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
@@ -3533,6 +3993,111 @@ class CIS_Report:
                         self.__output_bucket, report_file_name)
 
     
+    ##########################################################################
+    # Generates an HTML report
+    ##########################################################################
+    def __report_generate_html_summary_report(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".html"
+            file_path = os.path.join(report_directory, file_name)
+
+            # add report_datetimeto each dictionary
+            result = [dict(item, extract_date=self.start_time_str)
+                      for item in data]
+
+
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                redacted_result = []
+                for item in result:
+                    record = {}
+                    for key in item.keys():
+                        str_item = str(item[key])
+                        items_to_redact = re.findall('ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}',str_item)
+                        for redact_me in items_to_redact:
+                            str_item = str_item.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+                        
+                        record[key] = str_item
+
+                    redacted_result.append(record)
+                # Overriding result with redacted result
+                result = redacted_result
+            
+
+            # generate fields
+            fields = [key for key in result[0].keys()]
+
+
+            with open(file_path, mode='w') as html_file:
+                # Creating table header
+                html_file.write('<html><table><tr>\n')
+                for th in fields:
+                    html_file.write("<th>" + th + "</th>\n")
+                html_file.write('</tr>\n')
+
+                # Creating HTML Table of the summary report
+                html_appendix = []
+                for row in result:
+                    if row['Compliant'] == 'No':
+                        html_appendix.append(row['Recommendation #'].replace("'",""))
+                    
+                    html_file.write("<tr>")
+                    # Used for formating Summary Report Data
+                    for row_key, row_value in row.items():
+                        if row_key == "Recommendation #":
+                            html_file.write('<td><a href="#' + str(row_value).replace("'","") + '">' + row_value + '</a></td>\n')
+                        elif row_key == "Filename":
+                            html_file.write('<td><a href="./' + str(row_value) + '">' + row_value + '</a></td>\n')
+                        elif row_key == "Compliant" and row_value == "No":
+                            html_file.write('<td> <b style="color:red;">' + str(row_value) + "</b></td>\n")
+                        else:
+                            html_file.write("<td>" + str(row_value) + "</td>\n")
+
+                    #print(row)
+                    html_file.write("</tr>")
+
+                html_file.write("</table>\n")
+
+                # Creating appendix for the report
+                for finding in html_appendix:
+                    # writing out Finding title
+                    html_file.write(f"<h3><a id='{finding}'> <u> {finding} - {self.cis_foundations_benchmark_1_2[finding]['Title']}</u></h3>\n")
+                    for item_key,item_value in self.cis_report_data[finding].items():
+                        if item_value != "":
+                            html_file.write(f"<p><b> {item_key}:<b/><br>\n")
+                            if item_key == 'Observation':
+                                html_file.write(f"{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))} {item_value} </p>\n")
+                            else:
+                                html_file.write(f"{item_value} </p>\n")
+
+                # Closing HTML
+                html_file.write("</html>\n")
+
+            print("HTML: " + file_subject.ljust(22) + " --> " + file_path)
+            # Used by Upload
+               
+            return file_path
+           
+        except Exception as e:
+            raise Exception("Error in report_generate_html_report: " + str(e.args))
+        
     ##########################################################################
     # Orchestrates analysis and report generation
     ##########################################################################
@@ -3929,6 +4494,11 @@ class CIS_Report:
 
         return self.__report_directory
 
+    def get_obp_checks(self):
+        self.__obp_checks = True
+        self.generate_reports()
+        return self.obp_foundations_checks
+
     ##########################################################################
     # Print header centered
     ##########################################################################
@@ -3939,6 +4509,11 @@ class CIS_Report:
         print("#" + name.center(chars - 2, " ") + "#")
         print('#' * chars)
 
+    ##########################################################################
+    # Create CSV Hyperlink
+    ##########################################################################
+    def __generate_csv_hyperlink(self,url, name):
+        return '=HYPERLINK("' + url + '","' + name +'")'
 
 
 
@@ -4132,15 +4707,17 @@ def execute_report():
                     worksheet_name = worksheet_name.replace("_","")
 
                 worksheet = workbook.add_worksheet(worksheet_name)
-                with open(csvfile, 'rt', encoding='utf8') as f:
+                with open(csvfile, 'rt', encoding='unicode_escape') as f:
                     reader = csv.reader(f)
                     for r, row in enumerate(reader):
                         for c, col in enumerate(row):
-                            worksheet.write(r, c, col)
-            
+                            # Skipping the deep link due to formating errors in xlsx
+                            if "=HYPERLINK" not in col:
+                                worksheet.write(r, c, col)
             workbook.close()
     except Exception as e:
         print("**Failed to output to excel. Please use CSV files.**")
+        print(e)
 
 ##########################################################################
 # Main

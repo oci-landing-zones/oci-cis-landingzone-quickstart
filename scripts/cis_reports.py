@@ -29,6 +29,7 @@ try:
     from xlsxwriter.workbook import Workbook    
     import glob
     OUTPUT_TO_XLSX = True
+    print("Print to Excel " * 5)
 except:
     OUTPUT_TO_XLSX = False
 
@@ -4706,15 +4707,17 @@ def execute_report():
                     worksheet_name = worksheet_name.replace("_","")
 
                 worksheet = workbook.add_worksheet(worksheet_name)
-                with open(csvfile, 'rt', encoding='utf8') as f:
+                with open(csvfile, 'rt', encoding='unicode_escape') as f:
                     reader = csv.reader(f)
                     for r, row in enumerate(reader):
                         for c, col in enumerate(row):
-                            worksheet.write(r, c, col)
-            
+                            # Skipping the deep link due to formating errors in xlsx
+                            if "=HYPERLINK" not in col:
+                                worksheet.write(r, c, col)
             workbook.close()
     except Exception as e:
         print("**Failed to output to excel. Please use CSV files.**")
+        print(e)
 
 ##########################################################################
 # Main

@@ -1,3 +1,17 @@
+#   February 1, 2023 Release Notes - 2.5.3
+1. [HTML CIS Summary Report](#2-5-3-script-html)
+1. [Resource Deep Links in CSV](#2-5-3-deep-link)
+1. [Improved CIS IAM 1.1 Check](#2-5-3-cis-logic)
+
+## <a name="2-5-3-script-html">HTML CIS Summary Report</a>
+The CIS Compliance checking script now outputs an HTML summary report.  The summary report includes additional information from the [CIS OCI Benchmark v1.2](https://www.cisecurity.org/benchmark/oracle_cloud) plus a link to the finding's CSV file.
+
+## <a name="2-5-3-deep-link">Resource Deep Links in CSV</a>
+The CIS Compliance checking script CSV reports have a new field `deep_link` which contains a clickable link to the resource in the OCI Console. 
+
+## <a name="2-5-3-cis-logic">Improved CIS IAM 1.1 Check</a>
+The CIS Compliance checking script check for Identity and Access Management 1.1: *Ensure service level admins are created to manage resources of particular service* has been improved to reduce false positives. 
+
 #  January 26, 2023 Release Notes - 2.5.2
 1. [Service Connector Hub Improvements](#2-5-2-sch-improvements)
 1. [CIS Level Setting Updates](#2-5-2-cis-level)

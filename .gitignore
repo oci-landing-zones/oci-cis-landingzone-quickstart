@@ -12,3 +12,4 @@
 test/**
 *.csv
 *.xlsx
+*.html

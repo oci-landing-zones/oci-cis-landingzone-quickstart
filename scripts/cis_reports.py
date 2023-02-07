@@ -1294,8 +1294,8 @@ class CIS_Report:
                             except Exception as e:
                                 record = {
                                     "id": "",
-                                    "name":  bucket_info.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),
+                                    "name":  bucket.name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,

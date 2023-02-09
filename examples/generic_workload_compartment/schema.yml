@@ -1,0 +1,71 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "OCI CIS Landing Zone Generic Workload"
+stackDescription: "A stack that deploys an application workload compartment and optionally a database compartment to go with the workload compartment and the associate policies."
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "landing_zone_prefix"
+      - "enable_compartments_delete"
+      - "parent_compartment_id"
+  
+  - title: "Workload Compartment Variables"
+    variables:
+      - "workload_compartment_name"
+      - "workload_compartment_user_group_name"
+  
+  - title: "Workload Database Compartment"
+    variables:  
+      - "create_database_compartment"
+      - "database_compartment_name"
+      - "database_workload_compartment_user_group_name"
+
+
+variables:
+  landing_zone_prefix:
+    type: string
+    minLength: 1
+    maxLength: 8
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "The unique label that was used in your CIS Landing Zone deployment."
+    required: true
+  
+  enable_compartments_delete:
+    type: boolean
+    title: "Enable Compartment Delete"
+    description: "Whether compartments are physically deleted upon destroy."
+  
+  parent_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing parent compartment"
+    description: "Compartment where the workload compartment(s) will be created in."
+    required: true
+
+  workload_compartment_name:
+    type: string
+    title: "Compartment Name of the workload compartment."
+    default: "app-workload-cmp"
+    required: true
+  
+  workload_compartment_user_group_name:
+    type: oci:identity:groups:name
+    title: "Existing Application group name."
+    required: true
+  
+  # Variables not required to display to user
+  user_ocid:
+    type: string
+
+  fingerprint:
+    type: string
+
+  private_key_path:
+    type: string
+
+  private_key_password:
+    type: password

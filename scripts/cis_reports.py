@@ -1170,7 +1170,7 @@ class CIS_Report:
                             "compartment_id": policy.compartment_id,
                             "description": policy.description,
                             "lifecycle_state": policy.lifecycle_state,
-                            "statements": policy.statements,
+                            "statements": policy.statements
                         }
                         self.__policies.append(record)
             
@@ -1191,7 +1191,7 @@ class CIS_Report:
                 ).data
             for dynamic_group in dynamic_groups_data:
                 try:
-                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id + "?region=" + region_key
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                     record = {
                         "id": dynamic_group.id,
                         "name": dynamic_group.name,

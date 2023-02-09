@@ -1,3 +1,9 @@
+#   February 10, 2023 Release Notes - 2.5.4
+1. [Improved CIS 3.7 and 3.13 Checks](#2-5-4-cis-logic)
+
+## <a name="2-5-4-cis-logic">Improved CIS 3.7 and 3.13 Checks</a>
+The CIS Compliance checking script checks for Logging and Monitoring 3.7: *Ensure a notification is configured for IAM policy changes* and Logging and Monitoring 3.13: *Ensure a notification is configured for changes to route tables* has been improved to reduce false positives.
+
 #   February 1, 2023 Release Notes - 2.5.3
 1. [HTML CIS Summary Report](#2-5-3-script-html)
 1. [Resource Deep Links in CSV](#2-5-3-deep-link)

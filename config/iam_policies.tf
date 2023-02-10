@@ -151,13 +151,16 @@ locals {
     "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
     "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
     "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}",
-    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}"
+    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment.name}"
   ]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
+        # https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/iam-private-endpoint-configure-policies.html
         "allow group ${local.database_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.network_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage private-ips in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use subnets in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}"]  
 

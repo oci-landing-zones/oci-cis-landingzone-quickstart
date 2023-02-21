@@ -168,7 +168,7 @@ locals {
   database_admin_grants_on_security_cmp = [
         "allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
+        "allow group ${local.database_admin_group_name} to read keys in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
@@ -288,7 +288,7 @@ locals {
 
   ## ADB grants
   autonomous_database_grants = [
-        "allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment.name}",
         "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
   
   ## Storage admin grants

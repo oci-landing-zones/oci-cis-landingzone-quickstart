@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI CIS Landing Zone Generic Workload"
-stackDescription: "A stack that deploys an application workload compartment and optionally a database compartment to go with the workload compartment and the associate policies."
+stackDescription: "A stack that deploys an application workload compartment and optionally a database compartment to go with the workload compartment and the associated policies."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -25,6 +25,16 @@ variableGroups:
       - "database_compartment_name"
       - "database_workload_compartment_user_group_name"
 
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_id"
+      - "user_id"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+      - "compartments"
+      - "home_region"
 
 variables:
   landing_zone_prefix:
@@ -39,7 +49,8 @@ variables:
     type: boolean
     title: "Enable Compartment Delete"
     description: "Whether compartments are physically deleted upon destroy."
-  
+    default: false
+
   parent_compartment_id:
     type: oci:identity:compartment:id
     title: "Existing parent compartment"
@@ -53,12 +64,32 @@ variables:
     required: true
   
   workload_compartment_user_group_name:
-    type: oci:identity:groups:name
+    type: string
     title: "Existing Application group name."
+    description: "OCI User group name associated with the workload compartment."
     required: true
   
+  create_database_compartment:
+    type: boolean
+    title: "Create Database Compartment"
+    description: "Whether a database compartment is created to support the workload."
+    default: false
+
+  database_compartment_name:
+    type: string
+    title: "Database Compartment Name"
+    description: "Compartment Name of the database compartment for the workload."
+  
+  database_workload_compartment_user_group_name:
+    type: string
+    title: "Database Workload Compartment User Group Name"
+    description: "OCI User group associated with workload database compartment."
+  
   # Variables not required to display to user
-  user_ocid:
+  tenancy_id:
+    type: string
+
+  user_id:
     type: string
 
   fingerprint:
@@ -67,5 +98,11 @@ variables:
   private_key_path:
     type: string
 
+  compartments:
+    type: string
+
   private_key_password:
     type: password
+  
+  home_region: 
+    type: string

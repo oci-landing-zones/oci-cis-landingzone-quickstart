@@ -1050,7 +1050,7 @@ class CIS_Report:
                     user.id)
 
                 self.__users.append(record)
-            print("\tProcessed " + str(len(self.__users)) + " users")
+            print("\tProcessed " + str(len(self.__users)) + " Users")
             return self.__users
 
         except Exception as e:
@@ -1298,7 +1298,7 @@ class CIS_Report:
                                 record = {
                                     "id": "",
                                     "name":  bucket.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.name),
+                                    "deep_link": "", # self.__generate_csv_hyperlink(deep_link, bucket.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,
@@ -1850,8 +1850,8 @@ class CIS_Report:
                         ).data
                         # Looping through DRGs in a compartment
                         for drg in drg_data:
+                            deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
                             try:
-                                deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
@@ -2829,7 +2829,7 @@ class CIS_Report:
                 # Append Budget to list of Budgets
                 self.__budgets.append(record)
 
-            print("\tProcessed " + str(len(self.__budgets)) + " budgets")
+            print("\tProcessed " + str(len(self.__budgets)) + " Budgets")
             return self.__budgets
         except Exception as e:
             raise RuntimeError(
@@ -2847,7 +2847,7 @@ class CIS_Report:
         except Exception as e:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__audit_retention_period = -1
-                print("\t***Access to audit retention requires the user to be part of the Administrator group")
+                print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
             else:
                 raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
             
@@ -2867,7 +2867,7 @@ class CIS_Report:
             return self.__cloud_guard_config_status
         except Exception as e:
             self.__cloud_guard_config_status = 'DISABLED'
-            print("***Cloud Guard service requires a PayGo account")
+            print("*** Cloud Guard service requires a PayGo account ***")
 
 
     ##########################################################################
@@ -2923,7 +2923,7 @@ class CIS_Report:
             print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")                        
             return self.__cloud_guard_targets
         except Exception as e:
-            print("***Cloud Guard service requires a PayGo account")
+            print("*** Cloud Guard service requires a PayGo account ***")
 
     ##########################################################################
     # Identity Password Policy
@@ -2938,7 +2938,7 @@ class CIS_Report:
         except Exception as e:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__tenancy_password_policy = None
-                print("\t***Access to password policies in this tenancy requires elevated permissions.")
+                print("\t*** Access to password policies in this tenancy requires elevated permissions. ***")
             else:
                 raise RuntimeError(
                 "Error in __identity_read_tenancy_password_policy " + str(e.args))
@@ -3067,7 +3067,7 @@ class CIS_Report:
                                 record = {
                                     "id": connector.id,
                                     "display_name": connector.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, connector.display_name),
+                                    "deep_link": "", # self.__generate_csv_hyperlink(deep_link, connector.display_name),
                                     "description": connector.description,
                                     "freeform_tags": connector.freeform_tags,
                                     "defined_tags" : connector.defined_tags,
@@ -4085,33 +4085,38 @@ class CIS_Report:
                 html_file.write('</div></section><section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth"><div class="otable otable-scrolling"><div class="otable-w1">')
                 html_file.write('<table class="otable-w2"><thead><tr>')
                 for th in fields:
+                    column_width = '63%'
                     if th == 'extract_date':
                         th = th.replace('_', ' ').title()
+                        continue
                     elif th == 'Recommendation #':
-                        html_file.write('<th class="otable-col-head" style=" width:15%;">' + th + '</th>')
+                        column_width = '15%'
                     elif th == 'Compliant':
-                        html_file.write('<th class="otable-col-head" style=" width:10%;">' + th + '</th>')
+                        column_width = '10%'
                     elif th == 'Section':
-                        html_file.write('<th class="otable-col-head" style=" width:12%;">' + th + '</th>')
+                        column_width = '12%'
                     else:
-                        html_file.write('<th class="otable-col-head" style=" width:63%;">' + th + '</th>')
+                        column_width = '63%'
+                    html_file.write('<th class="otable-col-head" style=" width:' + column_width + ';">' + th + '</th>')
                 html_file.write('</tr></thead><tbody>')
                 # Creating HTML Table of the summary report
                 html_appendix = []
                 for row in result:
-                    if row['Compliant'] == 'No':
+                    compliant = row['Compliant']
+                    text_color = 'green'
+                    if compliant == 'No':
                         html_appendix.append(row['Recommendation #'].replace("'",""))
+                        text_color = 'red'
                     # Print the row
                     html_file.write("<tr>")
                     v = row['Recommendation #'].replace("'","")
-                    html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
-                    v = row['Compliant']
-                    c = 'green'
-                    if v == "No":
-                        c = 'red'
-                    html_file.write('<td><b style="color:' + c + ';">' + str(v) + '</b></td>\n')
+                    if compliant == 'No':
+                        html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
+                    else:
+                        html_file.write('<td>' + v + '</td>\n')
+                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b></td>\n')
                     html_file.write("<td>" + str(row['Section']) + "</td>\n")
-                    # TODO ICKE
+                    # Details
                     html_file.write('<td><table><tr><td width="10%"><b>Title</b></td>')
                     html_file.write('<td colspan="3">' + str(row['Title']) + '</td></tr>')
                     html_file.write('<tr><td><b>Remediation</b></td>')
@@ -4120,7 +4125,6 @@ class CIS_Report:
                     html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
                     html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
-                    # HERE ICKE
                     html_file.write('<tr><td width="">' + str(row['Level']) + '</td>')
                     html_file.write('<td>' + str(row['CIS v8']).replace('[','').replace(']','').replace("'",'') + '</td>')
                     html_file.write('<td>' + str(row['CCCS Guard Rail']) + '</td>')
@@ -4141,7 +4145,6 @@ class CIS_Report:
                         if item_value != "":
                             html_file.write(f"<h4>{item_key.title()}</h4>")
                             if item_key == 'Observation':
-                                # TODO ICKE
                                 html_file.write(f"<p><b>{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))}</b> {item_value}</p>\n")
                             else:
                                 v = item_value.replace('<pre>', '<pre style="font-size: 1.4rem;">')

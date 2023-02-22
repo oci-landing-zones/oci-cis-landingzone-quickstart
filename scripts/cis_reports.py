@@ -3117,7 +3117,7 @@ class CIS_Report:
                 raise RuntimeError(
                     "Error in __search_resources_in_root_compartment " + str(e.args))
         
-        print("\tProcessed " + str(len(self.__resources_in_root_compartment)) + " resource in the root compartment")                        
+        print("\tProcessed " + str(len(self.__resources_in_root_compartment)) + " resources in the root compartment")                        
         return self.__resources_in_root_compartment
 
     ##########################################################################

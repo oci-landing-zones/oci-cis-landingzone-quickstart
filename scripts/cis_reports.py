@@ -503,9 +503,9 @@ class CIS_Report:
                 'com.oraclecloud.identitycontrolplane.updateidentityprovider'
             ],
             "3.5": [
-                'com.oraclecloud.identityControlPlane.createidpgroupmapping',
-                'com.oraclecloud.identityControlPlane.deleteidpgroupmapping',
-                'com.oraclecloud.identityControlPlane.updateidpgroupmapping'
+                'com.oraclecloud.identitycontrolplane.createidpgroupmapping',
+                'com.oraclecloud.identitycontrolplane.deleteidpgroupmapping',
+                'com.oraclecloud.identitycontrolplane.updateidpgroupmapping'
             ],
             "3.6": [
                 'com.oraclecloud.identitycontrolplane.creategroup',

@@ -1193,8 +1193,8 @@ class CIS_Report:
                 compartment_id = self.__tenancy.id
                 ).data
             for dynamic_group in dynamic_groups_data:
+                deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                 try:
-                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                     record = {
                         "id": dynamic_group.id,
                         "name": dynamic_group.name,
@@ -1211,9 +1211,9 @@ class CIS_Report:
                     }
                 except Exception as e:
                     record = {
-                        "id": "",
-                        "name": "",
-                        "deep_link": "",
+                        "id": dynamic_group.id,
+                        "name": dynamic_group.name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
                         "description": "",
                         "matching_rule": "",
                         "time_created": "",

@@ -11,10 +11,9 @@ locals {
 
 module "lz_services_policy" {
   source              = "../modules/iam/iam-services-policy"
-  providers           = { oci = oci.home }
   tenancy_id          = var.tenancy_ocid
   tenancy_policy_name = "${var.unique_prefix}-services-policy"
-  default_tags        = local.service_policy_defined_tags
+  defined_tags        = local.service_policy_defined_tags
   freeform_tags       = local.service_policy_freeform_tags
 }
 

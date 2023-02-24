@@ -28,6 +28,7 @@ variable "policies" {
     defined_tags   = map(string)
     freeform_tags  = map(string)
   }))
+  default = {}
 }
 
 variable "defined_tags" {

@@ -1295,10 +1295,12 @@ class CIS_Report:
                                 }
                                 self.__buckets.append(record)
                             except Exception as e:
+                                deep_link = self.__oci_buckets_uri + bucket.namespace + \
+                                     "/" + bucket.name + "/objects?region=" + region_key
                                 record = {
                                     "id": "",
                                     "name":  bucket.name,
-                                    "deep_link": "", # self.__generate_csv_hyperlink(deep_link, bucket.name),
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,
@@ -1309,7 +1311,7 @@ class CIS_Report:
                                     "storage_tier": "",
                                     "time_created": bucket.time_created.strftime(self.__iso_time_format),
                                     "versioning": "",
-                                    "defined_tags" : "",
+                                    "defined_tags" : bucket.defined_tags,
                                     "freeform_tags" : "",
                                     "region" : region_key,
                                     "notes": str(e)

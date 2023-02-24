@@ -289,7 +289,8 @@ locals {
   ## ADB grants
   autonomous_database_grants = [
         "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment.name}",
-        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.security_compartment.name}"]
   
   ## Storage admin grants
   storage_admin_grants = [

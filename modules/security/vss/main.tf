@@ -1,12 +1,12 @@
 /** 
  * ## CIS OCI Landing Zone Vulnerability Scanning Service (VSS) Module
  *
- * This module manages one single VSS recipe, multiple VSS targets and one IAM policy for VSS. 
+ * This module manages one single VSS recipe, and multiple VSS targets. 
  * The recipe is assigned to all provided targets.
  * var.vss_custom_recipes and var.vss_custom_targets, when provided, are added to Landing Zone default recipe and targets.
  */
 
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 terraform {
@@ -64,14 +64,6 @@ locals {
     defined_tags = var.defined_tags
     freeform_tags = var.freeform_tags
   } }
-
-  vss_grants = [
-    "allow service vulnerability-scanning-service to manage instances in tenancy",
-    "allow service vulnerability-scanning-service to read compartments in tenancy",
-    "allow service vulnerability-scanning-service to read repos in tenancy",
-    "allow service vulnerability-scanning-service to read vnics in tenancy",
-    "allow service vulnerability-scanning-service to read vnic-attachments in tenancy"
-  ]
 
   #-- Supported file scan recurrences by VSS: BI-WEEKLY, MONTHLY
   #-- If overall scan schedule is WEEKLY, file scan uses the same scan day. If overall scan sechdule is DAILY, we set file scan day to Sundays (WKST=SU).
@@ -160,20 +152,6 @@ resource "oci_vulnerability_scanning_host_scan_target" "these" {
     defined_tags          = local.default_vss_targets[each.key].defined_tags
     freeform_tags         = local.default_vss_targets[each.key].freeform_tags
  }
-
-#----------------------------------------------------------------------------
-#-- VSS policy resource.
-#----------------------------------------------------------------------------
-resource "oci_identity_policy" "vss" {
-  count          = var.manage_iam_policies ? 1 : 0
-  provider       = oci.home
-  name           = var.vss_policy_name
-  description    = "CIS Landing Zone policy for VSS (Vulnerability Scanning Service)."
-  compartment_id = var.tenancy_id
-  statements     = local.vss_grants
-  defined_tags   = var.defined_tags
-  freeform_tags  = var.freeform_tags
-}
 
 #-----------------------------------------------------------------------------
 #-- Custom recipes resources

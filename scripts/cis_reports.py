@@ -1410,8 +1410,8 @@ class CIS_Report:
                                     compartment_id=compartment.id
                                 ).data
                             for boot_volume in boot_volumes_data:
+                                deep_link = self.__oci_boot_volumes_uri + boot_volume.id + '?region=' + region_key
                                 try:
-                                    deep_link = self.__oci_boot_volumes_uri + boot_volume.id + '?region=' + region_key
                                     record = {
                                         "id": boot_volume.id,
                                         "display_name": boot_volume.display_name,
@@ -1438,9 +1438,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": "",
-                                        "display_name": "",
-                                        "deep_link": "",
+                                        "id": boot_volume.id,
+                                        "display_name": boot_volume.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
                                         "image_id": "",
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
@@ -1483,8 +1483,8 @@ class CIS_Report:
                                     availability_domain = ad.name
                                 ).data
                             for fss in fss_data:
+                                deep_link = self.__oci_fss_uri + fss.id + '?region=' + region_key
                                 try:
-                                    deep_link = self.__oci_fss_uri + fss.id + '?region=' + region_key
                                     record = {
                                         "id": fss.id,
                                         "display_name": fss.display_name,
@@ -1506,9 +1506,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": "",
-                                        "display_name": "",
-                                        "deep_link": "",
+                                        "id": fss.id,
+                                        "display_name": fss.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
                                         "lifecycle_details": "",

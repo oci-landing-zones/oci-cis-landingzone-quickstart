@@ -2097,9 +2097,25 @@ class CIS_Report:
 
 
                             except:
-                                print("execption " * 10)
-                                print(ip_sec)
-
+                                record = {
+                                    "id": ip_sec.id,
+                                    "display_name" : ip_sec.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
+                                    "cpe_id" : "",
+                                    "drg_id" : "",
+                                    "compartment_id" : ip_sec.compartment_id,
+                                    "cpe_local_identifier" : "",
+                                    "cpe_local_identifier_type" : "",
+                                    "lifecycle_state" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "tunnels" : [],
+                                    "number_tunnels_up" : 0,
+                                    "tunnels_up" : False, 
+                                    "notes":""
+                                }
+                                
                             try:
                                 self.__network_ipsec_connections[ip_sec.drg_id].append(record)
                             except:
@@ -2403,8 +2419,8 @@ class CIS_Report:
                         ).data
                         for oic_instance in oic_instances:
                             if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
+                                deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
                                 try:
-                                    deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
                                     record = {
                                         "id": oic_instance.id,
                                         "display_name": oic_instance.display_name,
@@ -2429,9 +2445,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": "",
-                                        "display_name": "",
-                                        "deep_link": "",
+                                        "id": oic_instance.id,
+                                        "display_name": oic_instance.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
                                         "network_endpoint_details": "",
                                         "compartment_id": "",
                                         "alternate_custom_endpoints": "",
@@ -2487,8 +2503,6 @@ class CIS_Report:
                                     "license_type": oac_instance.license_type,
                                     "time_created": oac_instance.time_created.strftime(self.__iso_time_format),
                                     "time_updated": str(oac_instance.time_updated),
-                                    # "defined_tags" : oac_instance.defined_tags,
-                                    # "freeform_tags" : oac_instance.freeform_tags,
                                     "region" : region_key,
                                     "notes":""
                                 }
@@ -2507,8 +2521,6 @@ class CIS_Report:
                                     "license_type": "",
                                     "time_created": "",
                                     "time_updated": "",
-                                    # "defined_tags": "",
-                                    # "freeform_tags": "",
                                     "region" : region_key,
                                     "notes":str(e)
                                 }

@@ -2993,11 +2993,11 @@ class CIS_Report:
                         ).data
                         # Getting Bucket Info
                         for connector in service_connectors_data:
+                            deep_link = self.__oci_serviceconnector_uri + connector.id + "/logging" + '?region=' + region_key
                             try:
                                 service_connector = region_values['sch_client'].get_service_connector(
                                     service_connector_id=connector.id
                                     ).data
-                                deep_link = self.__oci_serviceconnector_uri + service_connector.id + "/logging" + '?region=' + region_key
                                 record = {
                                     "id": service_connector.id,
                                     "display_name": service_connector.display_name,

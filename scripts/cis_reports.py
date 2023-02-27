@@ -2019,60 +2019,6 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in __network_read_fastonnects " + str(e.args))
 
-    ##########################################################################
-    # Load Customer Premises Equipments  
-    ##########################################################################
-    def __network_read_cpes(self):
-        try:
-            for region_key, region_values in self.__regions.items():
-                # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        cpe_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_cpes,
-                            compartment_id=compartment.id,
-                        ).data
-                        # Looping through CPEs in a compartment
-                        try:
-                            for cpe in cpe_data:
-                                deep_link = self.__oci_cpe_uri + cpe.id+ '?region=' + region_key
-                                record = {
-                                    "id": cpe.id,
-                                    "display_name" : cpe.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, cpe.display_name),
-                                    "cpe_device_shape_id" : cpe.cpe_device_shape_id,
-                                    "ip_address" : cpe.ip_address,
-                                    "compartment_id" : cpe.compartment_id,
-                                    "time_created" : cpe.time_created.strftime(self.__iso_time_format),
-                                    "freeform_tags" : cpe.freeform_tags,
-                                    "define_tags" : cpe.defined_tags,
-                                    "region" : region_key,
-                                    "notes":""
-
-                                }
-                                # Adding CPEs to CPE list
-                                self.__network_cpes.append(record)
-                        except Exception as e:
-                            record = {
-                                    "id": "",
-                                    "display_name" : "",
-                                    "deep_link": "",
-                                    "cpe_device_shape_id" : "",
-                                    "ip_address" : "",
-                                    "compartment_id" : compartment.id,
-                                    "time_created" : "",
-                                    "freeform_tags" : "",
-                                    "define_tags" : "",
-                                    "region" : region_key,
-                                    "notes": str(e)
-
-                            }
-                            self.__network_cpes.append(record)
-            print("\tProcessed " + str(len(self.__network_cpes)) + " Customer Premises Devices")                        
-            return self.__network_cpes
-        except Exception as e:
-            raise RuntimeError(
-                "Error in __network_read_cpes " + str(e.args))
 
     ##########################################################################
     # Load IP Sec Connections
@@ -4307,7 +4253,6 @@ class CIS_Report:
         if self.__obp_checks:
             obp_functions = [
                 self.__network_read_fastonnects,
-                # self.__network_read_cpes,
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,

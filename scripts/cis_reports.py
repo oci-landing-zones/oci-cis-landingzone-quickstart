@@ -2485,8 +2485,8 @@ class CIS_Report:
                             compartment_id=compartment.id
                         ).data
                         for oac_instance in oac_instances:
+                            deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
                             try:
-                                deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
                                 record = {
                                     "id": oac_instance.id,
                                     "name": oac_instance.name,
@@ -2508,9 +2508,9 @@ class CIS_Report:
                                 }
                             except Exception as e:
                                 record = {
-                                    "name": "",
-                                    "description": "",
-                                    "deep_link": "",
+                                    "id": oac_instance.id,
+                                    "name": oac_instance.name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
                                     "network_endpoint_details": "",
                                     "compartment_id": "",
                                     "lifecycle_state": "",

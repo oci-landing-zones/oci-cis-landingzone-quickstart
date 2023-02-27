@@ -1920,90 +1920,91 @@ class CIS_Report:
                             # lifecycle_state="PROVISIONED"
                         ).data
                         # Looping through fastconnects in a compartment
-                        try:
-                            for fastconnect in fastconnect_data:
-                                deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
+                        for fastconnect in fastconnect_data:
+                            deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
+                            try:
+                                    record = {
+                                        "id": fastconnect.id,
+                                        "display_name" : fastconnect.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
+                                        "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
+                                        "bgp_admin_state" : fastconnect.bgp_admin_state,
+                                        "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
+                                        "bgp_management" : fastconnect.bgp_management, 
+                                        "bgp_session_state" : fastconnect.bgp_session_state,
+                                        "compartment_id" : fastconnect.compartment_id,
+                                        "cross_connect_mappings" : fastconnect.cross_connect_mappings,
+                                        "customer_asn" : fastconnect.customer_asn,
+                                        "customer_bgp_asn" : fastconnect.customer_bgp_asn,
+                                        "gateway_id" : fastconnect.gateway_id,
+                                        "ip_mtu" : fastconnect.ip_mtu,
+                                        "is_bfd_enabled" : fastconnect.is_bfd_enabled,
+                                        "lifecycle_state" : fastconnect.lifecycle_state,
+                                        "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
+                                        "provider_name" : fastconnect.provider_name,
+                                        "provider_service_id" : fastconnect.provider_service_id,
+                                        "provider_service_key_name" : fastconnect.provider_service_key_name,
+                                        "provider_service_name" : fastconnect.provider_service_name,
+                                        "provider_state" : fastconnect.provider_state,
+                                        "public_prefixes" : fastconnect.public_prefixes,
+                                        "reference_comment" : fastconnect.reference_comment,
+                                        "fastconnect_region" : fastconnect.region,
+                                        "routing_policy" : fastconnect.routing_policy,
+                                        "service_type" : fastconnect.service_type,
+                                        "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
+                                        "type" : fastconnect.type,
+                                        "freeform_tags" : fastconnect.freeform_tags,
+                                        "define_tags" : fastconnect.defined_tags,
+                                        "region" : region_key,
+                                        "notes":""
+
+                                    }
+                                    # Adding fastconnect to fastconnect dict
+                                    try:
+                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                                    except:
+                                        self.__network_fastconnects[fastconnect.gateway_id] = []
+                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                                    count_of_fast_connects += 1
+
+                            except Exception as e:
                                 record = {
-                                    "id": fastconnect.id,
-                                    "display_name" : fastconnect.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
-                                    "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
-                                    "bgp_admin_state" : fastconnect.bgp_admin_state,
-                                    "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
-                                    "bgp_management" : fastconnect.bgp_management, 
-                                    "bgp_session_state" : fastconnect.bgp_session_state,
-                                    "compartment_id" : fastconnect.compartment_id,
-                                    "cross_connect_mappings" : fastconnect.cross_connect_mappings,
-                                    "customer_asn" : fastconnect.customer_asn,
-                                    "customer_bgp_asn" : fastconnect.customer_bgp_asn,
-                                    "gateway_id" : fastconnect.gateway_id,
-                                    "ip_mtu" : fastconnect.ip_mtu,
-                                    "is_bfd_enabled" : fastconnect.is_bfd_enabled,
-                                    "lifecycle_state" : fastconnect.lifecycle_state,
-                                    "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
-                                    "provider_name" : fastconnect.provider_name,
-                                    "provider_service_id" : fastconnect.provider_service_id,
-                                    "provider_service_key_name" : fastconnect.provider_service_key_name,
-                                    "provider_service_name" : fastconnect.provider_service_name,
-                                    "provider_state" : fastconnect.provider_state,
-                                    "public_prefixes" : fastconnect.public_prefixes,
-                                    "reference_comment" : fastconnect.reference_comment,
-                                    "fastconnect_region" : fastconnect.region,
-                                    "routing_policy" : fastconnect.routing_policy,
-                                    "service_type" : fastconnect.service_type,
-                                    "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
-                                    "type" : fastconnect.type,
-                                    "freeform_tags" : fastconnect.freeform_tags,
-                                    "define_tags" : fastconnect.defined_tags,
-                                    "region" : region_key,
-                                    "notes":""
+                                        "id": fastconnect.id,
+                                        "display_name" :  fastconnect.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
+                                        "bandwidth_shape_name" : "",
+                                        "bgp_admin_state" : "",
+                                        "bgp_ipv6_session_state" : "",
+                                        "bgp_management" : "", 
+                                        "bgp_session_state" : "",
+                                        "compartment_id" : compartment.id,
+                                        "cross_connect_mappings" : "",
+                                        "customer_asn" : "",
+                                        "customer_bgp_asn" : "",
+                                        "gateway_id" : "",
+                                        "ip_mtu" : "",
+                                        "is_bfd_enabled" : "",
+                                        "lifecycle_state" : "",
+                                        "oracle_bgp_asn" : "",
+                                        "provider_name" : "",
+                                        "provider_service_id" : "",
+                                        "provider_service_key_name" : "",
+                                        "provider_service_name" : "",
+                                        "provider_state" : "",
+                                        "public_prefixes" : "",
+                                        "reference_comment" : "",
+                                        "fastconnect_region" : "",
+                                        "routing_policy" : "",
+                                        "service_type" : "",
+                                        "time_created" : "",
+                                        "type" : "",
+                                        "freeform_tags" : "",
+                                        "define_tags" : "",
+                                        "region" : region_key,
+                                        "notes": str(e)
 
                                 }
-                                # Adding fastconnect to fastconnect dict
-                                try:
-                                    self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                except:
-                                    self.__network_fastconnects[fastconnect.gateway_id] = []
-                                    self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                count_of_fast_connects += 1
-
-                        except Exception as e:
-                            record = {
-                                    "id": "",
-                                    "display_name" : "",
-                                    "deep_link": "",
-                                    "bandwidth_shape_name" : "",
-                                    "bgp_admin_state" : "",
-                                    "bgp_ipv6_session_state" : "",
-                                    "bgp_management" : "", 
-                                    "bgp_session_state" : "",
-                                    "compartment_id" : compartment.id,
-                                    "cross_connect_mappings" : "",
-                                    "customer_asn" : "",
-                                    "customer_bgp_asn" : "",
-                                    "gateway_id" : "",
-                                    "ip_mtu" : "",
-                                    "is_bfd_enabled" : "",
-                                    "lifecycle_state" : "",
-                                    "oracle_bgp_asn" : "",
-                                    "provider_name" : "",
-                                    "provider_service_id" : "",
-                                    "provider_service_key_name" : "",
-                                    "provider_service_name" : "",
-                                    "provider_state" : "",
-                                    "public_prefixes" : "",
-                                    "reference_comment" : "",
-                                    "fastconnect_region" : "",
-                                    "routing_policy" : "",
-                                    "service_type" : "",
-                                    "time_created" : "",
-                                    "type" : "",
-                                    "freeform_tags" : "",
-                                    "define_tags" : "",
-                                    "region" : region_key,
-                                    "notes": str(e)
-
-                            }
+                            
                             # Adding fastconnect to fastconnect dict
                             try:
                                 self.__network_fastconnects[compartment.id].append(record)

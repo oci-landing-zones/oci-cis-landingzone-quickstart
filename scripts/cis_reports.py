@@ -1139,7 +1139,6 @@ class CIS_Report:
                     'deep_link': self.__generate_csv_hyperlink(deep_link, key.display_name),
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
-                    # .strftime('%Y-%m-%d %H:%M:%S'),
                     'time_created': key.time_created.strftime(self.__iso_time_format),
                     'time_expires': str(key.time_expires),
 
@@ -1194,36 +1193,36 @@ class CIS_Report:
                 ).data
             for dynamic_group in dynamic_groups_data:
                 deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
-                try:
-                    record = {
-                        "id": dynamic_group.id,
-                        "name": dynamic_group.name,
-                        "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                        "description": dynamic_group.description,
-                        "matching_rule": dynamic_group.matching_rule,
-                        "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
-                        "inactive_status": dynamic_group.inactive_status,
-                        "lifecycle_state": dynamic_group.lifecycle_state,
-                        "defined_tags": dynamic_group.defined_tags,
-                        "freeform_tags": dynamic_group.freeform_tags,
-                        "compartment_id": dynamic_group.compartment_id,
-                        "notes": ""
-                    }
-                except Exception as e:
-                    record = {
-                        "id": dynamic_group.id,
-                        "name": dynamic_group.name,
-                        "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                        "description": "",
-                        "matching_rule": "",
-                        "time_created": "",
-                        "inactive_status": "",
-                        "lifecycle_state": "",
-                        "defined_tags": "",
-                        "freeform_tags": "",
-                        "compartment_id": "",
-                        "notes": str(e)
-                    }
+                # try:
+                record = {
+                    "id": dynamic_group.id,
+                    "name": dynamic_group.name,
+                    "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
+                    "description": dynamic_group.description,
+                    "matching_rule": dynamic_group.matching_rule,
+                    "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
+                    "inactive_status": dynamic_group.inactive_status,
+                    "lifecycle_state": dynamic_group.lifecycle_state,
+                    "defined_tags": dynamic_group.defined_tags,
+                    "freeform_tags": dynamic_group.freeform_tags,
+                    "compartment_id": dynamic_group.compartment_id,
+                    "notes": ""
+                }
+                # except Exception as e:
+                #     record = {
+                #         "id": dynamic_group.id,
+                #         "name": dynamic_group.name,
+                #         "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
+                #         "description": "",
+                #         "matching_rule": "",
+                #         "time_created": "",
+                #         "inactive_status": "",
+                #         "lifecycle_state": "",
+                #         "defined_tags": "",
+                #         "freeform_tags": "",
+                #         "compartment_id": "",
+                #         "notes": str(e)
+                #     }
                 self.__dynamic_groups.append(record)
             
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")                        
@@ -1337,8 +1336,8 @@ class CIS_Report:
                         ).data
                         # Getting Block Volume inf
                         for volume in volumes_data:
+                            deep_link = self.__oci_block_volumes_uri + volume.id + '?region=' + region_key
                             try:
-                                deep_link = self.__oci_block_volumes_uri + volume.id + '?region=' + region_key
                                 record = {
                                     "id": volume.id,
                                     "display_name": volume.display_name,
@@ -1365,9 +1364,9 @@ class CIS_Report:
                                 }
                             except Exception as e:
                                 record = {
-                                    "id":"",
-                                    "display_name": "",
-                                    "deep_link": "",
+                                    "id": volume.id,
+                                    "display_name": volume.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
                                     "kms_key_id": "",
                                     "lifecycle_state": "",
                                     "compartment_id": "",

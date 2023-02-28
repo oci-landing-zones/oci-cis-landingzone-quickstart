@@ -1888,7 +1888,7 @@ class CIS_Report:
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
                                     "region" : region_key,
-                                    "notes":""
+                                    "notes": str(e)
 
                                 }
                             # for Raw Data
@@ -3775,16 +3775,19 @@ class CIS_Report:
                                 fast_connect_providers.add(virtual_circuit['provider_name'])
                                 number_of_valid_fast_connect_circuits += 1
 
-            record = {
-                "drg_id" : drg_id,
-                "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
-                "region" : self.__network_drgs[drg_id]['region'],
-                "number_of_connected_vcns" : number_of_valid_connected_vcns,
-                "number_of_customer_premises_equipment" : len(customer_premises_equipment),
-                "number_of_connected_ipsec_connections" : number_of_valid_site_to_site_connection,
-                "number_of_fastconnects_cicruits" : number_of_valid_fast_connect_circuits,
-                "number_of_fastconnect_providers" : len(fast_connect_providers),
-            }
+            if drg_id in self.__network_drgs:
+                record = {
+                    "drg_id" : drg_id,
+                    "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
+                    "region" : self.__network_drgs[drg_id]['region'],
+                    "number_of_connected_vcns" : number_of_valid_connected_vcns,
+                    "number_of_customer_premises_equipment" : len(customer_premises_equipment),
+                    "number_of_connected_ipsec_connections" : number_of_valid_site_to_site_connection,
+                    "number_of_fastconnects_cicruits" : number_of_valid_fast_connect_circuits,
+                    "number_of_fastconnect_providers" : len(fast_connect_providers),
+                }
+            else:
+                print(f"This DRG: {drg_id} is deleted with an active attachement: {attachment['display_name']}")
 
             #Checking if the DRG and connected resourcs are aligned with best practices
             # One attached VCN, One VPN connection and one fast connect

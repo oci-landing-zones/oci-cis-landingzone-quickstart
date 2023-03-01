@@ -3571,13 +3571,45 @@ class CIS_Report:
 
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
-                finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                try:
+                    finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                except Exception as e:
+                    finding = {                
+                        "id" : compartment,
+                        "name" : "Compartment No Longer Exists",
+                        "deep_link": "",
+                        "compartment_id": "(root)",
+                        "defined_tags": "",
+                        "description": str(e),
+                        "freeform_tags": "",
+                        "inactive_status": "",
+                        "is_accessible": "",
+                        "lifecycle_state": "",
+                        "time_created": "",
+                        "region" : ""
+                    }
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
-                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
-                finding['region'] = region_key
+                try:
+                    finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                except Exception as e:
+                    finding = {                
+                        "id" : compartment,
+                        "name" : "Compartment No Longer Exists",
+                        "deep_link": "",
+                        "compartment_id": "(root)",
+                        "defined_tags": "",
+                        "description": str(e),
+                        "freeform_tags": "",
+                        "inactive_status": "",
+                        "is_accessible": "",
+                        "lifecycle_state": "",
+                        "time_created": "",
+                        "region" : ""
+                    }                
+                    finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
 
         

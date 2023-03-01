@@ -1871,7 +1871,7 @@ class CIS_Report:
                                     "region" : region_key,
                                     "notes":""
                                 }
-                            except:
+                            except Exception as e:
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
@@ -3269,7 +3269,7 @@ class CIS_Report:
                                     sl)
                         except (AttributeError):
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
-                            print(" I am an excption " * 5)
+                            # print(" I am an excption " * 5)
                             self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
                                 sl)
@@ -3775,7 +3775,7 @@ class CIS_Report:
                                 fast_connect_providers.add(virtual_circuit['provider_name'])
                                 number_of_valid_fast_connect_circuits += 1
 
-            if drg_id in self.__network_drgs:
+            try:
                 record = {
                     "drg_id" : drg_id,
                     "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
@@ -3786,7 +3786,17 @@ class CIS_Report:
                     "number_of_fastconnects_cicruits" : number_of_valid_fast_connect_circuits,
                     "number_of_fastconnect_providers" : len(fast_connect_providers),
                 }
-            else:
+            except:
+                record = {
+                    "drg_id" : drg_id,
+                    "drg_display_name" : "Deleted with an active attachement",
+                    "region" : attachment['region'],
+                    "number_of_connected_vcns" : 0,
+                    "number_of_customer_premises_equipment" : 0,
+                    "number_of_connected_ipsec_connections" : 0,
+                    "number_of_fastconnects_cicruits" : 0,
+                    "number_of_fastconnect_providers" : 0,
+                }
                 print(f"This DRG: {drg_id} is deleted with an active attachement: {attachment['display_name']}")
 
             #Checking if the DRG and connected resourcs are aligned with best practices

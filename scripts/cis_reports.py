@@ -1036,6 +1036,13 @@ class CIS_Report:
                     'is_mfa_activated': user.is_mfa_activated,
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
+                    'can_use_api_keys': user.capabilities.can_use_api_keys,
+                    'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
+                    'can_use_console_password':  user.capabilities.can_use_console_password,
+                    'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
+                    'can_use_db_credentials': user.capabilities.can_use_db_credentials,
+                    'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
+                    'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
                     'groups': []
                 }
                 # Adding Groups to the user

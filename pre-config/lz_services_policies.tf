@@ -35,14 +35,21 @@ locals {
 }
 
 module "lz_services_policy" {
-  source = "../modules/iam/iam-policy"
-  policies = var.grant_services_policies == true ? {
-    (local.services_policy_name) = {
-      compartment_id = var.tenancy_ocid
-      description    = "Landing Zone policy for OCI services: Cloud Guard, Vulnerability Scanning and OS Management."
-      defined_tags   = local.services_policy_defined_tags
-      freeform_tags  = local.services_policy_freeform_tags
-      statements     = length(local.all_services_policy_statements) > 0 ? local.all_services_policy_statements : local.default_services_policy_statements
-    }
-  } : {}
+  source              = "../modules/iam/iam-services-policy"
+  tenancy_id          = var.tenancy_ocid
+  service_label       = var.unique_prefix
+  tenancy_policy_name = "${var.unique_prefix}-services-policy"
+  defined_tags        = local.service_policy_defined_tags
+  freeform_tags       = local.service_policy_freeform_tags
+}
+
+locals {
+#--------------------------------------------------------------------------
+#-- These variables are NOT meant to be overriden.
+#--------------------------------------------------------------------------  
+  default_service_policy_defined_tags = null
+  default_service_policy_freeform_tags = local.landing_zone_tags
+
+  service_policy_defined_tags = local.custom_service_policy_defined_tags != null ? merge(local.custom_service_policy_defined_tags, local.default_service_policy_defined_tags) : local.default_service_policy_defined_tags
+  service_policy_freeform_tags = local.custom_service_policy_freeform_tags != null ? merge(local.custom_service_policy_freeform_tags, local.default_service_policy_freeform_tags) : local.default_service_policy_freeform_tags
 }

@@ -6,6 +6,11 @@ variable "tenancy_id" {
   type = string
 }
 
+variable "service_label" {
+  description = "The service label, use as a prefix to resource names."
+  type = string
+}
+
 variable "enable_tenancy_level_policies" {
   description = "Whether policies for OCI services are enabled at the tenancy level."
   type = bool

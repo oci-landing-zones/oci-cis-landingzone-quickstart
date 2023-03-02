@@ -151,13 +151,16 @@ locals {
     "allow group ${local.database_admin_group_name} to read work-requests in compartment ${local.database_compartment.name}",
     "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.database_compartment.name}",
     "allow group ${local.database_admin_group_name} to read instance-agent-plugins in compartment ${local.database_compartment.name}",
-    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}"
+    "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment.name}",
+    "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment.name}"
   ]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
+        # https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/iam-private-endpoint-configure-policies.html
         "allow group ${local.database_admin_group_name} to read virtual-network-family in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.network_compartment.name}",
+        "allow group ${local.database_admin_group_name} to manage private-ips in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use subnets in compartment ${local.network_compartment.name}",
         "allow group ${local.database_admin_group_name} to use network-security-groups in compartment ${local.network_compartment.name}"]  
 
@@ -165,7 +168,7 @@ locals {
   database_admin_grants_on_security_cmp = [
         "allow group ${local.database_admin_group_name} to read vss-family in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to read vaults in compartment ${local.security_compartment.name}",
-        "allow group ${local.database_admin_group_name} to inspect keys in compartment ${local.security_compartment.name}",
+        "allow group ${local.database_admin_group_name} to read keys in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to use bastion in compartment ${local.security_compartment.name}",
         "allow group ${local.database_admin_group_name} to manage bastion-session in compartment ${local.security_compartment.name}"]
 
@@ -285,8 +288,9 @@ locals {
 
   ## ADB grants
   autonomous_database_grants = [
-        "allow dynamic-group ${local.database_kms_dynamic_group_name} to read vaults in compartment ${local.security_compartment.name}",
-        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}"]
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment.name}",
+        "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.security_compartment.name}"]
   
   ## Storage admin grants
   storage_admin_grants = [

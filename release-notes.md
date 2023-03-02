@@ -1,10 +1,3 @@
-
-#   February XX, 2023 Release Notes - 2.5.5
-1. [OCI IAM Policy Fix for Database Admin Group](#2-5-4-adb-policy-fix)
-
-## <a name="2-5-4-adb-policy-fix">OCI IAM Policy Fix for Database Admin Group</a>
-Updated OCI IAM policies attached to the Database Admin Group to support deploying ADBs in private subnets. Policy is based on documentation [here](https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/iam-private-endpoint-configure-policies.html).
-
 #   February 10, 2023 Release Notes - 2.5.4
 1. [Improved CIS 3.7 and 3.13 Checks](#2-5-4-cis-logic)
 

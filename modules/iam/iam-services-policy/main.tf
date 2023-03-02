@@ -27,7 +27,7 @@ locals {
     "Allow service osms to read instances in tenancy"
   ]
 
-  tenancy_policies = { for i in [1] : ("SERVICES-POLICY") => {
+  tenancy_policies = { for i in [1] : ("${var.service_label}-services-policy") => {
     compartment_id = var.tenancy_id
     name           = var.tenancy_policy_name
     description    = "Landing Zone policy for OCI services."

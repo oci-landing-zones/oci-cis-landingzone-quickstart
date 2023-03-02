@@ -13,6 +13,7 @@ module "lz_services_policy" {
   source                        = "../modules/iam/iam-services-policy"
   providers                     = { oci = oci.home }
   tenancy_id                    = var.tenancy_ocid
+  service_label                 = var.service_label
   enable_tenancy_level_policies = var.extend_landing_zone_to_new_region == false ? (local.use_existing_root_cmp_grants == true ? false : true) : false
   tenancy_policy_name           = "${var.service_label}-services-policy"
   defined_tags                  = local.service_policy_defined_tags

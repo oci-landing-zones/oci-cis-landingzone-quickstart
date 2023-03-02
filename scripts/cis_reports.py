@@ -681,9 +681,9 @@ class CIS_Report:
         # Setting list of regions to run in
 
         # Start print time info
-        self.__print_header("Running CIS Reports...")
-        print("Updated February 17, 2023.")
-        print("Tested oci-python-sdk version: 2.91.0")
+        self.__print_header("Running CIS Reports - Release 2.5.5")
+        print("Updated March 2, 2023.")
+        print("Tested oci-python-sdk version: 2.93.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config
@@ -1036,6 +1036,13 @@ class CIS_Report:
                     'is_mfa_activated': user.is_mfa_activated,
                     'lifecycle_state': user.lifecycle_state,
                     'time_created': user.time_created.strftime(self.__iso_time_format),
+                    'can_use_api_keys': user.capabilities.can_use_api_keys,
+                    'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
+                    'can_use_console_password':  user.capabilities.can_use_console_password,
+                    'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
+                    'can_use_db_credentials': user.capabilities.can_use_db_credentials,
+                    'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
+                    'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
                     'groups': []
                 }
                 # Adding Groups to the user

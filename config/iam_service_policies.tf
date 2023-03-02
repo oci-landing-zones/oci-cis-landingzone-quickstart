@@ -4,20 +4,17 @@
 locals {
   all_service_policy_statements = []
 
-  all_service_policy_defined_tags = {}
-  all_service_policy_freeform_tags = {}
-
-  # Names
-  services_policy_name   = "${var.service_label}-services-policy"
-
-  cloud_guard_statements = [
-    "Allow service cloudguard to read all-resources in tenancy",
-    "Allow service cloudguard to use network-security-groups in tenancy"
-  ]
-
-  os_mgmt_statements = [
-    "Allow service osms to read instances in tenancy"
-  ]
+module "lz_services_policy" {
+  source                        = "../modules/iam/iam-services-policy"
+  providers                     = { oci = oci.home }
+  tenancy_id                    = var.tenancy_ocid
+  service_label                 = var.service_label
+  enable_tenancy_level_policies = var.extend_landing_zone_to_new_region == false ? (local.use_existing_root_cmp_grants == true ? false : true) : false
+  tenancy_policy_name           = "${var.service_label}-services-policy"
+  defined_tags                  = local.service_policy_defined_tags
+  freeform_tags                 = local.service_policy_freeform_tags
+  policies                      = local.service_policies
+}
 
   default_service_policy_defined_tags = null
   default_service_policy_freeform_tags = local.landing_zone_tags

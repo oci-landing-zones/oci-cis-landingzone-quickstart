@@ -681,9 +681,9 @@ class CIS_Report:
         # Setting list of regions to run in
 
         # Start print time info
-        self.__print_header("Running CIS Reports...")
-        print("Updated February 17, 2023.")
-        print("Tested oci-python-sdk version: 2.91.0")
+        self.__print_header("Running CIS Reports - Release 2.5.5")
+        print("Updated March 2, 2023.")
+        print("Tested oci-python-sdk version: 2.93.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
         self.__config = config

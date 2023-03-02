@@ -9,8 +9,7 @@ locals {
   regions_map_reverse = { for r in data.oci_identity_regions.these.regions : r.name => r.key } # All regions indexed by region name.
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
-  realm               = split(".",trimprefix(data.oci_identity_tenancy.this.id, "ocid1.tenancy."))[0]
-  
+
   ### IAM
   # Default compartment names
   enclosing_compartment    = {key:"${var.service_label}-top-cmp", name: var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : "${var.service_label}-top-cmp") : "tenancy"}

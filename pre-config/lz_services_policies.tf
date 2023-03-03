@@ -22,9 +22,9 @@ locals {
 #--------------------------------------------------------------------------
 #-- These variables are NOT meant to be overriden.
 #--------------------------------------------------------------------------  
-  default_service_policy_defined_tags  = null
+  default_service_policy_defined_tags = null
   default_service_policy_freeform_tags = local.landing_zone_tags
 
-  service_policy_defined_tags  = local.custom_service_policy_defined_tags != null ? merge(local.custom_service_policy_defined_tags, local.default_service_policy_defined_tags) : local.default_service_policy_defined_tags
+  service_policy_defined_tags = local.custom_service_policy_defined_tags != null ? merge(local.custom_service_policy_defined_tags, local.default_service_policy_defined_tags) : local.default_service_policy_defined_tags
   service_policy_freeform_tags = local.custom_service_policy_freeform_tags != null ? merge(local.custom_service_policy_freeform_tags, local.default_service_policy_freeform_tags) : local.default_service_policy_freeform_tags
 }

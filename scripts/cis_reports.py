@@ -97,20 +97,20 @@ class CIS_Report:
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
-            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
-            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': None, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': None, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4','Remediation':[]},
-            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
-            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4','Remediation':[]},
+            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage.', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
 
             '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
             '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
@@ -506,9 +506,9 @@ class CIS_Report:
                 'com.oraclecloud.identitycontrolplane.updateidentityprovider'
             ],
             "3.5": [
-                'com.oraclecloud.identitycontrolplane.createidpgroupmapping',
-                'com.oraclecloud.identitycontrolplane.deleteidpgroupmapping',
-                'com.oraclecloud.identitycontrolplane.updateidpgroupmapping'
+                'com.oraclecloud.identityControlPlane.createidpgroupmapping',
+                'com.oraclecloud.identityControlPlane.deleteidpgroupmapping',
+                'com.oraclecloud.identityControlPlane.updateidpgroupmapping'
             ],
             "3.6": [
                 'com.oraclecloud.identitycontrolplane.creategroup',
@@ -1146,6 +1146,7 @@ class CIS_Report:
                     'deep_link': self.__generate_csv_hyperlink(deep_link, key.display_name),
                     'inactive_status': key.inactive_status,
                     'lifecycle_state': key.lifecycle_state,
+                    # .strftime('%Y-%m-%d %H:%M:%S'),
                     'time_created': key.time_created.strftime(self.__iso_time_format),
                     'time_expires': str(key.time_expires),
 
@@ -1199,37 +1200,37 @@ class CIS_Report:
                 compartment_id = self.__tenancy.id
                 ).data
             for dynamic_group in dynamic_groups_data:
-                deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
-                # try:
-                record = {
-                    "id": dynamic_group.id,
-                    "name": dynamic_group.name,
-                    "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                    "description": dynamic_group.description,
-                    "matching_rule": dynamic_group.matching_rule,
-                    "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
-                    "inactive_status": dynamic_group.inactive_status,
-                    "lifecycle_state": dynamic_group.lifecycle_state,
-                    "defined_tags": dynamic_group.defined_tags,
-                    "freeform_tags": dynamic_group.freeform_tags,
-                    "compartment_id": dynamic_group.compartment_id,
-                    "notes": ""
-                }
-                # except Exception as e:
-                #     record = {
-                #         "id": dynamic_group.id,
-                #         "name": dynamic_group.name,
-                #         "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                #         "description": "",
-                #         "matching_rule": "",
-                #         "time_created": "",
-                #         "inactive_status": "",
-                #         "lifecycle_state": "",
-                #         "defined_tags": "",
-                #         "freeform_tags": "",
-                #         "compartment_id": "",
-                #         "notes": str(e)
-                #     }
+                try:
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
+                    record = {
+                        "id": dynamic_group.id,
+                        "name": dynamic_group.name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
+                        "description": dynamic_group.description,
+                        "matching_rule": dynamic_group.matching_rule,
+                        "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
+                        "inactive_status": dynamic_group.inactive_status,
+                        "lifecycle_state": dynamic_group.lifecycle_state,
+                        "defined_tags": dynamic_group.defined_tags,
+                        "freeform_tags": dynamic_group.freeform_tags,
+                        "compartment_id": dynamic_group.compartment_id,
+                        "notes": ""
+                    }
+                except Exception as e:
+                    record = {
+                        "id": "",
+                        "name": "",
+                        "deep_link": "",
+                        "description": "",
+                        "matching_rule": "",
+                        "time_created": "",
+                        "inactive_status": "",
+                        "lifecycle_state": "",
+                        "defined_tags": "",
+                        "freeform_tags": "",
+                        "compartment_id": "",
+                        "notes": str(e)
+                    }
                 self.__dynamic_groups.append(record)
             
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")                        
@@ -1301,12 +1302,10 @@ class CIS_Report:
                                 }
                                 self.__buckets.append(record)
                             except Exception as e:
-                                deep_link = self.__oci_buckets_uri + bucket.namespace + \
-                                     "/" + bucket.name + "/objects?region=" + region_key
                                 record = {
                                     "id": "",
                                     "name":  bucket.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.name),
+                                    "deep_link": "", # self.__generate_csv_hyperlink(deep_link, bucket.name),
                                     "kms_key_id": "",
                                     "namespace": bucket.namespace,
                                     "compartment_id": bucket.compartment_id,
@@ -1317,7 +1316,7 @@ class CIS_Report:
                                     "storage_tier": "",
                                     "time_created": bucket.time_created.strftime(self.__iso_time_format),
                                     "versioning": "",
-                                    "defined_tags" : bucket.defined_tags,
+                                    "defined_tags" : "",
                                     "freeform_tags" : "",
                                     "region" : region_key,
                                     "notes": str(e)
@@ -1343,8 +1342,8 @@ class CIS_Report:
                         ).data
                         # Getting Block Volume inf
                         for volume in volumes_data:
-                            deep_link = self.__oci_block_volumes_uri + volume.id + '?region=' + region_key
                             try:
+                                deep_link = self.__oci_block_volumes_uri + volume.id + '?region=' + region_key
                                 record = {
                                     "id": volume.id,
                                     "display_name": volume.display_name,
@@ -1371,9 +1370,9 @@ class CIS_Report:
                                 }
                             except Exception as e:
                                 record = {
-                                    "id": volume.id,
-                                    "display_name": volume.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
+                                    "id":"",
+                                    "display_name": "",
+                                    "deep_link": "",
                                     "kms_key_id": "",
                                     "lifecycle_state": "",
                                     "compartment_id": "",
@@ -1416,8 +1415,8 @@ class CIS_Report:
                                     compartment_id=compartment.id
                                 ).data
                             for boot_volume in boot_volumes_data:
-                                deep_link = self.__oci_boot_volumes_uri + boot_volume.id + '?region=' + region_key
                                 try:
+                                    deep_link = self.__oci_boot_volumes_uri + boot_volume.id + '?region=' + region_key
                                     record = {
                                         "id": boot_volume.id,
                                         "display_name": boot_volume.display_name,
@@ -1444,9 +1443,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": boot_volume.id,
-                                        "display_name": boot_volume.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
+                                        "id": "",
+                                        "display_name": "",
+                                        "deep_link": "",
                                         "image_id": "",
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
@@ -1489,8 +1488,8 @@ class CIS_Report:
                                     availability_domain = ad.name
                                 ).data
                             for fss in fss_data:
-                                deep_link = self.__oci_fss_uri + fss.id + '?region=' + region_key
                                 try:
+                                    deep_link = self.__oci_fss_uri + fss.id + '?region=' + region_key
                                     record = {
                                         "id": fss.id,
                                         "display_name": fss.display_name,
@@ -1512,9 +1511,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": fss.id,
-                                        "display_name": fss.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
+                                        "id": "",
+                                        "display_name": "",
+                                        "deep_link": "",
                                         "kms_key_id": "",
                                         "lifecycle_state": "",
                                         "lifecycle_details": "",
@@ -1878,7 +1877,7 @@ class CIS_Report:
                                     "region" : region_key,
                                     "notes":""
                                 }
-                            except Exception as e:
+                            except:
                                 record = {
                                     "id": drg.id,
                                     "display_name" : drg.display_name,
@@ -1895,7 +1894,7 @@ class CIS_Report:
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
                                     "region" : region_key,
-                                    "notes": str(e)
+                                    "notes":""
 
                                 }
                             # for Raw Data
@@ -1927,91 +1926,90 @@ class CIS_Report:
                             # lifecycle_state="PROVISIONED"
                         ).data
                         # Looping through fastconnects in a compartment
-                        for fastconnect in fastconnect_data:
-                            deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
-                            try:
-                                    record = {
-                                        "id": fastconnect.id,
-                                        "display_name" : fastconnect.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
-                                        "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
-                                        "bgp_admin_state" : fastconnect.bgp_admin_state,
-                                        "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
-                                        "bgp_management" : fastconnect.bgp_management, 
-                                        "bgp_session_state" : fastconnect.bgp_session_state,
-                                        "compartment_id" : fastconnect.compartment_id,
-                                        "cross_connect_mappings" : fastconnect.cross_connect_mappings,
-                                        "customer_asn" : fastconnect.customer_asn,
-                                        "customer_bgp_asn" : fastconnect.customer_bgp_asn,
-                                        "gateway_id" : fastconnect.gateway_id,
-                                        "ip_mtu" : fastconnect.ip_mtu,
-                                        "is_bfd_enabled" : fastconnect.is_bfd_enabled,
-                                        "lifecycle_state" : fastconnect.lifecycle_state,
-                                        "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
-                                        "provider_name" : fastconnect.provider_name,
-                                        "provider_service_id" : fastconnect.provider_service_id,
-                                        "provider_service_key_name" : fastconnect.provider_service_key_name,
-                                        "provider_service_name" : fastconnect.provider_service_name,
-                                        "provider_state" : fastconnect.provider_state,
-                                        "public_prefixes" : fastconnect.public_prefixes,
-                                        "reference_comment" : fastconnect.reference_comment,
-                                        "fastconnect_region" : fastconnect.region,
-                                        "routing_policy" : fastconnect.routing_policy,
-                                        "service_type" : fastconnect.service_type,
-                                        "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
-                                        "type" : fastconnect.type,
-                                        "freeform_tags" : fastconnect.freeform_tags,
-                                        "define_tags" : fastconnect.defined_tags,
-                                        "region" : region_key,
-                                        "notes":""
-
-                                    }
-                                    # Adding fastconnect to fastconnect dict
-                                    try:
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    except:
-                                        self.__network_fastconnects[fastconnect.gateway_id] = []
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    count_of_fast_connects += 1
-
-                            except Exception as e:
+                        try:
+                            for fastconnect in fastconnect_data:
+                                deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
                                 record = {
-                                        "id": fastconnect.id,
-                                        "display_name" :  fastconnect.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
-                                        "bandwidth_shape_name" : "",
-                                        "bgp_admin_state" : "",
-                                        "bgp_ipv6_session_state" : "",
-                                        "bgp_management" : "", 
-                                        "bgp_session_state" : "",
-                                        "compartment_id" : compartment.id,
-                                        "cross_connect_mappings" : "",
-                                        "customer_asn" : "",
-                                        "customer_bgp_asn" : "",
-                                        "gateway_id" : "",
-                                        "ip_mtu" : "",
-                                        "is_bfd_enabled" : "",
-                                        "lifecycle_state" : "",
-                                        "oracle_bgp_asn" : "",
-                                        "provider_name" : "",
-                                        "provider_service_id" : "",
-                                        "provider_service_key_name" : "",
-                                        "provider_service_name" : "",
-                                        "provider_state" : "",
-                                        "public_prefixes" : "",
-                                        "reference_comment" : "",
-                                        "fastconnect_region" : "",
-                                        "routing_policy" : "",
-                                        "service_type" : "",
-                                        "time_created" : "",
-                                        "type" : "",
-                                        "freeform_tags" : "",
-                                        "define_tags" : "",
-                                        "region" : region_key,
-                                        "notes": str(e)
+                                    "id": fastconnect.id,
+                                    "display_name" : fastconnect.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
+                                    "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
+                                    "bgp_admin_state" : fastconnect.bgp_admin_state,
+                                    "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
+                                    "bgp_management" : fastconnect.bgp_management, 
+                                    "bgp_session_state" : fastconnect.bgp_session_state,
+                                    "compartment_id" : fastconnect.compartment_id,
+                                    "cross_connect_mappings" : fastconnect.cross_connect_mappings,
+                                    "customer_asn" : fastconnect.customer_asn,
+                                    "customer_bgp_asn" : fastconnect.customer_bgp_asn,
+                                    "gateway_id" : fastconnect.gateway_id,
+                                    "ip_mtu" : fastconnect.ip_mtu,
+                                    "is_bfd_enabled" : fastconnect.is_bfd_enabled,
+                                    "lifecycle_state" : fastconnect.lifecycle_state,
+                                    "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
+                                    "provider_name" : fastconnect.provider_name,
+                                    "provider_service_id" : fastconnect.provider_service_id,
+                                    "provider_service_key_name" : fastconnect.provider_service_key_name,
+                                    "provider_service_name" : fastconnect.provider_service_name,
+                                    "provider_state" : fastconnect.provider_state,
+                                    "public_prefixes" : fastconnect.public_prefixes,
+                                    "reference_comment" : fastconnect.reference_comment,
+                                    "fastconnect_region" : fastconnect.region,
+                                    "routing_policy" : fastconnect.routing_policy,
+                                    "service_type" : fastconnect.service_type,
+                                    "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
+                                    "type" : fastconnect.type,
+                                    "freeform_tags" : fastconnect.freeform_tags,
+                                    "define_tags" : fastconnect.defined_tags,
+                                    "region" : region_key,
+                                    "notes":""
 
                                 }
-                            
+                                # Adding fastconnect to fastconnect dict
+                                try:
+                                    self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                                except:
+                                    self.__network_fastconnects[fastconnect.gateway_id] = []
+                                    self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                                count_of_fast_connects += 1
+
+                        except Exception as e:
+                            record = {
+                                    "id": "",
+                                    "display_name" : "",
+                                    "deep_link": "",
+                                    "bandwidth_shape_name" : "",
+                                    "bgp_admin_state" : "",
+                                    "bgp_ipv6_session_state" : "",
+                                    "bgp_management" : "", 
+                                    "bgp_session_state" : "",
+                                    "compartment_id" : compartment.id,
+                                    "cross_connect_mappings" : "",
+                                    "customer_asn" : "",
+                                    "customer_bgp_asn" : "",
+                                    "gateway_id" : "",
+                                    "ip_mtu" : "",
+                                    "is_bfd_enabled" : "",
+                                    "lifecycle_state" : "",
+                                    "oracle_bgp_asn" : "",
+                                    "provider_name" : "",
+                                    "provider_service_id" : "",
+                                    "provider_service_key_name" : "",
+                                    "provider_service_name" : "",
+                                    "provider_state" : "",
+                                    "public_prefixes" : "",
+                                    "reference_comment" : "",
+                                    "fastconnect_region" : "",
+                                    "routing_policy" : "",
+                                    "service_type" : "",
+                                    "time_created" : "",
+                                    "type" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+
+                            }
                             # Adding fastconnect to fastconnect dict
                             try:
                                 self.__network_fastconnects[compartment.id].append(record)
@@ -2026,6 +2024,60 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in __network_read_fastonnects " + str(e.args))
 
+    ##########################################################################
+    # Load Customer Premises Equipments  
+    ##########################################################################
+    def __network_read_cpes(self):
+        try:
+            for region_key, region_values in self.__regions.items():
+                # Looping through compartments in tenancy
+                for compartment in self.__compartments:
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        cpe_data = oci.pagination.list_call_get_all_results(
+                            region_values['network_client'].list_cpes,
+                            compartment_id=compartment.id,
+                        ).data
+                        # Looping through CPEs in a compartment
+                        try:
+                            for cpe in cpe_data:
+                                deep_link = self.__oci_cpe_uri + cpe.id+ '?region=' + region_key
+                                record = {
+                                    "id": cpe.id,
+                                    "display_name" : cpe.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, cpe.display_name),
+                                    "cpe_device_shape_id" : cpe.cpe_device_shape_id,
+                                    "ip_address" : cpe.ip_address,
+                                    "compartment_id" : cpe.compartment_id,
+                                    "time_created" : cpe.time_created.strftime(self.__iso_time_format),
+                                    "freeform_tags" : cpe.freeform_tags,
+                                    "define_tags" : cpe.defined_tags,
+                                    "region" : region_key,
+                                    "notes":""
+
+                                }
+                                # Adding CPEs to CPE list
+                                self.__network_cpes.append(record)
+                        except Exception as e:
+                            record = {
+                                    "id": "",
+                                    "display_name" : "",
+                                    "deep_link": "",
+                                    "cpe_device_shape_id" : "",
+                                    "ip_address" : "",
+                                    "compartment_id" : compartment.id,
+                                    "time_created" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "notes": str(e)
+
+                            }
+                            self.__network_cpes.append(record)
+            print("\tProcessed " + str(len(self.__network_cpes)) + " Customer Premises Devices")                        
+            return self.__network_cpes
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __network_read_cpes " + str(e.args))
 
     ##########################################################################
     # Load IP Sec Connections
@@ -2104,25 +2156,9 @@ class CIS_Report:
 
 
                             except:
-                                record = {
-                                    "id": ip_sec.id,
-                                    "display_name" : ip_sec.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
-                                    "cpe_id" : "",
-                                    "drg_id" : "",
-                                    "compartment_id" : ip_sec.compartment_id,
-                                    "cpe_local_identifier" : "",
-                                    "cpe_local_identifier_type" : "",
-                                    "lifecycle_state" : "",
-                                    "freeform_tags" : "",
-                                    "define_tags" : "",
-                                    "region" : region_key,
-                                    "tunnels" : [],
-                                    "number_tunnels_up" : 0,
-                                    "tunnels_up" : False, 
-                                    "notes":""
-                                }
-                                
+                                print("execption " * 10)
+                                print(ip_sec)
+
                             try:
                                 self.__network_ipsec_connections[ip_sec.drg_id].append(record)
                             except:
@@ -2426,8 +2462,8 @@ class CIS_Report:
                         ).data
                         for oic_instance in oic_instances:
                             if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
-                                deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
                                 try:
+                                    deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
                                     record = {
                                         "id": oic_instance.id,
                                         "display_name": oic_instance.display_name,
@@ -2452,9 +2488,9 @@ class CIS_Report:
                                     }
                                 except Exception as e:
                                     record = {
-                                        "id": oic_instance.id,
-                                        "display_name": oic_instance.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
+                                        "id": "",
+                                        "display_name": "",
+                                        "deep_link": "",
                                         "network_endpoint_details": "",
                                         "compartment_id": "",
                                         "alternate_custom_endpoints": "",
@@ -2492,8 +2528,8 @@ class CIS_Report:
                             compartment_id=compartment.id
                         ).data
                         for oac_instance in oac_instances:
-                            deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
                             try:
+                                deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
                                 record = {
                                     "id": oac_instance.id,
                                     "name": oac_instance.name,
@@ -2510,14 +2546,16 @@ class CIS_Report:
                                     "license_type": oac_instance.license_type,
                                     "time_created": oac_instance.time_created.strftime(self.__iso_time_format),
                                     "time_updated": str(oac_instance.time_updated),
+                                    # "defined_tags" : oac_instance.defined_tags,
+                                    # "freeform_tags" : oac_instance.freeform_tags,
                                     "region" : region_key,
                                     "notes":""
                                 }
                             except Exception as e:
                                 record = {
-                                    "id": oac_instance.id,
-                                    "name": oac_instance.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
+                                    "name": "",
+                                    "description": "",
+                                    "deep_link": "",
                                     "network_endpoint_details": "",
                                     "compartment_id": "",
                                     "lifecycle_state": "",
@@ -2528,6 +2566,8 @@ class CIS_Report:
                                     "license_type": "",
                                     "time_created": "",
                                     "time_updated": "",
+                                    # "defined_tags": "",
+                                    # "freeform_tags": "",
                                     "region" : region_key,
                                     "notes":str(e)
                                 }
@@ -3000,11 +3040,11 @@ class CIS_Report:
                         ).data
                         # Getting Bucket Info
                         for connector in service_connectors_data:
-                            deep_link = self.__oci_serviceconnector_uri + connector.id + "/logging" + '?region=' + region_key
                             try:
                                 service_connector = region_values['sch_client'].get_service_connector(
                                     service_connector_id=connector.id
                                     ).data
+                                deep_link = self.__oci_serviceconnector_uri + service_connector.id + "/logging" + '?region=' + region_key
                                 record = {
                                     "id": service_connector.id,
                                     "display_name": service_connector.display_name,
@@ -3147,7 +3187,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['external_identifier'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
                     user)
@@ -3276,7 +3316,7 @@ class CIS_Report:
                                     sl)
                         except (AttributeError):
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
-                            # print(" I am an excption " * 5)
+                            print(" I am an excption " * 5)
                             self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
                                 sl)
@@ -3578,45 +3618,13 @@ class CIS_Report:
 
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
-                try:
-                    finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
-                except Exception as e:
-                    finding = {                
-                        "id" : compartment,
-                        "name" : "Compartment No Longer Exists",
-                        "deep_link": "",
-                        "compartment_id": "(root)",
-                        "defined_tags": "",
-                        "description": str(e),
-                        "freeform_tags": "",
-                        "inactive_status": "",
-                        "is_accessible": "",
-                        "lifecycle_state": "",
-                        "time_created": "",
-                        "region" : ""
-                    }
+                finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
                 finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
-                try:
-                    finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
-                except Exception as e:
-                    finding = {                
-                        "id" : compartment,
-                        "name" : "Compartment No Longer Exists",
-                        "deep_link": "",
-                        "compartment_id": "(root)",
-                        "defined_tags": "",
-                        "description": str(e),
-                        "freeform_tags": "",
-                        "inactive_status": "",
-                        "is_accessible": "",
-                        "lifecycle_state": "",
-                        "time_created": "",
-                        "region" : ""
-                    }                
-                    finding['region'] = region_key
+                finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment ))[0]
+                finding['region'] = region_key
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
 
         
@@ -3814,29 +3822,16 @@ class CIS_Report:
                                 fast_connect_providers.add(virtual_circuit['provider_name'])
                                 number_of_valid_fast_connect_circuits += 1
 
-            try:
-                record = {
-                    "drg_id" : drg_id,
-                    "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
-                    "region" : self.__network_drgs[drg_id]['region'],
-                    "number_of_connected_vcns" : number_of_valid_connected_vcns,
-                    "number_of_customer_premises_equipment" : len(customer_premises_equipment),
-                    "number_of_connected_ipsec_connections" : number_of_valid_site_to_site_connection,
-                    "number_of_fastconnects_cicruits" : number_of_valid_fast_connect_circuits,
-                    "number_of_fastconnect_providers" : len(fast_connect_providers),
-                }
-            except:
-                record = {
-                    "drg_id" : drg_id,
-                    "drg_display_name" : "Deleted with an active attachement",
-                    "region" : attachment['region'],
-                    "number_of_connected_vcns" : 0,
-                    "number_of_customer_premises_equipment" : 0,
-                    "number_of_connected_ipsec_connections" : 0,
-                    "number_of_fastconnects_cicruits" : 0,
-                    "number_of_fastconnect_providers" : 0,
-                }
-                print(f"This DRG: {drg_id} is deleted with an active attachement: {attachment['display_name']}")
+            record = {
+                "drg_id" : drg_id,
+                "drg_display_name" : self.__network_drgs[drg_id]['display_name'],
+                "region" : self.__network_drgs[drg_id]['region'],
+                "number_of_connected_vcns" : number_of_valid_connected_vcns,
+                "number_of_customer_premises_equipment" : len(customer_premises_equipment),
+                "number_of_connected_ipsec_connections" : number_of_valid_site_to_site_connection,
+                "number_of_fastconnects_cicruits" : number_of_valid_fast_connect_circuits,
+                "number_of_fastconnect_providers" : len(fast_connect_providers),
+            }
 
             #Checking if the DRG and connected resourcs are aligned with best practices
             # One attached VCN, One VPN connection and one fast connect
@@ -4317,6 +4312,7 @@ class CIS_Report:
         if self.__obp_checks:
             obp_functions = [
                 self.__network_read_fastonnects,
+                # self.__network_read_cpes,
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,

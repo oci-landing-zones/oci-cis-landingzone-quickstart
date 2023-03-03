@@ -16,10 +16,10 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_log_analytics_log_analytics_log_group.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/log_analytics_log_analytics_log_group) | resource |
-| [oci_log_analytics_namespace.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/log_analytics_namespace) | resource |
-| [oci_log_analytics_namespaces.these](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/log_analytics_namespaces) | data source |
-| [oci_objectstorage_namespace.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/objectstorage_namespace) | data source |
+| [oci_log_analytics_log_analytics_log_group.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/log_analytics_log_analytics_log_group) | resource |
+| [oci_log_analytics_namespace.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/log_analytics_namespace) | resource |
+| [oci_log_analytics_namespaces.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/log_analytics_namespaces) | data source |
+| [oci_objectstorage_namespace.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/objectstorage_namespace) | data source |
 
 ## Inputs
 

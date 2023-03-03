@@ -1,3 +1,25 @@
+
+#   March 2, 2023 Release Notes - 2.5.5
+1. [OCI IAM Policy Fix for Database Admin Group](#2-5-5-adb-policy-fix)
+1. [OCI IAM Service Policy Update](#2-5-5-oci-iam-service-policy)
+1. [Enhanced HTML CIS Summary Report](#2-5-5-html-cis-summary)
+1. [Compliance Checking Script Updates](#2-5-5-script-updates)
+
+
+## <a name="2-5-5-adb-policy-fix">OCI IAM Policy Fix for Database Admin Group</a>
+Updated OCI IAM policies attached to the Database Admin Group to support deploying ADBs in private subnets. Policy is based on documentation [here](https://docs.oracle.com/en-us/iaas/autonomous-database-shared/doc/iam-private-endpoint-configure-policies.html).
+
+## <a name="2-5-5-oci-iam-service-policy">OCI IAM Service Policy Update</a>
+Added an OCI IAM policy to allow OCI services File Storage Service, Object Storage Service, Oracle Kubernetes Engine, Streaming and Block Storage to encrypt data using keys in the OCI Vault in the Security Compartment. 
+
+## <a name="2-5-5-html-cis-summary">Enhanced HTML CIS Summary Report</a>
+The HTML CIS Summary report from the CIS compliance checking script has a significantly updated look and feel.
+
+## <a name="2-5-5-script-updates">CIS Compliance Script Updates</a>
+- The CIS compliance checking script has added user capabilities to OCI IAM user collection.  These attributes are only available in the `raw_data_identity_users.csv` file.
+- Enhanced exception handling for Oracle Best Practice checks.
+
+
 #   February 10, 2023 Release Notes - 2.5.4
 1. [Improved CIS 3.7 and 3.13 Checks](#2-5-4-cis-logic)
 

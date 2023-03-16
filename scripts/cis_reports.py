@@ -1636,6 +1636,7 @@ class CIS_Report:
                             for egress_rule in security_list.egress_security_rules:
                                 erule = {
                                     "description": egress_rule.description,
+                                    "destination": egress_rule.destination,
                                     "destination_type": egress_rule.destination_type,
                                     "icmp_options": egress_rule.icmp_options,
                                     "is_stateless": egress_rule.is_stateless,

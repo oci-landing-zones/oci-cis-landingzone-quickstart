@@ -3792,8 +3792,7 @@ class CIS_Report:
             for attachment in drg_values:
                 if attachment['network_type'].upper() == 'VCN':
                     # Checking if DRG has a valid VCN attached to it
-                    if attachment['network_id'] in self.__network_vcns:
-                        number_of_valid_connected_vcns += 1 
+                    number_of_valid_connected_vcns += 1 
 
                 elif attachment['network_type'].upper() == 'IPSEC_TUNNEL':
                     # Checking if the IPSec Connection has both tunnels up

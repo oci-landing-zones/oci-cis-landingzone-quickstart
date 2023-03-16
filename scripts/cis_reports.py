@@ -1859,6 +1859,12 @@ class CIS_Report:
                         # Looping through DRGs in a compartment
                         for drg in drg_data:
                             deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
+                            #Fetch DRG Upgrade status
+                            try:
+                                upgrade_status = region_values['network_client'].get_upgrade_status(drg.id).data.status
+                            except:
+                                upgrade_status = "Not Available"
+                                
                             try:
                                 record = {
                                     "id": drg.id,
@@ -1872,6 +1878,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
+                                    "upgrade_status" : upgrade_status,                                    
                                     "time_created" : drg.time_created.strftime(self.__iso_time_format),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
@@ -1891,6 +1898,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
+                                    "upgrade_status" : upgrade_status,                                    
                                     "time_created" : drg.time_created.strftime(self.__iso_time_format),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,

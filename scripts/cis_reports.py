@@ -619,7 +619,6 @@ class CIS_Report:
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
-        self.__network_vcns = {}
         self.__network_fastconnects = {} # Indexed by DRG ID
         self.__network_drgs = {} # Indexed by DRG ID
         self.__raw_network_drgs = []
@@ -1744,26 +1743,11 @@ class CIS_Report:
                             self.__network_subnets.append(record)
             print("\tProcessed " + str(len(self.__network_subnets)) + " Network Subnets")                        
             
-            # Build a list of VCNs
-            self.__network_build_network_vcn_subnets,
+
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_network_subnets " + str(e.args))
-
-    ##########################################################################
-    # Build a Dictionary of VCN from the subnets indexed by vcn_id
-    ##########################################################################
-    def __network_build_network_vcn_subnets(self):
-        for subnet in self.__network_subnets:
-            try:
-                self.__network_vcns[subnet['vcn_id']].append(subnet)
-            except:
-                self.__network_vcns[subnet['vcn_id']] = []
-                self.__network_vcns[subnet['vcn_id']].append(subnet)
-        
-        print("\tProcessed " + str(len(self.__network_vcns)) + " Network VCNs")                        
-        return self.__network_vcns
 
 
     ##########################################################################

@@ -2080,7 +2080,7 @@ class CIS_Report:
                                         if tunnel_record['status'].upper() == "UP":
                                             record['number_tunnels_up'] += 1
                                         else:
-                                            tunnel_record['tunnels_up'] = False
+                                            record['tunnels_up'] = False
                                         record["tunnels"].append(tunnel_record)
                                 except:
                                     print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)

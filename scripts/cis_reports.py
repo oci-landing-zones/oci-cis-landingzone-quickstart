@@ -3951,11 +3951,17 @@ class CIS_Report:
             if recommendation['Level'] <= level:
                 report_filename = "cis" + " "+ recommendation['section'] + "_" + recommendation['recommendation_#']
                 report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_","_") + ".csv"
+                if recommendation['Status']:
+                    compliant_output = "Yes"
+                elif recommendation['Status'] is None:
+                    compliant_output = "Not Applicable"
+                else:
+                    compliant_output = "No"
                 record = {
                     "Recommendation #": f"'{key}'", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
-                    "Compliant": ('Yes' if recommendation['Status'] else 'No'),
+                    "Compliant": compliant_output,
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],

@@ -3943,7 +3943,7 @@ class CIS_Report:
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
-                    "Filename" : report_filename if not(recommendation['Status']) else " ",
+                    "Filename" : report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation" : self.cis_report_data[key]['Remediation']
                 }
                 # Add record to summary report for CSV output

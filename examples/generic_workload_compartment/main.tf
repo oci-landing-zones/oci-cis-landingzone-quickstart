@@ -36,51 +36,25 @@ locals {
       children : {}
       } if var.create_database_compartment
   })
-
-  compartment_policies = concat([for k, v in module.cislz_compartments.level_1_compartments : {
+  
+  compartment_policies = [for k, v in module.cislz_compartments.compartments : {
     name = v.name,
     id   = v.id,
-    freeform_tags = v.freeform_tags }],
-    [for k, v in module.cislz_compartments.level_2_compartments : {
-      name = v.name,
-      id   = v.id,
-    freeform_tags = v.freeform_tags }],
-    [for k, v in module.cislz_compartments.level_3_compartments : {
-      name = v.name,
-      id   = v.id,
-    freeform_tags = v.freeform_tags }],
-    [for k, v in module.cislz_compartments.level_4_compartments : {
-      name = v.name,
-      id   = v.id,
-    freeform_tags = v.freeform_tags }],
-    [for k, v in module.cislz_compartments.level_5_compartments : {
-      name = v.name,
-      id   = v.id,
-    freeform_tags = v.freeform_tags }],
-    [for k, v in module.cislz_compartments.level_6_compartments : {
-      name = v.name,
-      id   = v.id,
     freeform_tags = v.freeform_tags }]
-  )
 
 }
 
 
 
 module "cislz_compartments" {
-  source                     = "github.com/andrecorreaneto/terraform-oci-cis-landing-zone-compartments"
+  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam-compartments.git"
   compartments               = local.compartments
   enable_compartments_delete = true
 }
 
 module "cislz_policies" {
-  # depends_on = [
-  #   module.cislz_compartments
-  # ]
   tenancy_id = var.tenancy_id
   source     = "github.com/andrecorreaneto/terraform-oci-cis-landing-zone-policies"
-  #cislz_tag_lookup_value = var.landing_zone_prefix
   target_compartments = local.compartment_policies
-  #  enable_compartment_level_template_policies = true
   enable_debug = true
 }

@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 provider "oci" {
-  region               = var.home_region
+  region               = var.region
   tenancy_ocid         = var.tenancy_id
   user_ocid            = var.user_id
   fingerprint          = var.fingerprint

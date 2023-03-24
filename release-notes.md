@@ -1,6 +1,7 @@
 
-#   March 27, 2023 Release Notes - 2.5.6
+#   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
 ## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
 Updates:
 - Added egress rules to Security Lists and Network Security Groups.

@@ -3783,8 +3783,6 @@ class CIS_Report:
             
 
             for attachment in drg_values:
-                print("*" * 40)
-                print(attachment)
                 if attachment['network_type'].upper() == 'VCN':
                     # Checking if DRG has a valid VCN attached to it
                     number_of_valid_connected_vcns += 1 

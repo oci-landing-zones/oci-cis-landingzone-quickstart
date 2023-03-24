@@ -3783,6 +3783,8 @@ class CIS_Report:
             
 
             for attachment in drg_values:
+                print("*" * 40)
+                print(attachment)
                 if attachment['network_type'].upper() == 'VCN':
                     # Checking if DRG has a valid VCN attached to it
                     number_of_valid_connected_vcns += 1 
@@ -4598,8 +4600,10 @@ class CIS_Report:
     # Create CSV Hyperlink
     ##########################################################################
     def __generate_csv_hyperlink(self,url, name):
-        return '=HYPERLINK("' + url + '","' + name +'")'
-
+        if len(url) < 255:
+            return '=HYPERLINK("' + url + '","' + name +'")'
+        else:
+            return url
 
 
 ##########################################################################

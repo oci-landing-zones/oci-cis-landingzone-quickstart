@@ -1559,7 +1559,7 @@ class CIS_Report:
                                 "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
+                                "deep_link":deep_link,
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -1630,8 +1630,8 @@ class CIS_Report:
                                 "region" : region_key,
                                 "freeform_tags" : security_list.freeform_tags,
                                 "defined_tags" : security_list.defined_tags,
-                                "egress_security_rules": [],
-                                "ingress_security_rules": []
+                                "ingress_security_rules": [],
+                                "egress_security_rules": []
                             }
                             for egress_rule in security_list.egress_security_rules:
                                 erule = {

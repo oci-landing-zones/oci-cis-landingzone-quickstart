@@ -619,7 +619,6 @@ class CIS_Report:
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
-        self.__network_vcns = {}
         self.__network_fastconnects = {} # Indexed by DRG ID
         self.__network_drgs = {} # Indexed by DRG ID
         self.__raw_network_drgs = []
@@ -1559,7 +1558,7 @@ class CIS_Report:
                                 "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
+                                "deep_link":deep_link,
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -1630,12 +1629,13 @@ class CIS_Report:
                                 "region" : region_key,
                                 "freeform_tags" : security_list.freeform_tags,
                                 "defined_tags" : security_list.defined_tags,
-                                "egress_security_rules": [],
-                                "ingress_security_rules": []
+                                "ingress_security_rules": [],
+                                "egress_security_rules": []
                             }
                             for egress_rule in security_list.egress_security_rules:
                                 erule = {
                                     "description": egress_rule.description,
+                                    "destination": egress_rule.destination,
                                     "destination_type": egress_rule.destination_type,
                                     "icmp_options": egress_rule.icmp_options,
                                     "is_stateless": egress_rule.is_stateless,
@@ -1744,26 +1744,11 @@ class CIS_Report:
                             self.__network_subnets.append(record)
             print("\tProcessed " + str(len(self.__network_subnets)) + " Network Subnets")                        
             
-            # Build a list of VCNs
-            self.__network_build_network_vcn_subnets,
+
             return self.__network_subnets
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_network_subnets " + str(e.args))
-
-    ##########################################################################
-    # Build a Dictionary of VCN from the subnets indexed by vcn_id
-    ##########################################################################
-    def __network_build_network_vcn_subnets(self):
-        for subnet in self.__network_subnets:
-            try:
-                self.__network_vcns[subnet['vcn_id']].append(subnet)
-            except:
-                self.__network_vcns[subnet['vcn_id']] = []
-                self.__network_vcns[subnet['vcn_id']].append(subnet)
-        
-        print("\tProcessed " + str(len(self.__network_vcns)) + " Network VCNs")                        
-        return self.__network_vcns
 
 
     ##########################################################################
@@ -1859,6 +1844,12 @@ class CIS_Report:
                         # Looping through DRGs in a compartment
                         for drg in drg_data:
                             deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
+                            #Fetch DRG Upgrade status
+                            try:
+                                upgrade_status = region_values['network_client'].get_upgrade_status(drg.id).data.status
+                            except:
+                                upgrade_status = "Not Available"
+                                
                             try:
                                 record = {
                                     "id": drg.id,
@@ -1872,6 +1863,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
+                                    "upgrade_status" : upgrade_status,                                    
                                     "time_created" : drg.time_created.strftime(self.__iso_time_format),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
@@ -1891,6 +1883,7 @@ class CIS_Report:
                                     "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
                                     "compartment_id" : drg.compartment_id,
                                     "lifecycle_state" : drg.lifecycle_state,
+                                    "upgrade_status" : upgrade_status,                                    
                                     "time_created" : drg.time_created.strftime(self.__iso_time_format),
                                     "freeform_tags" : drg.freeform_tags,
                                     "define_tags" : drg.defined_tags,
@@ -2096,7 +2089,7 @@ class CIS_Report:
                                         if tunnel_record['status'].upper() == "UP":
                                             record['number_tunnels_up'] += 1
                                         else:
-                                            tunnel_record['tunnels_up'] = False
+                                            record['tunnels_up'] = False
                                         record["tunnels"].append(tunnel_record)
                                 except:
                                     print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)
@@ -3792,8 +3785,7 @@ class CIS_Report:
             for attachment in drg_values:
                 if attachment['network_type'].upper() == 'VCN':
                     # Checking if DRG has a valid VCN attached to it
-                    if attachment['network_id'] in self.__network_vcns:
-                        number_of_valid_connected_vcns += 1 
+                    number_of_valid_connected_vcns += 1 
 
                 elif attachment['network_type'].upper() == 'IPSEC_TUNNEL':
                     # Checking if the IPSec Connection has both tunnels up
@@ -3951,16 +3943,22 @@ class CIS_Report:
             if recommendation['Level'] <= level:
                 report_filename = "cis" + " "+ recommendation['section'] + "_" + recommendation['recommendation_#']
                 report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_","_") + ".csv"
+                if recommendation['Status']:
+                    compliant_output = "Yes"
+                elif recommendation['Status'] is None:
+                    compliant_output = "Not Applicable"
+                else:
+                    compliant_output = "No"
                 record = {
                     "Recommendation #": f"'{key}'", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
-                    "Compliant": ('Yes' if recommendation['Status'] else 'No'),
+                    "Compliant": compliant_output,
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
-                    "Filename" : report_filename if not(recommendation['Status']) else " ",
+                    "Filename" : report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation" : self.cis_report_data[key]['Remediation']
                 }
                 # Add record to summary report for CSV output
@@ -4600,8 +4598,10 @@ class CIS_Report:
     # Create CSV Hyperlink
     ##########################################################################
     def __generate_csv_hyperlink(self,url, name):
-        return '=HYPERLINK("' + url + '","' + name +'")'
-
+        if len(url) < 255:
+            return '=HYPERLINK("' + url + '","' + name +'")'
+        else:
+            return url
 
 
 ##########################################################################

@@ -12,6 +12,7 @@ locals {
 module "lz_services_policy" {
   source                        = "../modules/iam/iam-services-policy"
   providers                     = { oci = oci.home }
+  depends_on                    = [null_resource.wait_on_compartments]
   tenancy_id                    = var.tenancy_ocid
   service_label                 = var.service_label
   enable_tenancy_level_policies = var.extend_landing_zone_to_new_region == false ? (local.use_existing_root_cmp_grants == true ? false : true) : false

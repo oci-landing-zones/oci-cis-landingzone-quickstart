@@ -1,3 +1,31 @@
+#   April 04, 2023 Release Notes - 2.5.7
+1. [Exadata Events Fix](#2-5-7-exadata-events-fix)
+1. [Compliance Checking Script Updates](#2-5-7-script-updates)
+
+## <a name="2-5-7-exadata-events-fix">Exadata Events Fix</a>
+- Exadata events handled with jsonencode function in [mon_notifications.tf](./config/mon_notifications.tf).
+
+## <a name="2-5-7-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added optionality to the NSG deep_link incase the link is less than 254 characters.
+- Updated Release version and date.
+
+Fixes:
+- Fixed console output formatting for CIS Summary report.
+
+
+
+#   March 24, 2023 Release Notes - 2.5.6
+1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
+## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added egress rules to Security Lists and Network Security Groups.
+- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
+
+Fixes:
+- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
+- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

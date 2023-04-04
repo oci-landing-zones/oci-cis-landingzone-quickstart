@@ -1558,7 +1558,7 @@ class CIS_Report:
                                 "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "deep_link":deep_link,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,

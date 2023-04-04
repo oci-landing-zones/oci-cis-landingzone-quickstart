@@ -1,3 +1,8 @@
+#   April XX, 2023 Release Notes - 2.5.7
+1. [Exadata Events Fix](#2-5-7-exadata-events-fix)
+
+## <a name="2-5-7-exadata-events-fix">Exadata Events Fix</a>
+- Exadata events handled with jsonencode function in [mon_notifications.tf](./config/mon_notifications.tf).
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

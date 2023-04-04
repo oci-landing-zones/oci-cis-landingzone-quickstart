@@ -681,7 +681,7 @@ class CIS_Report:
 
         # Start print time info
         self.__print_header("Running CIS Reports - Release 2.5.7")
-        print("Updated April 7, 2023.")
+        print("Updated April 4, 2023.")
         print("Tested oci-python-sdk version: 2.93.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)

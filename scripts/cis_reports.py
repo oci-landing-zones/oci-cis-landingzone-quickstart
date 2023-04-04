@@ -680,8 +680,8 @@ class CIS_Report:
         # Setting list of regions to run in
 
         # Start print time info
-        self.__print_header("Running CIS Reports - Release 2.5.5")
-        print("Updated March 2, 2023.")
+        self.__print_header("Running CIS Reports - Release 2.5.7")
+        print("Updated April 4, 2023.")
         print("Tested oci-python-sdk version: 2.93.1")
         print("Your oci-python-sdk version: " + str(oci.__version__))
         print("Starts at " + self.start_time_str)
@@ -1558,7 +1558,7 @@ class CIS_Report:
                                 "id": nsg.id,
                                 "compartment_id": nsg.compartment_id,
                                 "display_name": nsg.display_name,
-                                "deep_link":deep_link,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
                                 "lifecycle_state": nsg.lifecycle_state,
                                 "time_created": nsg.time_created.strftime(self.__iso_time_format),
                                 "vcn_id": nsg.vcn_id,
@@ -3027,7 +3027,7 @@ class CIS_Report:
                                 record = {
                                     "id": connector.id,
                                     "display_name": connector.display_name,
-                                    "deep_link": "", # self.__generate_csv_hyperlink(deep_link, connector.display_name),
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, connector.display_name),
                                     "description": connector.description,
                                     "freeform_tags": connector.freeform_tags,
                                     "defined_tags" : connector.defined_tags,
@@ -3953,7 +3953,7 @@ class CIS_Report:
                     "Recommendation #": f"'{key}'", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
-                    "Compliant": compliant_output,
+                    "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],

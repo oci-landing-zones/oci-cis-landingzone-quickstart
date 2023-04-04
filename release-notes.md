@@ -1,4 +1,4 @@
-#   April 07, 2023 Release Notes - 2.5.7
+#   April 04, 2023 Release Notes - 2.5.7
 1. [Exadata Events Fix](#2-5-7-exadata-events-fix)
 1. [Compliance Checking Script Updates](#2-5-7-script-updates)
 

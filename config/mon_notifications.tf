@@ -177,11 +177,7 @@ locals {
       compartment_id      = local.exainfra_topic.cmp_id
       description         = "Landing Zone events rule to detect Exadata infrastructure events."
       is_enabled          = var.create_events_as_enabled
-      condition           = <<EOT
-            {"eventType": 
-            [${local.exainfra_events}]
-            }
-            EOT
+      condition           = jsonencode({"eventType": local.exainfra_events})
       actions_action_type = "ONS"
       actions_is_enabled  = true
       actions_description = "Sends notification via ONS"

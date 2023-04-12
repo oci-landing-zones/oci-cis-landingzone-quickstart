@@ -1908,7 +1908,6 @@ class CIS_Report:
     # Load Network FastConnect 
     ##########################################################################
     def __network_read_fastonnects(self):
-        count_of_fast_connects = 0
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -2005,15 +2004,14 @@ class CIS_Report:
 
                                 }
                             
-                            # Adding fastconnect to fastconnect dict
-                            try:
-                                self.__network_fastconnects[compartment.id].append(record)
-                            except:
-                                self.__network_fastconnects[compartment.id] = []
-                                self.__network_fastconnects[compartment.id].append(record)
-                            count_of_fast_connects += 1
+                                # Adding fastconnect to fastconnect dict
+                                try:
+                                    self.__network_fastconnects[compartment.id].append(record)
+                                except:
+                                    self.__network_fastconnects[compartment.id] = []
+                                    self.__network_fastconnects[compartment.id].append(record)
 
-            print("\tProcessed " + str(count_of_fast_connects) + " FastConnects")                        
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))) + " FastConnects")                        
             return self.__network_fastconnects
         except Exception as e:
             raise RuntimeError(
@@ -2024,7 +2022,6 @@ class CIS_Report:
     # Load IP Sec Connections
     ##########################################################################
     def __network_read_ip_sec_connections(self):
-        count_of_ip_sec_connections = 0
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -2094,8 +2091,6 @@ class CIS_Report:
                                 except:
                                     print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)
                                     record['tunnels_up'] = False
-
-
                             except:
                                 record = {
                                     "id": ip_sec.id,
@@ -2121,9 +2116,8 @@ class CIS_Report:
                             except:
                                 self.__network_ipsec_connections[ip_sec.drg_id] = []
                                 self.__network_ipsec_connections[ip_sec.drg_id].append(record)
-                            count_of_ip_sec_connections += 1
 
-            print("\tProcessed " + str(count_of_ip_sec_connections) + " IP SEC Conenctions")                        
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")                        
             return self.__network_ipsec_connections
         except Exception as e:
             raise RuntimeError(
@@ -4441,7 +4435,7 @@ class CIS_Report:
         
         # Converting a dict that is one to a list to a flat list
         report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "raw_data", "network_fastconnects", list(itertools.chain.from_iterable(self.__network_fastconnects.values())))
+               self.__report_directory, "raw_data", "network_fastconnects", (list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))
         list_report_file_names.append(report_file_name)
         
         # Converting a dict that is one to a list to a flat list

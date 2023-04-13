@@ -3381,17 +3381,18 @@ class CIS_Report:
             try:
                 event_dict = json.loads(jsonable_str)
             except:
-                print("*** Invalid Event Condition for event: " + event['display_name'] + " ***")
+                print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
                 event_dict = {}
-            
-            if event_dict:
+            # Issue 256: 'eventtpye' not in event_dict (i.e. missing in event condition)
+            if event_dict and 'eventtype' in event_dict:
                 for key, changes in self.cis_monitoring_checks.items():
                     # Checking if all cis change list is a subset of event condition
-                    # if(all(x in test_list for x in sub_list)):
-                    if event_dict != {}:
+                    try:
                         if(all(x in event_dict['eventtype'] for x in changes)):
                             self.cis_foundations_benchmark_1_2[key]['Status'] = True
-
+                    except Exception as e:
+                        print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
+        
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:

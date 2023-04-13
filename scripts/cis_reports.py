@@ -34,6 +34,28 @@ except:
     OUTPUT_TO_XLSX = False
 
 ##########################################################################
+# Print header centered
+##########################################################################
+def print_header(name):
+    chars = int(90)
+    print('')
+    print('#' * chars)
+    print('#' + name.center(chars - 2, ' ') + '#')
+    print('#' * chars)
+
+def show_version(verbose=False):
+    script_version = 'CIS Reports - Release 2.5.7'
+    script_updated = 'Updated April 4, 2023.'
+    if verbose:
+        print_header('Running ' + script_version)
+        print(script_updated)
+        print('Tested oci-python-sdk version: 2.93.1')
+        print('Your oci-python-sdk version: ' + str(oci.__version__))
+    else:
+        print(script_version)
+        print(script_updated)
+
+##########################################################################
 # CIS Reporting Class
 ##########################################################################
 class CIS_Report:
@@ -680,10 +702,7 @@ class CIS_Report:
         # Setting list of regions to run in
 
         # Start print time info
-        self.__print_header("Running CIS Reports - Release 2.5.7")
-        print("Updated April 4, 2023.")
-        print("Tested oci-python-sdk version: 2.93.1")
-        print("Your oci-python-sdk version: " + str(oci.__version__))
+        show_version(verbose=True)
         print("Starts at " + self.start_time_str)
         self.__config = config
         self.__signer = signer
@@ -3950,7 +3969,7 @@ class CIS_Report:
                 else:
                     compliant_output = "No"
                 record = {
-                    "Recommendation #": f"'{key}'", 
+                    "Recommendation #": f"{key}", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
@@ -3968,7 +3987,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
 
         # Screen output for CIS Summary Report
-        self.__print_header("CIS Foundations Benchmark 1.2 Summary Report")
+        print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
         print('#' * 90)
@@ -3984,7 +4003,7 @@ class CIS_Report:
                       finding['Findings'] + "\t\t" + finding['Title'])
 
         # Generating Summary report CSV
-        self.__print_header("Writing CIS reports to CSV")
+        print_header("Writing CIS reports to CSV")
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
         
@@ -4191,7 +4210,7 @@ class CIS_Report:
 
         obp_summary_report = []
         # Screen output for CIS Summary Report
-        self.__print_header("OCI Best Practices Findings")
+        print_header("OCI Best Practices Findings")
         print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  ")
         print('#' * 90)
         # Adding data to summary report
@@ -4206,7 +4225,7 @@ class CIS_Report:
             }
             obp_summary_report.append(record)
 
-        self.__print_header("Writing Oracle Best Practices reports to CSV")
+        print_header("Writing Oracle Best Practices reports to CSV")
 
         summary_report_file_name = self.__print_to_csv_file(
                     self.__report_directory, "obp", "OBP_Summary", obp_summary_report)
@@ -4575,7 +4594,7 @@ class CIS_Report:
             self.__report_generate_raw_data_output()
         
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
-        self.__print_header("Finished in: " + str(end_datetime - self.start_datetime))
+        print_header("Finished in: " + str(end_datetime - self.start_datetime))
 
         return self.__report_directory
 
@@ -4583,16 +4602,6 @@ class CIS_Report:
         self.__obp_checks = True
         self.generate_reports()
         return self.obp_foundations_checks
-
-    ##########################################################################
-    # Print header centered
-    ##########################################################################
-    def __print_header(self, name):
-        chars = int(90)
-        print("")
-        print('#' * chars)
-        print("#" + name.center(chars - 2, " ") + "#")
-        print('#' * chars)
 
     ##########################################################################
     # Create CSV Hyperlink
@@ -4760,7 +4769,13 @@ def execute_report():
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
+    parser.add_argument('-v', action='store_true', default=False,
+                        dest='version', help='Show the version of the script and exit.' )
     cmd = parser.parse_args()
+
+    if cmd.version:
+        show_version()
+        sys.exit()
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)

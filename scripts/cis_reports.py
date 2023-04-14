@@ -44,12 +44,12 @@ def print_header(name):
     print('#' * chars)
 
 def show_version(verbose=False):
-    script_version = 'CIS Reports - Release 2.5.7'
-    script_updated = 'Updated April 4, 2023.'
+    script_version = 'CIS Reports - Release 2.5.8'
+    script_updated = 'Updated April 14, 2023.'
     if verbose:
         print_header('Running ' + script_version)
         print(script_updated)
-        print('Tested oci-python-sdk version: 2.93.1')
+        print('Tested oci-python-sdk version: 2.97.0')
         print('Your oci-python-sdk version: ' + str(oci.__version__))
     else:
         print(script_version)
@@ -155,7 +155,7 @@ class CIS_Report:
             '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2','8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
             '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
             '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},

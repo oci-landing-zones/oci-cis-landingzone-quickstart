@@ -3970,7 +3970,7 @@ class CIS_Report:
                 else:
                     compliant_output = "No"
                 record = {
-                    "Recommendation #": f"{key}", 
+                    "Recommendation #": f"'{key}'", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",

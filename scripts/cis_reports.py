@@ -155,8 +155,8 @@ class CIS_Report:
             '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2,''8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2','8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
             '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
             '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},
             '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : '','Remediation':[]},
@@ -1056,7 +1056,7 @@ class CIS_Report:
                     'time_created': user.time_created.strftime(self.__iso_time_format),
                     'can_use_api_keys': user.capabilities.can_use_api_keys,
                     'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
-                    'can_use_console_password':  user.capabilities.can_use_console_password,
+                    'can_use_console_password': user.capabilities.can_use_console_password,
                     'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
                     'can_use_db_credentials': user.capabilities.can_use_db_credentials,
                     'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
@@ -3159,7 +3159,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['identity_provider_id'] is None and user['can_use_console_password'] and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
                     user)

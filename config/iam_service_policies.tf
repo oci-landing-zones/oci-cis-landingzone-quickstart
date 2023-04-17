@@ -19,7 +19,7 @@ module "lz_services_policy" {
   tenancy_policy_name           = "${var.service_label}-services-policy"
   defined_tags                  = local.service_policy_defined_tags
   freeform_tags                 = local.service_policy_freeform_tags
-  policies                      = local.service_policies
+  policies                      = var.extend_landing_zone_to_new_region == false ? local.service_policies : {}
 }
 
 locals {

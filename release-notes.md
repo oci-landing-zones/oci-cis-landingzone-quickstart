@@ -1,3 +1,18 @@
+#   April 17, 2023 Release Notes - 2.5.8
+1. [Compliance Checking Script Updates](#2-5-8-script-updates)
+1. [Terraform Template Updates](#2-5-8-tf-updates)
+
+## <a name="2-5-8-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Updated CIS rule 1.7 to exclude OCI IAM Local Users that are service accounts.  A service account is a OCI IAM Local user that does not have *Local Password* as a *User Capabilities.*  
+- Support validated on OCI SDK 2.97.0.
+Fixes:
+- Improved error handling for Event Rules with no conditions.
+
+## <a name="2-5-8-tf-updates">Terraform Template Updates</a>
+- Compartment level service policies no longer created when extending Landing Zone to new region.
+- VSS and Vault resources now dependent on service policies. 
+
 #   April 04, 2023 Release Notes - 2.5.7
 1. [Exadata Events Fix](#2-5-7-exadata-events-fix)
 1. [Compliance Checking Script Updates](#2-5-7-script-updates)

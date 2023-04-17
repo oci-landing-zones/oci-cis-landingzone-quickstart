@@ -34,6 +34,28 @@ except:
     OUTPUT_TO_XLSX = False
 
 ##########################################################################
+# Print header centered
+##########################################################################
+def print_header(name):
+    chars = int(90)
+    print('')
+    print('#' * chars)
+    print('#' + name.center(chars - 2, ' ') + '#')
+    print('#' * chars)
+
+def show_version(verbose=False):
+    script_version = 'CIS Reports - Release 2.5.8'
+    script_updated = 'Updated April 14, 2023.'
+    if verbose:
+        print_header('Running ' + script_version)
+        print(script_updated)
+        print('Tested oci-python-sdk version: 2.97.0')
+        print('Your oci-python-sdk version: ' + str(oci.__version__))
+    else:
+        print(script_version)
+        print(script_updated)
+
+##########################################################################
 # CIS Reporting Class
 ##########################################################################
 class CIS_Report:
@@ -121,8 +143,8 @@ class CIS_Report:
             '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
             '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
 
-            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : '','Remediation':[]},
             '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
@@ -134,7 +156,7 @@ class CIS_Report:
             '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
             '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2,''8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2','8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
             '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
             '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},
             '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : '','Remediation':[]},
@@ -680,10 +702,7 @@ class CIS_Report:
         # Setting list of regions to run in
 
         # Start print time info
-        self.__print_header("Running CIS Reports - Release 2.5.7")
-        print("Updated April 4, 2023.")
-        print("Tested oci-python-sdk version: 2.93.1")
-        print("Your oci-python-sdk version: " + str(oci.__version__))
+        show_version(verbose=True)
         print("Starts at " + self.start_time_str)
         self.__config = config
         self.__signer = signer
@@ -1037,7 +1056,7 @@ class CIS_Report:
                     'time_created': user.time_created.strftime(self.__iso_time_format),
                     'can_use_api_keys': user.capabilities.can_use_api_keys,
                     'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
-                    'can_use_console_password':  user.capabilities.can_use_console_password,
+                    'can_use_console_password': user.capabilities.can_use_console_password,
                     'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
                     'can_use_db_credentials': user.capabilities.can_use_db_credentials,
                     'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
@@ -3140,7 +3159,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['identity_provider_id'] is None and user['can_use_console_password'] and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
                     user)
@@ -3362,17 +3381,18 @@ class CIS_Report:
             try:
                 event_dict = json.loads(jsonable_str)
             except:
-                print("*** Invalid Event Condition for event: " + event['display_name'] + " ***")
+                print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
                 event_dict = {}
-            
-            if event_dict:
+            # Issue 256: 'eventtpye' not in event_dict (i.e. missing in event condition)
+            if event_dict and 'eventtype' in event_dict:
                 for key, changes in self.cis_monitoring_checks.items():
                     # Checking if all cis change list is a subset of event condition
-                    # if(all(x in test_list for x in sub_list)):
-                    if event_dict != {}:
+                    try:
                         if(all(x in event_dict['eventtype'] for x in changes)):
                             self.cis_foundations_benchmark_1_2[key]['Status'] = True
-
+                    except Exception as e:
+                        print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
+        
         # CIS Check 3.14 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
@@ -3968,7 +3988,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'] )
 
         # Screen output for CIS Summary Report
-        self.__print_header("CIS Foundations Benchmark 1.2 Summary Report")
+        print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
         print('#' * 90)
@@ -3984,7 +4004,7 @@ class CIS_Report:
                       finding['Findings'] + "\t\t" + finding['Title'])
 
         # Generating Summary report CSV
-        self.__print_header("Writing CIS reports to CSV")
+        print_header("Writing CIS reports to CSV")
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
         
@@ -4191,7 +4211,7 @@ class CIS_Report:
 
         obp_summary_report = []
         # Screen output for CIS Summary Report
-        self.__print_header("OCI Best Practices Findings")
+        print_header("OCI Best Practices Findings")
         print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  ")
         print('#' * 90)
         # Adding data to summary report
@@ -4206,7 +4226,7 @@ class CIS_Report:
             }
             obp_summary_report.append(record)
 
-        self.__print_header("Writing Oracle Best Practices reports to CSV")
+        print_header("Writing Oracle Best Practices reports to CSV")
 
         summary_report_file_name = self.__print_to_csv_file(
                     self.__report_directory, "obp", "OBP_Summary", obp_summary_report)
@@ -4575,7 +4595,7 @@ class CIS_Report:
             self.__report_generate_raw_data_output()
         
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
-        self.__print_header("Finished in: " + str(end_datetime - self.start_datetime))
+        print_header("Finished in: " + str(end_datetime - self.start_datetime))
 
         return self.__report_directory
 
@@ -4583,16 +4603,6 @@ class CIS_Report:
         self.__obp_checks = True
         self.generate_reports()
         return self.obp_foundations_checks
-
-    ##########################################################################
-    # Print header centered
-    ##########################################################################
-    def __print_header(self, name):
-        chars = int(90)
-        print("")
-        print('#' * chars)
-        print("#" + name.center(chars - 2, " ") + "#")
-        print('#' * chars)
 
     ##########################################################################
     # Create CSV Hyperlink
@@ -4760,7 +4770,13 @@ def execute_report():
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
+    parser.add_argument('-v', action='store_true', default=False,
+                        dest='version', help='Show the version of the script and exit.' )
     cmd = parser.parse_args()
+
+    if cmd.version:
+        show_version()
+        sys.exit()
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)

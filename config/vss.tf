@@ -17,6 +17,7 @@ locals {
 
 module "lz_scanning" {
   source     = "../modules/security/vss"
+  depends_on = [null_resource.wait_on_services_policy]
   providers  = {
     oci = oci
     oci.home = oci.home

@@ -485,12 +485,12 @@ class CIS_Report:
 
         # MAP Checks
         self.obp_foundations_checks = {
-            'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], 'OBP' : [], "Documentation" : ""},
-            'SIEM_Audit_Log_All_Comps' : {'Status' : True, 'Findings' : [], 'OBP' : [], "Documentation" : ""}, # Assuming True
-            'SIEM_Audit_Incl_Sub_Comp' : {'Status' : True,'Findings' : [], 'OBP' : [], "Documentation" : "" }, # Assuming True 
-            'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : ""},
-            'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : ""},
-            'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : ""},
+            'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
+            'SIEM_Audit_Log_All_Comps' : {'Status' : True, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"}, # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp' : {'Status' : True,'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html" }, # Assuming True 
+            'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity' : {'Status' : True, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm" },
             'Cloud_Guard_Config' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "" },
         }

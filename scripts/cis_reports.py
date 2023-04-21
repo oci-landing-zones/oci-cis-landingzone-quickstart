@@ -594,7 +594,6 @@ class CIS_Report:
                 'com.oraclecloud.servicegateway.attachserviceid',
                 'com.oraclecloud.servicegateway.changeservicegatewaycompartment',
                 'com.oraclecloud.servicegateway.createservicegateway',
-                'com.oraclecloud.servicegateway.deleteservicegateway.begin',
                 'com.oraclecloud.servicegateway.deleteservicegateway.end',
                 'com.oraclecloud.servicegateway.detachserviceid',
                 'com.oraclecloud.servicegateway.updateservicegateway'

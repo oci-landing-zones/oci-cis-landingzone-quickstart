@@ -585,7 +585,6 @@ class CIS_Report:
                 'com.oraclecloud.virtualnetwork.updateinternetgateway',
                 'com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment',
                 'com.oraclecloud.virtualnetwork.createlocalpeeringgateway',
-                'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway.begin',
                 'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway.end',
                 'com.oraclecloud.virtualnetwork.updatelocalpeeringgateway',
                 'com.oraclecloud.natgateway.changenatgatewaycompartment',

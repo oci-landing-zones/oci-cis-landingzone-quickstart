@@ -585,7 +585,7 @@ class CIS_Report:
                 'com.oraclecloud.virtualnetwork.updateinternetgateway',
                 'com.oraclecloud.virtualnetwork.changelocalpeeringgatewaycompartment',
                 'com.oraclecloud.virtualnetwork.createlocalpeeringgateway',
-                'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway',
+                'com.oraclecloud.virtualnetwork.deletelocalpeeringgateway.end',
                 'com.oraclecloud.virtualnetwork.updatelocalpeeringgateway',
                 'com.oraclecloud.natgateway.changenatgatewaycompartment',
                 'com.oraclecloud.natgateway.createnatgateway',
@@ -594,7 +594,6 @@ class CIS_Report:
                 'com.oraclecloud.servicegateway.attachserviceid',
                 'com.oraclecloud.servicegateway.changeservicegatewaycompartment',
                 'com.oraclecloud.servicegateway.createservicegateway',
-                'com.oraclecloud.servicegateway.deleteservicegateway.begin',
                 'com.oraclecloud.servicegateway.deleteservicegateway.end',
                 'com.oraclecloud.servicegateway.detachserviceid',
                 'com.oraclecloud.servicegateway.updateservicegateway'

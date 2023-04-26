@@ -1,3 +1,11 @@
+#   April 26, 2023 Release Notes - 2.5.9
+1. [Terraform Template Updates](#2-5-9-tf-updates)
+
+## <a name="2-5-9-tf-updates">Terraform Template Updates</a>
+Updates:
+- Security Zone is enabled only if an enclosing compartment is used. Changes in [security_zones.tf](./config/security_zones.tf).
+- Network event types updated for local peering gateway and service gateway: only event types ending with ".end" are captured. Changes in [mon_notifications.tf](./config/mon_notifications.tf).
+
 #   April 17, 2023 Release Notes - 2.5.8
 1. [Compliance Checking Script Updates](#2-5-8-script-updates)
 1. [Terraform Template Updates](#2-5-8-tf-updates)

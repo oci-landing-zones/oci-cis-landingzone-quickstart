@@ -478,7 +478,7 @@ variable "cloud_guard_admin_email_endpoints" {
 variable "enable_security_zones" {
     type        = bool
     default     = false
-    description = "Determines if Security Zones are enabled in Landing Zone compartments."
+    description = "Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
   }
   
   variable "sz_security_policies" {

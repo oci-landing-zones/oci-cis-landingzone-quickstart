@@ -118,7 +118,7 @@ Variable Name | Description | Required | Default Value
 ### <a name="security_zones_variables"></a>Security Zones Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is attached to either the enclosing compartment if enabled or the individual compartments managed by the Landing Zone. | No | false
+**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is enabled for the enclosing compartment. The Security Zone is only enabled if an enclosing compartment is used. | No | false
 **sz_security_policies** | List of Security Zones policy OCIDs that will be added to the Security Zones recipe.  These policies will in addition to the Security Zones policies associated to your select cis_level. To get a Security Zone policy OCID use the oci cli:  `oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>`  | No | []
 
 

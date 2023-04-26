@@ -39,6 +39,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
 - Notifications
 - Object Storage
 - Budgets
+- Security Zone
 
  ## <a name="deliverables"></a>Deliverables
  This repository encloses two deliverables:

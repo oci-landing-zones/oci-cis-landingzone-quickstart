@@ -122,7 +122,6 @@ locals {
           "com.oraclecloud.natgateway.updatenatgateway",
           "com.oraclecloud.natgateway.changenatgatewaycompartment",
           "com.oraclecloud.servicegateway.createservicegateway",
-          "com.oraclecloud.servicegateway.deleteservicegateway.begin",
           "com.oraclecloud.servicegateway.deleteservicegateway.end",
           "com.oraclecloud.servicegateway.attachserviceid",
           "com.oraclecloud.servicegateway.detachserviceid",

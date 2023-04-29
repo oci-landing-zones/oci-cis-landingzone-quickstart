@@ -25,6 +25,7 @@ locals {
 #---------------------------------------------------------------------------
 module "lz_vault" {
   source = "../modules/security/vaults"
+  depends_on = [null_resource.wait_on_services_policy]
   count  = local.enable_vault ? 1 : 0
   compartment_id = local.security_compartment_id
   name           = local.vault_name

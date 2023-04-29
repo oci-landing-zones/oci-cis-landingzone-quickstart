@@ -118,8 +118,8 @@ Variable Name | Description | Required | Default Value
 ### <a name="security_zones_variables"></a>Security Zones Variables
 Variable Name | Description | Required | Default Value
 --------------|-------------|----------|--------------
-**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is attached to either the enclosing compartment if enabled or the individual compartments managed by the Landing Zone. | No | false
-**sz_security_policies** | List of Security Zones policy OCIDs that will be added to the Security Zones recipe.  These policies will in addition to the Security Zones policies associated to your select cis_level. To get a Security Zone policy OCID use the oci cli:  `oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>`  | No | []
+**enable_security_zones** | Determines if Security Zones are enabled in Landing Zone compartment(s). If *true*, Security Zones recipe(s) are created and a Security Zone with that recipe is enabled for the enclosing compartment. The Security Zone is only enabled if an enclosing compartment is used. | No | false
+**sz_security_policies** | List of Security Zones policy OCIDs that will be added to the Security Zones recipe. These policies are added to the Security Zone policies associated to the selected cis_level. If cis_level is "1", *"deny public_buckets"* and *"deny db_instance_public_access"* policies are added. If cis_level is "2", *"deny block_volume_without_vault_key"*, *"deny boot_volume_without_vault_key"*, *"deny buckets_without_vault_key"*, and *"deny file_system_without_vault_key"* policies are further added. To get a Security Zone policy OCID use the oci cli:  `oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>`  | No | []
 
 
 ### <a name="logging_variables"></a>Logging Variables

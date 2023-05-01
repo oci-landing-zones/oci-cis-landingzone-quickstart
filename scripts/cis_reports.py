@@ -2647,11 +2647,11 @@ class CIS_Report:
                                             
                                     elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
                                         # Only write logs
-                                        self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+                                        self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id, "region" : region_key}
 
                                     elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
                                         # Only read logs
-                                        self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+                                        self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id, "region" : region_key}
 
                                     elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
                                         self.__load_balancer_error_logs.append(
@@ -3658,8 +3658,8 @@ class CIS_Report:
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                 # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                 if bucket_log_group_in_sch and not(bucket_log_in_sch):
@@ -3678,9 +3678,10 @@ class CIS_Report:
 
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
+                log_region = log_values['region']
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))  
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                 # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                 if bucket_log_group_in_sch and not(bucket_log_in_sch):
@@ -3690,19 +3691,10 @@ class CIS_Report:
                 elif bucket_log_in_sch:
                     self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
-                # else:
-                #     self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['findings'].append(bucket_name)
-
         
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
-            # for finding in region_values['VCN']['findings']:
-            #     missing_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
-            #     if missing_subnet:
-            #         self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(missing_subnet[0])
-            #     else:
-            #         print("Missed this subnet: " + str(finding ))
-            
+
             for finding in region_values['VCN']['subnets']:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
                 if logged_subnet:
@@ -3710,39 +3702,25 @@ class CIS_Report:
                 else:
                     print("Found this subnet: " + str(finding))
 
-            # for finding in region_values['Write_Bucket']['findings']:
-            #     missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-            #     if missing_bucket:
-            #         self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(missing_bucket[0])
-
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(logged_bucket[0])
 
-            # for finding in region_values['Read_Bucket']['findings']:
-            #     missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-            #     if missing_bucket:
-            #         self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
-
             for finding in region_values['Read_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
+                
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(logged_bucket[0])
 
-        
-        ## Adding Findings Unlogged items 
-        # self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] += self.cis_foundations_benchmark_1_2['3.17']['Findings']
-        unlogged_read_buckets = []
-        unlogged_write_buckets = []
 
         # Finding looking at all buckets and seeing if they meet one of the OBPs in one of the regions
         for finding in self.__buckets:
-            read_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'], self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP']))
+            read_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'] and bucket['region'] == finding['region'], self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP']))
             if not(read_logged_bucket):
                 self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(finding)
             
-            write_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'], self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP']))
+            write_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'] and bucket['region'] == finding['region'], self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP']))
             if not(write_logged_bucket):
                 self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(finding)
 
@@ -3755,10 +3733,7 @@ class CIS_Report:
         # Setting VCN Flow Logs Findings
         if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-        # elif not self.__service_connectors:
-        #     # If there are no service connectors then by default all subnets are not logged
-        #     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-        #     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] += self.__network_subnets
+
         else:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
 

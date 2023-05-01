@@ -4211,7 +4211,7 @@ class CIS_Report:
 
         obp_summary_report = []
         # Screen output for CIS Summary Report
-        self.__print_header("OCI Best Practices Findings")
+        print_header("OCI Best Practices Findings")
         print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  " +  "\tBest Practices")
         print('#' * 90)
         # Adding data to summary report
@@ -4221,7 +4221,7 @@ class CIS_Report:
             record = {
                 "Recommendation" : str(key),
                 "Compliant": ('Yes' if recommendation['Status'] else 'No'),
-                "OBP" : (str(len(recommendation['Findings'])) if len(recommendation['OBP']) > 0 else " "),
+                "OBP" : (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings" : (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Documentation" : recommendation['Documentation']
             }

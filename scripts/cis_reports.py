@@ -33,6 +33,10 @@ try:
 except:
     OUTPUT_TO_XLSX = False
 
+RELEASE_VERSION = "2.5.10"
+PYTHON_SDK_VERSION = "2.99.1"
+UPDATED_DATE = "May XX, 2023"
+
 ##########################################################################
 # Print header centered
 ##########################################################################
@@ -44,12 +48,12 @@ def print_header(name):
     print('#' * chars)
 
 def show_version(verbose=False):
-    script_version = 'CIS Reports - Release 2.5.8'
-    script_updated = 'Updated April 14, 2023.'
+    script_version = f'CIS Reports - Release {RELEASE_VERSION}'
+    script_updated = f'Updated {UPDATED_DATE}'
     if verbose:
         print_header('Running ' + script_version)
         print(script_updated)
-        print('Tested oci-python-sdk version: 2.97.0')
+        print(f'Tested oci-python-sdk version: {PYTHON_SDK_VERSION}')
         print('Your oci-python-sdk version: ' + str(oci.__version__))
     else:
         print(script_version)

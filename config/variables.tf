@@ -54,7 +54,7 @@ variable "extend_landing_zone_to_new_region" {
 variable "use_enclosing_compartment" {
   type        = bool
   default     = false
-  description = "Whether the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment."
+  description = "Whether the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment. The recommendation is to utilize an enclosing compartment."
 }
 variable "existing_enclosing_compartment_ocid" {
   type        = string

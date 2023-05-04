@@ -38,16 +38,16 @@ locals {
     ("VAULT-GLOBAL-POLICY") = {
       name           = "${var.service_label}-vault-policy"
       compartment_id = local.enclosing_compartment_id
-      description    = "Landing Zone policy for OCI services: Blockstorage, OKE and streams to use keys in the ${local.security_compartment.name} compartment."
-      statements     = ["Allow service blockstorage, oke, streaming, Fss${local.realm}Prod to use keys in compartment ${local.security_compartment.name}"]
+      description    = "Landing Zone policy for OCI services: Blockstorage, OKE and streams to use keys in the ${local.security_compartment_name} compartment."
+      statements     = ["Allow service blockstorage, oke, streaming, Fss${local.realm}Prod to use keys in compartment ${local.security_compartment_name}"]
       defined_tags   = local.service_policy_defined_tags
       freeform_tags  = local.service_policy_freeform_tags
     },
     ("VAULT-REGIONAL-POLICY") = {
       name           = "${var.service_label}-vault-${var.region}-policy"
       compartment_id = local.enclosing_compartment_id
-      description    = "Landing Zone policy for OCI services: Object Storage in ${var.region} to use keys in the ${local.security_compartment.name} compartment."
-      statements     = ["Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment.name}"]
+      description    = "Landing Zone policy for OCI services: Object Storage in ${var.region} to use keys in the ${local.security_compartment_name} compartment."
+      statements     = ["Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment_name}"]
       defined_tags   = local.service_policy_defined_tags
       freeform_tags  = local.service_policy_freeform_tags
     }

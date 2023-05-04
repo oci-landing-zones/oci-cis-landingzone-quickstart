@@ -16,28 +16,28 @@ locals {
   default_dynamic_groups = merge(
     { for i in [1] : (local.security_functions_dynamic_group_name) => {
       compartment_id = var.tenancy_ocid
-      description    = "Landing Zone dynamic group for functions in ${local.security_compartment.name} compartment."
+      description    = "Landing Zone dynamic group for functions in ${local.security_compartment_name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
     } if length(trimspace(var.existing_security_fun_dyn_group_name)) == 0},
     { for i in [1] : (local.appdev_functions_dynamic_group_name) => {
       compartment_id = var.tenancy_ocid
-      description    = "Landing Zone dynamic group for functions in ${local.appdev_compartment.name} compartment."
+      description    = "Landing Zone dynamic group for functions in ${local.appdev_compartment_name} compartment."
       matching_rule  = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.appdev_compartment_id}'}"
       defined_tags = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
     } if length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0},
     { for i in [1] : (local.appdev_computeagent_dynamic_group_name) => {
       compartment_id = var.tenancy_ocid
-      description    = "Landing Zone dynamic group for compute agents in ${local.appdev_compartment.name} compartment."
+      description    = "Landing Zone dynamic group for compute agents in ${local.appdev_compartment_name} compartment."
       matching_rule  = "ALL {resource.type = 'managementagent',resource.compartment.id = '${local.appdev_compartment_id}'}"
       defined_tags = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
     } if length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0},
     { for i in [1] : (local.database_kms_dynamic_group_name) => {
       compartment_id = var.tenancy_ocid
-      description    = "Landing Zone dynamic group for databases in ${local.database_compartment.name} compartment."
+      description    = "Landing Zone dynamic group for databases in ${local.database_compartment_name} compartment."
       matching_rule  = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"
       defined_tags = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags

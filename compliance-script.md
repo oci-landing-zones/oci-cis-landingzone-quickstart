@@ -266,7 +266,7 @@ Cloud_Guard_Config       		False		1
 ### Arguments
 ```
 % python3 cis_reports.py -h       
-usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--redact_output] [-ip] [-dt]
+usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--redact_output] [-ip] [-dt] [-st]
 
 options:
   -h, --help            show this help message and exit
@@ -286,6 +286,7 @@ options:
   --redact_output       Redacts OCIDs in output CSV files
   -ip                   Use Instance Principals for Authentication
   -dt                   Use Delegation Token for Authentication in Cloud Shell                 Use Delegation Token for Authentication in Cloud Shell
+  -st                   Use Security Token for Authentication in your desktop as session authentication with User credentials set up.
 % 
 ```
 
@@ -295,6 +296,7 @@ options:
 To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files.
 ```
 % python3 cis_reports.py -dt --obp --raw
+
 ``` 
 
 #### Executing on local machine with a specific OCI Config file
@@ -329,6 +331,22 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	user=<user_ocid>
 	fingerprint=<api_key_finger_print>
 	key_file=/path_to_my_private_key_file.pem
+
+#### Executing on local machine without config file
+
+To run on a local machine using a security token without OCI Config file.
+
+Execute the oci command.
+```
+% oci session authenticate
+```
+This command will prompt for Region details, provide region name ex: us-ashburn-1.
+Browser will open the OCI console window and asks for user credentials. Once after providing the credentials get back to the command prompt. This will create config file using the provided credentials in the "/Users/***/.oci/sessions/config.
+
+Execute the python script.
+```
+% python3 cis_reports.py -st
+```
 
 #### Executing using Cloud Shell
 To run in Cloud Shell with delegated token authentication.

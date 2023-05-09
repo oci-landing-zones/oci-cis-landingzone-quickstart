@@ -3655,9 +3655,7 @@ class CIS_Report:
                         "lifecycle_state": "",
                         "time_created": "",
                         "region" : region_key
-                    }         
-                print("*" * 20 )
-                print(f"OBP is {record}")       
+                    }             
                 self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
         
         #######################################

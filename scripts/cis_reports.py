@@ -3550,11 +3550,17 @@ class CIS_Report:
                         if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
+                            # print("*" * 20)
+                            # print(f"{source['compartment_id']} Included ALL Compartments region is: {sch_values['region']}" )
                         # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                         elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] += self.__get_children(source['compartment_id'],dict_of_compartments)
+                            # print("*" * 20)
+                            # print(f"{source['compartment_id']} Included Sub Compartments region is: {sch_values['region']}" )
                         elif source['log_group_id'].upper() == "_Audit".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
+                            # print("*" * 20)
+                            # print(f"{source['compartment_id']} Single Compartment region is: {sch_values['region']}" )
                     except:
                         # There can be empty log groups
                         pass
@@ -3586,8 +3592,22 @@ class CIS_Report:
             for compartment in region_values['Audit']['findings']:
                 try:
                     finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                    record = {                
+                        "id" : finding['id'],
+                        "name" : finding['name'],
+                        "deep_link": finding['deep_link'],
+                        "compartment_id": finding['compartment_id'],
+                        "defined_tags": finding['defined_tags'],
+                        "description": finding['description'],
+                        "freeform_tags": finding['freeform_tags'],
+                        "inactive_status": finding['inactive_status'],
+                        "is_accessible": finding['is_accessible'],
+                        "lifecycle_state": finding['lifecycle_state'],
+                        "time_created": finding['time_created'],
+                        "region" : region_key
+                    }
                 except Exception as e:
-                    finding = {                
+                    record = {                
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
@@ -3599,16 +3619,30 @@ class CIS_Report:
                         "is_accessible": "",
                         "lifecycle_state": "",
                         "time_created": "",
-                        "region" : ""
+                        "region" : region_key
                     }
-                finding['region'] = region_key
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
+                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(record)
+            
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
                 try:
                     finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                    record = {                
+                        "id" : finding['id'],
+                        "name" : finding['name'],
+                        "deep_link": finding['deep_link'],
+                        "compartment_id": finding['compartment_id'],
+                        "defined_tags": finding['defined_tags'],
+                        "description": finding['description'],
+                        "freeform_tags": finding['freeform_tags'],
+                        "inactive_status": finding['inactive_status'],
+                        "is_accessible": finding['is_accessible'],
+                        "lifecycle_state": finding['lifecycle_state'],
+                        "time_created": finding['time_created'],
+                        "region" : region_key
+                    }
                 except Exception as e:
-                    finding = {                
+                    record = {                
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
@@ -3620,12 +3654,11 @@ class CIS_Report:
                         "is_accessible": "",
                         "lifecycle_state": "",
                         "time_created": "",
-                        "region" : ""
-                    }                
-                    finding['region'] = region_key
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
-
-        
+                        "region" : region_key
+                    }         
+                print("*" * 20 )
+                print(f"OBP is {record}")       
+                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
         
         #######################################
         ### Subnet and Bucket Log Checks

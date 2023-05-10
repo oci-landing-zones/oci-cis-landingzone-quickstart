@@ -1,3 +1,9 @@
+#   May 12, 2023 Release Notes - 2.5.10
+1. [Support for Security Tokens in the CIS Compliance Script](#2-5-10-script-updates)
+
+## <a name="2-5-10-script-updates">Support for Security Tokens in the CIS Compliance Script</a>
+Added support of Security Tokens for script authentication courtesy of Dave Knot ([dns-prefetch](https://github.com/dns-prefetch)).  For usage example, go to the [compliance-script.md](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/compliance-script.md) and review the **Executing on a local machine via Security Token (oci session authenticate)** example. For more information on security tokens: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
+
 #   April 26, 2023 Release Notes - 2.5.9
 1. [Terraform Template Updates](#2-5-9-tf-updates)
 

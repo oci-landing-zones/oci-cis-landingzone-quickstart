@@ -336,7 +336,7 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	fingerprint=<api_key_finger_print>
 	key_file=/path_to_my_private_key_file.pem
 
-#### Executing on local machine via Security Token (oci session authenticate)
+#### Executing on a local machine via Security Token (oci session authenticate)
 
 To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
 

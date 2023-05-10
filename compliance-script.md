@@ -20,7 +20,7 @@ The script is located under the *scripts* folder in this repository. It outputs 
 ### Required Permissions
 The **Auditors Group** that is created as part of the CIS Landing Zone Terraform has all the permissions required to run the compliance checking in the tenancy.  Below is the minimum OCI IAM Policy to grant a group the script in a tenancy.
 
-**Access to audit retention requires the user to be part of the Administrator group*
+**Access to audit retention requires the user to be part of the Administrator group* - the only is to CIS recommendation 3.1.
 
 ```
 Allow group Auditor-Group to inspect all-resources in tenancy
@@ -266,7 +266,9 @@ Cloud_Guard_Config       		False		1
 ### Arguments
 ```
 % python3 cis_reports.py -h       
-usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--redact_output] [-ip] [-dt] [-st]
+usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET]
+                      [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL]
+                      [--regions REGIONS] [--raw] [--obp] [--redact_output] [-ip] [-dt] [-st] [-v]
 
 options:
   -h, --help            show this help message and exit
@@ -280,13 +282,15 @@ options:
   --print-to-screen PRINT_TO_SCREEN
                         Set to False if you want to see only non-compliant findings (i.e. False)
   --level LEVEL         CIS Recommendation Level options are: 1 or 2. Set to 2 by default
-  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
+  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-
+                        ashburn-1,ca-toronto-1,eu-frankfurt-1
   --raw                 Outputs all resource data into CSV files
   --obp                 Checks for OCI best practices
   --redact_output       Redacts OCIDs in output CSV files
   -ip                   Use Instance Principals for Authentication
-  -dt                   Use Delegation Token for Authentication in Cloud Shell                 Use Delegation Token for Authentication in Cloud Shell
-  -st                   Use Security Token for Authentication in your desktop as session authentication with User credentials set up.
+  -dt                   Use Delegation Token for Authentication in Cloud Shell
+  -st                   Authenticate using Security Token
+  -v                    Show the version of the script and exit.
 % 
 ```
 
@@ -332,9 +336,9 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 	fingerprint=<api_key_finger_print>
 	key_file=/path_to_my_private_key_file.pem
 
-#### Executing on local machine without config file
+#### Executing on local machine via Security Token (oci session authenticate)
 
-To run on a local machine using a security token without OCI Config file.
+To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
 
 Execute the oci command.
 ```

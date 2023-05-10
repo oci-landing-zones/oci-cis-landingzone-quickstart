@@ -35,7 +35,7 @@ except:
 
 RELEASE_VERSION = "2.5.10"
 PYTHON_SDK_VERSION = "2.99.1"
-UPDATED_DATE = "May XX, 2023"
+UPDATED_DATE = "May 12, 2023"
 
 ##########################################################################
 # Print header centered

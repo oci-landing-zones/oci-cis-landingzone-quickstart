@@ -4682,9 +4682,9 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
 
         except Exception:
             raise
-        # -----------------------------
-    # Security Token
-    # -----------------------------
+    # ---------------------------------------------------------------------------
+    # Security Token - Credit to Dave Knot (https://github.com/dns-prefetch)
+    # ---------------------------------------------------------------------------
     elif is_security_token:
 
         try:

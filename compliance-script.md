@@ -20,7 +20,7 @@ The script is located under the *scripts* folder in this repository. It outputs 
 ### Required Permissions
 The **Auditors Group** that is created as part of the CIS Landing Zone Terraform has all the permissions required to run the compliance checking in the tenancy.  Below is the minimum OCI IAM Policy to grant a group the script in a tenancy.
 
-**Access to audit retention requires the user to be part of the Administrator group* - the only is to CIS recommendation 3.1.
+**Access to audit retention requires the user to be part of the Administrator group* - the only recommendation affected is CIS recommendation 3.1.
 
 ```
 Allow group Auditor-Group to inspect all-resources in tenancy

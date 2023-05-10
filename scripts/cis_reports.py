@@ -1977,12 +1977,7 @@ class CIS_Report:
 
                                     }
                                     # Adding fastconnect to fastconnect dict
-                                    try:
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    except:
-                                        self.__network_fastconnects[fastconnect.gateway_id] = []
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    count_of_fast_connects += 1
+
 
                             except Exception as e:
                                 record = {
@@ -2022,13 +2017,12 @@ class CIS_Report:
 
                                 }
                             
-                                # Adding fastconnect to fastconnect dict
-                                try:
-                                    self.__network_fastconnects[compartment.id].append(record)
-                                except:
-                                    self.__network_fastconnects[compartment.id] = []
-                                    self.__network_fastconnects[compartment.id].append(record)
-
+                            # Adding fastconnect to fastconnect dict
+                            try:
+                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                            except:
+                                self.__network_fastconnects[fastconnect.gateway_id] = []
+                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
             print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))) + " FastConnects")                        
             return self.__network_fastconnects
         except Exception as e:

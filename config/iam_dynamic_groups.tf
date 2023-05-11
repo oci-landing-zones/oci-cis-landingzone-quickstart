@@ -17,7 +17,7 @@ locals {
 }
 
 module "lz_dynamic_groups" {
-  source     = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-iam.git//dynamic-groups"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/dynamic-groups"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   dynamic_groups_configuration = var.extend_landing_zone_to_new_region == false ? (local.custom_dynamic_groups_configuration != null ? local.custom_dynamic_groups_configuration : local.dynamic_groups_configuration) : local.empty_dynamic_groups_configuration

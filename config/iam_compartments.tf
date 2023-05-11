@@ -15,13 +15,6 @@ locals {
   custom_appdev_compartment_name    = null
   custom_database_compartment_name  = null
   custom_exainfra_compartment_name  = null
-
-  enable_enclosing_compartment = true #var.existing_enclosing_compartment_ocid == null && !var.extend_landing_zone_to_new_region
-  enable_network_compartment   = true #var.enable_network_compartment && !var.extend_landing_zone_to_new_region
-  enable_security_compartment  = true #var.enable_security_compartment && !var.extend_landing_zone_to_new_region
-  enable_appdev_compartment    = true #var.enable_appdev_compartment && !var.extend_landing_zone_to_new_region
-  enable_database_compartment  = true #var.enable_database_compartment && !var.extend_landing_zone_to_new_region
-  enable_exainfra_compartment  = var.deploy_exainfra_cmp #var.enable_exainfra_compartment && !var.extend_landing_zone_to_new_region
 }
 
 module "lz_top_compartment" {
@@ -43,6 +36,14 @@ locals {
   #------------------------------------------------------------------------------------------------------
   #-- These variables are not meant to be overriden
   #------------------------------------------------------------------------------------------------------
+
+  #-- Enable compartment variables for future usage.
+  enable_enclosing_compartment = true 
+  enable_network_compartment   = true 
+  enable_security_compartment  = true 
+  enable_appdev_compartment    = true 
+  enable_database_compartment  = true 
+  enable_exainfra_compartment  = var.deploy_exainfra_cmp
   
   #-----------------------------------------------------------
   #----- Tags to apply to compartments
@@ -59,13 +60,21 @@ locals {
   enclosing_compartment_key = "${var.service_label}-top-cmp"
   default_enclosing_compartment_name = "top-cmp"
   provided_enclosing_compartment_name = local.custom_enclosing_compartment_name != null ? local.custom_enclosing_compartment_name : "${var.service_label}-${local.default_enclosing_compartment_name}"
-    
+
+  cislz_enclosing_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"enclosing",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
+  } : {}
+
   enclosing_cmp = local.enable_enclosing_compartment ? { 
     (local.enclosing_compartment_key) : { 
       name : local.provided_enclosing_compartment_name, 
       description : "CIS Landing Zone enclosing compartment", 
       defined_tags : local.cmps_defined_tags, 
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"enclosing"}), 
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_enclosing_compartment_tags), 
       children : {}
     }   
   } : {}
@@ -78,12 +87,24 @@ locals {
   network_compartment_key  = "${var.service_label}-network-cmp"
   default_network_compartment_name = "network-cmp"
   provided_network_compartment_name = local.custom_network_compartment_name != null ? local.custom_network_compartment_name : "${var.service_label}-${local.default_network_compartment_name}"
+
+  cislz_network_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"network",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+  } : {}
+
   network_cmp = local.enable_network_compartment ? {
     (local.network_compartment_key) : { 
       name : local.provided_network_compartment_name, 
       description : "CIS Landing Zone compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others.", 
       defined_tags : local.cmps_defined_tags, 
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"network"}), 
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_network_compartment_tags), 
       children : {}
     }
   } : {}
@@ -91,12 +112,25 @@ locals {
   security_compartment_key = "${var.service_label}-security-cmp"
   default_security_compartment_name = "security-cmp"
   provided_security_compartment_name = local.custom_security_compartment_name != null ? local.custom_security_compartment_name : "${var.service_label}-${local.default_security_compartment_name}"
+
+  cislz_security_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"security",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+    "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+  } : {}
+
   security_cmp = local.enable_security_compartment ? {
     (local.security_compartment_key) : { 
       name : local.provided_security_compartment_name, 
       description : "CIS Landing Zone compartment for all security related resources: vaults, topics, notifications, logging, scanning, and others.", 
       defined_tags : local.cmps_defined_tags,
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"security"}),
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_security_compartment_tags),
       children : {}
     }
   } : {}    
@@ -104,12 +138,25 @@ locals {
   appdev_compartment_key   = "${var.service_label}-appdev-cmp"
   default_appdev_compartment_name = "appdev-cmp"
   provided_appdev_compartment_name = local.custom_appdev_compartment_name != null ? local.custom_appdev_compartment_name : "${var.service_label}-${local.default_appdev_compartment_name}"
+
+  cislz_appdev_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"application",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+    "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+  } : {}
+
   appdev_cmp = local.enable_appdev_compartment ? {
     (local.appdev_compartment_key) : { 
       name : local.provided_appdev_compartment_name, 
       description : "CIS Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others.", 
       defined_tags : local.cmps_defined_tags,
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"application"}),
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_appdev_compartment_tags),
       children : {}
     }
   } : {}    
@@ -117,12 +164,24 @@ locals {
   database_compartment_key = "${var.service_label}-database-cmp"
   default_database_compartment_name = "database-cmp"
   provided_database_compartment_name = local.custom_database_compartment_name != null ? local.custom_database_compartment_name : "${var.service_label}-${local.default_database_compartment_name}"
+
+  cislz_database_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"database",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+  } : {}  
+
   database_cmp = local.enable_database_compartment ? {
     (local.database_compartment_key) : { 
       name : local.provided_database_compartment_name, 
       description : "CIS Landing Zone compartment for all database related resources.", 
       defined_tags : local.cmps_defined_tags,
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"database"}),
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_database_compartment_tags),
       children : {}
     }
   } : {}    
@@ -130,12 +189,24 @@ locals {
   exainfra_compartment_key = "${var.service_label}-exainfra-cmp"
   default_exainfra_compartment_name = "exainfra-cmp"
   provided_exainfra_compartment_name = local.custom_exainfra_compartment_name != null ? local.custom_exainfra_compartment_name : "${var.service_label}-${local.default_exainfra_compartment_name}"
+
+  cislz_exainfra_compartment_tags = var.enable_tag_based_policies == true ? {
+    "cislz":"${var.service_label}",
+    "cislz-cmp-type":"exainfra",
+    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+  } : {}  
+
   exainfra_cmp = local.enable_exainfra_compartment ? {
     (local.exainfra_compartment_key) : { 
       name : local.provided_exainfra_compartment_name, 
       description : "CIS Landing Zone compartment for Exadata Cloud Service infrastructure.", 
       defined_tags : local.cmps_defined_tags,
-      freeform_tags : merge(local.cmps_freeform_tags, {"cislz-cmp-type":"exainfra"}),
+      freeform_tags : merge(local.cmps_freeform_tags, local.cislz_exainfra_compartment_tags),
       children : {}
     } 
   } : {}    

@@ -37,12 +37,6 @@ locals {
   dynamic_groups_defined_tags  = local.custom_dynamic_groups_defined_tags != null ? merge(local.custom_dynamic_groups_defined_tags, local.default_dynamic_groups_defined_tags) : local.default_dynamic_groups_defined_tags
   dynamic_groups_freeform_tags = local.custom_dynamic_groups_freeform_tags != null ? merge(local.custom_dynamic_groups_freeform_tags, local.default_dynamic_groups_freeform_tags) : local.default_dynamic_groups_freeform_tags
 
-  # Names
-  #security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ?  "${var.service_label}-sec-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_security_fun_dyn_group.dynamic_groups[0].name
-  #appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0  ?  "${var.service_label}-appdev-fun-dynamic-group" : data.oci_identity_dynamic_groups.existing_appdev_fun_dyn_group.dynamic_groups[0].name
-  #appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0  ? "${var.service_label}-appdev-computeagent-dynamic-group" : data.oci_identity_dynamic_groups.existing_compute_agent_dyn_group.dynamic_groups[0].name
-  #database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ?  "${var.service_label}-database-kms-dynamic-group" : data.oci_identity_dynamic_groups.existing_database_kms_dyn_group.dynamic_groups[0].name
-
   #--------------------------------------------------------------------
   #-- Security functions Dynamic Group
   #--------------------------------------------------------------------
@@ -123,12 +117,17 @@ locals {
     dynamic_groups : {}
   }
 
-  #----------------------------------------------------------------------------------
-  #----- Variables with dynamic group names per dynamic groups module output
-  #----------------------------------------------------------------------------------
-  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ? module.lz_dynamic_groups.dynamic_groups[local.security_functions_dynamic_group_key].name : var.existing_security_fun_dyn_group_name
-  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0    ? module.lz_dynamic_groups.dynamic_groups[local.appdev_functions_dynamic_group_key].name : var.existing_appdev_fun_dyn_group_name
-  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? module.lz_dynamic_groups.dynamic_groups[local.appdev_computeagent_dynamic_group_key].name : var.existing_compute_agent_dyn_group_name
-  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ? module.lz_dynamic_groups.dynamic_groups[local.database_kms_dynamic_group_key].name : var.existing_database_kms_dyn_group_name
+  #----------------------------------------------------------------------------------------
+  #----- We cannot reference the module output for obtaining dynamic group names, 
+  #----- because it creates a TF cycle issue with the compartments module that may
+  #----- reference the dynamic group that references the compartment in the matching
+  #----- clause that references the dynamic group that references the compartment that ...
+  #----- Hence the usage of provided_* local variables instead of the dynamic groups 
+  #----- module output for the true case in the assignments below.
+  #----------------------------------------------------------------------------------------
+  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ? local.provided_security_functions_dynamic_group_name : var.existing_security_fun_dyn_group_name
+  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0    ? local.provided_appdev_functions_dynamic_group_name : var.existing_appdev_fun_dyn_group_name
+  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : var.existing_compute_agent_dyn_group_name
+  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ? local.provided_database_kms_dynamic_group_name : var.existing_database_kms_dyn_group_name
 }
 

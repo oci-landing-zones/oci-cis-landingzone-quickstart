@@ -259,4 +259,5 @@ locals {
   cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? module.lz_groups.groups[local.cost_admin_group_key].name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : var.existing_cost_admin_group_name)
   storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? module.lz_groups.groups[local.storage_admin_group_key].name       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : var.existing_storage_admin_group_name)
   exainfra_admin_group_name      = var.deploy_exainfra_cmp ? ((trimspace(var.existing_exainfra_admin_group_name)) == 0 ? module.lz_groups.groups[local.exainfra_admin_group_key].name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0 ? data.oci_identity_group.existing_exainfra_admin_group.name : var.existing_exainfra_admin_group_name)) : var.existing_exainfra_admin_group_name
-}
+
+ }

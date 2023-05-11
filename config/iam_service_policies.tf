@@ -11,7 +11,7 @@ locals {
 
 module "lz_services_policy" {
   depends_on = [null_resource.wait_on_compartments]
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-iam.git//policies"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false ? local.services_policies_configuration : local.empty_services_policies_configuration

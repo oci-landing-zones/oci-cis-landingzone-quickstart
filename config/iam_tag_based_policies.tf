@@ -17,7 +17,7 @@ locals {
 
 module "lz_tag_based_policies" {
   #depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-iam.git//policies"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_tag_based_policies == true ? local.tag_based_policies_configuration : local.empty_tag_based_policies_configuration

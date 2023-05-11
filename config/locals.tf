@@ -9,26 +9,6 @@ locals {
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
   
-  # Policy names
-  security_admin_policy_name      = "${var.service_label}-security-admin-policy"
-  security_admin_root_policy_name = "${var.service_label}-security-admin-root-policy"
-  network_admin_policy_name       = "${var.service_label}-network-admin-policy"
-  compute_agent_policy_name       = "${var.service_label}-compute-agent-policy"
-  network_admin_root_policy_name  = "${var.service_label}-network-admin-root-policy"
-  database_admin_policy_name      = "${var.service_label}-database-admin-policy"
-  database_dynamic_group_policy_name = "${var.service_label}-database-dynamic_group-policy"
-  database_admin_root_policy_name = "${var.service_label}-database-admin-root-policy"
-  appdev_admin_policy_name        = "${var.service_label}-appdev-admin-policy"
-  appdev_admin_root_policy_name   = "${var.service_label}-appdev-admin-root-policy"
-  iam_admin_policy_name           = "${var.service_label}-iam-admin-policy"
-  iam_admin_root_policy_name      = "${var.service_label}-iam-admin-root-policy"
-  cred_admin_policy_name          = "${var.service_label}-credential-admin-policy"
-  auditor_policy_name             = "${var.service_label}-auditor-policy"
-  announcement_reader_policy_name = "${var.service_label}-announcement-reader-policy"
-  exainfra_admin_policy_name      = "${var.service_label}-exainfra-admin-policy"
-  cost_admin_root_policy_name  = "${var.service_label}-cost-admin-root-policy"
-  storage_admin_policy_name       = "${var.service_label}-storage-admin-policy"
-
   ### Network
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
@@ -58,10 +38,6 @@ locals {
   # Whether compartments should be deleted upon resource destruction.
   enable_cmp_delete = false
 
-  policy_scope = local.enclosing_compartment_name == "tenancy" ? "tenancy" : "compartment ${local.enclosing_compartment_name}"
-
-  use_existing_root_cmp_grants    = upper(var.policies_in_root_compartment) == "CREATE" ? false : true
-  
   # Delay in seconds for slowing down resource creation
   delay_in_secs = 70
 

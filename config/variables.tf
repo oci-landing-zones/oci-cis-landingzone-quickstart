@@ -75,6 +75,12 @@ variable "policies_in_root_compartment" {
   }
 }
 
+variable "enable_tag_based_policies" {
+  type = bool
+  default = false
+  description = "Whether policies should be created based on tags that are applied to compartments."
+}
+
 # ------------------------------------------------------
 # ----- IAM - Groups
 #-------------------------------------------------------

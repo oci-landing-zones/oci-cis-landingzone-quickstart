@@ -33,6 +33,10 @@ try:
 except:
     OUTPUT_TO_XLSX = False
 
+RELEASE_VERSION = "2.5.10"
+PYTHON_SDK_VERSION = "2.99.1"
+UPDATED_DATE = "May 12, 2023"
+
 ##########################################################################
 # Print header centered
 ##########################################################################
@@ -44,12 +48,12 @@ def print_header(name):
     print('#' * chars)
 
 def show_version(verbose=False):
-    script_version = 'CIS Reports - Release 2.5.8'
-    script_updated = 'Updated April 14, 2023.'
+    script_version = f'CIS Reports - Release {RELEASE_VERSION}'
+    script_updated = f'Updated {UPDATED_DATE}'
     if verbose:
         print_header('Running ' + script_version)
         print(script_updated)
-        print('Tested oci-python-sdk version: 2.97.0')
+        print(f'Tested oci-python-sdk version: {PYTHON_SDK_VERSION}')
         print('Your oci-python-sdk version: ' + str(oci.__version__))
     else:
         print(script_version)
@@ -4635,7 +4639,7 @@ def check_service_error(code):
 ##########################################################################
 
 
-def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token):
+def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token, is_security_token):
 
     # if instance principals authentications
     if is_instance_principals:
@@ -4678,6 +4682,36 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
 
         except KeyError:
             print("* Key Error obtaining delegation_token_file")
+            raise SystemExit
+
+        except Exception:
+            raise
+    # ---------------------------------------------------------------------------
+    # Security Token - Credit to Dave Knot (https://github.com/dns-prefetch)
+    # ---------------------------------------------------------------------------
+    elif is_security_token:
+
+        try:
+            # Read the token file from the security_token_file parameter of the .config file
+            config = oci.config.from_file(
+                oci.config.DEFAULT_LOCATION,
+                (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
+            )
+
+            token_file = config['security_token_file']
+            token = None
+            with open(token_file, 'r') as f:
+              token = f.read()
+
+            # Read the private key specified by the .config file.
+            private_key = oci.signer.load_private_key_from_file(config['key_file'])
+
+            signer = oci.auth.signers.SecurityTokenSigner(token, private_key)
+
+            return config, signer
+
+        except KeyError:
+            print("* Key Error obtaining security_token_file")
             raise SystemExit
 
         except Exception:
@@ -4769,6 +4803,7 @@ def execute_report():
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell' )
+    parser.add_argument('-st',  action='store_true', default=False, dest='is_security_token', help='Authenticate using Security Token')
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.' )
     cmd = parser.parse_args()
@@ -4777,7 +4812,7 @@ def execute_report():
         show_version()
         sys.exit()
 
-    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
+    config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
     csv_report_directory = report.generate_reports(int(cmd.level))
 

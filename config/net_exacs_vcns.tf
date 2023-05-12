@@ -82,6 +82,20 @@ locals {
           src_port_max = null
           dst_port_min = "22"
           dst_port_max = "22"
+        },
+        {
+          is_create = true
+          protocol = "1"
+          stateless = false
+          description = "Allows the initiation of ICMP connections to hosts in ${vcn.cidr} CIDR range."
+          dst = vcn.cidr
+          dst_type = "CIDR_BLOCK"
+          icmp_type = "3"
+          icmp_code = null
+          src_port_min = null 
+          src_port_max = null
+          dst_port_min = null
+          dst_port_max = null
         }]
         defined_tags = local.exacs_vncs_defined_tags
         freeform_tags = local.exacs_vncs_freeform_tags

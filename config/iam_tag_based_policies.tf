@@ -37,7 +37,6 @@ locals {
   #----- Policies configuration definition. Input to module.
   #------------------------------------------------------------------------  
   tag_based_policies_configuration = {
-    cislz_tag_lookup_value : var.service_label
     enable_cis_benchmark_checks : true
     enable_tenancy_level_template_policies : true
     enable_compartment_level_template_policies : true
@@ -52,14 +51,14 @@ locals {
       {"name":"${local.storage_admin_group_name}", "roles":"basic"},
       {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
     ]
-    supplied_compartments : [for k, v in module.lz_compartments.compartments : {"name": v.name, "ocid": v.id, "freeform_tags": v.freeform_tags}]
+    supplied_compartments : {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": v.freeform_tags}}
     supplied_policies : { 
       # Enclosing compartments are not always managed by this configuration, as utilizing an existing enclosing compartment is supported.
       # Hence we cannot rely on the policy module using compartments tags to create tag based policies, as the existing enclosing compartment may not be properly tagged.
-      "${var.service_label}-ENCLOSING-COMPARTMENT-POLICY" : {
+      "ENCLOSING-COMPARTMENT-POLICY" : {
         name : "${var.service_label}-enclosing-cmp-policy"
         description : "CIS Landing Zone policy for resources at the enclosing compartment."
-        compartment_ocid : local.enclosing_compartment_id
+        compartment_ocid : var.tenancy_ocid #local.enclosing_compartment_id
         statements : concat(local.iam_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_enclosing_cmp, local.appdev_admin_grants_on_enclosing_cmp) # these variables are defined in iam_policies.tf. 
         defined_tags : local.policies_defined_tags
         freeform_tags : local.policies_freeform_tags
@@ -71,7 +70,6 @@ locals {
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
   empty_tag_based_policies_configuration = {
-    cislz_tag_lookup_value : null
     enable_cis_benchmark_checks : false
     enable_tenancy_level_template_policies : false
     enable_compartment_level_template_policies : false

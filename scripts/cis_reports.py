@@ -3474,7 +3474,7 @@ class CIS_Report:
     # Recursive function the gets the child compartments of a compartment
     ##########################################################################    
     
-    def __get_children(self,parent, compartments):
+    def __get_children(self, parent, compartments):
         try:
             kids = compartments[parent]
         except:
@@ -3544,17 +3544,12 @@ class CIS_Report:
                         if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
-                            # print("*" * 20)
-                            # print(f"{source['compartment_id']} Included ALL Compartments region is: {sch_values['region']}" )
+
                         # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                         elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] += self.__get_children(source['compartment_id'],dict_of_compartments)
-                            # print("*" * 20)
-                            # print(f"{source['compartment_id']} Included Sub Compartments region is: {sch_values['region']}" )
                         elif source['log_group_id'].upper() == "_Audit".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
-                            # print("*" * 20)
-                            # print(f"{source['compartment_id']} Single Compartment region is: {sch_values['region']}" )
                     except:
                         # There can be empty log groups
                         pass
@@ -3562,13 +3557,16 @@ class CIS_Report:
         for region_key, region_values in self.__obp_regional_checks.items():
             # Checking if I already found the tenancy ocid with all child compartments included
             if not region_values['Audit']['tenancy_level_audit']:
-                audit_findings = set_of_all_compartments - set(region_values['Audit']['compartments'])
+                audit_findings =  set_of_all_compartments - set(region_values['Audit']['compartments'])
                 # If there are items in the then it is not auditing everything in the tenancy
                 if audit_findings:
-                    region_values['Audit']['findings'] = region_values['Audit']['findings'] + list(audit_findings)
+                    region_values['Audit']['findings'] += list(audit_findings)
                 else:
-                    region_values[region_key]['Audit']['tenancy_level_audit'] = True
-        
+                    region_values['Audit']['tenancy_level_audit'] = True
+                    region_values['Audit']['findings'] = []
+
+            
+                
         ## Consolidating Audit findings into the OBP Checks
         for region_key, region_values in self.__obp_regional_checks.items():
             # If this flag is set all compartments are not logged in region
@@ -3605,7 +3603,7 @@ class CIS_Report:
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
-                        "compartment_id": "(root)",
+                        "compartment_id": "",
                         "defined_tags": "",
                         "description": str(e),
                         "freeform_tags": "",
@@ -3615,7 +3613,10 @@ class CIS_Report:
                         "time_created": "",
                         "region" : region_key
                     }
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(record)
+                # Need to check for duplicates before adding the record
+                exists_already = list(filter(lambda source: source['id']== record['id'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
+                if not exists_already:
+                    self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(record)
             
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
@@ -3640,7 +3641,7 @@ class CIS_Report:
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
-                        "compartment_id": "(root)",
+                        "compartment_id": "",
                         "defined_tags": "",
                         "description": str(e),
                         "freeform_tags": "",
@@ -3649,8 +3650,11 @@ class CIS_Report:
                         "lifecycle_state": "",
                         "time_created": "",
                         "region" : region_key
-                    }             
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
+                    }
+                # Need to check for duplicates before adding the record
+                exists_already = list(filter(lambda source: source['id']== record['id'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
+                if not exists_already:
+                    self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
         
         #######################################
         ### Subnet and Bucket Log Checks

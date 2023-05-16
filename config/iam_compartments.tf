@@ -235,22 +235,26 @@ locals {
   #----------------------------------------------------------------------------------
   #----- Variables with compartment names and OCIDs per compartments module output
   #----------------------------------------------------------------------------------
-  enclosing_compartment_name = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].name) : "tenancy"
+  enclosing_compartment_name = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.provided_enclosing_compartment_name /*module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].name*/) : "tenancy"
   enclosing_compartment_id   = var.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? var.existing_enclosing_compartment_ocid : module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].id) : var.tenancy_ocid
 
   security_compartment_name = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.security_compartment_key].name : local.provided_security_compartment_name
+  #security_compartment_name = local.provided_security_compartment_name
   security_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.security_compartment_key].id : data.oci_identity_compartments.security.compartments[0].id
 
   network_compartment_name = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.network_compartment_key].name : local.provided_network_compartment_name
+  #network_compartment_name = local.provided_network_compartment_name
   network_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.network_compartment_key].id : data.oci_identity_compartments.network.compartments[0].id
 
   appdev_compartment_name = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.appdev_compartment_key].name : local.provided_appdev_compartment_name
+  #appdev_compartment_name = local.provided_appdev_compartment_name
   appdev_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.appdev_compartment_key].id : data.oci_identity_compartments.appdev.compartments[0].id
   
   database_compartment_name = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.database_compartment_key].name : local.provided_database_compartment_name
+  #database_compartment_name = local.provided_database_compartment_name
   database_compartment_id   = var.extend_landing_zone_to_new_region == false ? module.lz_compartments.compartments[local.database_compartment_key].id : data.oci_identity_compartments.database.compartments[0].id
   
   exainfra_compartment_name = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment_key].name : local.provided_exainfra_compartment_name
+  #exainfra_compartment_name = local.provided_exainfra_compartment_name
   exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && var.deploy_exainfra_cmp == true ? module.lz_compartments.compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : "exainfra_cmp_undefined"
-    
 }

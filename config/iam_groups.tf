@@ -57,7 +57,7 @@ locals {
       description   = "CIS Landing Zone group for managing IAM resources in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"iam-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {} 
 
@@ -74,7 +74,7 @@ locals {
       description   = "CIS Landing Zone group for managing users credentials in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"cred-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -91,7 +91,7 @@ locals {
       description  = "CIS Landing Zone group for Cost management."
       members      = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"cost-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -108,7 +108,7 @@ locals {
       description   = "CIS Landing Zone group for network management."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"network-admin"})
+      freeform_tags = local.groups_freeform_tags
     } 
   } : {} 
 
@@ -125,7 +125,7 @@ locals {
       description   = "CIS Landing Zone group for security services management."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"security-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -142,7 +142,7 @@ locals {
       description   = "CIS Landing Zone group for managing app development related services."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"application-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -159,7 +159,7 @@ locals {
       description   = "CIS Landing Zone group for managing databases."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"database-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -176,7 +176,7 @@ locals {
       description   = "CIS Landing Zone group for managing Exadata Cloud Service infrastructure."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"exainfra-admin"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -193,7 +193,7 @@ locals {
       description   = "CIS Landing Zone group for storage services management."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"storage-admin"})
+      freeform_tags = local.groups_freeform_tags
     } 
   } : {}
 
@@ -210,7 +210,7 @@ locals {
       description   = "CIS Landing Zone group for auditing the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"auditor"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
@@ -227,7 +227,7 @@ locals {
       description   = "CIS Landing Zone group for reading Console announcements."
       members       = []
       defined_tags  = local.groups_defined_tags
-      freeform_tags = merge(local.groups_freeform_tags,{"roles":"announcement-reader"})
+      freeform_tags = local.groups_freeform_tags
     }
   } : {}
 

@@ -50,7 +50,7 @@ locals {
       description   = "CIS Landing Zone dynamic group for security functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
-      freeform_tags = merge(local.dynamic_groups_freeform_tags,{"roles":"dyn-security-functions"})
+      freeform_tags = local.dynamic_groups_freeform_tags
     } 
   } : {}
 
@@ -67,7 +67,7 @@ locals {
       description   = "CIS Landing Zone dynamic group for application functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.appdev_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
-      freeform_tags = merge(local.dynamic_groups_freeform_tags,{"roles":"dyn-application-functions"})
+      freeform_tags = local.dynamic_groups_freeform_tags
     }
   } : {}
 
@@ -84,7 +84,7 @@ locals {
       description   = "CIS Landing Zone dynamic group for Compute Agent plugin execution."
       matching_rule = "ALL {resource.type = 'managementagent',resource.compartment.id = '${local.appdev_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
-      freeform_tags = merge(local.dynamic_groups_freeform_tags,{"roles":"dyn-compute-agent"})
+      freeform_tags = local.dynamic_groups_freeform_tags
     }  
   } : {}
 
@@ -101,7 +101,7 @@ locals {
       description   = "CIS Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
       matching_rule = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
-      freeform_tags = merge(local.dynamic_groups_freeform_tags,{"roles":"dyn-database-kms"})
+      freeform_tags = local.dynamic_groups_freeform_tags
     }  
   } : {}
 

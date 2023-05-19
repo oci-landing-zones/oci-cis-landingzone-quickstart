@@ -3614,7 +3614,7 @@ class CIS_Report:
                         "region" : region_key
                     }
                 # Need to check for duplicates before adding the record
-                exists_already = list(filter(lambda source: source['id']== record['id'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
+                exists_already = list(filter(lambda source: source['id']== record['id'] and source['region']== record['region'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'] ))
                 if not exists_already:
                     self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(record)
             
@@ -3652,7 +3652,7 @@ class CIS_Report:
                         "region" : region_key
                     }
                 # Need to check for duplicates before adding the record
-                exists_already = list(filter(lambda source: source['id']== record['id'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
+                exists_already = list(filter(lambda source: source['id'] == record['id'] and source['region'] == record['region'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
                 if not exists_already:
                     self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
         

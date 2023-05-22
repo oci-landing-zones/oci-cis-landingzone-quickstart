@@ -511,14 +511,14 @@ class CIS_Report:
 
         # MAP Checks
         self.obp_foundations_checks = {
-            'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'SIEM_Audit_Log_All_Comps' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : ""}, # Assuming True
-            'SIEM_Audit_Incl_Sub_Comp' : {'Status' : True,'Findings' : [], "OBP" : [], "Documentation" : "" }, # Assuming True 
-            'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : ""},
-            'Networking_Connectivity' : {'Status' : True, 'Findings' : [], "OBP" : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm" },
-            'Cloud_Guard_Config' : {'Status' : None, 'Findings' : [], "OBP" : [], "Documentation" : "" },
+            'Cost_Tracking_Budgets' : {'Status' : False, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
+            'SIEM_Audit_Log_All_Comps' : {'Status' : True, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"}, # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp' : {'Status' : True,'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html" }, # Assuming True 
+            'SIEM_VCN_Flow_Logging' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Write_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Read_Bucket_Logs' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'Networking_Connectivity' : {'Status' : True, 'Findings' : [], 'OBP' : [], "Documentation" : "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm" },
+            'Cloud_Guard_Config' : {'Status' : None, 'Findings' : [], 'OBP' : [], "Documentation" : "" },
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -1930,7 +1930,6 @@ class CIS_Report:
     # Load Network FastConnect 
     ##########################################################################
     def __network_read_fastonnects(self):
-        count_of_fast_connects = 0
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -1982,12 +1981,7 @@ class CIS_Report:
 
                                     }
                                     # Adding fastconnect to fastconnect dict
-                                    try:
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    except:
-                                        self.__network_fastconnects[fastconnect.gateway_id] = []
-                                        self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                                    count_of_fast_connects += 1
+
 
                             except Exception as e:
                                 record = {
@@ -2029,13 +2023,11 @@ class CIS_Report:
                             
                             # Adding fastconnect to fastconnect dict
                             try:
-                                self.__network_fastconnects[compartment.id].append(record)
+                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
                             except:
-                                self.__network_fastconnects[compartment.id] = []
-                                self.__network_fastconnects[compartment.id].append(record)
-                            count_of_fast_connects += 1
-
-            print("\tProcessed " + str(count_of_fast_connects) + " FastConnects")                        
+                                self.__network_fastconnects[fastconnect.gateway_id] = []
+                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))) + " FastConnects")                        
             return self.__network_fastconnects
         except Exception as e:
             raise RuntimeError(
@@ -2046,7 +2038,6 @@ class CIS_Report:
     # Load IP Sec Connections
     ##########################################################################
     def __network_read_ip_sec_connections(self):
-        count_of_ip_sec_connections = 0
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
@@ -2116,8 +2107,6 @@ class CIS_Report:
                                 except:
                                     print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)
                                     record['tunnels_up'] = False
-
-
                             except:
                                 record = {
                                     "id": ip_sec.id,
@@ -2143,9 +2132,8 @@ class CIS_Report:
                             except:
                                 self.__network_ipsec_connections[ip_sec.drg_id] = []
                                 self.__network_ipsec_connections[ip_sec.drg_id].append(record)
-                            count_of_ip_sec_connections += 1
 
-            print("\tProcessed " + str(count_of_ip_sec_connections) + " IP SEC Conenctions")                        
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")                        
             return self.__network_ipsec_connections
         except Exception as e:
             raise RuntimeError(
@@ -2657,11 +2645,11 @@ class CIS_Report:
                                             
                                     elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
                                         # Only write logs
-                                        self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+                                        self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id, "region" : region_key}
 
                                     elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
                                         # Only read logs
-                                        self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id}
+                                        self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id" : log.log_group_id, "log_id": log.id, "region" : region_key}
 
                                     elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
                                         self.__load_balancer_error_logs.append(
@@ -3490,7 +3478,7 @@ class CIS_Report:
     # Recursive function the gets the child compartments of a compartment
     ##########################################################################    
     
-    def __get_children(self,parent, compartments):
+    def __get_children(self, parent, compartments):
         try:
             kids = compartments[parent]
         except:
@@ -3560,9 +3548,10 @@ class CIS_Report:
                         if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_audit'] = True
                             self.__obp_regional_checks[sch_values['region']]['Audit']['tenancy_level_include_sub_comps'] = True
+
                         # Since it is not the Tenancy we should add the compartment to the list and check if sub compartment are included
                         elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
-                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] = self.__get_children(source['compartment_id'],dict_of_compartments) + self.__obp_regional_checks[sch_values['region']]['Audit']['compartments']
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] += self.__get_children(source['compartment_id'],dict_of_compartments)
                         elif source['log_group_id'].upper() == "_Audit".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
                     except:
@@ -3572,13 +3561,16 @@ class CIS_Report:
         for region_key, region_values in self.__obp_regional_checks.items():
             # Checking if I already found the tenancy ocid with all child compartments included
             if not region_values['Audit']['tenancy_level_audit']:
-                audit_findings = set_of_all_compartments - set(region_values['Audit']['compartments'])
+                audit_findings =  set_of_all_compartments - set(region_values['Audit']['compartments'])
                 # If there are items in the then it is not auditing everything in the tenancy
                 if audit_findings:
-                    region_values['Audit']['findings'] = region_values['Audit']['findings'] + list(audit_findings)
+                    region_values['Audit']['findings'] += list(audit_findings)
                 else:
-                    region_values[region_key]['Audit']['tenancy_level_audit'] = True
-        
+                    region_values['Audit']['tenancy_level_audit'] = True
+                    region_values['Audit']['findings'] = []
+
+            
+                
         ## Consolidating Audit findings into the OBP Checks
         for region_key, region_values in self.__obp_regional_checks.items():
             # If this flag is set all compartments are not logged in region
@@ -3596,12 +3588,26 @@ class CIS_Report:
             for compartment in region_values['Audit']['findings']:
                 try:
                     finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                    record = {                
+                        "id" : finding['id'],
+                        "name" : finding['name'],
+                        "deep_link": finding['deep_link'],
+                        "compartment_id": finding['compartment_id'],
+                        "defined_tags": finding['defined_tags'],
+                        "description": finding['description'],
+                        "freeform_tags": finding['freeform_tags'],
+                        "inactive_status": finding['inactive_status'],
+                        "is_accessible": finding['is_accessible'],
+                        "lifecycle_state": finding['lifecycle_state'],
+                        "time_created": finding['time_created'],
+                        "region" : region_key
+                    }
                 except Exception as e:
-                    finding = {                
+                    record = {                
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
-                        "compartment_id": "(root)",
+                        "compartment_id": "",
                         "defined_tags": "",
                         "description": str(e),
                         "freeform_tags": "",
@@ -3609,20 +3615,37 @@ class CIS_Report:
                         "is_accessible": "",
                         "lifecycle_state": "",
                         "time_created": "",
-                        "region" : ""
+                        "region" : region_key
                     }
-                finding['region'] = region_key
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(finding)
+                # Need to check for duplicates before adding the record
+                exists_already = list(filter(lambda source: source['id']== record['id'] and source['region']== record['region'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'] ))
+                if not exists_already:
+                    self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['Findings'].append(record)
+            
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
                 try:
                     finding = list(filter(lambda source: source['id']== compartment, self.__raw_compartment ))[0]
+                    record = {                
+                        "id" : finding['id'],
+                        "name" : finding['name'],
+                        "deep_link": finding['deep_link'],
+                        "compartment_id": finding['compartment_id'],
+                        "defined_tags": finding['defined_tags'],
+                        "description": finding['description'],
+                        "freeform_tags": finding['freeform_tags'],
+                        "inactive_status": finding['inactive_status'],
+                        "is_accessible": finding['is_accessible'],
+                        "lifecycle_state": finding['lifecycle_state'],
+                        "time_created": finding['time_created'],
+                        "region" : region_key
+                    }
                 except Exception as e:
-                    finding = {                
+                    record = {                
                         "id" : compartment,
                         "name" : "Compartment No Longer Exists",
                         "deep_link": "",
-                        "compartment_id": "(root)",
+                        "compartment_id": "",
                         "defined_tags": "",
                         "description": str(e),
                         "freeform_tags": "",
@@ -3630,12 +3653,12 @@ class CIS_Report:
                         "is_accessible": "",
                         "lifecycle_state": "",
                         "time_created": "",
-                        "region" : ""
-                    }                
-                    finding['region'] = region_key
-                self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(finding)
-
-        
+                        "region" : region_key
+                    }
+                # Need to check for duplicates before adding the record
+                exists_already = list(filter(lambda source: source['id'] == record['id'] and source['region'] == record['region'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'] ))
+                if not exists_already:
+                    self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
         
         #######################################
         ### Subnet and Bucket Log Checks
@@ -3648,71 +3671,62 @@ class CIS_Report:
                 
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
-
+                
                 subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
                 subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
 
+                # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                if subnet_log_group_in_sch and not(subnet_log_in_sch):
+                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+
                 # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
-                if subnet_log_in_sch:
+                elif subnet_log_in_sch:
                     self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
                     
-                # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                elif  subnet_log_group_in_sch and not(subnet_log_group_in_sch[0]['log_id']):
-                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
-
-                else:
-                    self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
+                # else:
+                #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
 
             ### Bucket Write Logs Checks
-
             for bucket_name, log_values in self.__write_bucket_logs.items():
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
+                log_region = log_values['region']
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))
-
-                # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                if bucket_log_in_sch:
-                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                 # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                elif bucket_log_group_in_sch and not(bucket_log_group_in_sch[0]['log_id']):
+                if bucket_log_group_in_sch and not(bucket_log_in_sch):
                     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
                 
-                else:
-                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
+                # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                elif bucket_log_in_sch:
+                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+
+                # else:
+                #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
             
             ### Bucket Read Log Checks
 
             for bucket_name, log_values in self.__read_bucket_logs.items():
-
                 log_id = log_values['log_id']
                 log_group_id = log_values['log_group_id']
+                log_region = log_values['region']
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))  
-
-                # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                if bucket_log_in_sch:
-                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                 # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                elif bucket_log_group_in_sch and not(bucket_log_group_in_sch[0]['log_id']):
+                if bucket_log_group_in_sch and not(bucket_log_in_sch):
                     self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
-                else:
-                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['findings'].append(bucket_name)
+                # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                elif bucket_log_in_sch:
+                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
         
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
-            for finding in region_values['VCN']['findings']:
-                missing_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
-                if missing_subnet:
-                    self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(missing_subnet[0])
-                else:
-                    print("Missed this subnet: " + str(finding ))
 
             for finding in region_values['VCN']['subnets']:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
@@ -3721,47 +3735,38 @@ class CIS_Report:
                 else:
                     print("Found this subnet: " + str(finding))
 
-            for finding in region_values['Write_Bucket']['findings']:
-                missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                if missing_bucket:
-                    self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(missing_bucket[0])
-
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(logged_bucket[0])
 
-            for finding in region_values['Read_Bucket']['findings']:
-                missing_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                if missing_bucket:
-                    self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(missing_bucket[0])
-
             for finding in region_values['Read_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
+                
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(logged_bucket[0])
 
-        
-        ## Adding Findings Unlogged items 
-        self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'] += self.cis_foundations_benchmark_1_2['3.17']['Findings']
-        unlogged_read_buckets = []
-        # Finding buckets that don't have read logging enable to add them to the findings
-        for bucket in self.__buckets:
-            if not(bucket['name'] in self.__read_bucket_logs):
-                unlogged_read_buckets.append(bucket)
-        self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] += unlogged_read_buckets
-        ### Adding in Merging in CIS Finding
-        self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] += self.cis_foundations_benchmark_1_2['3.14']['Findings']
 
+        # Finding looking at all buckets and seeing if they meet one of the OBPs in one of the regions
+        for finding in self.__buckets:
+            read_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'] and bucket['region'] == finding['region'], self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP']))
+            if not(read_logged_bucket):
+                self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'].append(finding)
+            
+            write_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'] and bucket['region'] == finding['region'], self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP']))
+            if not(write_logged_bucket):
+                self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(finding)
 
+        # Finding looking at all subnet and seeing if they meet one of the OBPs in one of the regions
+        for finding in self.__network_subnets:
+            logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+            if not(logged_subnet):
+                self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(finding)   
 
         # Setting VCN Flow Logs Findings
         if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-        elif not self.__service_connectors:
-            # If there are no service connectors then by default all subnets are not logged
-            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'] += self.__network_subnets
+
         else:
             self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
 
@@ -4215,15 +4220,16 @@ class CIS_Report:
         obp_summary_report = []
         # Screen output for CIS Summary Report
         print_header("OCI Best Practices Findings")
-        print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  ")
+        print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  " +  "\tBest Practices")
         print('#' * 90)
         # Adding data to summary report
         for key, recommendation in self.obp_foundations_checks.items():
             padding = str(key).ljust(25, " ")
-            print(padding + "\t\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])))
+            print(padding + "\t\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])) + "\t" + "\t" + str(len(recommendation['OBP'])))
             record = {
                 "Recommendation" : str(key),
                 "Compliant": ('Yes' if recommendation['Status'] else 'No'),
+                "OBP" : (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings" : (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Documentation" : recommendation['Documentation']
             }
@@ -4456,7 +4462,7 @@ class CIS_Report:
         
         # Converting a dict that is one to a list to a flat list
         report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "raw_data", "network_fastconnects", list(itertools.chain.from_iterable(self.__network_fastconnects.values())))
+               self.__report_directory, "raw_data", "network_fastconnects", (list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))
         list_report_file_names.append(report_file_name)
         
         # Converting a dict that is one to a list to a flat list

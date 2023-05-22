@@ -62,11 +62,7 @@ locals {
   provided_enclosing_compartment_name = local.custom_enclosing_compartment_name != null ? local.custom_enclosing_compartment_name : "${var.service_label}-${local.default_enclosing_compartment_name}"
 
   cislz_enclosing_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"enclosing",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
+    "cislz-cmp-type":"enclosing"
   } : {}
 
   enclosing_cmp = local.enable_enclosing_compartment ? { 
@@ -89,14 +85,7 @@ locals {
   provided_network_compartment_name = local.custom_network_compartment_name != null ? local.custom_network_compartment_name : "${var.service_label}-${local.default_network_compartment_name}"
 
   cislz_network_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"network",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    "cislz-cmp-type":"network"
   } : {}
 
   network_cmp = local.enable_network_compartment ? {
@@ -114,15 +103,7 @@ locals {
   provided_security_compartment_name = local.custom_security_compartment_name != null ? local.custom_security_compartment_name : "${var.service_label}-${local.default_security_compartment_name}"
 
   cislz_security_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"security",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-    "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+    "cislz-cmp-type":"security"
   } : {}
 
   security_cmp = local.enable_security_compartment ? {
@@ -140,15 +121,7 @@ locals {
   provided_appdev_compartment_name = local.custom_appdev_compartment_name != null ? local.custom_appdev_compartment_name : "${var.service_label}-${local.default_appdev_compartment_name}"
 
   cislz_appdev_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"application",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-    "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+    "cislz-cmp-type":"application"
   } : {}
 
   appdev_cmp = local.enable_appdev_compartment ? {
@@ -166,14 +139,7 @@ locals {
   provided_database_compartment_name = local.custom_database_compartment_name != null ? local.custom_database_compartment_name : "${var.service_label}-${local.default_database_compartment_name}"
 
   cislz_database_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"database",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    "cislz-cmp-type":"database"
   } : {}  
 
   database_cmp = local.enable_database_compartment ? {
@@ -191,14 +157,7 @@ locals {
   provided_exainfra_compartment_name = local.custom_exainfra_compartment_name != null ? local.custom_exainfra_compartment_name : "${var.service_label}-${local.default_exainfra_compartment_name}"
 
   cislz_exainfra_compartment_tags = var.enable_tag_based_policies == true ? {
-    "cislz":"${var.service_label}",
-    "cislz-cmp-type":"exainfra",
-    "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-    "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-    "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-    "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-    "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-    "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    "cislz-cmp-type":"exainfra"
   } : {}  
 
   exainfra_cmp = local.enable_exainfra_compartment ? {

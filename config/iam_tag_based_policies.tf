@@ -51,8 +51,9 @@ locals {
       {"name":"${local.storage_admin_group_name}", "roles":"basic"},
       {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
     ]
-    supplied_compartments : {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": v.freeform_tags}}
-    supplied_policies : { 
+
+    supplied_compartments : {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}}
+    supplied_policies : var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid != null ? { 
       # Enclosing compartments are not always managed by this configuration, as utilizing an existing enclosing compartment is supported.
       # Hence we cannot rely on the policy module using compartments tags to create tag based policies, as the existing enclosing compartment may not be properly tagged.
       "ENCLOSING-COMPARTMENT-POLICY" : {
@@ -63,10 +64,66 @@ locals {
         defined_tags : local.policies_defined_tags
         freeform_tags : local.policies_freeform_tags
       }  
-    }
+    } : {}
     defined_tags : local.tag_based_policies_defined_tags
     freeform_tags : local.tag_based_policies_freeform_tags
   }
+
+  cislz_compartments_metadata = {
+    "enclosing" : {
+      "cislz-cmp-type":"enclosing",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
+    },
+    "network" : {
+      "cislz-cmp-type":"network",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    },
+    "security" : {
+      "cislz-cmp-type":"security",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+      "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+    },
+    "application" : {
+      "cislz-cmp-type":"application",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+      "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+    }, 
+    "database" : {
+      "cislz-cmp-type":"database",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    },
+    "exainfra" : {
+      "cislz-cmp-type":"exainfra",
+      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+    }
+  } 
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
   empty_tag_based_policies_configuration = {

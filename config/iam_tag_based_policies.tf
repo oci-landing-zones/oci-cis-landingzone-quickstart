@@ -52,7 +52,7 @@ locals {
       {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
     ]
 
-    supplied_compartments : {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}}
+    supplied_compartments : var.enable_tag_based_policies == true ? {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
     supplied_policies : var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid != null ? { 
       # Enclosing compartments are not always managed by this configuration, as utilizing an existing enclosing compartment is supported.
       # Hence we cannot rely on the policy module using compartments tags to create tag based policies, as the existing enclosing compartment may not be properly tagged.

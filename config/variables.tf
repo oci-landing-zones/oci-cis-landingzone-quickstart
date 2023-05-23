@@ -78,7 +78,7 @@ variable "policies_in_root_compartment" {
 variable "enable_tag_based_policies" {
   type = bool
   default = false
-  description = "Whether policies should be created based on tags that are applied to compartments."
+  description = "Whether policies should be created based on a tag that is applied to compartments."
 }
 
 # ------------------------------------------------------

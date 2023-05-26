@@ -4,7 +4,7 @@
 #
 # cis_reports.py
 # @author base: Adi Zohar
-# @author: Josh Hammer, Andre Correa, Chad Russell, and Olaf Heimburger
+# @author: Josh Hammer, Andre Correa, Chad Russell, Jake Bloom and Olaf Heimburger
 #
 # Supports Python 3 and above
 #
@@ -12,7 +12,7 @@
 ##########################################################################
 
 from __future__ import print_function
-from concurrent.futures import thread
+import concurrent.futures
 import sys
 import argparse
 import datetime
@@ -934,7 +934,16 @@ class CIS_Report:
     # Check for Managed PaaS Compartment
     ##########################################################################
     def __if_not_managed_paas_compartment(self, name):
-        return name != "ManagedCompartmentForPaaS"
+            return name != "ManagedCompartmentForPaaS"
+
+    ##########################################################################
+    # Set ManagementCompartment ID
+    ##########################################################################
+    def __set_managed_paas_compartment(self):
+        self.__managed_paas_compartment_id = ""
+        for compartment in self.__compartments:
+            if compartment.name == "ManagedCompartmentForPaaS":
+                self.__managed_paas_compartment_id = compartment.id
 
     ##########################################################################
     # Load compartments
@@ -987,7 +996,9 @@ class CIS_Report:
             }
             self.__raw_compartment.append(root_compartment)
 
-            print("\tProcessed " + str(len(self.__compartments)) + " Compartments")                        
+            self.__set_managed_paas_compartment()
+
+            print("\tProcessed " + str(len(self.__compartments)) + " Compartments")  
             return self.__compartments
 
         except Exception as e:
@@ -1183,30 +1194,29 @@ class CIS_Report:
     # Tenancy IAM Policies
     ##########################################################################
     def __identity_read_tenancy_policies(self):
-        # Get all policy at the tenancy level
         try:
-            for compartment in self.__compartments:
-                if self.__if_not_managed_paas_compartment(compartment.name):
-                    policies_data = oci.pagination.list_call_get_all_results(
-                        self.__regions[self.__home_region]['identity_client'].list_policies,
-                        compartment_id = compartment.id
-                    ).data
-                    for policy in policies_data:
-                        deep_link = self.__oci_policies_uri + policy.id
-                        record = {
-                            "id": policy.id,
-                            "name": policy.name,
-                            'deep_link': self.__generate_csv_hyperlink(deep_link, policy.name),
-                            "compartment_id": policy.compartment_id,
-                            "description": policy.description,
-                            "lifecycle_state": policy.lifecycle_state,
-                            "statements": policy.statements
-                        }
-                        self.__policies.append(record)
+            policies_data = oci.pagination.list_call_get_all_results(
+                self.__regions[self.__home_region]['search_client'].search_resources, 
+                search_details=oci.resource_search.models.StructuredSearchDetails(
+                query="query Policy resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
             
-            print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")                        
+            for policy in policies_data:   
+                deep_link = self.__oci_policies_uri + policy.identifier
+                record = {
+                    "id": policy.identifier,
+                    "name": policy.display_name,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, policy.display_name),
+                    "compartment_id": policy.compartment_id,
+                    "description": policy.additional_details['description'],
+                    "lifecycle_state": policy.lifecycle_state,
+                    "statements": policy.additional_details['statements']
+                }
+                self.__policies.append(record)
+                        
+            print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")                       
             return self.__policies
-            
+                        
         except Exception as e:
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
@@ -1284,66 +1294,62 @@ class CIS_Report:
         try:
             # looping through regions
             for region_key, region_values in self.__regions.items():
-                # Collecting buckets from each compartment
-                for compartment in self.__compartments:
-                    # Skipping the managed paas compartment
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        buckets_data = oci.pagination.list_call_get_all_results(
-                            region_values['os_client'].list_buckets,
-                            namespace_name = self.__os_namespace,
-                            compartment_id = compartment.id
-                        ).data
-                        # Getting Bucket Info
-                        for bucket in buckets_data:
-                            try:
-                                bucket_info = region_values['os_client'].get_bucket(
-                                    self.__os_namespace, bucket.name).data
-                                
-                                deep_link = self.__oci_buckets_uri + bucket_info.namespace + \
-                                     "/" + bucket_info.name + "/objects?region=" + region_key
-                                record = {
-                                    "id": bucket_info.id,
-                                    "name": bucket_info.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),                                    
-                                    "kms_key_id": bucket_info.kms_key_id,
-                                    "namespace": bucket_info.namespace,
-                                    "compartment_id": bucket_info.compartment_id,
-                                    "object_events_enabled": bucket_info.object_events_enabled,
-                                    "public_access_type": bucket_info.public_access_type,
-                                    "replication_enabled": bucket_info.replication_enabled,
-                                    "is_read_only": bucket_info.is_read_only,
-                                    "storage_tier": bucket_info.storage_tier,
-                                    "time_created": bucket_info.time_created.strftime(self.__iso_time_format),
-                                    "versioning": bucket_info.versioning,
-                                    "defined_tags" : bucket_info.defined_tags,
-                                    "freeform_tags" : bucket_info.freeform_tags,
-                                    "region" : region_key,
-                                    "notes": ""
-                                }
-                                self.__buckets.append(record)
-                            except Exception as e:
-                                deep_link = self.__oci_buckets_uri + bucket.namespace + \
-                                     "/" + bucket.name + "/objects?region=" + region_key
-                                record = {
-                                    "id": "",
-                                    "name":  bucket.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.name),
-                                    "kms_key_id": "",
-                                    "namespace": bucket.namespace,
-                                    "compartment_id": bucket.compartment_id,
-                                    "object_events_enabled": "",
-                                    "public_access_type": "",
-                                    "replication_enabled": "",
-                                    "is_read_only": "",
-                                    "storage_tier": "",
-                                    "time_created": bucket.time_created.strftime(self.__iso_time_format),
-                                    "versioning": "",
-                                    "defined_tags" : bucket.defined_tags,
-                                    "freeform_tags" : "",
-                                    "region" : region_key,
-                                    "notes": str(e)
-                                }
-                                self.__buckets.append(record)
+                buckets_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Bucket resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+
+                # Getting Bucket Info
+                for bucket in buckets_data:
+                    try:
+                        bucket_info = region_values['os_client'].get_bucket(
+                            bucket.additional_details['namespace'], bucket.display_name).data
+                        deep_link = self.__oci_buckets_uri + bucket_info.namespace + \
+                                "/" + bucket_info.name + "/objects?region=" + region_key
+                        record = {
+                            "id": bucket_info.id,
+                            "name": bucket_info.name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, bucket_info.name),                                    
+                            "kms_key_id": bucket_info.kms_key_id,
+                            "namespace": bucket_info.namespace,
+                            "compartment_id": bucket_info.compartment_id,
+                            "object_events_enabled": bucket_info.object_events_enabled,
+                            "public_access_type": bucket_info.public_access_type,
+                            "replication_enabled": bucket_info.replication_enabled,
+                            "is_read_only": bucket_info.is_read_only,
+                            "storage_tier": bucket_info.storage_tier,
+                            "time_created": bucket_info.time_created.strftime(self.__iso_time_format),
+                            "versioning": bucket_info.versioning,
+                            "defined_tags" : bucket_info.defined_tags,
+                            "freeform_tags" : bucket_info.freeform_tags,
+                            "region" : region_key,
+                            "notes": ""
+                        }
+                        self.__buckets.append(record)
+                    except Exception as e:
+                        deep_link = self.__oci_buckets_uri + bucket.additional_details['namespace'] + \
+                                "/" + bucket.display_name + "/objects?region=" + region_key
+                        record = {
+                            "id": "",
+                            "name":  bucket.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.display_name),
+                            "kms_key_id": "",
+                            "namespace": bucket.additional_details['namespace'],
+                            "compartment_id": bucket.compartment_id,
+                            "object_events_enabled": "",
+                            "public_access_type": "",
+                            "replication_enabled": "",
+                            "is_read_only": "",
+                            "storage_tier": "",
+                            "time_created": bucket.time_created.strftime(self.__iso_time_format),
+                            "versioning": "",
+                            "defined_tags" : bucket.defined_tags,
+                            "freeform_tags" : "",
+                            "region" : region_key,
+                            "notes": str(e)
+                        }
+                        self.__buckets.append(record)
                 # Returning Buckets
             print("\tProcessed " + str(len(self.__buckets)) + " Buckets")            
             return self.__buckets
@@ -1356,66 +1362,66 @@ class CIS_Report:
     def __block_volume_read_block_volumes(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        volumes_data = oci.pagination.list_call_get_all_results(
-                            region_values['bv_client'].list_volumes,
-                            compartment_id=compartment.id
-                        ).data
-                        # Getting Block Volume inf
-                        for volume in volumes_data:
-                            deep_link = self.__oci_block_volumes_uri + volume.id + '?region=' + region_key
-                            try:
-                                record = {
-                                    "id": volume.id,
-                                    "display_name": volume.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
-                                    "kms_key_id": volume.kms_key_id,
-                                    "lifecycle_state": volume.lifecycle_state,
-                                    "compartment_id": volume.compartment_id,
-                                    "size_in_gbs": volume.size_in_gbs,
-                                    "size_in_mbs": volume.size_in_mbs,
-                                    "source_details": volume.source_details,
-                                    "time_created": volume.time_created.strftime(self.__iso_time_format),
-                                    "volume_group_id": volume.volume_group_id,
-                                    "vpus_per_gb": volume.vpus_per_gb,
-                                    "auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
-                                    "availability_domain" : volume.availability_domain,
-                                    "block_volume_replicas": volume.block_volume_replicas,
-                                    "is_auto_tune_enabled": volume.is_auto_tune_enabled,
-                                    "is_hydrated": volume.is_hydrated,
-                                    "defined_tags": volume.defined_tags,
-                                    "freeform_tags": volume.freeform_tags,
-                                    "system_tags": volume.system_tags,
-                                    "region" : region_key,
-                                    "notes": ""
-                                }
-                            except Exception as e:
-                                record = {
-                                    "id": volume.id,
-                                    "display_name": volume.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
-                                    "kms_key_id": "",
-                                    "lifecycle_state": "",
-                                    "compartment_id": "",
-                                    "size_in_gbs": "",
-                                    "size_in_mbs": "",
-                                    "source_details": "",
-                                    "time_created":"",
-                                    "volume_group_id": "",
-                                    "vpus_per_gb": "",
-                                    "auto_tuned_vpus_per_gb": "",
-                                    "availability_domain" : "",
-                                    "block_volume_replicas": "",
-                                    "is_auto_tune_enabled": "",
-                                    "is_hydrated": "",
-                                    "defined_tags": "",
-                                    "freeform_tags": "",
-                                    "system_tags": "",
-                                    "region" : region_key,
-                                    "notes": str(e)
-                                    }
-                            self.__block_volumes.append(record)
+                volumes_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Volume resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+
+                # Getting Block Volume inf
+                for volume in volumes_data:
+                    deep_link = self.__oci_block_volumes_uri + volume.identifier + '?region=' + region_key
+                    try:
+                        record = {
+                            "id": volume.identifier,
+                            "display_name": volume.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
+                            "kms_key_id": volume.additional_details['kmsKeyId'],
+                            "lifecycle_state": volume.lifecycle_state,
+                            "compartment_id": volume.compartment_id,
+                            "size_in_gbs": volume.additional_details['sizeInGBs'],
+                            "size_in_mbs": volume.additional_details['sizeInMBs'],
+                            #"source_details": volume.source_details,
+                            "time_created": volume.time_created.strftime(self.__iso_time_format),
+                            #"volume_group_id": volume.volume_group_id,
+                            #"vpus_per_gb": volume.vpus_per_gb,
+                            #"auto_tuned_vpus_per_gb": volume.auto_tuned_vpus_per_gb,
+                            "availability_domain" : volume.availability_domain,
+                            #"block_volume_replicas": volume.block_volume_replicas,
+                            #"is_auto_tune_enabled": volume.is_auto_tune_enabled,
+                            #"is_hydrated": volume.is_hydrated,
+                            "defined_tags": volume.defined_tags,
+                            "freeform_tags": volume.freeform_tags,
+                            "system_tags": volume.system_tags,
+                            "region" : region_key,
+                            "notes": ""
+                        }
+                    except Exception as e:
+                        record = {
+                            "id": volume.identifier,
+                            "display_name": volume.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, volume.display_name),
+                            "kms_key_id": "",
+                            "lifecycle_state": "",
+                            "compartment_id": "",
+                            "size_in_gbs": "",
+                            "size_in_mbs": "",
+                            #"source_details": "",
+                            "time_created":"",
+                            #"volume_group_id": "",
+                            #"vpus_per_gb": "",
+                            #"auto_tuned_vpus_per_gb": "",
+                            "availability_domain" : "",
+                            #"block_volume_replicas": "",
+                            #"is_auto_tune_enabled": "",
+                            #"is_hydrated": "",
+                            "defined_tags": "",
+                            "freeform_tags": "",
+                            "system_tags": "",
+                            "region" : region_key,
+                            "notes": str(e)
+                            }
+                    self.__block_volumes.append(record)
             print("\tProcessed " + str(len(self.__block_volumes)) + " Block Volumes")
             return self.__block_volumes
         except Exception as e:
@@ -1427,68 +1433,65 @@ class CIS_Report:
     def __boot_volume_read_boot_volumes(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        # Iterating through ADs in region
-                        for ad in region_values['availability_domains']:
-                            boot_volumes_data = oci.pagination.list_call_get_all_results(
-                                    region_values['bv_client'].list_boot_volumes,
-                                    availability_domain=ad.name,
-                                    compartment_id=compartment.id
-                                ).data
-                            for boot_volume in boot_volumes_data:
-                                deep_link = self.__oci_boot_volumes_uri + boot_volume.id + '?region=' + region_key
-                                try:
-                                    record = {
-                                        "id": boot_volume.id,
-                                        "display_name": boot_volume.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
-                                        "image_id": boot_volume.image_id,
-                                        "kms_key_id": boot_volume.kms_key_id,
-                                        "lifecycle_state": boot_volume.lifecycle_state,
-                                        "size_in_gbs": boot_volume.size_in_gbs,
-                                        "size_in_mbs": boot_volume.size_in_mbs,
-                                        "availability_domain": boot_volume.availability_domain,
-                                        "time_created": boot_volume.time_created.strftime(self.__iso_time_format),
-                                        "compartment_id": boot_volume.compartment_id,
-                                        "auto_tuned_vpus_per_gb": boot_volume.auto_tuned_vpus_per_gb,
-                                        "boot_volume_replicas": boot_volume.boot_volume_replicas,
-                                        "is_auto_tune_enabled": boot_volume.is_auto_tune_enabled,
-                                        "is_hydrated": boot_volume.is_hydrated,
-                                        "source_details": boot_volume.source_details,
-                                        "vpus_per_gb": boot_volume.vpus_per_gb,
-                                        "system_tags": boot_volume.system_tags,
-                                        "defined_tags": boot_volume.defined_tags,
-                                        "freeform_tags": boot_volume.freeform_tags,
-                                        "region" : region_key,
-                                        "notes": ""
-                                    }
-                                except Exception as e:
-                                    record = {
-                                        "id": boot_volume.id,
-                                        "display_name": boot_volume.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
-                                        "image_id": "",
-                                        "kms_key_id": "",
-                                        "lifecycle_state": "",
-                                        "size_in_gbs": "",
-                                        "size_in_mbs": "",
-                                        "availability_domain": "",
-                                        "time_created": "",
-                                        "compartment_id": "",
-                                        "auto_tuned_vpus_per_gb": "",
-                                        "boot_volume_replicas": "",
-                                        "is_auto_tune_enabled": "",
-                                        "is_hydrated": "",
-                                        "source_details": "",
-                                        "vpus_per_gb": "",
-                                        "system_tags": "",
-                                        "defined_tags": "",
-                                        "freeform_tags": "",
-                                        "region" : region_key,
-                                        "notes": str(e)
-                                    }
-                                self.__boot_volumes.append(record)
+                boot_volumes_data = oci.pagination.list_call_get_all_results(
+                        region_values['search_client'].search_resources, 
+                        search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query BootVolume resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+
+                for boot_volume in boot_volumes_data:
+                    deep_link = self.__oci_boot_volumes_uri + boot_volume.identifier + '?region=' + region_key
+                    try:
+                        record = {
+                            "id": boot_volume.identifier,
+                            "display_name": boot_volume.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
+                            #"image_id": boot_volume.image_id,
+                            "kms_key_id": boot_volume.additional_details['kmsKeyId'],
+                            "lifecycle_state": boot_volume.lifecycle_state,
+                            "size_in_gbs": boot_volume.additional_details['sizeInGBs'],
+                            "size_in_mbs": boot_volume.additional_details['sizeInMBs'],
+                            "availability_domain": boot_volume.availability_domain,
+                            "time_created": boot_volume.time_created.strftime(self.__iso_time_format),
+                            "compartment_id": boot_volume.compartment_id,
+                            #"auto_tuned_vpus_per_gb": boot_volume.auto_tuned_vpus_per_gb,
+                            #"boot_volume_replicas": boot_volume.boot_volume_replicas,
+                            #"is_auto_tune_enabled": boot_volume.is_auto_tune_enabled,
+                            #"is_hydrated": boot_volume.is_hydrated,
+                            #"source_details": boot_volume.source_details,
+                            #"vpus_per_gb": boot_volume.vpus_per_gb,
+                            "system_tags": boot_volume.system_tags,
+                            "defined_tags": boot_volume.defined_tags,
+                            "freeform_tags": boot_volume.freeform_tags,
+                            "region" : region_key,
+                            "notes": ""
+                        }
+                    except Exception as e:
+                        record = {
+                            "id": boot_volume.identifier,
+                            "display_name": boot_volume.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, boot_volume.display_name),
+                            #"image_id": "",
+                            "kms_key_id": "",
+                            "lifecycle_state": "",
+                            "size_in_gbs": "",
+                            "size_in_mbs": "",
+                            "availability_domain": "",
+                            "time_created": "",
+                            "compartment_id": "",
+                            #"auto_tuned_vpus_per_gb": "",
+                            #"boot_volume_replicas": "",
+                            #"is_auto_tune_enabled": "",
+                            #"is_hydrated": "",
+                            #"source_details": "",
+                            #"vpus_per_gb": "",
+                            "system_tags": "",
+                            "defined_tags": "",
+                            "freeform_tags": "",
+                            "region" : region_key,
+                            "notes": str(e)
+                        }
+                    self.__boot_volumes.append(record)
             print("\tProcessed " + str(len(self.__boot_volumes)) + " Boot Volumes")
             return(self.__boot_volumes)
         except Exception as e:
@@ -1500,58 +1503,55 @@ class CIS_Report:
     def __fss_read_fsss(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        # Iterating through ADs in region
-                        for ad in region_values['availability_domains']:
-                            fss_data = oci.pagination.list_call_get_all_results(
-                                    region_values['fss_client'].list_file_systems,
-                                    compartment_id = compartment.id,
-                                    availability_domain = ad.name
-                                ).data
-                            for fss in fss_data:
-                                deep_link = self.__oci_fss_uri + fss.id + '?region=' + region_key
-                                try:
-                                    record = {
-                                        "id": fss.id,
-                                        "display_name": fss.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
-                                        "kms_key_id": fss.kms_key_id,
-                                        "lifecycle_state": fss.lifecycle_state,
-                                        "lifecycle_details": fss.lifecycle_details,
-                                        "availability_domain": fss.availability_domain,
-                                        "time_created": fss.time_created.strftime(self.__iso_time_format),
-                                        "compartment_id": fss.compartment_id,
-                                        "is_clone_parent": fss.is_clone_parent,
-                                        "is_hydrated": fss.is_hydrated,
-                                        "metered_bytes": fss.metered_bytes,
-                                        "source_details": fss.source_details,
-                                        "defined_tags": fss.defined_tags,
-                                        "freeform_tags": fss.freeform_tags,
-                                        "region" : region_key,
-                                        "notes": ""
-                                    }
-                                except Exception as e:
-                                    record = {
-                                        "id": fss.id,
-                                        "display_name": fss.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
-                                        "kms_key_id": "",
-                                        "lifecycle_state": "",
-                                        "lifecycle_details": "",
-                                        "availability_domain": "",
-                                        "time_created": "",
-                                        "compartment_id": "",
-                                        "is_clone_parent": "",
-                                        "is_hydrated": "",
-                                        "metered_bytes": "",
-                                        "source_details": "",
-                                        "defined_tags": "",
-                                        "freeform_tags": "",
-                                        "region" : region_key,
-                                        "notes": str(e)
-                                    }
-                                self.__file_storage_system.append(record)
+                fss_data = oci.pagination.list_call_get_all_results(
+                        region_values['search_client'].search_resources, 
+                        search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query FileSystem resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+
+                for fss in fss_data:
+                    deep_link = self.__oci_fss_uri + fss.identifier + '?region=' + region_key
+                    try:
+                        record = {
+                            "id": fss.identifier,
+                            "display_name": fss.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
+                            "kms_key_id": fss.additional_details['kmsKeyId'],
+                            "lifecycle_state": fss.lifecycle_state,
+                            #"lifecycle_details": fss.lifecycle_details,
+                            "availability_domain": fss.availability_domain,
+                            "time_created": fss.time_created.strftime(self.__iso_time_format),
+                            "compartment_id": fss.compartment_id,
+                            #"is_clone_parent": fss.is_clone_parent,
+                            #"is_hydrated": fss.is_hydrated,
+                            #"metered_bytes": fss.metered_bytes,
+                            "source_details": fss.additional_details['sourceDetails'],
+                            "defined_tags": fss.defined_tags,
+                            "freeform_tags": fss.freeform_tags,
+                            "region" : region_key,
+                            "notes": ""
+                        }
+                    except Exception as e:
+                        record = {
+                            "id": fss.identifier,
+                            "display_name": fss.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, fss.display_name),
+                            "kms_key_id": "",
+                            "lifecycle_state": "",
+                            #"lifecycle_details": "",
+                            "availability_domain": "",
+                            "time_created": "",
+                            "compartment_id": "",
+                            #"is_clone_parent": "",
+                            #"is_hydrated": "",
+                            #"metered_bytes": "",
+                            "source_details": "",
+                            "defined_tags": "",
+                            "freeform_tags": "",
+                            "region" : region_key,
+                            "notes": str(e)
+                        }
+                    self.__file_storage_system.append(record)
             print("\tProcessed " + str(len(self.__file_storage_system)) + " File Storage service")
             return(self.__file_storage_system)
         except Exception as e:
@@ -1566,57 +1566,59 @@ class CIS_Report:
         # Loopig Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        nsgs_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_network_security_groups,
-                            compartment_id=compartment.id
-                        ).data
-                        # Looping through NSGs to to get
-                        for nsg in nsgs_data:
-                            deep_link = self.__oci_networking_uri + nsg.vcn_id + \
-                                "/network-security-groups/" + nsg.id +  '?region=' + region_key
-                            record = {
-                                "id": nsg.id,
-                                "compartment_id": nsg.compartment_id,
-                                "display_name": nsg.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
-                                "lifecycle_state": nsg.lifecycle_state,
-                                "time_created": nsg.time_created.strftime(self.__iso_time_format),
-                                "vcn_id": nsg.vcn_id,
-                                "freeform_tags" : nsg.freeform_tags,
-                                "defined_tags" : nsg.defined_tags,
-                                "region" : region_key,
-                                "rules": []
-                            }
-                            nsg_rules = oci.pagination.list_call_get_all_results(
-                                region_values['network_client'].list_network_security_group_security_rules,
-                                network_security_group_id = nsg.id
-                            ).data
-                            for rule in nsg_rules:
-                                deep_link = self.__oci_networking_uri + nsg.vcn_id + \
-                                "/network-security-groups/" + nsg.id + "/nsg-rules" + '?region=' + region_key
-                                rule_record = {
-                                    "id": rule.id,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, rule.id),
-                                    "destination": rule.destination,
-                                    "destination_type": rule.destination_type,
-                                    "direction": rule.direction,
-                                    "icmp_options": rule.icmp_options,
-                                    "is_stateless": rule.is_stateless,
-                                    "is_valid": rule.is_valid,
-                                    "protocol": rule.protocol,
-                                    "source": rule.source,
-                                    "source_type": rule.source_type,
-                                    "tcp_options": rule.tcp_options,
-                                    "time_created": rule.time_created.strftime(self.__iso_time_format),
-                                    "udp_options": rule.udp_options,
+                nsgs_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query NetworkSecurityGroup resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+                
+                # Looping through NSGs to to get
+                for nsg in nsgs_data:
+                    deep_link = self.__oci_networking_uri + nsg.additional_details['vcnId'] + \
+                        "/network-security-groups/" + nsg.identifier +  '?region=' + region_key
+                    record = {
+                        "id": nsg.identifier,
+                        "compartment_id": nsg.compartment_id,
+                        "display_name": nsg.display_name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, nsg.display_name),
+                        "lifecycle_state": nsg.lifecycle_state,
+                        "time_created": nsg.time_created.strftime(self.__iso_time_format),
+                        "vcn_id": nsg.additional_details['vcnId'],
+                        "freeform_tags" : nsg.freeform_tags,
+                        "defined_tags" : nsg.defined_tags,
+                        "region" : region_key,
+                        "rules": []
+                    }
 
-                                }
-                                # Append NSG Rules to NSG
-                                record['rules'].append(rule_record)
-                            # Append NSG to list of NSGs
-                            self.__network_security_groups.append(record)
+                    nsg_rules = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_network_security_group_security_rules,
+                        network_security_group_id = nsg.identifier
+                    ).data
+
+                    for rule in nsg_rules:
+                        deep_link = self.__oci_networking_uri + nsg.additional_details['vcnId'] + \
+                        "/network-security-groups/" + nsg.identifier + "/nsg-rules" + '?region=' + region_key
+                        rule_record = {
+                            "id": rule.id,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, rule.id),
+                            "destination": rule.destination,
+                            "destination_type": rule.destination_type,
+                            "direction": rule.direction,
+                            "icmp_options": rule.icmp_options,
+                            "is_stateless": rule.is_stateless,
+                            "is_valid": rule.is_valid,
+                            "protocol": rule.protocol,
+                            "source": rule.source,
+                            "source_type": rule.source_type,
+                            "tcp_options": rule.tcp_options,
+                            "time_created": rule.time_created.strftime(self.__iso_time_format),
+                            "udp_options": rule.udp_options,
+
+                        }
+                        # Append NSG Rules to NSG
+                        record['rules'].append(rule_record)
+                    # Append NSG to list of NSGs
+                    self.__network_security_groups.append(record)
             print("\tProcessed " + str(len(self.__network_security_groups)) + " Network Security Groups")
             return self.__network_security_groups
         except Exception as e:
@@ -1630,55 +1632,57 @@ class CIS_Report:
         # Looping Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
                         security_lists_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_security_lists,
-                            compartment_id = compartment.id
+                            region_values['search_client'].search_resources, 
+                            search_details=oci.resource_search.models.StructuredSearchDetails(
+                            query="query SecurityList resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                         ).data
+
                         # Looping through Security Lists to to get
                         for security_list in security_lists_data:
-                            deep_link = self.__oci_networking_uri + security_list.vcn_id + \
-                                "/security-lists/" + security_list.id + '?region=' + region_key
+                            deep_link = self.__oci_networking_uri + security_list.additional_details['vcnId'] + \
+                                "/security-lists/" + security_list.identifier + '?region=' + region_key
                             record = {
-                                "id": security_list.id,
+                                "id": security_list.identifier,
                                 "compartment_id": security_list.compartment_id,
                                 "display_name": security_list.display_name,
                                 "deep_link": self.__generate_csv_hyperlink(deep_link, security_list.display_name),
                                 "lifecycle_state": security_list.lifecycle_state,
                                 "time_created": security_list.time_created.strftime(self.__iso_time_format),
-                                "vcn_id": security_list.vcn_id,
+                                "vcn_id": security_list.additional_details['vcnId'],
                                 "region" : region_key,
                                 "freeform_tags" : security_list.freeform_tags,
                                 "defined_tags" : security_list.defined_tags,
                                 "ingress_security_rules": [],
                                 "egress_security_rules": []
                             }
-                            for egress_rule in security_list.egress_security_rules:
-                                erule = {
-                                    "description": egress_rule.description,
-                                    "destination": egress_rule.destination,
-                                    "destination_type": egress_rule.destination_type,
-                                    "icmp_options": egress_rule.icmp_options,
-                                    "is_stateless": egress_rule.is_stateless,
-                                    "protocol": egress_rule.protocol,
-                                    "tcp_options": egress_rule.tcp_options,
-                                    "udp_options": egress_rule.udp_options
-                                }
-                                record['egress_security_rules'].append(erule)
 
-                            for ingress_rule in security_list.ingress_security_rules:
-                                irule = {
-                                    "description": ingress_rule.description,
-                                    "source": ingress_rule.source,
-                                    "source_type": ingress_rule.source_type,
-                                    "icmp_options": ingress_rule.icmp_options,
-                                    "is_stateless": ingress_rule.is_stateless,
-                                    "protocol": ingress_rule.protocol,
-                                    "tcp_options": ingress_rule.tcp_options,
-                                    "udp_options": ingress_rule.udp_options
-                                }
-                                record['ingress_security_rules'].append(irule)
+                            if security_list.additional_details['egressSecurityRules'] is not None:
+                                for i in range(len(security_list.additional_details['egressSecurityRules'])):
+                                    erule = {
+                                        #"description": egress_rule.description,
+                                        "destination": security_list.additional_details['egressSecurityRules'][i]['destination'],
+                                        #"destination_type": egress_rule.destination_type,
+                                        "icmp_options": security_list.additional_details['egressSecurityRules'][i]['icmpOptions'],
+                                        "is_stateless": security_list.additional_details['egressSecurityRules'][i]['isStateless'],
+                                        "protocol": security_list.additional_details['egressSecurityRules'][i]['protocol'],
+                                        "tcp_options": security_list.additional_details['egressSecurityRules'][i]['tcpOptions'],
+                                        "udp_options": security_list.additional_details['egressSecurityRules'][i]['udpOptions']
+                                    }
+                                    record['egress_security_rules'].append(erule)
+                            if security_list.additional_details['ingressSecurityRules'] is not None:
+                                for i in range(len(security_list.additional_details['ingressSecurityRules'])):
+                                    irule = {
+                                        #"description": ingress_rule.description,
+                                        "source": security_list.additional_details['ingressSecurityRules'][i]['source'],
+                                        #"source_type": ingress_rule.source_type,
+                                        "icmp_options": security_list.additional_details['ingressSecurityRules'][i]['icmpOptions'],
+                                        "is_stateless": security_list.additional_details['ingressSecurityRules'][i]['isStateless'],
+                                        "protocol": security_list.additional_details['ingressSecurityRules'][i]['protocol'],
+                                        "tcp_options": security_list.additional_details['ingressSecurityRules'][i]['tcpOptions'],
+                                        "udp_options": security_list.additional_details['ingressSecurityRules'][i]['udpOptions']
+                                    }
+                                    record['ingress_security_rules'].append(irule)
 
                             # Append Security List to list of NSGs
                             self.__network_security_lists.append(record)
@@ -1695,75 +1699,72 @@ class CIS_Report:
     def __network_read_network_subnets(self):
         try:
             for region_key, region_values in self.__regions.items():
-                # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        subnets_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_subnets,
-                            compartment_id = compartment.id,
-                            lifecycle_state="AVAILABLE"
-                        ).data
-                        # Looping through subnets in a compartment
-                        try:
-                            for subnet in subnets_data:
-                                deep_link = self.__oci_networking_uri + subnet.vcn_id + \
-                                    "/subnets/" + subnet.id + '?region=' + region_key
-                                record = {
-                                    "id": subnet.id,
-                                    "availability_domain": subnet.availability_domain,
-                                    "cidr_block": subnet.cidr_block,
-                                    "compartment_id": subnet.compartment_id,
-                                    "dhcp_options_id": subnet.dhcp_options_id,
-                                    "display_name": subnet.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
-                                    "dns_label": subnet.dns_label,
-                                    "ipv6_cidr_block": subnet.ipv6_cidr_block,
-                                    "ipv6_virtual_router_ip": subnet.ipv6_virtual_router_ip,
-                                    "lifecycle_state": subnet.lifecycle_state,
-                                    "prohibit_public_ip_on_vnic": subnet.prohibit_public_ip_on_vnic,
-                                    "route_table_id": subnet.route_table_id,
-                                    "security_list_ids": subnet.security_list_ids,
-                                    "subnet_domain_name": subnet.subnet_domain_name,
-                                    "time_created": subnet.time_created.strftime(self.__iso_time_format),
-                                    "vcn_id": subnet.vcn_id,
-                                    "virtual_router_ip": subnet.virtual_router_ip,
-                                    "virtual_router_mac": subnet.virtual_router_mac,
-                                    "freeform_tags" : subnet.freeform_tags,
-                                    "define_tags" : subnet.defined_tags,
-                                    "region" : region_key,
-                                    "notes":""
+                subnets_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Subnet resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
 
-                                }
-                                # Adding subnet to subnet list
-                                self.__network_subnets.append(record)
-                        except Exception as e:
-                            deep_link = self.__oci_networking_uri + subnet.vcn_id + \
-                                    "/subnet/" + subnet.id + '?region=' + region_key
-                            record = {
-                                "id": subnet.id,
-                                "availability_domain": subnet.availability_domain,
-                                "cidr_block": subnet.cidr_block,
-                                "compartment_id": subnet.compartment_id,
-                                "dhcp_options_id": subnet.dhcp_options_id,
-                                "display_name": subnet.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
-                                "dns_label": subnet.dns_label,
-                                "ipv6_cidr_block": "",
-                                "ipv6_virtual_router_ip": "",
-                                "lifecycle_state": subnet.lifecycle_state,
-                                "prohibit_public_ip_on_vnic": subnet.prohibit_public_ip_on_vnic,
-                                "route_table_id": subnet.route_table_id,
-                                "security_list_ids": subnet.security_list_ids,
-                                "subnet_domain_name": subnet.subnet_domain_name,
-                                "time_created": subnet.time_created.strftime(self.__iso_time_format),
-                                "vcn_id": subnet.vcn_id,
-                                "virtual_router_ip": subnet.virtual_router_ip,
-                                "virtual_router_mac": subnet.virtual_router_mac,
-                                "region" : region_key,
-                                "notes": str(e)
+                try:
+                    for subnet in subnets_data:
+                        deep_link = self.__oci_networking_uri + subnet.additional_details['vcnId'] + \
+                            "/subnets/" + subnet.identifier + '?region=' + region_key
+                        record = {
+                            "id": subnet.identifier,
+                            "availability_domain": subnet.availability_domain,
+                            "cidr_block": subnet.additional_details['cidrBlock'],
+                            "compartment_id": subnet.compartment_id,
+                            "dhcp_options_id": subnet.additional_details['dhcpOptionsId'],
+                            "display_name": subnet.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
+                            "dns_label": subnet.additional_details['dnsLabel'],
+                            "ipv6_cidr_block": subnet.additional_details['ipv6CidrBlock'],
+                            "ipv6_virtual_router_ip": subnet.additional_details['ipv6VirtualRouterIp'],
+                            "lifecycle_state": subnet.lifecycle_state,
+                            "prohibit_public_ip_on_vnic": subnet.additional_details['prohibitPublicIpOnVnic'],
+                            "route_table_id": subnet.additional_details['routeTableId'],
+                            "security_list_ids": subnet.additional_details['securityListIds'],
+                            "subnet_domain_name": subnet.additional_details['subnetDomainName'],
+                            "time_created": subnet.time_created.strftime(self.__iso_time_format),
+                            "vcn_id": subnet.additional_details['vcnId'],
+                            "virtual_router_ip": subnet.additional_details['virtualRouterIp'],
+                            "virtual_router_mac": subnet.additional_details['virtualRouterMac'],
+                            "freeform_tags" : subnet.freeform_tags,
+                            "define_tags" : subnet.defined_tags,
+                            "region" : region_key,
+                            "notes":""
 
-                            }
-                            self.__network_subnets.append(record)
+                        }
+                        # Adding subnet to subnet list
+                        self.__network_subnets.append(record)
+                except Exception as e:
+                    deep_link = self.__oci_networking_uri + subnet.additional_details['vcnId'] + \
+                            "/subnet/" + subnet.identifier + '?region=' + region_key
+                    record = {
+                        "id": subnet.identifier,
+                        "availability_domain": subnet.availability_domain,
+                        "cidr_block": subnet.additional_details['cidrBlock'],
+                        "compartment_id": subnet.compartment_id,
+                        "dhcp_options_id": subnet.additional_details['dhcpOptionsId'],
+                        "display_name": subnet.display_name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, subnet.display_name),
+                        "dns_label": subnet.additional_details['dnsLabel'],
+                        "ipv6_cidr_block": "",
+                        "ipv6_virtual_router_ip": "",
+                        "lifecycle_state": subnet.lifecycle_state,
+                        "prohibit_public_ip_on_vnic": subnet.additional_details['prohibitPublicIpOnVnic'],
+                        "route_table_id": subnet.additional_details['routeTableId'],
+                        "security_list_ids": subnet.additional_details['securityListIds'],
+                        "subnet_domain_name": subnet.additional_details['subnetDomainName'],
+                        "time_created": subnet.time_created.strftime(self.__iso_time_format),
+                        "vcn_id": subnet.additional_details['vcnId'],
+                        "virtual_router_ip": subnet.additional_details['virtualRouterIp'],
+                        "virtual_router_mac": subnet.additional_details['virtualRouterMac'],
+                        "region" : region_key,
+                        "notes": str(e)
+
+                    }
+                    self.__network_subnets.append(record)
             print("\tProcessed " + str(len(self.__network_subnets)) + " Network Subnets")                        
             
 
@@ -1781,67 +1782,78 @@ class CIS_Report:
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        drg_attachment_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_drg_attachments,
-                            compartment_id=compartment.id,
-                            lifecycle_state="ATTACHED",
-                            attachment_type="ALL"
-                        ).data
-                        # Looping through DRG Attachments in a compartment
-                        for drg_attachment in drg_attachment_data:
-                            deep_link = self.__oci_drg_uri + drg_attachment.drg_id + "/drg-attachment/" + drg_attachment.id + '?region=' + region_key
-                            try:
-                                record = {
-                                "id": drg_attachment.id,
-                                "display_name" : drg_attachment.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
-                                "drg_id" : drg_attachment.drg_id,
-                                "vcn_id" : drg_attachment.vcn_id,
-                                "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
-                                "export_drg_route_distribution_id" : str(drg_attachment.export_drg_route_distribution_id),
-                                "is_cross_tenancy" : drg_attachment.is_cross_tenancy,
-                                "lifecycle_state" : drg_attachment.lifecycle_state,
-                                "network_details" : drg_attachment.network_details,
-                                "network_id" : drg_attachment.network_details.id,
-                                "network_type" : drg_attachment.network_details.type,
-                                "freeform_tags" : drg_attachment.freeform_tags,
-                                "define_tags" : drg_attachment.defined_tags,
-                                "time_created" : drg_attachment.time_created.strftime(self.__iso_time_format),
-                                "region" : region_key,
-                                "notes":""
+                drg_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query DrgAttachment resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
 
+                compartments = set()
+
+                for drg in drg_resources:
+                    compartments.add(drg.compartment_id)
+                
+                for compartment in compartments:
+                    drg_attachment_data = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_drg_attachments,
+                        compartment_id=compartment,
+                        lifecycle_state="ATTACHED",
+                        attachment_type="ALL"
+                    ).data
+
+                    # Looping through DRG Attachments in a compartment
+                    for drg_attachment in drg_attachment_data:
+                        deep_link = self.__oci_drg_uri + drg_attachment.drg_id + "/drg-attachment/" + drg_attachment.id + '?region=' + region_key
+                        try:
+                            record = {
+                            "id": drg_attachment.id,
+                            "display_name" : drg_attachment.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
+                            "drg_id" : drg_attachment.drg_id,
+                            "vcn_id" : drg_attachment.vcn_id,
+                            "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
+                            "export_drg_route_distribution_id" : str(drg_attachment.export_drg_route_distribution_id),
+                            "is_cross_tenancy" : drg_attachment.is_cross_tenancy,
+                            "lifecycle_state" : drg_attachment.lifecycle_state,
+                            "network_details" : drg_attachment.network_details,
+                            "network_id" : drg_attachment.network_details.id,
+                            "network_type" : drg_attachment.network_details.type,
+                            "freeform_tags" : drg_attachment.freeform_tags,
+                            "define_tags" : drg_attachment.defined_tags,
+                            "time_created" : drg_attachment.time_created.strftime(self.__iso_time_format),
+                            "region" : region_key,
+                            "notes":""
+
+                        }
+                        except:
+                            record = {
+                            "id": drg_attachment.id,
+                            "display_name" : drg_attachment.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
+                            "drg_id" : drg_attachment.drg_id,
+                            "vcn_id" : drg_attachment.vcn_id,
+                            "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
+                            "export_drg_route_distribution_id" : str(drg_attachment.export_drg_route_distribution_id),
+                            "is_cross_tenancy" : drg_attachment.is_cross_tenancy,
+                            "lifecycle_state" : drg_attachment.lifecycle_state,
+                            "network_details" : drg_attachment.network_details,
+                            "network_id" : "",
+                            "network_type" : "",
+                            "freeform_tags" : drg_attachment.freeform_tags,
+                            "define_tags" : drg_attachment.defined_tags,
+                            "time_created" : drg_attachment.time_created.strftime(self.__iso_time_format),
+                            "region" : region_key,
+                            "notes":""
                             }
-                            except:
-                                record = {
-                                "id": drg_attachment.id,
-                                "display_name" : drg_attachment.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg_attachment.display_name),
-                                "drg_id" : drg_attachment.drg_id,
-                                "vcn_id" : drg_attachment.vcn_id,
-                                "drg_route_table_id" : str(drg_attachment.drg_route_table_id),
-                                "export_drg_route_distribution_id" : str(drg_attachment.export_drg_route_distribution_id),
-                                "is_cross_tenancy" : drg_attachment.is_cross_tenancy,
-                                "lifecycle_state" : drg_attachment.lifecycle_state,
-                                "network_details" : drg_attachment.network_details,
-                                "network_id" : "",
-                                "network_type" : "",
-                                "freeform_tags" : drg_attachment.freeform_tags,
-                                "define_tags" : drg_attachment.defined_tags,
-                                "time_created" : drg_attachment.time_created.strftime(self.__iso_time_format),
-                                "region" : region_key,
-                                "notes":""
-                                }
 
-                            # Adding DRG Attachment to DRG Attachments list
-                            try:
-                                self.__network_drg_attachments[drg_attachment.drg_id].append(record)
-                            except:
-                                self.__network_drg_attachments[drg_attachment.drg_id] = []
-                                self.__network_drg_attachments[drg_attachment.drg_id].append(record)
-                            # Counter
-                            count_of_drg_attachments +=1
+                        # Adding DRG Attachment to DRG Attachments list
+                        try:
+                            self.__network_drg_attachments[drg_attachment.drg_id].append(record)
+                        except:
+                            self.__network_drg_attachments[drg_attachment.drg_id] = []
+                            self.__network_drg_attachments[drg_attachment.drg_id].append(record)
+                        # Counter
+                        count_of_drg_attachments +=1
 
                                 
             print("\tProcessed " + str(count_of_drg_attachments) + " DRG Attachments")                        
@@ -1857,66 +1869,76 @@ class CIS_Report:
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        drg_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_drgs,
-                            compartment_id=compartment.id,
-                        ).data
-                        # Looping through DRGs in a compartment
-                        for drg in drg_data:
-                            deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
-                            #Fetch DRG Upgrade status
-                            try:
-                                upgrade_status = region_values['network_client'].get_upgrade_status(drg.id).data.status
-                            except:
-                                upgrade_status = "Not Available"
-                                
-                            try:
-                                record = {
-                                    "id": drg.id,
-                                    "display_name" : drg.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
-                                    "default_drg_route_tables" : drg.default_drg_route_tables,
-                                    "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
-                                    "default_remote_peering_connection_route_table" : drg.default_drg_route_tables.remote_peering_connection,
-                                    "default_vcn_table" : drg.default_drg_route_tables.vcn,
-                                    "default_virtual_circuit_route_table" : drg.default_drg_route_tables.virtual_circuit,
-                                    "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
-                                    "compartment_id" : drg.compartment_id,
-                                    "lifecycle_state" : drg.lifecycle_state,
-                                    "upgrade_status" : upgrade_status,                                    
-                                    "time_created" : drg.time_created.strftime(self.__iso_time_format),
-                                    "freeform_tags" : drg.freeform_tags,
-                                    "define_tags" : drg.defined_tags,
-                                    "region" : region_key,
-                                    "notes":""
-                                }
-                            except Exception as e:
-                                record = {
-                                    "id": drg.id,
-                                    "display_name" : drg.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
-                                    "default_drg_route_tables" : drg.default_drg_route_tables,
-                                    "default_ipsec_tunnel_route_table" : "",
-                                    "default_remote_peering_connection_route_table" : "",
-                                    "default_vcn_table" : "",
-                                    "default_virtual_circuit_route_table" : "",
-                                    "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
-                                    "compartment_id" : drg.compartment_id,
-                                    "lifecycle_state" : drg.lifecycle_state,
-                                    "upgrade_status" : upgrade_status,                                    
-                                    "time_created" : drg.time_created.strftime(self.__iso_time_format),
-                                    "freeform_tags" : drg.freeform_tags,
-                                    "define_tags" : drg.defined_tags,
-                                    "region" : region_key,
-                                    "notes": str(e)
+                drg_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Drg resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
 
-                                }
-                            # for Raw Data
-                            self.__raw_network_drgs.append(record)
-                            # For Checks data
-                            self.__network_drgs[drg.id] = record
+                compartments = set()
+
+                for drg in drg_resources:
+                    compartments.add(drg.compartment_id)
+
+                for compartment in compartments:
+                    drg_data = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_drgs,
+                        compartment_id=compartment,
+                    ).data
+                    # Looping through DRGs in a compartment
+                    for drg in drg_data:
+                        deep_link = self.__oci_drg_uri + drg.id + '?region=' + region_key
+                        #Fetch DRG Upgrade status
+                        try:
+                            upgrade_status = region_values['network_client'].get_upgrade_status(drg.id).data.status
+                        except:
+                            upgrade_status = "Not Available"
+                            
+                        try:
+                            record = {
+                                "id": drg.id,
+                                "display_name" : drg.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
+                                "default_drg_route_tables" : drg.default_drg_route_tables,
+                                "default_ipsec_tunnel_route_table" : drg.default_drg_route_tables.ipsec_tunnel,
+                                "default_remote_peering_connection_route_table" : drg.default_drg_route_tables.remote_peering_connection,
+                                "default_vcn_table" : drg.default_drg_route_tables.vcn,
+                                "default_virtual_circuit_route_table" : drg.default_drg_route_tables.virtual_circuit,
+                                "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
+                                "compartment_id" : drg.compartment_id,
+                                "lifecycle_state" : drg.lifecycle_state,
+                                "upgrade_status" : upgrade_status,                                    
+                                "time_created" : drg.time_created.strftime(self.__iso_time_format),
+                                "freeform_tags" : drg.freeform_tags,
+                                "define_tags" : drg.defined_tags,
+                                "region" : region_key,
+                                "notes":""
+                            }
+                        except Exception as e:
+                            record = {
+                                "id": drg.id,
+                                "display_name" : drg.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, drg.display_name),
+                                "default_drg_route_tables" : drg.default_drg_route_tables,
+                                "default_ipsec_tunnel_route_table" : "",
+                                "default_remote_peering_connection_route_table" : "",
+                                "default_vcn_table" : "",
+                                "default_virtual_circuit_route_table" : "",
+                                "default_export_drg_route_distribution_id" : drg.default_export_drg_route_distribution_id,
+                                "compartment_id" : drg.compartment_id,
+                                "lifecycle_state" : drg.lifecycle_state,
+                                "upgrade_status" : upgrade_status,                                    
+                                "time_created" : drg.time_created.strftime(self.__iso_time_format),
+                                "freeform_tags" : drg.freeform_tags,
+                                "define_tags" : drg.defined_tags,
+                                "region" : region_key,
+                                "notes": str(e)
+
+                            }
+                        # for Raw Data
+                        self.__raw_network_drgs.append(record)
+                        # For Checks data
+                        self.__network_drgs[drg.id] = record
 
 
 
@@ -1933,100 +1955,110 @@ class CIS_Report:
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        fastconnect_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_virtual_circuits,
-                            compartment_id=compartment.id,
-                            # lifecycle_state="PROVISIONED"
-                        ).data
-                        # Looping through fastconnects in a compartment
-                        for fastconnect in fastconnect_data:
-                            deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
-                            try:
-                                    record = {
-                                        "id": fastconnect.id,
-                                        "display_name" : fastconnect.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
-                                        "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
-                                        "bgp_admin_state" : fastconnect.bgp_admin_state,
-                                        "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
-                                        "bgp_management" : fastconnect.bgp_management, 
-                                        "bgp_session_state" : fastconnect.bgp_session_state,
-                                        "compartment_id" : fastconnect.compartment_id,
-                                        "cross_connect_mappings" : fastconnect.cross_connect_mappings,
-                                        "customer_asn" : fastconnect.customer_asn,
-                                        "customer_bgp_asn" : fastconnect.customer_bgp_asn,
-                                        "gateway_id" : fastconnect.gateway_id,
-                                        "ip_mtu" : fastconnect.ip_mtu,
-                                        "is_bfd_enabled" : fastconnect.is_bfd_enabled,
-                                        "lifecycle_state" : fastconnect.lifecycle_state,
-                                        "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
-                                        "provider_name" : fastconnect.provider_name,
-                                        "provider_service_id" : fastconnect.provider_service_id,
-                                        "provider_service_key_name" : fastconnect.provider_service_key_name,
-                                        "provider_service_name" : fastconnect.provider_service_name,
-                                        "provider_state" : fastconnect.provider_state,
-                                        "public_prefixes" : fastconnect.public_prefixes,
-                                        "reference_comment" : fastconnect.reference_comment,
-                                        "fastconnect_region" : fastconnect.region,
-                                        "routing_policy" : fastconnect.routing_policy,
-                                        "service_type" : fastconnect.service_type,
-                                        "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
-                                        "type" : fastconnect.type,
-                                        "freeform_tags" : fastconnect.freeform_tags,
-                                        "define_tags" : fastconnect.defined_tags,
-                                        "region" : region_key,
-                                        "notes":""
+                fastconnects = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query VirtualCircuit resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                compartments = set()
+
+                for vc in fastconnects:
+                    compartments.add(vc.compartment_id)
+
+                for compartment in compartments:
+                    fastconnect_data = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_virtual_circuits,
+                        compartment_id=compartment,
+                    ).data
+                    # lifecycle_state="PROVISIONED"
+                    # Looping through fastconnects in a compartment
+                    for fastconnect in fastconnect_data:
+                        deep_link = self.__oci_fastconnect_uri + fastconnect.id + '?region=' + region_key
+                        try:
+                                record = {
+                                    "id": fastconnect.id,
+                                    "display_name" : fastconnect.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
+                                    "bandwidth_shape_name" : fastconnect.bandwidth_shape_name,
+                                    "bgp_admin_state" : fastconnect.bgp_admin_state,
+                                    "bgp_ipv6_session_state" : fastconnect.bgp_ipv6_session_state,
+                                    "bgp_management" : fastconnect.bgp_management, 
+                                    "bgp_session_state" : fastconnect.bgp_session_state,
+                                    "compartment_id" : fastconnect.compartment_id,
+                                    "cross_connect_mappings" : fastconnect.cross_connect_mappings,
+                                    "customer_asn" : fastconnect.customer_asn,
+                                    "customer_bgp_asn" : fastconnect.customer_bgp_asn,
+                                    "gateway_id" : fastconnect.gateway_id,
+                                    "ip_mtu" : fastconnect.ip_mtu,
+                                    "is_bfd_enabled" : fastconnect.is_bfd_enabled,
+                                    "lifecycle_state" : fastconnect.lifecycle_state,
+                                    "oracle_bgp_asn" : fastconnect.oracle_bgp_asn,
+                                    "provider_name" : fastconnect.provider_name,
+                                    "provider_service_id" : fastconnect.provider_service_id,
+                                    "provider_service_key_name" : fastconnect.provider_service_id,
+                                    "provider_service_name" : fastconnect.provider_service_name,
+                                    "provider_state" : fastconnect.provider_state,
+                                    "public_prefixes" : fastconnect.public_prefixes,
+                                    "reference_comment" : fastconnect.reference_comment,
+                                    "fastconnect_region" : fastconnect.region,
+                                    "routing_policy" : fastconnect.routing_policy,
+                                    "service_type" : fastconnect.service_type,
+                                    "time_created" : fastconnect.time_created.strftime(self.__iso_time_format),
+                                    "type" : fastconnect.type,
+                                    "freeform_tags" : fastconnect.freeform_tags,
+                                    "define_tags" : fastconnect.defined_tags,
+                                    "region" : region_key,
+                                    "notes":""
+
+                                        }
+                                        # Adding fastconnect to fastconnect dict
+
+
+                        except Exception as e:
+                            record = {
+                                    "id": fastconnect.id,
+                                    "display_name" :  fastconnect.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
+                                    "bandwidth_shape_name" : "",
+                                    "bgp_admin_state" : "",
+                                    "bgp_ipv6_session_state" : "",
+                                    "bgp_management" : "", 
+                                    "bgp_session_state" : "",
+                                    "compartment_id" : fastconnect.compartment_id,
+                                    "cross_connect_mappings" : "",
+                                    "customer_asn" : "",
+                                    "customer_bgp_asn" : "",
+                                    "gateway_id" : "",
+                                    "ip_mtu" : "",
+                                    "is_bfd_enabled" : "",
+                                    "lifecycle_state" : "",
+                                    "oracle_bgp_asn" : "",
+                                    "provider_name" : "",
+                                    "provider_service_id" : "",
+                                    "provider_service_key_name" : "",
+                                    "provider_service_name" : "",
+                                    "provider_state" : "",
+                                    "public_prefixes" : "",
+                                    "reference_comment" : "",
+                                    "fastconnect_region" : "",
+                                    "routing_policy" : "",
+                                    "service_type" : "",
+                                    "time_created" : "",
+                                    "type" : "",
+                                    "freeform_tags" : "",
+                                    "define_tags" : "",
+                                    "region" : region_key,
+                                    "notes": str(e)
 
                                     }
-                                    # Adding fastconnect to fastconnect dict
-
-
-                            except Exception as e:
-                                record = {
-                                        "id": fastconnect.id,
-                                        "display_name" :  fastconnect.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, fastconnect.display_name),
-                                        "bandwidth_shape_name" : "",
-                                        "bgp_admin_state" : "",
-                                        "bgp_ipv6_session_state" : "",
-                                        "bgp_management" : "", 
-                                        "bgp_session_state" : "",
-                                        "compartment_id" : compartment.id,
-                                        "cross_connect_mappings" : "",
-                                        "customer_asn" : "",
-                                        "customer_bgp_asn" : "",
-                                        "gateway_id" : "",
-                                        "ip_mtu" : "",
-                                        "is_bfd_enabled" : "",
-                                        "lifecycle_state" : "",
-                                        "oracle_bgp_asn" : "",
-                                        "provider_name" : "",
-                                        "provider_service_id" : "",
-                                        "provider_service_key_name" : "",
-                                        "provider_service_name" : "",
-                                        "provider_state" : "",
-                                        "public_prefixes" : "",
-                                        "reference_comment" : "",
-                                        "fastconnect_region" : "",
-                                        "routing_policy" : "",
-                                        "service_type" : "",
-                                        "time_created" : "",
-                                        "type" : "",
-                                        "freeform_tags" : "",
-                                        "define_tags" : "",
-                                        "region" : region_key,
-                                        "notes": str(e)
-
-                                }
-                            
-                            # Adding fastconnect to fastconnect dict
-                            try:
-                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
-                            except:
-                                self.__network_fastconnects[fastconnect.gateway_id] = []
-                                self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                                
+                        # Adding fastconnect to fastconnect dict
+                        try:
+                            self.__network_fastconnects[fastconnect.gateway_id].append(record)
+                        except:
+                            self.__network_fastconnects[fastconnect.gateway_id] = []
+                            self.__network_fastconnects[fastconnect.gateway_id].append(record)
             print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))) + " FastConnects")                        
             return self.__network_fastconnects
         except Exception as e:
@@ -2040,98 +2072,97 @@ class CIS_Report:
     def __network_read_ip_sec_connections(self):
         try:
             for region_key, region_values in self.__regions.items():
-                # Looping through compartments in tenancy
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        ip_sec_connections_data = oci.pagination.list_call_get_all_results(
-                            region_values['network_client'].list_ip_sec_connections,
-                            compartment_id=compartment.id,
-                        ).data
-                        # Looping through IP SEC Connections in a compartment
+                ip_sec_connections_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query IPSecConnection resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
                         
-                        for ip_sec in ip_sec_connections_data:
-                            try:
-                                deep_link = self.__oci_ipsec_uri + ip_sec.id + '?region=' + region_key
-                                record = {
-                                    "id": ip_sec.id,
-                                    "display_name" : ip_sec.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
-                                    "cpe_id" : ip_sec.cpe_id,
-                                    "drg_id" : ip_sec.drg_id,
-                                    "compartment_id" : ip_sec.compartment_id,
-                                    "cpe_local_identifier" : ip_sec.cpe_local_identifier,
-                                    "cpe_local_identifier_type" : ip_sec.cpe_local_identifier_type,
-                                    "lifecycle_state" : ip_sec.lifecycle_state,
-                                    "freeform_tags" : ip_sec.freeform_tags,
-                                    "define_tags" : ip_sec.defined_tags,
-                                    "region" : region_key,
-                                    "tunnels" : [],
-                                    "number_tunnels_up" : 0,
-                                    "tunnels_up" : True, # It is true unless I find out otherwise
-                                    "notes":""
-                                }
-                                # Getting Tunnel Data
-                                try:
-                                    ip_sec_tunnels_data = oci.pagination.list_call_get_all_results(
-                                        region_values['network_client'].list_ip_sec_connection_tunnels,
-                                        ipsc_id=ip_sec.id,
-                                    ).data
-                                    for tunnel in ip_sec_tunnels_data:
-                                        deep_link = self.__oci_ipsec_uri + ip_sec.id + "/tunnels/" + tunnel.id + '?region=' + region_key
-                                        tunnel_record = {
-                                                "id" : tunnel.id,
-                                                "cpe_ip" : tunnel.cpe_ip,
-                                                "display_name" : tunnel.display_name,
-                                                "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
-                                                "vpn_ip" : tunnel.vpn_ip,
-                                                "ike_version" : tunnel.ike_version,
-                                                "encryption_domain_config" : tunnel.encryption_domain_config,
-                                                "lifecycle_state" : tunnel.lifecycle_state,
-                                                "nat_translation_enabled" : tunnel.nat_translation_enabled,
-                                                "bgp_session_info" : tunnel.bgp_session_info,
-                                                "oracle_can_initiate" : tunnel.oracle_can_initiate,
-                                                "routing" : tunnel.routing,
-                                                "status" : tunnel.status,
-                                                "compartment_id" : tunnel.compartment_id,
-                                                "dpd_mode" : tunnel.dpd_mode,
-                                                "dpd_timeout_in_sec" : tunnel.dpd_timeout_in_sec,
-                                                "time_created" : tunnel.time_created.strftime(self.__iso_time_format),
-                                                "time_status_updated" : str(tunnel.time_status_updated),
-                                                "notes" : ""
-                                            }
-                                        if tunnel_record['status'].upper() == "UP":
-                                            record['number_tunnels_up'] += 1
-                                        else:
-                                            record['tunnels_up'] = False
-                                        record["tunnels"].append(tunnel_record)
-                                except:
-                                    print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.id)
+                for ip_sec in ip_sec_connections_data:
+                    try:
+                        deep_link = self.__oci_ipsec_uri + ip_sec.identifier + '?region=' + region_key
+                        record = {
+                            "id": ip_sec.identifier,
+                            "display_name" : ip_sec.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
+                            "cpe_id" : ip_sec.additional_details['cpeId'],
+                            "drg_id" : ip_sec.additional_details['drgId'],
+                            "compartment_id" : ip_sec.compartment_id,
+                            #"cpe_local_identifier" : ip_sec.cpe_local_identifier,
+                            #"cpe_local_identifier_type" : ip_sec.cpe_local_identifier_type,
+                            "lifecycle_state" : ip_sec.lifecycle_state,
+                            "freeform_tags" : ip_sec.freeform_tags,
+                            "define_tags" : ip_sec.defined_tags,
+                            "region" : region_key,
+                            "tunnels" : [],
+                            "number_tunnels_up" : 0,
+                            "tunnels_up" : True, # It is true unless I find out otherwise
+                            "notes":""
+                        }
+                        # Getting Tunnel Data
+                        try:
+                            ip_sec_tunnels_data = oci.pagination.list_call_get_all_results(
+                                region_values['network_client'].list_ip_sec_connection_tunnels,
+                                ipsc_id=ip_sec.identifier,
+                            ).data
+                            for tunnel in ip_sec_tunnels_data:
+                                deep_link = self.__oci_ipsec_uri + ip_sec.identifier + "/tunnels/" + tunnel.id + '?region=' + region_key
+                                tunnel_record = {
+                                        "id" : tunnel.id,
+                                        "cpe_ip" : tunnel.cpe_ip,
+                                        "display_name" : tunnel.display_name,
+                                        "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
+                                        "vpn_ip" : tunnel.vpn_ip,
+                                        "ike_version" : tunnel.ike_version,
+                                        "encryption_domain_config" : tunnel.encryption_domain_config,
+                                        "lifecycle_state" : tunnel.lifecycle_state,
+                                        "nat_translation_enabled" : tunnel.nat_translation_enabled,
+                                        "bgp_session_info" : tunnel.bgp_session_info,
+                                        "oracle_can_initiate" : tunnel.oracle_can_initiate,
+                                        "routing" : tunnel.routing,
+                                        "status" : tunnel.status,
+                                        "compartment_id" : tunnel.compartment_id,
+                                        "dpd_mode" : tunnel.dpd_mode,
+                                        "dpd_timeout_in_sec" : tunnel.dpd_timeout_in_sec,
+                                        "time_created" : tunnel.time_created.strftime(self.__iso_time_format),
+                                        "time_status_updated" : str(tunnel.time_status_updated),
+                                        "notes" : ""
+                                    }
+                                if tunnel_record['status'].upper() == "UP":
+                                    record['number_tunnels_up'] += 1
+                                else:
                                     record['tunnels_up'] = False
-                            except:
-                                record = {
-                                    "id": ip_sec.id,
-                                    "display_name" : ip_sec.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
-                                    "cpe_id" : "",
-                                    "drg_id" : "",
-                                    "compartment_id" : ip_sec.compartment_id,
-                                    "cpe_local_identifier" : "",
-                                    "cpe_local_identifier_type" : "",
-                                    "lifecycle_state" : "",
-                                    "freeform_tags" : "",
-                                    "define_tags" : "",
-                                    "region" : region_key,
-                                    "tunnels" : [],
-                                    "number_tunnels_up" : 0,
-                                    "tunnels_up" : False, 
-                                    "notes":""
-                                }
-                                
-                            try:
-                                self.__network_ipsec_connections[ip_sec.drg_id].append(record)
-                            except:
-                                self.__network_ipsec_connections[ip_sec.drg_id] = []
-                                self.__network_ipsec_connections[ip_sec.drg_id].append(record)
+                                record["tunnels"].append(tunnel_record)
+                        except:
+                            print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.identifier)
+                            record['tunnels_up'] = False
+
+
+                    except:
+                        record = {
+                            "id": ip_sec.identifier,
+                            "display_name" : ip_sec.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, ip_sec.display_name),
+                            "cpe_id" : "",
+                            "drg_id" : "",
+                            "compartment_id" : ip_sec.compartment_id,
+                            "cpe_local_identifier" : "",
+                            "cpe_local_identifier_type" : "",
+                            "lifecycle_state" : "",
+                            "freeform_tags" : "",
+                            "define_tags" : "",
+                            "region" : region_key,
+                            "tunnels" : [],
+                            "number_tunnels_up" : 0,
+                            "tunnels_up" : False, 
+                            "notes":""
+                        }
+                        
+                    try:
+                        self.__network_ipsec_connections[ip_sec.additional_details['drgId']].append(record)
+                    except:
+                        self.__network_ipsec_connections[ip_sec.additional_details['drgId']] = []
+                        self.__network_ipsec_connections[ip_sec.additional_details['drgId']].append(record)
 
             print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")                        
             return self.__network_ipsec_connections
@@ -2145,196 +2176,125 @@ class CIS_Report:
     def __adb_read_adbs(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments: 
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        autonomous_databases = oci.pagination.list_call_get_all_results(
+                ##UPDATED JB
+                
+
+                adb_query_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query AutonomousDatabase resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                compartments = set()
+
+                for adb in adb_query_resources:
+                    compartments.add(adb.compartment_id)
+
+                for compartment in compartments: 
+                    autonomous_databases = oci.pagination.list_call_get_all_results(
                         region_values['adb_client'].list_autonomous_databases, 
-                                compartment_id = compartment.id
-                            ).data
-                        for adb in autonomous_databases:
-                            try: 
-                                deep_link = self.__oci_adb_uri + adb.id + '?region=' + region_key
-                                if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
-                                    adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
-                                    record = {
-                                                "id": adb.id,
-                                                "display_name": adb.display_name,
-                                                "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
-                                                "apex_details": adb.apex_details,
-                                                "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
-                                                "autonomous_container_database_id": adb.autonomous_container_database_id,
-                                                "autonomous_maintenance_schedule_type": adb.autonomous_maintenance_schedule_type,
-                                                "available_upgrade_versions": adb.available_upgrade_versions,
-                                                "backup_config": adb.backup_config,
-                                                "compartment_id": adb.compartment_id,
-                                                "connection_strings": adb.connection_strings,
-                                                "connection_urls": adb.connection_urls,
-                                                "cpu_core_count": adb.cpu_core_count,
-                                                "customer_contacts": adb.cpu_core_count,
-                                                "data_safe_status": adb.data_safe_status,
-                                                "data_storage_size_in_gbs": adb.data_storage_size_in_gbs,
-                                                "data_storage_size_in_tbs": adb.data_storage_size_in_tbs,
-                                                "database_management_status": adb.database_management_status,
-                                                "dataguard_region_type": adb.dataguard_region_type,
-                                                "db_name": adb.db_name,
-                                                "db_version": adb.db_version,
-                                                "db_workload": adb.db_workload,
-                                                "defined_tags": adb.defined_tags,
-                                                "failed_data_recovery_in_seconds": adb.failed_data_recovery_in_seconds,
-                                                "freeform_tags": adb.freeform_tags,
-                                                "infrastructure_type": adb.infrastructure_type,
-                                                "is_access_control_enabled": adb.is_access_control_enabled,
-                                                "is_auto_scaling_enabled": adb.is_auto_scaling_enabled,
-                                                "is_data_guard_enabled": adb.is_data_guard_enabled,
-                                                "is_dedicated": adb.is_dedicated,
-                                                "is_free_tier": adb.is_free_tier,
-                                                "is_mtls_connection_required": adb.is_mtls_connection_required,
-                                                "is_preview": adb.is_preview,
-                                                "is_reconnect_clone_enabled": adb.is_reconnect_clone_enabled,
-                                                "is_refreshable_clone": adb.is_refreshable_clone,
-                                                "key_history_entry": adb.key_history_entry,
-                                                "key_store_id": adb.key_store_id,
-                                                "key_store_wallet_name": adb.key_store_wallet_name,
-                                                "kms_key_id": adb.kms_key_id,
-                                                "kms_key_lifecycle_details": adb.kms_key_lifecycle_details,
-                                                "kms_key_version_id": adb.kms_key_version_id,
-                                                "license_model": adb.license_model,
-                                                "lifecycle_details": adb.lifecycle_details,
-                                                "lifecycle_state": adb.lifecycle_state,
-                                                "nsg_ids": adb.nsg_ids,
-                                                "ocpu_count": adb.ocpu_count,
-                                                "open_mode": adb.open_mode,
-                                                "operations_insights_status": adb.operations_insights_status,
-                                                "peer_db_ids": adb.peer_db_ids,
-                                                "permission_level": adb.permission_level,
-                                                "private_endpoint": adb.private_endpoint,
-                                                "private_endpoint_ip": adb.private_endpoint_ip,
-                                                "private_endpoint_label": adb.private_endpoint_label,
-                                                "refreshable_mode": adb.refreshable_mode,
-                                                "refreshable_status": adb.refreshable_status,
-                                                "role": adb.role,
-                                                "scheduled_operations": adb.scheduled_operations,
-                                                "service_console_url": adb.service_console_url,
-                                                "source_id": adb.source_id,
-                                                "standby_whitelisted_ips": adb.standby_whitelisted_ips,
-                                                "subnet_id": adb.subnet_id,
-                                                "supported_regions_to_clone_to": adb.supported_regions_to_clone_to,
-                                                "system_tags": adb.system_tags,
-                                                "time_created": adb.time_created.strftime(self.__iso_time_format),
-                                                "time_data_guard_role_changed": str(adb.time_data_guard_role_changed),
-                                                "time_deletion_of_free_autonomous_database": str(adb.time_deletion_of_free_autonomous_database),
-                                                "time_local_data_guard_enabled": str(adb.time_local_data_guard_enabled),
-                                                "time_maintenance_begin": str(adb.time_maintenance_begin),
-                                                "time_maintenance_end": str(adb.time_maintenance_end),
-                                                "time_of_last_failover": str(adb.time_of_last_failover),
-                                                "time_of_last_refresh": str(adb.time_of_last_refresh),
-                                                "time_of_last_refresh_point": str(adb.time_of_last_refresh_point),
-                                                "time_of_last_switchover": str(adb.time_of_last_switchover),
-                                                "time_of_next_refresh": str(adb.time_of_next_refresh),
-                                                "time_reclamation_of_free_autonomous_database": str(adb.time_reclamation_of_free_autonomous_database),
-                                                "time_until_reconnect_clone_enabled": str(adb.time_until_reconnect_clone_enabled),
-                                                "used_data_storage_size_in_tbs": str(adb.used_data_storage_size_in_tbs),
-                                                "vault_id": adb.vault_id,
-                                                "whitelisted_ips": adb.whitelisted_ips,
-                                                "region" : region_key,
-                                                "notes" : ""
-                                            }
-                                else:
-                                    record = {
-                                                "id": adb.id,
-                                                "display_name": adb.display_name,
-                                                "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
-                                                "apex_details": "",
-                                                "are_primary_whitelisted_ips_used": "",
-                                                "autonomous_container_database_id": "",
-                                                "autonomous_maintenance_schedule_type": "",
-                                                "available_upgrade_versions": "",
-                                                "backup_config": "",
-                                                "compartment_id": adb.compartment_id,
-                                                "connection_strings": "",
-                                                "connection_urls": "",
-                                                "cpu_core_count": "",
-                                                "customer_contacts": "",
-                                                "data_safe_status": "",
-                                                "data_storage_size_in_gbs": "",
-                                                "data_storage_size_in_tbs": "",
-                                                "database_management_status": "",
-                                                "dataguard_region_type": "",
-                                                "db_name": "",
-                                                "db_version": "",
-                                                "db_workload": "",
-                                                "defined_tags": "",
-                                                "failed_data_recovery_in_seconds": "",
-                                                "freeform_tags": "",
-                                                "infrastructure_type": "",
-                                                "is_access_control_enabled": "",
-                                                "is_auto_scaling_enabled": "",
-                                                "is_data_guard_enabled": "",
-                                                "is_dedicated": "",
-                                                "is_free_tier": "",
-                                                "is_mtls_connection_required": "",
-                                                "is_preview": "",
-                                                "is_reconnect_clone_enabled": "",
-                                                "is_refreshable_clone": "",
-                                                "key_history_entry": "",
-                                                "key_store_id": "",
-                                                "key_store_wallet_name": "",
-                                                "kms_key_id": "",
-                                                "kms_key_lifecycle_details": "",
-                                                "kms_key_version_id": "",
-                                                "license_model": "",
-                                                "lifecycle_details": "",
-                                                "lifecycle_state": adb.lifecycle_state,
-                                                "nsg_ids": "",
-                                                "ocpu_count": "",
-                                                "open_mode": "",
-                                                "operations_insights_status": "",
-                                                "peer_db_ids": "",
-                                                "permission_level": "",
-                                                "private_endpoint": "",
-                                                "private_endpoint_ip":"",
-                                                "private_endpoint_label": "",
-                                                "refreshable_mode": "",
-                                                "refreshable_status": "",
-                                                "role": "",
-                                                "scheduled_operations": "",
-                                                "service_console_url": "",
-                                                "source_id": "",
-                                                "standby_whitelisted_ips": "",
-                                                "subnet_id": "",
-                                                "supported_regions_to_clone_to": "",
-                                                "system_tags": "",
-                                                "time_created": "",
-                                                "time_data_guard_role_changed": "",
-                                                "time_deletion_of_free_autonomous_database": "",
-                                                "time_local_data_guard_enabled": "",
-                                                "time_maintenance_begin": "",
-                                                "time_maintenance_end": "",
-                                                "time_of_last_failover": "",
-                                                "time_of_last_refresh": "",
-                                                "time_of_last_refresh_point": "",
-                                                "time_of_last_switchover": "",
-                                                "time_of_next_refresh": "",
-                                                "time_reclamation_of_free_autonomous_database": "",
-                                                "time_until_reconnect_clone_enabled": "",
-                                                "used_data_storage_size_in_tbs": "",
-                                                "vault_id": "",
-                                                "whitelisted_ips": "",
-                                                "region" : region_key,
-                                                "notes": ""
-                                            }
-                            except Exception as e:
+                        compartment_id = compartment
+                        ).data
+                    for adb in autonomous_databases:
+                        try: 
+                            deep_link = self.__oci_adb_uri + adb.id + '?region=' + region_key
+                            if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or
+                                adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
                                 record = {
-                                            "id":"",
-                                            "display_name": "",
-                                            "deep_link": "",
+                                            "id": adb.id,
+                                            "display_name": adb.display_name,
+                                            "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
+                                            "apex_details": adb.apex_details,
+                                            "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
+                                            "autonomous_container_database_id": adb.autonomous_container_database_id,
+                                            "autonomous_maintenance_schedule_type": adb.autonomous_maintenance_schedule_type,
+                                            "available_upgrade_versions": adb.available_upgrade_versions,
+                                            "backup_config": adb.backup_config,
+                                            "compartment_id": adb.compartment_id,
+                                            "connection_strings": adb.connection_strings,
+                                            "connection_urls": adb.connection_urls,
+                                            "cpu_core_count": adb.cpu_core_count,
+                                            "customer_contacts": adb.cpu_core_count,
+                                            "data_safe_status": adb.data_safe_status,
+                                            "data_storage_size_in_gbs": adb.data_storage_size_in_gbs,
+                                            "data_storage_size_in_tbs": adb.data_storage_size_in_tbs,
+                                            "database_management_status": adb.database_management_status,
+                                            "dataguard_region_type": adb.dataguard_region_type,
+                                            "db_name": adb.db_name,
+                                            "db_version": adb.db_version,
+                                            "db_workload": adb.db_workload,
+                                            "defined_tags": adb.defined_tags,
+                                            "failed_data_recovery_in_seconds": adb.failed_data_recovery_in_seconds,
+                                            "freeform_tags": adb.freeform_tags,
+                                            "infrastructure_type": adb.infrastructure_type,
+                                            "is_access_control_enabled": adb.is_access_control_enabled,
+                                            "is_auto_scaling_enabled": adb.is_auto_scaling_enabled,
+                                            "is_data_guard_enabled": adb.is_data_guard_enabled,
+                                            "is_dedicated": adb.is_dedicated,
+                                            "is_free_tier": adb.is_free_tier,
+                                            "is_mtls_connection_required": adb.is_mtls_connection_required,
+                                            "is_preview": adb.is_preview,
+                                            "is_reconnect_clone_enabled": adb.is_reconnect_clone_enabled,
+                                            "is_refreshable_clone": adb.is_refreshable_clone,
+                                            "key_history_entry": adb.key_history_entry,
+                                            "key_store_id": adb.key_store_id,
+                                            "key_store_wallet_name": adb.key_store_wallet_name,
+                                            "kms_key_id": adb.kms_key_id,
+                                            "kms_key_lifecycle_details": adb.kms_key_lifecycle_details,
+                                            "kms_key_version_id": adb.kms_key_version_id,
+                                            "license_model": adb.license_model,
+                                            "lifecycle_details": adb.lifecycle_details,
+                                            "lifecycle_state": adb.lifecycle_state,
+                                            "nsg_ids": adb.nsg_ids,
+                                            "ocpu_count": adb.ocpu_count,
+                                            "open_mode": adb.open_mode,
+                                            "operations_insights_status": adb.operations_insights_status,
+                                            "peer_db_ids": adb.peer_db_ids,
+                                            "permission_level": adb.permission_level,
+                                            "private_endpoint": adb.private_endpoint,
+                                            "private_endpoint_ip": adb.private_endpoint_ip,
+                                            "private_endpoint_label": adb.private_endpoint_label,
+                                            "refreshable_mode": adb.refreshable_mode,
+                                            "refreshable_status": adb.refreshable_status,
+                                            "role": adb.role,
+                                            "scheduled_operations": adb.scheduled_operations,
+                                            "service_console_url": adb.service_console_url,
+                                            "source_id": adb.source_id,
+                                            "standby_whitelisted_ips": adb.standby_whitelisted_ips,
+                                            "subnet_id": adb.subnet_id,
+                                            "supported_regions_to_clone_to": adb.supported_regions_to_clone_to,
+                                            "system_tags": adb.system_tags,
+                                            "time_created": adb.time_created.strftime(self.__iso_time_format),
+                                            "time_data_guard_role_changed": str(adb.time_data_guard_role_changed),
+                                            "time_deletion_of_free_autonomous_database": str(adb.time_deletion_of_free_autonomous_database),
+                                            "time_local_data_guard_enabled": str(adb.time_local_data_guard_enabled),
+                                            "time_maintenance_begin": str(adb.time_maintenance_begin),
+                                            "time_maintenance_end": str(adb.time_maintenance_end),
+                                            "time_of_last_failover": str(adb.time_of_last_failover),
+                                            "time_of_last_refresh": str(adb.time_of_last_refresh),
+                                            "time_of_last_refresh_point": str(adb.time_of_last_refresh_point),
+                                            "time_of_last_switchover": str(adb.time_of_last_switchover),
+                                            "time_of_next_refresh": str(adb.time_of_next_refresh),
+                                            "time_reclamation_of_free_autonomous_database": str(adb.time_reclamation_of_free_autonomous_database),
+                                            "time_until_reconnect_clone_enabled": str(adb.time_until_reconnect_clone_enabled),
+                                            "used_data_storage_size_in_tbs": str(adb.used_data_storage_size_in_tbs),
+                                            "vault_id": adb.vault_id,
+                                            "whitelisted_ips": adb.whitelisted_ips,
+                                            "region" : region_key,
+                                            "notes" : ""
+                                        }
+                            else:
+                                record = {
+                                            "id": adb.id,
+                                            "display_name": adb.display_name,
+                                            "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
                                             "apex_details": "",
                                             "are_primary_whitelisted_ips_used": "",
                                             "autonomous_container_database_id": "",
                                             "autonomous_maintenance_schedule_type": "",
                                             "available_upgrade_versions": "",
                                             "backup_config": "",
-                                            "compartment_id": "",
+                                            "compartment_id": adb.compartment_id,
                                             "connection_strings": "",
                                             "connection_urls": "",
                                             "cpu_core_count": "",
@@ -2368,7 +2328,7 @@ class CIS_Report:
                                             "kms_key_version_id": "",
                                             "license_model": "",
                                             "lifecycle_details": "",
-                                            "lifecycle_state": "",
+                                            "lifecycle_state": adb.lifecycle_state,
                                             "nsg_ids": "",
                                             "ocpu_count": "",
                                             "open_mode": "",
@@ -2405,9 +2365,93 @@ class CIS_Report:
                                             "vault_id": "",
                                             "whitelisted_ips": "",
                                             "region" : region_key,
-                                            "notes": str(e)
-                                }
-                            self.__autonomous_databases.append(record)
+                                            "notes": ""
+                                        }
+                        except Exception as e:
+                            record = {
+                                        "id":"",
+                                        "display_name": "",
+                                        "deep_link": "",
+                                        "apex_details": "",
+                                        "are_primary_whitelisted_ips_used": "",
+                                        "autonomous_container_database_id": "",
+                                        "autonomous_maintenance_schedule_type": "",
+                                        "available_upgrade_versions": "",
+                                        "backup_config": "",
+                                        "compartment_id": "",
+                                        "connection_strings": "",
+                                        "connection_urls": "",
+                                        "cpu_core_count": "",
+                                        "customer_contacts": "",
+                                        "data_safe_status": "",
+                                        "data_storage_size_in_gbs": "",
+                                        "data_storage_size_in_tbs": "",
+                                        "database_management_status": "",
+                                        "dataguard_region_type": "",
+                                        "db_name": "",
+                                        "db_version": "",
+                                        "db_workload": "",
+                                        "defined_tags": "",
+                                        "failed_data_recovery_in_seconds": "",
+                                        "freeform_tags": "",
+                                        "infrastructure_type": "",
+                                        "is_access_control_enabled": "",
+                                        "is_auto_scaling_enabled": "",
+                                        "is_data_guard_enabled": "",
+                                        "is_dedicated": "",
+                                        "is_free_tier": "",
+                                        "is_mtls_connection_required": "",
+                                        "is_preview": "",
+                                        "is_reconnect_clone_enabled": "",
+                                        "is_refreshable_clone": "",
+                                        "key_history_entry": "",
+                                        "key_store_id": "",
+                                        "key_store_wallet_name": "",
+                                        "kms_key_id": "",
+                                        "kms_key_lifecycle_details": "",
+                                        "kms_key_version_id": "",
+                                        "license_model": "",
+                                        "lifecycle_details": "",
+                                        "lifecycle_state": "",
+                                        "nsg_ids": "",
+                                        "ocpu_count": "",
+                                        "open_mode": "",
+                                        "operations_insights_status": "",
+                                        "peer_db_ids": "",
+                                        "permission_level": "",
+                                        "private_endpoint": "",
+                                        "private_endpoint_ip":"",
+                                        "private_endpoint_label": "",
+                                        "refreshable_mode": "",
+                                        "refreshable_status": "",
+                                        "role": "",
+                                        "scheduled_operations": "",
+                                        "service_console_url": "",
+                                        "source_id": "",
+                                        "standby_whitelisted_ips": "",
+                                        "subnet_id": "",
+                                        "supported_regions_to_clone_to": "",
+                                        "system_tags": "",
+                                        "time_created": "",
+                                        "time_data_guard_role_changed": "",
+                                        "time_deletion_of_free_autonomous_database": "",
+                                        "time_local_data_guard_enabled": "",
+                                        "time_maintenance_begin": "",
+                                        "time_maintenance_end": "",
+                                        "time_of_last_failover": "",
+                                        "time_of_last_refresh": "",
+                                        "time_of_last_refresh_point": "",
+                                        "time_of_last_switchover": "",
+                                        "time_of_next_refresh": "",
+                                        "time_reclamation_of_free_autonomous_database": "",
+                                        "time_until_reconnect_clone_enabled": "",
+                                        "used_data_storage_size_in_tbs": "",
+                                        "vault_id": "",
+                                        "whitelisted_ips": "",
+                                        "region" : region_key,
+                                        "notes": str(e)
+                            }
+                        self.__autonomous_databases.append(record)
                 
             print("\tProcessed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")                        
             return self.__autonomous_databases
@@ -2421,62 +2465,72 @@ class CIS_Report:
     def __oic_read_oics(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        oic_instances = oci.pagination.list_call_get_all_results(
-                            region_values['oic_client'].list_integration_instances,
-                            compartment_id = compartment.id
-                        ).data
-                        for oic_instance in oic_instances:
-                            if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
-                                deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
-                                try:
-                                    record = {
-                                        "id": oic_instance.id,
-                                        "display_name": oic_instance.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
-                                        "network_endpoint_details": oic_instance.network_endpoint_details,
-                                        "compartment_id": oic_instance.compartment_id,
-                                        "alternate_custom_endpoints": oic_instance.alternate_custom_endpoints,
-                                        "consumption_model": oic_instance.consumption_model,
-                                        "custom_endpoint": oic_instance.custom_endpoint,
-                                        "instance_url": oic_instance.instance_url,
-                                        "integration_instance_type": oic_instance.integration_instance_type,
-                                        "is_byol": oic_instance.is_byol,
-                                        "is_file_server_enabled": oic_instance.is_file_server_enabled,
-                                        "is_visual_builder_enabled": oic_instance.is_visual_builder_enabled,
-                                        "lifecycle_state": oic_instance.lifecycle_state,
-                                        "message_packs": oic_instance.message_packs,
-                                        "state_message": oic_instance.state_message,
-                                        "time_created": oic_instance.time_created.strftime(self.__iso_time_format),
-                                        "time_updated": str(oic_instance.time_updated),
-                                        "region" : region_key,
-                                        "notes": ""
-                                    }
-                                except Exception as e:
-                                    record = {
-                                        "id": oic_instance.id,
-                                        "display_name": oic_instance.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
-                                        "network_endpoint_details": "",
-                                        "compartment_id": "",
-                                        "alternate_custom_endpoints": "",
-                                        "consumption_model": "",
-                                        "custom_endpoint": "",
-                                        "instance_url": "",
-                                        "integration_instance_type": "",
-                                        "is_byol": "",
-                                        "is_file_server_enabled": "",
-                                        "is_visual_builder_enabled": "",
-                                        "lifecycle_state": "",
-                                        "message_packs": "",
-                                        "state_message": "",
-                                        "time_created":"",
-                                        "time_updated":"",
-                                        "region" : region_key,
-                                        "notes": str(e)
-                                    }
-                                self.__integration_instances.append(record)
+                oic_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query IntegrationInstance resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                compartments = set()
+
+                for oic_resource in oic_resources:
+                    compartments.add(oic_resource.compartment_id)
+
+                for compartment in compartments:
+                    oic_instances = oci.pagination.list_call_get_all_results(
+                        region_values['oic_client'].list_integration_instances,
+                        compartment_id = compartment
+                    ).data
+                    for oic_instance in oic_instances:
+                        if oic_instance.lifecycle_state == 'ACTIVE' or oic_instance.LIFECYCLE_STATE_INACTIVE  == "INACTIVE":
+                            deep_link = self.__oci_oicinstance_uri+ oic_instance.id + '?region=' + region_key
+                            try:
+                                record = {
+                                    "id": oic_instance.id,
+                                    "display_name": oic_instance.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
+                                    "network_endpoint_details": oic_instance.network_endpoint_details,
+                                    "compartment_id": oic_instance.compartment_id,
+                                    "alternate_custom_endpoints": oic_instance.alternate_custom_endpoints,
+                                    "consumption_model": oic_instance.consumption_model,
+                                    "custom_endpoint": oic_instance.custom_endpoint,
+                                    "instance_url": oic_instance.instance_url,
+                                    "integration_instance_type": oic_instance.integration_instance_type,
+                                    "is_byol": oic_instance.is_byol,
+                                    "is_file_server_enabled": oic_instance.is_file_server_enabled,
+                                    "is_visual_builder_enabled": oic_instance.is_visual_builder_enabled,
+                                    "lifecycle_state": oic_instance.lifecycle_state,
+                                    "message_packs": oic_instance.message_packs,
+                                    "state_message": oic_instance.state_message,
+                                    "time_created": oic_instance.time_created.strftime(self.__iso_time_format),
+                                    "time_updated": str(oic_instance.time_updated),
+                                    "region" : region_key,
+                                    "notes": ""
+                                }
+                            except Exception as e:
+                                record = {
+                                    "id": oic_instance.id,
+                                    "display_name": oic_instance.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oic_instance.display_name),
+                                    "network_endpoint_details": "",
+                                    "compartment_id": "",
+                                    "alternate_custom_endpoints": "",
+                                    "consumption_model": "",
+                                    "custom_endpoint": "",
+                                    "instance_url": "",
+                                    "integration_instance_type": "",
+                                    "is_byol": "",
+                                    "is_file_server_enabled": "",
+                                    "is_visual_builder_enabled": "",
+                                    "lifecycle_state": "",
+                                    "message_packs": "",
+                                    "state_message": "",
+                                    "time_created":"",
+                                    "time_updated":"",
+                                    "region" : region_key,
+                                    "notes": str(e)
+                                }
+                            self.__integration_instances.append(record)
             print("\tProcessed " + str(len(self.__integration_instances)) + " Integration Instance")                        
             return self.__integration_instances
         except Exception as e:
@@ -2488,54 +2542,64 @@ class CIS_Report:
     def __oac_read_oacs(self):
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        oac_instances = oci.pagination.list_call_get_all_results(
+                oac_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query AnalyticsInstance resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                compartments=set()
+
+                for resource in oac_resources:
+                    compartments.add(resource.compartment_id)
+
+                for compartment in compartments:
+                    oac_instances = oci.pagination.list_call_get_all_results(
                             region_values['oac_client'].list_analytics_instances,
-                            compartment_id=compartment.id
-                        ).data
-                        for oac_instance in oac_instances:
-                            deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
-                            try:
-                                record = {
-                                    "id": oac_instance.id,
-                                    "name": oac_instance.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
-                                    "description": oac_instance.description,
-                                    "network_endpoint_details": oac_instance.network_endpoint_details,
-                                    "network_endpoint_type": oac_instance.network_endpoint_details.network_endpoint_type,
-                                    "compartment_id": oac_instance.compartment_id,
-                                    "lifecycle_state": oac_instance.lifecycle_state,
-                                    "email_notification": oac_instance.email_notification,
-                                    "feature_set": oac_instance.feature_set,
-                                    "service_url": oac_instance.service_url,
-                                    "capacity": oac_instance.capacity,
-                                    "license_type": oac_instance.license_type,
-                                    "time_created": oac_instance.time_created.strftime(self.__iso_time_format),
-                                    "time_updated": str(oac_instance.time_updated),
-                                    "region" : region_key,
-                                    "notes":""
-                                }
-                            except Exception as e:
-                                record = {
-                                    "id": oac_instance.id,
-                                    "name": oac_instance.name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
-                                    "network_endpoint_details": "",
-                                    "compartment_id": "",
-                                    "lifecycle_state": "",
-                                    "email_notification": "",
-                                    "feature_set": "",
-                                    "service_url": "",
-                                    "capacity": "",
-                                    "license_type": "",
-                                    "time_created": "",
-                                    "time_updated": "",
-                                    "region" : region_key,
-                                    "notes":str(e)
-                                }
-                            self.__analytics_instances.append(record)
-                
+                            compartment_id=compartment
+                            ).data
+                    for oac_instance in oac_instances:
+                        deep_link = self.__oci_oacinstance_uri+ oac_instance.id + '?region=' + region_key  
+                        try:
+                            record = {
+                                "id": oac_instance.id,
+                                "name": oac_instance.name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
+                                "description": oac_instance.description,
+                                "network_endpoint_details": oac_instance.network_endpoint_details,
+                                "network_endpoint_type": oac_instance.network_endpoint_details.network_endpoint_type,
+                                "compartment_id": oac_instance.compartment_id,
+                                "lifecycle_state": oac_instance.lifecycle_state,
+                                "email_notification": oac_instance.email_notification,
+                                "feature_set": oac_instance.feature_set,
+                                "service_url": oac_instance.service_url,
+                                "capacity": oac_instance.capacity,
+                                "license_type": oac_instance.license_type,
+                                "time_created": oac_instance.time_created.strftime(self.__iso_time_format),
+                                "time_updated": str(oac_instance.time_updated),
+                                "region" : region_key,
+                                "notes":""
+                            }
+                        except Exception as e:
+                            record = {
+                                "id": oac_instance.id,
+                                "name": oac_instance.name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, oac_instance.name),
+                                "network_endpoint_details": "",
+                                "compartment_id": "",
+                                "lifecycle_state": "",
+                                "email_notification": "",
+                                "feature_set": "",
+                                "service_url": "",
+                                "capacity": "",
+                                "license_type": "",
+                                "time_created": "",
+                                "time_updated": "",
+                                "region" : region_key,
+                                "notes":str(e)
+                            }
+                        self.__analytics_instances.append(record)
+                    
             print("\tProcessed " + str(len(self.__analytics_instances)) + " Analytics Instances")                        
             return self.__analytics_instances
         except Exception as e:
@@ -2548,28 +2612,27 @@ class CIS_Report:
         
         try:
             for region_key, region_values in self.__regions.items():
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        events_rules_data = oci.pagination.list_call_get_all_results(
-                            region_values['events_client'].list_rules,
-                            compartment_id = compartment.id
-                        ).data
-
-                        for event_rule in events_rules_data:
-                            deep_link = self.__oci_events_uri + event_rule.id + '?region=' + region_key
-                            record = {
-                                "compartment_id": event_rule.compartment_id,
-                                "condition": event_rule.condition,
-                                "description": event_rule.description,
-                                "display_name": event_rule.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),
-                                "id": event_rule.id,
-                                "is_enabled": event_rule.is_enabled,
-                                "lifecycle_state": event_rule.lifecycle_state,
-                                "time_created": event_rule.time_created.strftime(self.__iso_time_format),
-                                "region" : region_key
-                            }
-                            self.__event_rules.append(record)
+                events_rules_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query EventRule resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+                
+                for event_rule in events_rules_data:
+                    deep_link = self.__oci_events_uri + event_rule.identifier + '?region=' + region_key
+                    record = {
+                        "compartment_id": event_rule.compartment_id,
+                        "condition": event_rule.additional_details['condition'],
+                        "description": event_rule.additional_details['description'],
+                        "display_name": event_rule.display_name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),
+                        "id": event_rule.identifier,
+                        #"is_enabled": event_rule.is_enabled,
+                        "lifecycle_state": event_rule.lifecycle_state,
+                        "time_created": event_rule.time_created.strftime(self.__iso_time_format),
+                        "region" : region_key
+                    }
+                    self.__event_rules.append(record)
                 
             print("\tProcessed " + str(len(self.__event_rules)) + " Event Rules")                        
             return self.__event_rules
@@ -2583,26 +2646,23 @@ class CIS_Report:
         
         try:
             for region_key, region_values in self.__regions.items():
-                # Looping through compartments
-                for compartment in self.__compartments:
-                    # Checking if Managed Compartment cause I can't query it
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        # Getting Log Groups in compartment
                         log_groups = oci.pagination.list_call_get_all_results(
-                            region_values['logging_client'].list_log_groups,
-                            compartment_id = compartment.id
-                        ).data
+                            region_values['search_client'].search_resources, 
+                            search_details=oci.resource_search.models.StructuredSearchDetails(
+                            query="query LogGroup resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                            ).data
+
                         # Looping through log groups to get logs
                         for log_group in log_groups:
-                            deep_link = self.__oci_loggroup_uri + log_group.id + '?region=' + region_key
+                            deep_link = self.__oci_loggroup_uri + log_group.identifier + '?region=' + region_key
                             record = {
                                 "compartment_id": log_group.compartment_id,
-                                "description": log_group.description,
+                                "description": log_group.additional_details['description'],
                                 "display_name": log_group.display_name,
                                 "deep_link": self.__generate_csv_hyperlink(deep_link, log_group.display_name),
-                                "id": log_group.id,
+                                "id": log_group.identifier,
                                 "time_created": log_group.time_created.strftime(self.__iso_time_format),
-                                "time_last_modified": str(log_group.time_last_modified),
+                                #"time_last_modified": str(log_group.time_last_modified),
                                 "defined_tags" : log_group.defined_tags,
                                 "freeform_tags" : log_group.freeform_tags,
                                 "region" : region_key,
@@ -2611,10 +2671,10 @@ class CIS_Report:
 
                             logs = oci.pagination.list_call_get_all_results(
                                 region_values['logging_client'].list_logs,
-                                log_group_id=log_group.id
+                                log_group_id=log_group.identifier
                             ).data
                             for log in logs:
-                                deep_link = self.__oci_loggroup_uri + log_group.id + "/logs/" + log.id + '?region=' + region_key
+                                deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
                                 log_record = {
                                     "compartment_id": log.compartment_id,
                                     "display_name": log.display_name,
@@ -2682,73 +2742,56 @@ class CIS_Report:
         self.__vaults = []
         try:
             for region_key, region_values in self.__regions.items():
-                # Iterating through compartments
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        vaults_data = oci.pagination.list_call_get_all_results(
-                            region_values['vault_client'].list_vaults,
-                            compartment_id = compartment.id
-                        ).data
-                        # Get all Vaults in a compartment
-                        for vlt in vaults_data:
-                            deep_link = self.__oci_vault_uri + vlt.id + '?region=' + region_key
-                            vault_record = {
-                                "compartment_id": vlt.compartment_id,
-                                "crypto_endpoint": vlt.crypto_endpoint,
-                                "display_name": vlt.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, vlt.display_name),
-                                "id": vlt.id,
-                                "lifecycle_state": vlt.lifecycle_state,
-                                "management_endpoint": vlt.management_endpoint,
-                                "time_created": vlt.time_created.strftime(self.__iso_time_format),
-                                "vault_type": vlt.vault_type,
-                                "freeform_tags": vlt.freeform_tags,
-                                "defined_tags": vlt.defined_tags,
-                                "region" : region_key,
-                                "keys": []
+                keys_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Key resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                vaults_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query Vault resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                # Get all Vaults in a compartment
+                for vlt in vaults_data:
+                    deep_link = self.__oci_vault_uri + vlt.identifier + '?region=' + region_key
+                    vault_record = {
+                        "compartment_id": vlt.compartment_id,
+                        #"crypto_endpoint": vlt.crypto_endpoint,
+                        "display_name": vlt.display_name,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link, vlt.display_name),
+                        "id": vlt.identifier,
+                        "lifecycle_state": vlt.lifecycle_state,
+                        #"management_endpoint": vlt.management_endpoint,
+                        "time_created": vlt.time_created.strftime(self.__iso_time_format),
+                        "vault_type": vlt.additional_details['vaultType'],
+                        "freeform_tags": vlt.freeform_tags,
+                        "defined_tags": vlt.defined_tags,
+                        "region" : region_key,
+                        "keys": []
+                    }
+                    for key in keys_data:
+                        if vlt.identifier == key.additional_details['vaultId']:
+                            deep_link = self.__oci_vault_uri + vlt.identifier + "/vaults/" + key.identifier + '?region=' + region_key
+                            key_record = {
+                                "id": key.identifier,
+                                "display_name": key.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, key.display_name),
+                                "compartment_id": key.compartment_id,
+                                "lifecycle_state": key.lifecycle_state,
+                                "time_created": key.time_created.strftime(self.__iso_time_format),
                             }
-                            # Checking for active Vaults only
-                            if vlt.lifecycle_state == 'ACTIVE':
-                                try:
-                                    cur_key_client = oci.key_management.KmsManagementClient(
-                                        self.__config, vlt.management_endpoint)
-                                    keys = oci.pagination.list_call_get_all_results(
-                                        cur_key_client.list_keys,
-                                        compartment.id
-                                    ).data
-                                    # Iterrating through Keys in Vaults
-                                    for key in keys:
-                                        deep_link = self.__oci_vault_uri + vlt.id + "/vaults/" + key.id + '?region=' + region_key
-                                        key_record = {
-                                            "id": key.id,
-                                            "display_name": key.display_name,
-                                            "deep_link": self.__generate_csv_hyperlink(deep_link, key.display_name),
-                                            "compartment_id": key.compartment_id,
-                                            "lifecycle_state": key.lifecycle_state,
-                                            "time_created": key.time_created.strftime(self.__iso_time_format),
-                                        }
-                                        # Getting Key Versions - Most current one is the first one in the list
-                                        key_versions = oci.pagination.list_call_get_all_results(
-                                            cur_key_client.list_key_versions,
-                                            key.id
-                                        ).data
+                            vault_record['keys'].append(key_record)
 
-                                        # Adding current key version to key_record
-                                        key_record['current_key_version_date'] = key_versions[0].time_created
-                                        # Adding key to vault
-                                        vault_record['keys'].append(key_record)
-                                
-                                except Exception as e:
-                                    self.__vaults.append(vault_record)
+                    self.__vaults.append(vault_record)
 
-
-                            self.__vaults.append(vault_record)
-                
             print("\tProcessed " + str(len(self.__vaults)) + " Vaults")                        
             return self.__vaults
         except Exception as e:
             raise RuntimeError(
-                "Error in __vault_read_vaults " + str(e.args))
+                "Error in __vault_read_vaults " + str(e.args))     
 
     ##########################################################################
     # OCI Budgets
@@ -2920,29 +2963,30 @@ class CIS_Report:
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterate through compartments to get all subscriptions
-                for compartment in self.__compartments:
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        subs_data = oci.pagination.list_call_get_all_results(
-                            region_values['ons_subs_client'].list_subscriptions,
-                            compartment_id = compartment.id
-                        ).data
-                        for sub in subs_data:
-                            deep_link = self.__oci_onssub_uri + sub.id + '?region=' + region_key
-                            record = {
-                                "id": sub.id,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, sub.id),
-                                "compartment_id": sub.compartment_id,
-                                "created_time": sub.created_time, # this is an INT
-                                "endpoint": sub.endpoint,
-                                "protocol": sub.protocol,
-                                "topic_id": sub.topic_id,
-                                "lifecycle_state": sub.lifecycle_state,
-                                "defined_tags": sub.defined_tags,
-                                "freeform_tags": sub.freeform_tags,
-                                "region" : region_key
+                subs_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query OnsSubscription resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
 
-                            }
-                            self.__subscriptions.append(record)
+                for sub in subs_data:
+                    deep_link = self.__oci_onssub_uri +sub.identifier + '?region=' + region_key
+                    record = {
+                        "id":sub.identifier,
+                        "deep_link": self.__generate_csv_hyperlink(deep_link,sub.identifier),
+                        "compartment_id": sub.compartment_id,
+                        #"created_time": sub.created_time, # this is an INT
+                        "created_time": sub.time_created,
+                        "endpoint": sub.additional_details['endpoint'],
+                        "protocol": sub.additional_details['protocol'],
+                        "topic_id": sub.additional_details['topicId'],
+                        "lifecycle_state": sub.lifecycle_state,
+                        "defined_tags": sub.defined_tags,
+                        "freeform_tags": sub.freeform_tags,
+                        "region" : region_key
+
+                    }
+                    self.__subscriptions.append(record)
                 
             print("\tProcessed " + str(len(self.__subscriptions)) + " Subscriptions")                        
             return self.__subscriptions
@@ -2992,66 +3036,63 @@ class CIS_Report:
             # looping through regions
             for region_key, region_values in self.__regions.items():
                 # Collecting Service Connectors from each compartment
-                for compartment in self.__compartments:
-                    # Skipping the managed paas compartment
-                    if self.__if_not_managed_paas_compartment(compartment.name):
-                        # Only getting active service connectors
-                        service_connectors_data = oci.pagination.list_call_get_all_results(
-                            region_values['sch_client'].list_service_connectors,
-                            compartment_id=compartment.id,
-                            lifecycle_state='ACTIVE'
-                        ).data
-                        # Getting Bucket Info
-                        for connector in service_connectors_data:
-                            deep_link = self.__oci_serviceconnector_uri + connector.id + "/logging" + '?region=' + region_key
-                            try:
-                                service_connector = region_values['sch_client'].get_service_connector(
-                                    service_connector_id=connector.id
-                                    ).data
-                                record = {
-                                    "id": service_connector.id,
-                                    "display_name": service_connector.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, service_connector.display_name),
-                                    "description": service_connector.description,
-                                    "freeform_tags": service_connector.freeform_tags,
-                                    "defined_tags" : service_connector.defined_tags,
-                                    "lifecycle_state" : service_connector.lifecycle_state,
-                                    "lifecycle_details": service_connector.lifecyle_details,
-                                    "system_tags": service_connector.system_tags,
-                                    "time_created": service_connector.time_created.strftime(self.__iso_time_format),
-                                    "time_updated": str(service_connector.time_updated),
-                                    "target_kind" : service_connector.target.kind,
-                                    "log_sources" : [],
-                                    "region" : region_key,
-                                    "notes": ""
+                service_connectors_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources, 
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query="query ServiceConnector resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                ).data
+
+                # Getting Bucket Info
+                for connector in service_connectors_data:
+                    deep_link = self.__oci_serviceconnector_uri + connector.identifier + "/logging" + '?region=' + region_key
+                    try:
+                        service_connector = region_values['sch_client'].get_service_connector(
+                            service_connector_id=connector.identifier
+                            ).data
+                        record = {
+                            "id": service_connector.id,
+                            "display_name": service_connector.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, service_connector.display_name),
+                            "description": service_connector.description,
+                            "freeform_tags": service_connector.freeform_tags,
+                            "defined_tags" : service_connector.defined_tags,
+                            "lifecycle_state" : service_connector.lifecycle_state,
+                            #"lifecycle_details": service_connector.lifecyle_details,
+                            "system_tags": service_connector.system_tags,
+                            "time_created": service_connector.time_created.strftime(self.__iso_time_format),
+                            #"time_updated": str(service_connector.time_updated),
+                            "target_kind" : service_connector.target.kind,
+                            "log_sources" : [],
+                            "region" : region_key,
+                            "notes": ""
+                        }
+                        for log_source in service_connector.source.log_sources:
+                            record['log_sources'].append({
+                                    'compartment_id' : log_source.compartment_id,
+                                    'log_group_id' : log_source.log_group_id,
+                                    'log_id' : log_source.log_id
                                 }
-                                for log_source in service_connector.source.log_sources:
-                                    record['log_sources'].append({
-                                            'compartment_id' : log_source.compartment_id,
-                                            'log_group_id' : log_source.log_group_id,
-                                            'log_id' : log_source.log_id
-                                        }
-                                    )
-                                self.__service_connectors[service_connector.id] = record
-                            except Exception as e:
-                                record = {
-                                    "id": connector.id,
-                                    "display_name": connector.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, connector.display_name),
-                                    "description": connector.description,
-                                    "freeform_tags": connector.freeform_tags,
-                                    "defined_tags" : connector.defined_tags,
-                                    "lifecycle_state" : connector.lifecycle_state,
-                                    "lifecycle_details": connector.lifecycle_details,
-                                    "system_tags": "",
-                                    "time_created": connector.time_created.strftime(self.__iso_time_format),
-                                    "time_updated": str(connector.time_updated),
-                                    "target_kind" : "",
-                                    "log_sources" : [],
-                                    "region" : region_key,
-                                    "notes": str(e)
-                                }
-                                self.__service_connectors[connector.id] = record
+                            )
+                        self.__service_connectors[service_connector.id] = record
+                    except Exception as e:
+                        record = {
+                            "id": connector.identifier,
+                            "display_name": connector.display_name,
+                            "deep_link": self.__generate_csv_hyperlink(deep_link, connector.display_name),
+                            "description": connector.additional_details['description'],
+                            "freeform_tags": connector.freeform_tags,
+                            "defined_tags" : connector.defined_tags,
+                            "lifecycle_state" : connector.lifecycle_state,
+                            #"lifecycle_details": connector.lifecycle_details,
+                            "system_tags": "",
+                            "time_created": connector.time_created.strftime(self.__iso_time_format),
+                            #"time_updated": str(connector.time_updated),
+                            "target_kind" : "",
+                            "log_sources" : [],
+                            "region" : region_key,
+                            "notes": str(e)
+                        }
+                        self.__service_connectors[connector.identifier] = record
             # Returning Service Connectors
             print("\tProcessed " + str(len(self.__service_connectors)) + " Service Connectors")
             return self.__service_connectors
@@ -3265,15 +3306,14 @@ class CIS_Report:
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
-
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
                         try:
-                            if irule['tcp_options'].destination_port_range.min == 22 and irule['tcp_options'].destination_port_range.max == 22:
+                            if irule['tcp_options']['destinationPortRange']['min'] == 22 and irule['tcp_options']['destinationPortRange']['max'] == 22:
                                 self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
                                 self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(
                                     sl)
-                            elif irule['tcp_options'].destination_port_range.min == 3389 and irule['tcp_options'].destination_port_range.max == 3389:
+                            elif irule['tcp_options']['destinationPortRange']['min'] == 3389 and irule['tcp_options']['destinationPortRange']['max'] == 3389:
                                 self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
                                 self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(
                                     sl)
@@ -3490,7 +3530,6 @@ class CIS_Report:
 
         return kids
 
-
     ##########################################################################
     # Analyzes Tenancy Data for Oracle Best Practices Report
     ##########################################################################
@@ -3665,75 +3704,78 @@ class CIS_Report:
         #######################################
         for sch_id, sch_values in self.__service_connectors.items():
             # Only Active SCH with a target that is configured
-            ### Subnet Logs Checks
-
-            for subnet_id, log_values in self.__subnet_logs.items():
-                
-                log_id = log_values['log_id']
-                log_group_id = log_values['log_group_id']
-                
-                subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
-                subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
-
-                # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                if subnet_log_group_in_sch and not(subnet_log_in_sch):
-                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
-
-                # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
-                elif subnet_log_in_sch:
-                    self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
+                ### Subnet Logs Checks
+                for subnet_id, log_values in self.__subnet_logs.items():
                     
-                # else:
-                #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
+                    log_id = log_values['log_id']
+                    log_group_id = log_values['log_group_id']
+                    
+                    subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
+                    subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
 
-            ### Bucket Write Logs Checks
-            for bucket_name, log_values in self.__write_bucket_logs.items():
-                log_id = log_values['log_id']
-                log_group_id = log_values['log_group_id']
-                log_region = log_values['region']
+                    # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                    if subnet_log_group_in_sch and not(subnet_log_in_sch):
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
+                    # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
+                    elif subnet_log_in_sch:
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                        
+                    # else:
+                    #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
 
-                # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                ### Bucket Write Logs Checks
+                for bucket_name, log_values in self.__write_bucket_logs.items():
+                    log_id = log_values['log_id']
+                    log_group_id = log_values['log_group_id']
+                    log_region = log_values['region']
+
+                    bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                    bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
+
+                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                    if bucket_log_group_in_sch and not(bucket_log_in_sch):
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                    
+                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                    elif bucket_log_in_sch:
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+
+                    # else:
+                    #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
                 
-                # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                elif bucket_log_in_sch:
-                    self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                ### Bucket Read Log Checks
 
-                # else:
-                #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
-            
-            ### Bucket Read Log Checks
+                for bucket_name, log_values in self.__read_bucket_logs.items():
+                    log_id = log_values['log_id']
+                    log_group_id = log_values['log_group_id']
+                    log_region = log_values['region']
 
-            for bucket_name, log_values in self.__read_bucket_logs.items():
-                log_id = log_values['log_id']
-                log_group_id = log_values['log_group_id']
-                log_region = log_values['region']
+                    bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
+                    bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
-                bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
-                bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
+                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
+                    if bucket_log_group_in_sch and not(bucket_log_in_sch):
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
-                # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
-                if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
-
-                # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                elif bucket_log_in_sch:
-                    self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                    elif bucket_log_in_sch:
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
 
         
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
-
+            
             for finding in region_values['VCN']['subnets']:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
-                if logged_subnet:
+                # Checking that the subnet has not already been written to OBP 
+                existing_finding = list(filter(lambda subnet: subnet['id'] == finding, self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+
+                if logged_subnet and not(existing_finding):
                     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(logged_subnet[0])
                 else:
-                    print("Found this subnet: " + str(finding))
+                    print("Found this subnet being logged but the subnet does not exist: " + str(finding))
 
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
@@ -3956,6 +3998,8 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
+
+    
 
 
     ##########################################################################
@@ -4317,7 +4361,6 @@ class CIS_Report:
         if self.__home_region not in self.__regions_to_run_in and not(self.__run_in_all_regions):
             self.__regions.pop(self.__home_region)
         
-
         print("Processing regional resources...")
         # Stores running threads
         regional_threads = []
@@ -4351,17 +4394,20 @@ class CIS_Report:
             ]
         else: 
             obp_functions = []
-
-        # Starting execution of functions
-        for func in cis_regional_functions + obp_functions:
-            t = Thread(target = func)
-            t.start()
-            regional_threads.append(t)
-
-        # Waiting for execution of functions
-        for t in regional_threads:
-            t.join()
         
+        def execute_function(func):
+            func()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+            # Submit each function to the executor
+            futures = []
+            for func in cis_regional_functions + obp_functions:
+                futures.append(executor.submit(execute_function, func))
+
+            # Wait for all functions to complete
+            for future in concurrent.futures.as_completed(futures):
+                result = future.result()
+       
 
     ##########################################################################
     # Generate Raw Data Output
@@ -4819,6 +4865,7 @@ def execute_report():
         sys.exit()
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
+    config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
     csv_report_directory = report.generate_reports(int(cmd.level))
 

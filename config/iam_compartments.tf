@@ -61,7 +61,7 @@ locals {
   default_enclosing_compartment_name = "top-cmp"
   provided_enclosing_compartment_name = local.custom_enclosing_compartment_name != null ? local.custom_enclosing_compartment_name : "${var.service_label}-${local.default_enclosing_compartment_name}"
 
-  cislz_enclosing_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_enclosing_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"enclosing"
   } : {}
 
@@ -84,7 +84,7 @@ locals {
   default_network_compartment_name = "network-cmp"
   provided_network_compartment_name = local.custom_network_compartment_name != null ? local.custom_network_compartment_name : "${var.service_label}-${local.default_network_compartment_name}"
 
-  cislz_network_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_network_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"network"
   } : {}
 
@@ -102,7 +102,7 @@ locals {
   default_security_compartment_name = "security-cmp"
   provided_security_compartment_name = local.custom_security_compartment_name != null ? local.custom_security_compartment_name : "${var.service_label}-${local.default_security_compartment_name}"
 
-  cislz_security_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_security_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"security"
   } : {}
 
@@ -120,7 +120,7 @@ locals {
   default_appdev_compartment_name = "appdev-cmp"
   provided_appdev_compartment_name = local.custom_appdev_compartment_name != null ? local.custom_appdev_compartment_name : "${var.service_label}-${local.default_appdev_compartment_name}"
 
-  cislz_appdev_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_appdev_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"application"
   } : {}
 
@@ -138,7 +138,7 @@ locals {
   default_database_compartment_name = "database-cmp"
   provided_database_compartment_name = local.custom_database_compartment_name != null ? local.custom_database_compartment_name : "${var.service_label}-${local.default_database_compartment_name}"
 
-  cislz_database_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_database_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"database"
   } : {}  
 
@@ -156,7 +156,7 @@ locals {
   default_exainfra_compartment_name = "exainfra-cmp"
   provided_exainfra_compartment_name = local.custom_exainfra_compartment_name != null ? local.custom_exainfra_compartment_name : "${var.service_label}-${local.default_exainfra_compartment_name}"
 
-  cislz_exainfra_compartment_tags = var.enable_tag_based_policies == true ? {
+  cislz_exainfra_compartment_tags = var.enable_template_policies == true ? {
     "cislz-cmp-type":"exainfra"
   } : {}  
 

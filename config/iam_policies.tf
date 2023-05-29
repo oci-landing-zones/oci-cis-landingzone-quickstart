@@ -444,7 +444,7 @@ locals {
       (local.security_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.security_admin_root_policy_name
-        description    = "Landing Zone ${local.security_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.security_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.security_admin_grants_on_root_cmp
@@ -452,7 +452,7 @@ locals {
       (local.iam_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.iam_admin_root_policy_name
-        description    = "Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_root_cmp
@@ -460,7 +460,7 @@ locals {
       (local.network_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.network_admin_root_policy_name
-        description    = "Landing Zone ${local.network_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.network_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = ["allow group ${local.network_admin_group_name} to use cloud-shell in tenancy",
@@ -470,7 +470,7 @@ locals {
       (local.appdev_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.appdev_admin_root_policy_name
-        description    = "Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.appdev_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = ["allow group ${local.appdev_admin_group_name} to use cloud-shell in tenancy",
@@ -480,7 +480,7 @@ locals {
       (local.database_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.database_admin_root_policy_name
-        description    = "Landing Zone ${local.database_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.database_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = ["allow group ${local.database_admin_group_name} to use cloud-shell in tenancy",
@@ -490,7 +490,7 @@ locals {
       (local.auditor_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.auditor_policy_name
-        description    = "Landing Zone ${local.auditor_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.auditor_group_name}'s root compartment policy."
         defined_tags = local.policies_defined_tags
         freeform_tags = local.policies_freeform_tags
         statements = [
@@ -516,7 +516,7 @@ locals {
       (local.announcement_reader_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.announcement_reader_policy_name
-        description    = "Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = [
@@ -527,7 +527,7 @@ locals {
       (local.cred_admin_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.cred_admin_policy_name
-        description    = "Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = [
@@ -540,7 +540,7 @@ locals {
       (local.cost_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.cost_admin_root_policy_name
-        description    = "Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.cost_root_permissions
@@ -549,19 +549,21 @@ locals {
 }
 
 module "lz_root_policies" {
-#  depends_on = [module.lz_groups, module.lz_top_compartment] ### Explicitly declaring dependencies on the group and compartments modules.
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  depends_on = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
+  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_tag_based_policies == false ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
 }
 
 module "lz_policies" {
-#  depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
+  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_tag_based_policies == false ? local.policies_configuration : local.empty_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? local.policies_configuration : local.empty_policies_configuration
 }
 
 locals {

@@ -4,69 +4,71 @@
 #-- This file supports the creation of tag based policies, which are policies created based on tags that are applied to compartments.
 #-- This functionality is supported by the policy module in https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies
 #-- The default approach is using the supplied policies, defined in iam_policies.tf file.
-#-- For using tag based policies, set variable enable_tag_based_policies to true.
+#-- For using tag based policies, set variable enable_template_policies to true.
 
 locals {
   #-------------------------------------------------------------------------- 
   #-- Any of these custom variables can be overriden in a _override.tf file
   #--------------------------------------------------------------------------
   #-- Custom tags applied to tag based policies.
-  custom_tag_based_policies_defined_tags = null
-  custom_tag_based_policies_freeform_tags = null
+  custom_template_policies_defined_tags = null
+  custom_template_policies_freeform_tags = null
 }  
 
-module "lz_tag_based_policies" {
-  #depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+module "lz_template_policies" {
+  depends_on = [module.lz_top_compartment, module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
+  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_tag_based_policies == true ? local.tag_based_policies_configuration : local.empty_tag_based_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == true ? local.template_policies_configuration : local.empty_template_policies_configuration
 }
 
 locals {
   #----------------------------------------------------------------------- 
   #-- These variables are NOT meant to be overriden.
   #-----------------------------------------------------------------------
-  default_tag_based_policies_defined_tags = null
-  default_tag_based_policies_freeform_tags = local.landing_zone_tags
+  default_template_policies_defined_tags = null
+  default_template_policies_freeform_tags = local.landing_zone_tags
 
-  tag_based_policies_defined_tags  = local.custom_tag_based_policies_defined_tags != null ? merge(local.custom_tag_based_policies_defined_tags, local.default_tag_based_policies_defined_tags) : local.default_tag_based_policies_defined_tags
-  tag_based_policies_freeform_tags = local.custom_tag_based_policies_freeform_tags != null ? merge(local.custom_tag_based_policies_freeform_tags, local.default_tag_based_policies_freeform_tags) : local.default_tag_based_policies_freeform_tags
+  template_policies_defined_tags  = local.custom_template_policies_defined_tags != null ? merge(local.custom_template_policies_defined_tags, local.default_template_policies_defined_tags) : local.default_template_policies_defined_tags
+  template_policies_freeform_tags = local.custom_template_policies_freeform_tags != null ? merge(local.custom_template_policies_freeform_tags, local.default_template_policies_freeform_tags) : local.default_template_policies_freeform_tags
   
   #------------------------------------------------------------------------
   #----- Policies configuration definition. Input to module.
   #------------------------------------------------------------------------  
-  tag_based_policies_configuration = {
+  template_policies_configuration = {
     enable_cis_benchmark_checks : true
-    enable_tenancy_level_template_policies : true
-    enable_compartment_level_template_policies : true
-    groups_with_tenancy_level_roles : [
-      {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
-      {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
-      {"name":"${local.security_admin_group_name}","roles":"security"},
-      {"name":"${local.appdev_admin_group_name}",  "roles":"application"},
-      {"name":"${local.auditor_group_name}",       "roles":"auditor"},
-      {"name":"${local.database_admin_group_name}","roles":"basic"},
-      {"name":"${local.exainfra_admin_group_name}","roles":"basic"},
-      {"name":"${local.storage_admin_group_name}", "roles":"basic"},
-      {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
-    ]
+    template_policies : {
+      tenancy_level_settings : {
+        groups_with_tenancy_level_roles : [
+          {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
+          {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
+          {"name":"${local.security_admin_group_name}","roles":"security"},
+          {"name":"${local.appdev_admin_group_name}",  "roles":"application"},
+          {"name":"${local.auditor_group_name}",       "roles":"auditor"},
+          {"name":"${local.database_admin_group_name}","roles":"basic"},
+          {"name":"${local.exainfra_admin_group_name}","roles":"basic"},
+          {"name":"${local.storage_admin_group_name}", "roles":"basic"},
+          {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
+        ]
+        policy_name_prefix : var.service_label
+      }
+      compartment_level_settings : {
+        supplied_compartments : var.enable_template_policies == true ? {for k, v in merge(module.lz_compartments.compartments, local.enclosing_compartment_map) : k => {"name": v.name, "ocid": v.id, "cislz_metadata": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
+      }
+    }
+    defined_tags : local.template_policies_defined_tags
+    freeform_tags : local.template_policies_freeform_tags
+  }
 
-    supplied_compartments : var.enable_tag_based_policies == true ? {for k, v in module.lz_compartments.compartments : k => {"name": v.name, "ocid": v.id, "freeform_tags": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
-    supplied_policies : var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid != null ? { 
-      # Enclosing compartments are not always managed by this configuration, as utilizing an existing enclosing compartment is supported.
-      # Hence we cannot rely on the policy module using compartments tags to create tag based policies, as the existing enclosing compartment may not be properly tagged.
-      "ENCLOSING-COMPARTMENT-POLICY" : {
-        name : "${var.service_label}-enclosing-cmp-policy"
-        description : "CIS Landing Zone policy for resources at the enclosing compartment."
-        compartment_ocid : var.tenancy_ocid #local.enclosing_compartment_id
-        statements : concat(local.iam_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_enclosing_cmp, local.appdev_admin_grants_on_enclosing_cmp) # these variables are defined in iam_policies.tf. 
-        defined_tags : local.policies_defined_tags
-        freeform_tags : local.policies_freeform_tags
-      }  
-    } : {}
-    defined_tags : local.tag_based_policies_defined_tags
-    freeform_tags : local.tag_based_policies_freeform_tags
+  #-- This map satisfies managed, existing, and no enclosing compartments. It is merged with managed compartments in supplied_compartments attribute above.
+  enclosing_compartment_map = {
+    (local.enclosing_compartment_key) : {
+      name : local.enclosing_compartment_name
+      id : local.enclosing_compartment_id
+      freeform_tags : {"cislz-cmp-type" : "enclosing"}
+    }
   }
 
   cislz_compartments_metadata = {
@@ -126,13 +128,9 @@ locals {
   } 
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
-  empty_tag_based_policies_configuration = {
+  empty_template_policies_configuration = {
     enable_cis_benchmark_checks : false
-    enable_tenancy_level_template_policies : false
-    enable_compartment_level_template_policies : false
-    groups_with_tenancy_level_roles : null
-    supplied_compartments : null
-    supplied_policies : null
+    template_policies : null
     defined_tags : null
     freeform_tags : null
   }

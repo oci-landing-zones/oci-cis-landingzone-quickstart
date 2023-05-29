@@ -18,7 +18,7 @@ variableGroups:
       - "env_advanced_options"
       - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
-      - "enable_tag_based_policies"
+      - "enable_template_policies"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -216,10 +216,10 @@ variables:
     default: "CREATE"
     visible: env_advanced_options
 
-  enable_tag_based_policies:
+  enable_template_policies:
     type: boolean
-    title: "Enable tag based policies?"
-    description: "Whether policies should be created based on a tag that is applied to compartments."
+    title: "Enable template policies?"
+    description: "Whether policies should be created based on metadata associated to compartments."
     default: false
     visible: env_advanced_options  
 

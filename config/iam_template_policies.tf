@@ -44,12 +44,13 @@ locals {
         groups_with_tenancy_level_roles : [
           {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
           {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
-          {"name":"${local.security_admin_group_name}","roles":"security"},
-          {"name":"${local.appdev_admin_group_name}",  "roles":"application"},
-          {"name":"${local.auditor_group_name}",       "roles":"auditor"},
-          {"name":"${local.database_admin_group_name}","roles":"basic"},
-          {"name":"${local.exainfra_admin_group_name}","roles":"basic"},
+          {"name":"${local.security_admin_group_name}","roles":"security,basic"},
+          {"name":"${local.network_admin_group_name}", "roles":"network,basic"},
+          {"name":"${local.appdev_admin_group_name}",  "roles":"application,basic"},
+          {"name":"${local.database_admin_group_name}","roles":"database,basic"},
+          {"name":"${local.exainfra_admin_group_name}","roles":"exainfra,basic"},
           {"name":"${local.storage_admin_group_name}", "roles":"basic"},
+          {"name":"${local.auditor_group_name}",       "roles":"auditor"},
           {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
         ]
         policy_name_prefix : var.service_label

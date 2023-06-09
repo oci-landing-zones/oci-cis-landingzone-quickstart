@@ -4064,7 +4064,7 @@ class CIS_Report:
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
-                    "Compliant" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
+                    "Compliantcount" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
                     "Total": str(len(recommendation['Total'])),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
@@ -4081,17 +4081,17 @@ class CIS_Report:
         # Screen output for CIS Summary Report
         print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
-              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
+              "\t" "Compliant" + "\t" +  "Total " + "\t\t" + "Findings  " + "\t" + 'Title')
         print('#' * 90)
         for finding in summary_report:
             # If print_to_screen is False it will only print non-compliant findings
             if not(self.__print_to_screen) and finding['Compliant'] == 'No':
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Total'] + "\t\t" + 
                       finding['Findings'] + "\t\t" + finding['Title'])
             elif self.__print_to_screen:
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Total'] + "\t\t" +
                       finding['Findings'] + "\t\t" + finding['Title'])
 
         # Generating Summary report CSV

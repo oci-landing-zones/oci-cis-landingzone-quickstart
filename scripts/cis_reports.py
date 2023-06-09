@@ -4568,6 +4568,11 @@ class CIS_Report:
                 self.__report_directory, "raw_data", "regions", self.__raw_regions)
         list_report_file_names.append(report_file_name)
 
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
+        list_report_file_names.append(report_file_name)
+
 
         if self.__output_bucket:
             for raw_report in list_report_file_names:

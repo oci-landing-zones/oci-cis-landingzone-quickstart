@@ -136,7 +136,7 @@ class CIS_Report:
             '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
             '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
             '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
 
             '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
             '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
@@ -3359,6 +3359,11 @@ class CIS_Report:
                                     self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
                             else:
                                 self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+        
+        if self.cis_foundations_benchmark_1_2['1.14']['Findings']:
+            self.cis_foundations_benchmark_1_2['1.14']['Findings']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_1_2['1.14']['Findings']['Status'] = True
 
         # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_1_2['1.14']['Total'] = self.__policies

@@ -3361,9 +3361,9 @@ class CIS_Report:
                                 self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
         
         if self.cis_foundations_benchmark_1_2['1.14']['Findings']:
-            self.cis_foundations_benchmark_1_2['1.14']['Findings']['Status'] = False
+            self.cis_foundations_benchmark_1_2['1.14']['Status'] = False
         else:
-            self.cis_foundations_benchmark_1_2['1.14']['Findings']['Status'] = True
+            self.cis_foundations_benchmark_1_2['1.14']['Status'] = True
 
         # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_1_2['1.14']['Total'] = self.__policies

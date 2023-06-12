@@ -3136,15 +3136,19 @@ class CIS_Report:
         # query = []
         # resources_in_root_data = []
         # record = []
-        query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_non_compliant = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_all_resources = "query all resources where compartmentId = '" + self.__tenancy.id + "'"
         # resources_in_root_data = self.__search_run_structured_query(query)
 
         for region_key, region_values in self.__regions.items():
             try:
-                structured_search = oci.resource_search.models.StructuredSearchDetails(query=query, type='Structured',
-                                                                                    matching_context_type=oci.resource_search.models.SearchDetails.MATCHING_CONTEXT_TYPE_NONE)
-                search_results = region_values['search_client'].search_resources(
-                    structured_search).data.items
+                #Searching for non compliant resources in root compartment
+                structured_search_query = oci.resource_search.models.StructuredSearchDetails(query=query_non_compliant)
+                search_results = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=structured_search_query
+                ).data                
+                    
                 for item in search_results:
                     record = {
                         "display_name": item.display_name,
@@ -3152,7 +3156,23 @@ class CIS_Report:
                         "region" : region_key
                     }
                     self.__resources_in_root_compartment.append(record)
-                    self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+
+                # Searching for all resources in the root compartment
+                structured_search_all_query = oci.resource_search.models.StructuredSearchDetails(query=query_all_resources)
+                structured_search_all_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=structured_search_all_query
+                ).data
+                
+                for item in structured_search_all_resources:
+                    # ignoring global resources like IAM
+                    if item.identifier.split('.')[3]:
+                        record = {
+                            "display_name": item.display_name,
+                            "id": item.identifier,
+                            "region" : region_key
+                        }
+                        self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
 
             except Exception as e:
                 raise RuntimeError(
@@ -4064,7 +4084,7 @@ class CIS_Report:
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
-                    "Compliantcount" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
+                    "Compliant Items" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
                     "Total": str(len(recommendation['Total'])),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
@@ -4081,18 +4101,18 @@ class CIS_Report:
         # Screen output for CIS Summary Report
         print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
-              "\t" "Compliant" + "\t" +  "Total " + "\t\t" + "Findings  " + "\t" + 'Title')
+              "\t" "Compliant" + "\t" +  "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
         for finding in summary_report:
             # If print_to_screen is False it will only print non-compliant findings
             if not(self.__print_to_screen) and finding['Compliant'] == 'No':
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Total'] + "\t\t" + 
-                      finding['Findings'] + "\t\t" + finding['Title'])
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Findings'] + "\t\t" + 
+                      finding['Total'] + "\t\t" + finding['Title'])
             elif self.__print_to_screen:
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Total'] + "\t\t" +
-                      finding['Findings'] + "\t\t" + finding['Title'])
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Findings'] + "\t\t" +
+                      finding['Total'] + "\t\t" + finding['Title'])
 
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")

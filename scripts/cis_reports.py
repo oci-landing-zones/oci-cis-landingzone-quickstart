@@ -4156,7 +4156,7 @@ class CIS_Report:
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Compliant Items" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
-                    "Total": str(len(recommendation['Total'])),
+                    "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],

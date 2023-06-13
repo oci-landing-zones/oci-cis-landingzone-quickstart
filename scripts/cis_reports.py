@@ -3383,28 +3383,31 @@ class CIS_Report:
                                 self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(
                                     sl)
                         except (AttributeError):
+                            print("*" * 80)
+                            print(irule)
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
                             # print(" I am an excption " * 5)
-                            self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
-                                sl)
-
-                # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
-                if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1' \
-                    and sl['display_name'].startswith("Default Security List for "):
-                    self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
-                        sl)
+                            # self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                            # self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
+                            #     sl)
         
         # CIS Total 2.1, 2.2 Adding - All SLs for to CIS Total
         self.cis_foundations_benchmark_1_2['2.1']['Total'] = self.__network_security_lists
         self.cis_foundations_benchmark_1_2['2.2']['Total'] = self.__network_security_lists
 
+
+
+        # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
         # CIS Total 2.5 Adding - All Default Security List for to CIS Total
         for sl in self.__network_security_lists:
             if sl['display_name'].startswith("Default Security List for "):
                 self.cis_foundations_benchmark_1_2['2.5']['Total'].append(sl)
-
+                for irule in sl['ingress_security_rules']:
+                    if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                        self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
+                            sl)
+                        break
 
         # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on ports 22, 3389
         for nsg in self.__network_security_groups:
@@ -3425,6 +3428,7 @@ class CIS_Report:
                             self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
                                 nsg)
+                    
                             
         # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
         self.cis_foundations_benchmark_1_2['2.3']['Total'] = self.__network_security_groups

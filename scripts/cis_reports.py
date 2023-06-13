@@ -123,58 +123,58 @@ class CIS_Report:
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
-            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
-            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': None, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': None, 'Level': 1, 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
-            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4','Remediation':[]},
-            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
-            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': False, 'Level': 2, 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4','6.7'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3','5.4'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
+            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.3','6.5'], 'CCCS Guard Rail' : '1,2,3,4','Remediation':[]},
+            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1','4.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1','5.2'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4','6.8'], 'CCCS Guard Rail' : '2,3','Remediation':[]},
 
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
 
-            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : '','Remediation':[]},
-            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2','8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
-            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
-            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},
-            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2','8.11'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail' : '11','Remediation':[]},
+            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2','8.5','13.6'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2','8.5','8.11'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]},
+            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail' : '6,7','Remediation':[]},
+            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail' : '','Remediation':[]},
 
-            '4.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '','Remediation':[]},
-            '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer-Managed Key (CMK).', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
-            '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
-            '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer-Managed Key.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
-            '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer-Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
+            '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer-Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : ''},
+            '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail' : '','Remediation':[]},
 
 
-            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12','Remediation':[]},
-            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]}
+            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail' : '2,3,8,12','Remediation':[]},
+            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail' : '1,2,3','Remediation':[]}
         }
         # Remediation Report
         self.cis_report_data = {
@@ -975,6 +975,7 @@ class CIS_Report:
                     "region" : ""
                     }
                 self.__raw_compartment.append(record)
+                self.cis_foundations_benchmark_1_2['5.1']['Total'].append(compartment)
             
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
@@ -1200,8 +1201,8 @@ class CIS_Report:
                 search_details=oci.resource_search.models.StructuredSearchDetails(
                 query="query Policy resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                 ).data
-            
-            for policy in policies_data:   
+
+            for policy in policies_data:
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1212,9 +1213,8 @@ class CIS_Report:
                     "lifecycle_state": policy.lifecycle_state,
                     "statements": policy.additional_details['statements']
                 }
-                self.__policies.append(record)
-                        
-            print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")                       
+                self.__policies.append(record) 
+            print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")                      
             return self.__policies
                         
         except Exception as e:
@@ -1351,7 +1351,7 @@ class CIS_Report:
                         }
                         self.__buckets.append(record)
                 # Returning Buckets
-            print("\tProcessed " + str(len(self.__buckets)) + " Buckets")            
+            print("\tProcessed " + str(len(self.__buckets)) + " Buckets")          
             return self.__buckets
         except Exception as e:
             raise RuntimeError("Error in __os_read_buckets " + str(e.args))
@@ -1737,6 +1737,7 @@ class CIS_Report:
                         }
                         # Adding subnet to subnet list
                         self.__network_subnets.append(record)
+                        self.cis_foundations_benchmark_1_2['3.14']['Total'].append(subnet)
                 except Exception as e:
                     deep_link = self.__oci_networking_uri + subnet.additional_details['vcnId'] + \
                             "/subnet/" + subnet.identifier + '?region=' + region_key
@@ -2633,6 +2634,7 @@ class CIS_Report:
                         "region" : region_key
                     }
                     self.__event_rules.append(record)
+
                 
             print("\tProcessed " + str(len(self.__event_rules)) + " Event Rules")                        
             return self.__event_rules
@@ -2987,6 +2989,7 @@ class CIS_Report:
 
                     }
                     self.__subscriptions.append(record)
+
                 
             print("\tProcessed " + str(len(self.__subscriptions)) + " Subscriptions")                        
             return self.__subscriptions
@@ -3107,15 +3110,19 @@ class CIS_Report:
         # query = []
         # resources_in_root_data = []
         # record = []
-        query = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_non_compliant = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_all_resources = "query all resources where compartmentId = '" + self.__tenancy.id + "'"
         # resources_in_root_data = self.__search_run_structured_query(query)
 
         for region_key, region_values in self.__regions.items():
             try:
-                structured_search = oci.resource_search.models.StructuredSearchDetails(query=query, type='Structured',
-                                                                                    matching_context_type=oci.resource_search.models.SearchDetails.MATCHING_CONTEXT_TYPE_NONE)
-                search_results = region_values['search_client'].search_resources(
-                    structured_search).data.items
+                #Searching for non compliant resources in root compartment
+                structured_search_query = oci.resource_search.models.StructuredSearchDetails(query=query_non_compliant)
+                search_results = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=structured_search_query
+                ).data                
+                    
                 for item in search_results:
                     record = {
                         "display_name": item.display_name,
@@ -3123,6 +3130,23 @@ class CIS_Report:
                         "region" : region_key
                     }
                     self.__resources_in_root_compartment.append(record)
+
+                # Searching for all resources in the root compartment
+                structured_search_all_query = oci.resource_search.models.StructuredSearchDetails(query=query_all_resources)
+                structured_search_all_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=structured_search_all_query
+                ).data
+                
+                for item in structured_search_all_resources:
+                    # ignoring global resources like IAM
+                    if item.identifier.split('.')[3]:
+                        record = {
+                            "display_name": item.display_name,
+                            "id": item.identifier,
+                            "region" : region_key
+                        }
+                        self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
 
             except Exception as e:
                 raise RuntimeError(
@@ -3137,7 +3161,8 @@ class CIS_Report:
     def __report_cis_analyze_tenancy_data(self):
         
         # 1.1 Check - Checking for policy statements that are not restricted to a service
-        for policy in self.__policies:
+        
+        for policy in self.__policies:            
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                     and ("to manage all-resources".upper() in statement.upper()) \
@@ -3148,7 +3173,8 @@ class CIS_Report:
                     break
   
         # 1.2 Check
-        for policy in self.__policies:
+        
+        for policy in self.__policies:            
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
                         and "to manage all-resources in tenancy".upper() in statement.upper() \
@@ -3180,6 +3206,10 @@ class CIS_Report:
                             self.cis_foundations_benchmark_1_2['1.3']['Findings'].append(policy)
                             self.cis_foundations_benchmark_1_2['1.3']['Status'] = False
 
+        # CIS Total 1.1,1,2,1.3 Adding - All IAM Policies for to CIS Total
+        self.cis_foundations_benchmark_1_2['1.1']['Total'] = self.__policies
+        self.cis_foundations_benchmark_1_2['1.2']['Total'] = self.__policies
+        self.cis_foundations_benchmark_1_2['1.3']['Total'] = self.__policies
 
 
         # 1.4 Check - Password Policy - Only in home region
@@ -3195,6 +3225,10 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
                     user)
+        
+        # CIS Total 1.7 Adding - All Users to CIS Total
+        self.cis_foundations_benchmark_1_2['1.7']['Total'] = self.__users
+
 
         # 1.8 Check - API Keys over 90
         for user in self.__users:
@@ -3214,6 +3248,9 @@ class CIS_Report:
 
                         self.cis_foundations_benchmark_1_2['1.8']['Findings'].append(
                             finding)
+                    
+                    # CIS Total 1.8 Adding - Customer Secrets to CIS Total
+                    self.cis_foundations_benchmark_1_2['1.8']['Total'].append(key)
 
         # CIS 1.9 Check - Old Customer Secrets
         for user in self.__users:
@@ -3235,6 +3272,9 @@ class CIS_Report:
 
                         self.cis_foundations_benchmark_1_2['1.9']['Findings'].append(
                             finding)
+                    
+                    # CIS Total 1.9 Adding - Customer Secrets to CIS Total
+                    self.cis_foundations_benchmark_1_2['1.9']['Total'].append(key)
 
         # CIS 1.10 Check - Old Auth Tokens
         for user in self.__users:
@@ -3257,6 +3297,10 @@ class CIS_Report:
 
                         self.cis_foundations_benchmark_1_2['1.10']['Findings'].append(
                             finding)
+                    
+                    # CIS Total 1.10 Adding - Keys to CIS Total
+                    self.cis_foundations_benchmark_1_2['1.10']['Total'].append(
+                        key)
 
         # CIS 1.11 Active Admins with API keys
         # Iterating through all users to see if they have API Keys and if they are active users
@@ -3264,7 +3308,12 @@ class CIS_Report:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_1_2['1.11']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.11']['Findings'].append(
-                    user)
+                    user)    
+            
+            # CIS Total 1.12 Adding - All IAM Users in Administrator group to CIS Total
+            if 'Administrators' in user['groups'] and user['lifecycle_state'] == 'ACTIVE':
+                self.cis_foundations_benchmark_1_2['1.11']['Total'].append(user)
+
 
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
@@ -3273,6 +3322,10 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['1.12']['Status'] = False
                 self.cis_foundations_benchmark_1_2['1.12']['Findings'].append(
                     user)
+        
+        # CIS Total 1.12 Adding - All IAM Users for to CIS Total
+        self.cis_foundations_benchmark_1_2['1.12']['Total'] = self.__users
+
         
         # CIS 1.13 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
         # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
@@ -3285,6 +3338,10 @@ class CIS_Report:
         # Clearing finding
         if self.cis_foundations_benchmark_1_2['1.13']['Status']:
             self.cis_foundations_benchmark_1_2['1.13']['Findings'] = []
+
+        # CIS Total 1.13 Adding - All Dynamic Groups  for to CIS Total
+        self.cis_foundations_benchmark_1_2['1.13']['Total'] = self.__dynamic_groups
+
 
         # CIS 1.14 Check - Ensure storage service-level admins cannot delete resources they manage. 
         # Iterating through all policies
@@ -3302,6 +3359,14 @@ class CIS_Report:
                                     self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
                             else:
                                 self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+        
+        if self.cis_foundations_benchmark_1_2['1.14']['Findings']:
+            self.cis_foundations_benchmark_1_2['1.14']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_1_2['1.14']['Status'] = True
+
+        # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
+        self.cis_foundations_benchmark_1_2['1.14']['Total'] = self.__policies
 
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
@@ -3318,17 +3383,31 @@ class CIS_Report:
                                 self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(
                                     sl)
                         except (AttributeError):
+                            print("*" * 80)
+                            print(irule)
                             # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
                             # print(" I am an excption " * 5)
-                            self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
-                                sl)
+                            # self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                            # self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
+                            #     sl)
+        
+        # CIS Total 2.1, 2.2 Adding - All SLs for to CIS Total
+        self.cis_foundations_benchmark_1_2['2.1']['Total'] = self.__network_security_lists
+        self.cis_foundations_benchmark_1_2['2.2']['Total'] = self.__network_security_lists
 
-                # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
-                if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
-                    self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
-                        sl)
+
+
+        # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
+        # CIS Total 2.5 Adding - All Default Security List for to CIS Total
+        for sl in self.__network_security_lists:
+            if sl['display_name'].startswith("Default Security List for "):
+                self.cis_foundations_benchmark_1_2['2.5']['Total'].append(sl)
+                for irule in sl['ingress_security_rules']:
+                    if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                        self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
+                            sl)
+                        break
 
         # CIS 2.3 and 2.4 Check - Network Security Groups Ingress from 0.0.0.0/0 on ports 22, 3389
         for nsg in self.__network_security_groups:
@@ -3349,6 +3428,12 @@ class CIS_Report:
                             self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
                                 nsg)
+                    
+                            
+        # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
+        self.cis_foundations_benchmark_1_2['2.3']['Total'] = self.__network_security_groups
+        self.cis_foundations_benchmark_1_2['2.4']['Total'] = self.__network_security_groups
+
 
         # CIS 2.6 - Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
         # Iterating through OIC instance have network access rules and ensure 0.0.0.0/0 is not in the list
@@ -3363,6 +3448,10 @@ class CIS_Report:
                     self.cis_foundations_benchmark_1_2['2.6']['Findings'].append(
                         integration_instance)                    
 
+        # CIS Total 2.6 Adding - All OIC Instances to CIS Total
+        self.cis_foundations_benchmark_1_2['2.6']['Total'] = self.__integration_instances
+
+        
         # CIS 2.7 - Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a VCN
         for analytics_instance in self.__analytics_instances:
             if analytics_instance['network_endpoint_type'].upper() == 'PUBLIC':
@@ -3375,6 +3464,10 @@ class CIS_Report:
                     self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
                     self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
                         analytics_instance) 
+
+        # CIS Total 2.7 Adding - All OAC Instances to CIS Total
+        self.cis_foundations_benchmark_1_2['2.7']['Total'] = self.__analytics_instances
+
 
         # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
         # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
@@ -3390,6 +3483,10 @@ class CIS_Report:
                         self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
                             autonomous_database)
 
+        # CIS Total 2.8 Adding - All ADBs to CIS Total
+        self.cis_foundations_benchmark_1_2['2.8']['Total'] = self.__autonomous_databases
+
+
         # CIS 3.1 Check - Ensure Audit log retention == 365 - Only checking in home region
         if self.__audit_retention_period >= 365:
             self.cis_foundations_benchmark_1_2['3.1']['Status'] = True
@@ -3400,9 +3497,17 @@ class CIS_Report:
             if tag['value'] == "${iam.principal.name}":
                 self.cis_foundations_benchmark_1_2['3.2']['Status'] = True
 
+        # CIS Total 3.2 Adding - All Tag Defaults to CIS Total
+        self.cis_foundations_benchmark_1_2['3.2']['Total'] = self.__tag_defaults
+
+
         # CIS Check 3.3 - Check for Active Notification and Subscription
         if len(self.__subscriptions) > 0:
             self.cis_foundations_benchmark_1_2['3.3']['Status'] = True
+
+        # CIS Check 3.2 Total - All Subscriptions to CIS Total
+        self.cis_foundations_benchmark_1_2['3.3']['Total'] = self.__subscriptions
+
 
         # CIS Checks 3.4 - 3.13
         # Iterate through all event rules
@@ -3446,14 +3551,23 @@ class CIS_Report:
                     self.cis_foundations_benchmark_1_2['3.16']['Status'] = False
                     self.cis_foundations_benchmark_1_2['3.16']['Findings'].append(
                         key)
+                
+                # CIS Check 3.16 Total - Adding Key to total
+                self.cis_foundations_benchmark_1_2['3.16']['Total'].append(key)
+
 
         # CIS Check 3.17 - Object Storage with Logs
         # Generating list of buckets names
-        for bucket in self.__buckets:
+        
+        for bucket in self.__buckets:            
             if not(bucket['name'] in self.__write_bucket_logs):
                 self.cis_foundations_benchmark_1_2['3.17']['Status'] = False
                 self.cis_foundations_benchmark_1_2['3.17']['Findings'].append(
                     bucket)
+        
+        # CIS Check 3.17 Total - Adding All Buckets to total
+        self.cis_foundations_benchmark_1_2['3.17']['Total'] = self.__buckets
+
 
         # CIS Section 4.1 Bucket Checks
         # Generating list of buckets names
@@ -3476,6 +3590,12 @@ class CIS_Report:
                         bucket)
                     self.cis_foundations_benchmark_1_2['4.1.3']['Status'] = False
 
+        # CIS Check 4.1.1,4.1.2,4.1.3 Total - Adding All Buckets to total
+        self.cis_foundations_benchmark_1_2['4.1.1']['Total'] = self.__buckets
+        self.cis_foundations_benchmark_1_2['4.1.2']['Total'] = self.__buckets 
+        self.cis_foundations_benchmark_1_2['4.1.3']['Total'] = self.__buckets 
+
+
         # CIS Section 4.2.1 Block Volume Checks
         # Generating list of block volumes names
         for volume in self.__block_volumes:
@@ -3485,6 +3605,10 @@ class CIS_Report:
                         volume)
                     self.cis_foundations_benchmark_1_2['4.2.1']['Status'] = False
         
+        # CIS Check 4.2.1 Total - Adding All Block Volumes to total
+        self.cis_foundations_benchmark_1_2['4.2.1']['Total'] = self.__block_volumes
+
+
         # CIS Section 4.2.2 Boot Volume Checks
         # Generating list of boot names
         for boot_volume in self.__boot_volumes:
@@ -3494,6 +3618,10 @@ class CIS_Report:
                         boot_volume)
                     self.cis_foundations_benchmark_1_2['4.2.2']['Status'] = False
 
+        # CIS Check 4.2.2 Total - Adding All Block Volumes to total
+        self.cis_foundations_benchmark_1_2['4.2.2']['Total'] = self.__boot_volumes
+
+
         # CIS Section 4.3.1 FSS Checks
         # Generating list of FSS names
         for file_system in self.__file_storage_system:
@@ -3502,6 +3630,10 @@ class CIS_Report:
                     self.cis_foundations_benchmark_1_2['4.3.1']['Findings'].append(
                         file_system)
                     self.cis_foundations_benchmark_1_2['4.3.1']['Status'] = False
+
+
+        # CIS Check 4.3.1 Total - Adding All Block Volumes to total
+        self.cis_foundations_benchmark_1_2['4.3.1']['Total'] = self.__file_storage_system
 
         # CIS Section 5 Checks
         # Checking if more than one compartment because of the ManagedPaaS Compartment
@@ -4027,6 +4159,8 @@ class CIS_Report:
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
+                    "Compliant Items" : str(len(recommendation['Total']) - len(recommendation['Findings'])), 
+                    "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
@@ -4042,18 +4176,18 @@ class CIS_Report:
         # Screen output for CIS Summary Report
         print_header("CIS Foundations Benchmark 1.2 Summary Report")
         print('Num' + "\t" + "Level " +
-              "\t" "Compliant" + "\t" + "Findings  " + "\t" + 'Title')
+              "\t" "Compliant" + "\t" +  "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
         for finding in summary_report:
             # If print_to_screen is False it will only print non-compliant findings
             if not(self.__print_to_screen) and finding['Compliant'] == 'No':
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
-                      finding['Findings'] + "\t\t" + finding['Title'])
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Findings'] + "\t\t" + 
+                      finding['Total'] + "\t\t" + finding['Title'])
             elif self.__print_to_screen:
                 print(finding['Recommendation #'] + "\t" +
-                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" +
-                      finding['Findings'] + "\t\t" + finding['Title'])
+                      finding['Level'] + "\t" + finding['Compliant'] + "\t\t" + finding['Findings'] + "\t\t" +
+                      finding['Total'] + "\t\t" + finding['Title'])
 
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")
@@ -4527,6 +4661,11 @@ class CIS_Report:
 
         report_file_name = self.__print_to_csv_file(
                 self.__report_directory, "raw_data", "regions", self.__raw_regions)
+        list_report_file_names.append(report_file_name)
+
+        
+        report_file_name = self.__print_to_csv_file(
+                self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
         list_report_file_names.append(report_file_name)
 
 

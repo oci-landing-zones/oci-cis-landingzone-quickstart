@@ -3373,24 +3373,31 @@ class CIS_Report:
             for irule in sl['ingress_security_rules']:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
                     if irule['tcp_options']:
-                        try:
-                            if irule['tcp_options']['destinationPortRange']['min'] == 22 and irule['tcp_options']['destinationPortRange']['max'] == 22:
-                                self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
-                                self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(
-                                    sl)
-                            elif irule['tcp_options']['destinationPortRange']['min'] == 3389 and irule['tcp_options']['destinationPortRange']['max'] == 3389:
-                                self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
-                                self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(
-                                    sl)
-                        except (AttributeError):
-                            print("*" * 80)
-                            print(irule)
-                            # Temporarily adding unfettered access to rule 2.5. Move this once a proper rule is available.
-                            # print(" I am an excption " * 5)
-                            # self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                            # self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
-                            #     sl)
-        
+                        port_min = irule['tcp_options']['destinationPortRange']['min']
+                        port_max = irule['tcp_options']['destinationPortRange']['max']
+                        ports_range = range(port_min, port_max +1)
+                        if  22 in ports_range:
+                            self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
+                        if 3389 in ports_range:
+                            self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                        break
+                    else:
+                        # If TCP Options is null it includes all ports
+                        self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
+                        self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                        break
+                elif irule['source'] == "0.0.0.0/0" and irule['protocol'] == 'all':
+                    # All Protocols allowed included TCP and all ports
+                    self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
+                    self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                    break
+    
         # CIS Total 2.1, 2.2 Adding - All SLs for to CIS Total
         self.cis_foundations_benchmark_1_2['2.1']['Total'] = self.__network_security_lists
         self.cis_foundations_benchmark_1_2['2.2']['Total'] = self.__network_security_lists
@@ -3414,21 +3421,31 @@ class CIS_Report:
             for rule in nsg['rules']:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
                     if rule['tcp_options']:
-                        try:
-                            if rule['tcp_options'].destination_port_range.min == 22 or rule['tcp_options'].destination_port_range.max == 22:
-                                self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
-                                self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
-                                    nsg)
-                            elif rule['tcp_options'].destination_port_range.min == 3389 or rule['tcp_options'].destination_port_range.max == 3389:
-                                self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
-                                self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(
-                                    nsg)
-                        except (AttributeError):
-                            # Temporarily adding unfettered access to rule 2.3. Move this once a proper rule is available.
+                        port_min = rule['tcp_options'].destination_port_range.min
+                        port_max = rule['tcp_options'].destination_port_range.max
+                        ports_range = range(port_min,port_max+1)
+                        if 22 in ports_range:
                             self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
                             self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
                                 nsg)
-                    
+                        if 3389 in ports_range:
+                            self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                        break
+                    else:
+                        # If TCP Options is null it includes all ports
+                        self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(nsg)
+                        self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
+                        self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                        break
+                elif rule['source'] == "0.0.0.0/0" and rule['protocol'] == 'all':
+                    # All Protocols allowed included TCP and all ports
+                    self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(nsg)
+                    self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                    break
                             
         # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
         self.cis_foundations_benchmark_1_2['2.3']['Total'] = self.__network_security_groups

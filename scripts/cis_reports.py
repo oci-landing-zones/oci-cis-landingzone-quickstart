@@ -35,7 +35,7 @@ except:
 
 RELEASE_VERSION = "2.5.11"
 PYTHON_SDK_VERSION = "2.103.0"
-UPDATED_DATE = "May 26, 2023"
+UPDATED_DATE = "June 20, 2023"
 
 ##########################################################################
 # Print header centered
@@ -3923,8 +3923,8 @@ class CIS_Report:
 
                 if logged_subnet and not(existing_finding):
                     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(logged_subnet[0])
-                else:
-                    print("Found this subnet being logged but the subnet does not exist: " + str(finding))
+                # else:
+                #     print("Found this subnet being logged but the subnet does not exist: " + str(finding))
 
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
@@ -4146,9 +4146,6 @@ class CIS_Report:
             self.obp_foundations_checks['Cloud_Guard_Config']['OBP'].append(cloud_guard_record)
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
-
-
-    
 
 
     ##########################################################################

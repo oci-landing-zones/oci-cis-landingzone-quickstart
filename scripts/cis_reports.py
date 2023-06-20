@@ -1737,7 +1737,6 @@ class CIS_Report:
                         }
                         # Adding subnet to subnet list
                         self.__network_subnets.append(record)
-                        self.cis_foundations_benchmark_1_2['3.14']['Total'].append(subnet)
                 except Exception as e:
                     deep_link = self.__oci_networking_uri + subnet.additional_details['vcnId'] + \
                             "/subnet/" + subnet.identifier + '?region=' + region_key
@@ -3553,6 +3552,10 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['3.14']['Status'] = False
                 self.cis_foundations_benchmark_1_2['3.14']['Findings'].append(
                     subnet)
+
+        # CIS Check 3.14 Total - Adding All Subnets to total
+        self.cis_foundations_benchmark_1_2['3.14']['Total'] =  self.__network_subnets
+
 
         # CIS Check 3.15 - Cloud Guard enabled
         if self.__cloud_guard_config_status == 'ENABLED':

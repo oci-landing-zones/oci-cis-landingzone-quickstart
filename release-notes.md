@@ -1,3 +1,20 @@
+#   June 20, 2023 Release Notes - 2.5.11
+1. [Performance update to the CIS Compliance Script](#2-5-11-script-performance)
+1. [Summary Data update to the CIS Compliance Script](#2-5-11-script-updates)
+1. [Fixes to the CIS Compliance Script](#2-5-11-script-fixes)
+
+## <a name="2-5-11-script-performance">Performance update to the CIS Compliance Script</a>
+Migrate the querying of resources to Resource Search (a module within Oracle’s API).  By using Resource Search, compartment iterations for listing items are ignored.  For items that require more detailed information than Resource Search returns, only those compartments are queried.  This migration reduces script execution time by 8 times.
+
+## <a name="#2-5-11-script-updates">Updates to the CIS Compliance Script</a>
+The CIS Summary report CSV adds two new columns **Compliant Items**, which represents the number of resources that are aligned to that recommendation, and **Total** which is the total number of that resource in tenancy. The **Total** column is also in the screen output.
+
+## <a name="#2-5-11-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes
+- Updated the CIS checks 2.1, 2,2, 2.3, and 2.4 to detect Security Lists and Networks Security Groups that allow egress access to ports 22 or 3389 via allowing all protocols, all ports, or using port ranges.
+- Updated CIS Check 2.5 to only look at Default Security Lists.
+
+
 #   May 12, 2023 Release Notes - 2.5.10
 1. [Support for Security Tokens in the CIS Compliance Script](#2-5-10-script-updates)
 1. [Terraform Template Updates](#2-5-9-tf-updates)

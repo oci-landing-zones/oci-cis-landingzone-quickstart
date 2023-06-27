@@ -15,7 +15,7 @@ module "lz_services_policy" {
   source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false ? local.services_policies_configuration : local.empty_services_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? local.services_policies_configuration : local.empty_services_policies_configuration
 }
 
 locals {
@@ -28,57 +28,37 @@ locals {
   service_policy_defined_tags = local.custom_service_policy_defined_tags != null ? merge(local.custom_service_policy_defined_tags, local.default_service_policy_defined_tags) : local.default_service_policy_defined_tags
   service_policy_freeform_tags = local.custom_service_policy_freeform_tags != null ? merge(local.custom_service_policy_freeform_tags, local.default_service_policy_freeform_tags) : local.default_service_policy_freeform_tags
 
+  cloud_guard_statements = ["Allow service cloudguard to read all-resources in tenancy",
+                            "Allow service cloudguard to use network-security-groups in tenancy"]
+
+  vss_statements = ["Allow service vulnerability-scanning-service to manage instances in tenancy",
+                    "Allow service vulnerability-scanning-service to read compartments in tenancy",
+                    "Allow service vulnerability-scanning-service to read repos in tenancy",
+                    "Allow service vulnerability-scanning-service to read vnics in tenancy",
+                    "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
+
+  os_mgmt_statements = ["Allow service osms to read instances in tenancy"]
+
   realm = split(".",trimprefix(data.oci_identity_tenancy.this.id, "ocid1.tenancy."))[0]
 
-  cloud_guard_statements = [
-    "Allow service cloudguard to read all-resources in tenancy",
-    "Allow service cloudguard to use network-security-groups in tenancy"]
+  object_storage_service_principals = join(",", [for region in data.oci_identity_region_subscriptions.these.region_subscriptions : "objectstorage-${region.region_name}"])
 
-  vss_statements = [
-    "Allow service vulnerability-scanning-service to manage instances in tenancy",
-    "Allow service vulnerability-scanning-service to read compartments in tenancy",
-    "Allow service vulnerability-scanning-service to read repos in tenancy",
-    "Allow service vulnerability-scanning-service to read vnics in tenancy",
-    "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"
-  ]
+  keys_access_statements =  ["Allow service blockstorage, oke, streaming, Fss${local.realm}Prod, ${local.object_storage_service_principals} to use keys in tenancy"]
 
-  os_mgmt_statements = [
-    "Allow service osms to read instances in tenancy"
-  ]
-
-  root_compartment_policies = { 
+  services_policy = { 
     ("${var.service_label}-services-policy") : {
       compartment_ocid = var.tenancy_ocid
       name             = "${var.service_label}-services-policy"
       description      = "CIS Landing Zone policy for OCI services."
-      statements       = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements)
+      statements       = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements, local.keys_access_statements)
       defined_tags     = local.service_policy_defined_tags
       freeform_tags    = local.service_policy_freeform_tags
     }
   } 
 
-  enclosing_compartment_policies = {
-    ("VAULT-GLOBAL-POLICY") = {
-      name             = "${var.service_label}-vault-policy"
-      compartment_ocid = local.enclosing_compartment_id
-      description      = "CIS Landing Zone policy for OCI services: Blockstorage, OKE and streams to use keys in the ${local.security_compartment_name} compartment."
-      statements       = ["Allow service blockstorage, oke, streaming, Fss${local.realm}Prod to use keys in compartment ${local.security_compartment_name}"]
-      defined_tags     = local.service_policy_defined_tags
-      freeform_tags    = local.service_policy_freeform_tags
-    },
-    ("VAULT-REGIONAL-POLICY") = {
-      name             = "${var.service_label}-vault-${var.region}-policy"
-      compartment_ocid = local.enclosing_compartment_id
-      description      = "CIS Landing Zone policy for OCI services: Object Storage in ${var.region} to use keys in the ${local.security_compartment_name} compartment."
-      statements       = ["Allow service objectstorage-${var.region} to use keys in compartment ${local.security_compartment_name}"]
-      defined_tags     = local.service_policy_defined_tags
-      freeform_tags    = local.service_policy_freeform_tags
-    }
-  }
-
   services_policies_configuration = {
     enable_cis_benchmark_checks : true
-    supplied_policies : merge(local.root_compartment_policies, local.enclosing_compartment_policies)
+    supplied_policies : local.services_policy
   }
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.

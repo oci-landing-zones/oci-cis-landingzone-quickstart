@@ -3368,7 +3368,7 @@ class CIS_Report:
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
-                    if irule['tcp_options']:
+                    if irule['tcp_options'] and irule['tcp_options']['destinationPortRange']:
                         port_min = irule['tcp_options']['destinationPortRange']['min']
                         port_max = irule['tcp_options']['destinationPortRange']['max']
                         ports_range = range(port_min, port_max +1)
@@ -3416,7 +3416,7 @@ class CIS_Report:
         for nsg in self.__network_security_groups:
             for rule in nsg['rules']:
                 if rule['source'] == "0.0.0.0/0" and rule['protocol'] == '6':
-                    if rule['tcp_options']:
+                    if rule['tcp_options'] and rule['tcp_options'].destination_port_range:
                         port_min = rule['tcp_options'].destination_port_range.min
                         port_max = rule['tcp_options'].destination_port_range.max
                         ports_range = range(port_min,port_max+1)

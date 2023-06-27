@@ -53,6 +53,9 @@ locals {
           {"name":"${local.auditor_group_name}",       "roles":"auditor"},
           {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
         ]
+        oci_services : {
+          enable_all_policies : true
+        }
         policy_name_prefix : var.service_label
       }
       compartment_level_settings : {

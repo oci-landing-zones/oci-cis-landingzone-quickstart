@@ -122,10 +122,10 @@ locals {
     "allow group ${local.security_admin_group_name} to read keys in compartment ${local.database_compartment_name}"
   ]
 
-  ## Security admin grants on AppDev compartment
-  security_admin_grants_on_exainfra_cmp = [
+  ## Security admin grants on Exainfra compartment
+  security_admin_grants_on_exainfra_cmp = var.deploy_exainfra_cmp == true ? [
     "allow group ${local.security_admin_group_name} to read keys in compartment ${local.exainfra_compartment_name}"
-  ]
+  ] : []
 
   ## All security admin grants
   security_admin_grants = concat(local.security_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_security_cmp, local.security_admin_grants_on_network_cmp,

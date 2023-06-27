@@ -1299,7 +1299,6 @@ class CIS_Report:
                     search_details=oci.resource_search.models.StructuredSearchDetails(
                     query="query Bucket resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                     ).data
-
                 # Getting Bucket Info
                 for bucket in buckets_data:
                     try:
@@ -1328,12 +1327,10 @@ class CIS_Report:
                         }
                         self.__buckets.append(record)
                     except Exception as e:
-                        deep_link = self.__oci_buckets_uri + bucket.additional_details['namespace'] + \
-                                "/" + bucket.display_name + "/objects?region=" + region_key
                         record = {
                             "id": "",
                             "name":  bucket.display_name,
-                            "deep_link": self.__generate_csv_hyperlink(deep_link, bucket.display_name),
+                            "deep_link": "",
                             "kms_key_id": "",
                             "namespace": bucket.additional_details['namespace'],
                             "compartment_id": bucket.compartment_id,

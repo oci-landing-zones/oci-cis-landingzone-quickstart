@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Secure Landing Zone Quick Start Configuration"
+description: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
 stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
 schemaVersion: 1.1.0
 version: "0.0.1"
@@ -1025,3 +1026,26 @@ variables:
 
   private_key_password:
     type: password
+
+outputs:
+  service_label:
+    type: string
+    title: Service Label
+
+  compartments:
+    type: json
+    title: Compartments
+
+  vcns:
+    type: json
+    title: Virtual Cloud Networks  
+
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${service_label}
+      - ${compartments}
+
+  - title: Networking
+    outputs:
+      - ${vcns}    

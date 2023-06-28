@@ -3,9 +3,9 @@
 
 title: "CIS OCI Landing Zone Quick Start Configuration"
 stackDescription: "A Terraform configuration that deploys an operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "A Terraform configuration that deploys an operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart</a>.
+description: "A Terraform configuration that deploys an operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
 schemaVersion: 1.1.0
-version: "0.0.1"
+version: "2.6.0"
 locale: "en"
 
 variableGroups:

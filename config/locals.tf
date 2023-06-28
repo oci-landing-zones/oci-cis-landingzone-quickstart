@@ -45,7 +45,7 @@ locals {
   display_outputs = true
 
   # Tags
-  landing_zone_tags = {"cis-landing-zone" : "${var.service_label}-quickstart"}
+  landing_zone_tags = {"cis-landing-zone" : fileexists("${path.module}/../release.txt") ? "${var.service_label}-quickstart/${file("${path.module}/../release.txt")}" : "${var.service_label}-quickstart"}
 
   is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
 }

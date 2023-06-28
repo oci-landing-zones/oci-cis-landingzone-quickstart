@@ -33,9 +33,9 @@ try:
 except:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.5.11"
+RELEASE_VERSION = "2.5.12"
 PYTHON_SDK_VERSION = "2.103.0"
-UPDATED_DATE = "June 20, 2023"
+UPDATED_DATE = "June 28, 2023"
 
 ##########################################################################
 # Print header centered

@@ -1,9 +1,9 @@
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "OCI Secure Landing Zone Quick Start Configuration"
-description: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
-stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
+title: "CIS OCI Landing Zone Quick Start Configuration"
+description: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
+stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -1038,7 +1038,23 @@ outputs:
 
   vcns:
     type: json
-    title: Virtual Cloud Networks  
+    title: (Spoke) Virtual Cloud Networks 
+
+  subnets:
+    type: json
+    title: (Spoke) Virtual Cloud Networks Subnets  
+
+  dmz_vcn:
+    type: json
+    title: DMZ (Hub) Virtual Cloud Network   
+
+  dmz_subnets:
+    type: json
+    title: DMZ (Hub) Virtual Cloud Network Subnets
+
+  bastions:
+    type: json
+    title: Bastions   
 
 outputGroups:
   - title: Environment
@@ -1048,4 +1064,8 @@ outputGroups:
 
   - title: Networking
     outputs:
-      - ${vcns}    
+      - ${vcns}
+      - ${subnets} 
+      - ${dmz_vcn}
+      - ${dmz_subnets} 
+      - ${bastions}      

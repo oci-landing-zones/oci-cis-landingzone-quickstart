@@ -59,7 +59,8 @@ locals {
         policy_name_prefix : var.service_label
       }
       compartment_level_settings : {
-        supplied_compartments : var.enable_template_policies == true ? {for k, v in merge(module.lz_compartments.compartments, local.enclosing_compartment_map) : k => {"name": v.name, "ocid": v.id, "cislz_metadata": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
+        #supplied_compartments : var.enable_template_policies == true ? {for k, v in merge(module.lz_compartments.compartments, local.enclosing_compartment_map) : k => {"name": v.name, "ocid": v.id, "cislz_metadata": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
+        supplied_compartments : merge(local.enclosing_compartment_map, local.enclosed_compartments_map, local.exainfra_compartment_map)
       }
     }
     defined_tags : local.template_policies_defined_tags
@@ -67,15 +68,101 @@ locals {
   }
 
   #-- This map satisfies managed, existing, and no enclosing compartments. It is merged with managed compartments in supplied_compartments attribute above.
-  enclosing_compartment_map = {
+  /* enclosing_compartment_map = {
     (local.enclosing_compartment_key) : {
       name : local.enclosing_compartment_name
       id : local.enclosing_compartment_id
       freeform_tags : {"cislz-cmp-type" : "enclosing"}
     }
+  } */
+
+  enclosing_compartment_map = {
+    (local.enclosing_compartment_key) : {
+      name : local.enclosing_compartment_name
+      ocid : local.enclosing_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"enclosing",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
+      }
+    }
   }
 
-  cislz_compartments_metadata = {
+  enclosed_compartments_map = {
+    (local.security_compartment_key) : {
+      name : local.provided_security_compartment_name
+      ocid : local.security_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"security",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+      }
+    }
+    (local.network_compartment_key) : {
+      name : local.provided_network_compartment_name
+      ocid : local.network_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"network",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+      }
+    }
+    (local.appdev_compartment_key) : {
+      name : local.provided_appdev_compartment_name
+      ocid : local.appdev_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"application",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+        "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+      }
+    }
+    (local.database_compartment_key) : {
+      name : local.provided_database_compartment_name
+      ocid : local.database_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"database",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+      }
+    }
+  }
+
+  exainfra_compartment_map = local.enable_exainfra_compartment ? {
+    (local.exainfra_compartment_key) : {
+      name : local.provided_exainfra_compartment_name
+      ocid : local.exainfra_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"exainfra",
+        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+      }
+    }
+  } : {}
+
+  /* cislz_compartments_metadata = {
     "enclosing" : {
       "cislz-cmp-type":"enclosing",
       "cislz-consumer-groups-security":"${local.security_admin_group_name}",
@@ -129,7 +216,7 @@ locals {
       "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
       "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
     }
-  } 
+  } */ 
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
   empty_template_policies_configuration = {

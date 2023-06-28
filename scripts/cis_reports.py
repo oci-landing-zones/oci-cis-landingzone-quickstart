@@ -3690,7 +3690,7 @@ class CIS_Report:
         ## Determines if a Budget Exists with an alert rule
         if len(self.__budgets) > 0:
             for budget in self.__budgets:
-                if budget['alert_rule_count'] > 0:
+                if budget['alert_rule_count'] >0 and budget['target_compartment_id'] == self.__tenancy.id:
                     self.obp_foundations_checks['Cost_Tracking_Budgets']['Status'] = True
                     self.obp_foundations_checks['Cost_Tracking_Budgets']['OBP'].append(budget)
                 else:

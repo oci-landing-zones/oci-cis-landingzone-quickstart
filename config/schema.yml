@@ -10,7 +10,7 @@ version: "2.6.0"
 locale: "en"
 
 # URL of CIS Landing Zone logo icon used on Application Information tab.
-logoUrl: "https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/issue-6-cmp-metadata/landing_zone_130.png"
+logoUrl: "https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/issue-281-new-iam-modules-integration/images/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"

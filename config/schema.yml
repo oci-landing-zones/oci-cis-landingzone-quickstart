@@ -2,11 +2,15 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "CIS OCI Landing Zone Quick Start Configuration"
-stackDescription: "A Terraform configuration that deploys an operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "A Terraform configuration that deploys an operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
+stackDescription: "This stack deploys a fully operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices. Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
+description: "This stack deploys a fully operational OCI architecture that follows the recommendations of CIS (Center for Internet Security) Benchmark for OCI. The CIS Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
+informationalText: "Code publicly available in https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
 schemaVersion: 1.1.0
 version: "2.6.0"
 locale: "en"
+
+# URL of CIS Landing Zone logo icon used on Application Information tab.
+logoUrl: "https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/issue-6-cmp-metadata/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"

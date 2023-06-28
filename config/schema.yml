@@ -3,8 +3,8 @@
 
 title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start"
 stackDescription: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy design that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy design that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices."
-informationalText: "For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">CIS OCI Landing Zone Quick Start</a>."
+description: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy design that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">CIS OCI Landing Zone Quick Start</a>."
+informationalText: "See below some of the outputs of the latest stack execution."
 schemaVersion: 1.1.0
 version: "2.6.0"
 locale: "en"

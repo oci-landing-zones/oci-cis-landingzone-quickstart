@@ -7,7 +7,6 @@ Fixes:
 - Removed Deeplink from Exception handling when reading object storage buckets
 - OBP check for budgets now verifies that there is budget with an alert for the root compartment
 
-
 #   June 20, 2023 Release Notes - 2.5.11
 1. [Performance update to the CIS Compliance Script](#2-5-11-script-performance)
 1. [Summary Data update to the CIS Compliance Script](#2-5-11-script-updates)
@@ -77,6 +76,18 @@ Fixes:
 - Fixed console output formatting for CIS Summary report.
 
 
+
+#   March 24, 2023 Release Notes - 2.5.6
+1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
+## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added egress rules to Security Lists and Network Security Groups.
+- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
+
+Fixes:
+- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
+- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

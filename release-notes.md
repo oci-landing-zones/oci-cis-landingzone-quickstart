@@ -1,3 +1,12 @@
+#   June 29, 2023 Release Notes - 2.5.12
+1. [Fixes to the CIS Compliance Script](#2-5-12-script-fixes)
+
+## <a name="2-5-12-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+- Fixed a logic issue for Security Lists and Network Security Groups with source ports but no destination ports
+- Removed Deeplink from Exception handling when reading object storage buckets
+- OBP check for budgets now verifies that there is budget with an alert for the root compartment
+
 #   June 20, 2023 Release Notes - 2.5.11
 1. [Performance update to the CIS Compliance Script](#2-5-11-script-performance)
 1. [Summary Data update to the CIS Compliance Script](#2-5-11-script-updates)

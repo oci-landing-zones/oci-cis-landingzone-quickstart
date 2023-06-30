@@ -150,15 +150,15 @@ Two extra compartments can be provisioned based on user choice:
 
 By default, the Landing Zone defines the following personas that account for most organization needs:
 
-- **Security Administrators**: manages security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
-- **Network Administrators**: manages OCI network family, including VCNs, DRGs, VNICs, IP addresses.
-- **Application Administrators**: manages application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manages database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc. 
 - **IAM Administrators**: manages IAM services and resources including compartments, groups, dynamic groups, policies, identity providers, authentication policies, network sources, tag defaults. However, this group is not allowed to manage the out-of-box *Administrators* and *Credential Administrators* groups. It's also not allowed to touch the out-of-box *Tenancy Admin Policy* policy.
 - **Credential Administrators**: manages a users’ capabilities and users credentials in general, including API keys, authentication tokens and secret keys.
 - **Cost Administrators**: manages budgets and usage reports.
 - **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis_reports.py* script. 
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
+- **Security Administrators**: manages security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
+- **Network Administrators**: manages OCI network family, including VCNs, DRGs, VNICs, IP addresses.
+- **Application Administrators**: manages application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
+- **Database Administrators**: manages database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc. 
 
 - **ExaCS Administrators** (only created when ExaCS compartment is created): manages Exadata infrastructure and VM clusters in the ExaCS compartment.
 
@@ -272,6 +272,25 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 - **existing_appdev_fun_dyn_group_name**: existing dynamic group for calling functions in the AppDev compartment.
 - **existing_compute_agent_dyn_group_name**: existing dynamic group for Compute management agent access.
 - **existing_database_kms_dyn_group_name**: existing dynamic group for databases to access OCI KMS Keys.
+
+### Custom Group Names
+
+By default, the group names are following the convention `${var.service_label}-group_name` using the `service-label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
+
+The supported variables are:
+- **custom_iam_admin_group_name**
+- **custom_cred_admin_group_name**
+- **custom_cost_admin_group_name**
+- **custom_auditor_group_name**
+- **custom_announcement_reader_group_name**
+- **custom_network_admin_group_name**
+- **custom_security_admin_group_name**
+- **custom_appdev_admin_group_name**
+- **custom_database_admin_group_name**
+- **custom_exainfra_admin_group_name**
+- **custom_storage_admin_group_name**
+
+For an example see [Example 4: Using Custom Group Names](#example-4-using-custom-group-names)
 
 ### Extending Landing Zone to a New Region
 
@@ -1030,6 +1049,26 @@ Now, we're placing ```vision_stage2_override.tf``` into the ```config``` directo
          }
 
 When you run ```terraform apply``` the defined tags of your components will be updated accordingly.
+
+### Example 4: Using Custom Group Names
+
+To define group names that follow the company naming convention, create a file `custom_group_names_override.tf` containing the following lines:
+
+    locals {
+      custom_iam_admin_group_name = "grp-iam-admins"
+      custom_cred_admin_group_name = "grp-credentials-admins"
+      custom_cost_admin_group_name = "grp-cost-admins"
+      custom_auditor_group_name = "grp-auditors"
+      custom_announcement_reader_group_name = "grp-announcement-readers"
+      custom_network_admin_group_name = "grp-network-admins"
+      custom_security_admin_group_name = "grp-security-admins"
+      custom_appdev_admin_group_name = "grp-application-admins"
+      custom_database_admin_group_name = "grp-database-admins"
+      custom_exainfra_admin_group_name = "grp-exainfra-admins"
+      custom_storage_admin_group_name = "grp-storage-admins"
+    }
+
+When done, move it to the `config` directory and verify it with `terraform plan`.
 
 # <a name="samples"></a>7. Deployment Samples
 

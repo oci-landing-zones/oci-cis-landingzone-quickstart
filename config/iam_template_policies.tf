@@ -17,8 +17,7 @@ locals {
 
 module "lz_template_policies" {
   depends_on = [module.lz_top_compartment, module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == true ? local.template_policies_configuration : local.empty_template_policies_configuration

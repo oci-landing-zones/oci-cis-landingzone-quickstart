@@ -1,3 +1,16 @@
+#   July XX, 2023 Release Notes - 2.6.0
+1. [Updates to Terraform Template](#2-6-0-tf-updates)
+
+## <a name="2-6-0-tf-updates">Updates to Terraform Template</a>
+Updates:
+- IAM resources, including compartments, groups, dynamic groups and policies are now managed with new remote modules, available in https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam. The old local IAM modules are still kept in this repository.
+- IAM policies can now be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the [new IAM policy module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies). In this approach, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the existing approach, where grants are combined per grantee and attached to the enclosing compartment. This alternative way is enabled by *Enable template policies?* checkbox (if using OCI Resource Manager) or by the *enable_template_policies* variable (if using Terraform CLI). The existing approach of deploying policies keeps being the default.
+- Some policy grants have been updated, allowing admin groups to manage keys in their own compartments and deploy private endpoints in Network compartment. Additionally, some grants have been consolidated into a single grant with a comma-separated list of group principals. Service policies have been consolidated into a single policy with the new name *${var.service_label}-services-policy*.
+- Deploying with an enclosing compartment becomes the default. Users who deploy without an enclosing compartment should unset *Use an enclosing compartment?* checkbox (if using OCI Resource Manager) or set *use_enclosing_compartment* variable to false (if using Terraform CLI).
+- Managed resources are now tagged with template release number.
+- Application Information tab is now enabled in OCI Resource Manager, displaying basic information about the stack and outputs of latest Terraform apply.
+
+
 #   June 29, 2023 Release Notes - 2.5.12
 1. [Fixes to the CIS Compliance Script](#2-5-12-script-fixes)
 

@@ -327,9 +327,9 @@ locals {
 
   ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
+                           "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report",
                            "allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
-                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
-                           "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
+                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy"]
 
   ### Dynamic Group Policies ###
   ## Compute Agent grants

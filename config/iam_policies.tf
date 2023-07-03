@@ -573,8 +573,7 @@ locals {
 
 module "lz_root_policies" {
   depends_on = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -582,8 +581,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? local.policies_configuration : local.empty_policies_configuration

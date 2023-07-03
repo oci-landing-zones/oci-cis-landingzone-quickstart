@@ -1,11 +1,16 @@
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "OCI Secure Landing Zone Quick Start Configuration"
-stackDescription: "A stack to deploy a set of CIS (Center for Internet Security) compliant resources in an OCI tenancy. The Secure Landing Zone is the combination of CIS Foundations Benchmark for OCI with OCI architecture best practices."
+title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start"
+stackDescription: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy design that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
+description: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy design that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">CIS OCI Landing Zone Quick Start</a>."
+informationalText: "See below some of the outputs of the latest stack execution."
 schemaVersion: 1.1.0
-version: "0.0.1"
+version: "2.6.0"
 locale: "en"
+
+# URL of CIS Landing Zone logo icon used on Application Information tab.
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/v91c5BlQGItJUv4HgzQ5C9TpS8hpB4J2Z0cw0OQH06_N7j0Dv1fYbzaHPNUYEoiJ/n/ociateam/b/acgoldrm-appdev-bucket/o/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"
@@ -18,6 +23,7 @@ variableGroups:
       - "env_advanced_options"
       - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
+      - "enable_template_policies"
       - "existing_iam_admin_group_name"
       - "existing_cred_admin_group_name"
       - "existing_security_admin_group_name"
@@ -188,7 +194,7 @@ variables:
     type: boolean
     title: "Use an enclosing compartment?"
     description: "Whether the Landing Zone compartments are created within an enclosing compartment. If unchecked, the Landing Zone compartments are created in the Root compartment, in which case you must have the required permissions."
-    default: false
+    default: true
   
   existing_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
@@ -214,6 +220,13 @@ variables:
     required: true
     default: "CREATE"
     visible: env_advanced_options
+
+  enable_template_policies:
+    type: boolean
+    title: "Enable template policies?"
+    description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
+    default: false
+    visible: env_advanced_options  
 
   existing_iam_admin_group_name:
     type: oci:identity:groups:id
@@ -1017,3 +1030,61 @@ variables:
 
   private_key_password:
     type: password
+
+outputs:
+  release:
+    type: string
+    title: CIS Landing Zone Release
+
+  region:
+    type: string
+    title: Region
+
+  service_label:
+    type: string
+    title: Service Label
+
+  cis_level:
+    type: string
+    title: CIS Profile Level  
+
+  compartments:
+    type: json
+    title: Compartments
+
+  vcns:
+    type: json
+    title: (Spoke) Virtual Cloud Networks 
+
+  subnets:
+    type: json
+    title: (Spoke) Virtual Cloud Networks Subnets  
+
+  dmz_vcn:
+    type: json
+    title: DMZ (Hub) Virtual Cloud Network   
+
+  dmz_subnets:
+    type: json
+    title: DMZ (Hub) Virtual Cloud Network Subnets
+
+  bastions:
+    type: json
+    title: Bastions   
+
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${release}
+      - ${region}
+      - ${service_label}
+      - ${cis_level}
+      - ${compartments}
+
+  - title: Networking
+    outputs:
+      - ${vcns}
+      - ${subnets} 
+      - ${dmz_vcn}
+      - ${dmz_subnets} 
+      - ${bastions}      

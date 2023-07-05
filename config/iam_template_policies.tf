@@ -41,6 +41,7 @@ locals {
     template_policies : {
       tenancy_level_settings : {
         groups_with_tenancy_level_roles : [
+          {"name":"${local.iam_admin_group_name}",     "roles":"iam"},
           {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
           {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
           {"name":"${local.security_admin_group_name}","roles":"security,basic"},

@@ -141,7 +141,8 @@ locals {
         "cislz-consumer-groups-database":"${local.database_admin_group_name}",
         "cislz-consumer-groups-network":"${local.network_admin_group_name}",
         "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
       }
     }
   }

@@ -159,7 +159,8 @@ locals {
     "allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment_name}",
     "allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment_name}",
     "allow group ${local.network_admin_group_name} to manage keys in compartment ${local.network_compartment_name}",
-    "allow group ${local.network_admin_group_name} to use key-delegate in compartment ${local.network_compartment_name}"] 
+    "allow group ${local.network_admin_group_name} to use key-delegate in compartment ${local.network_compartment_name}",
+    "allow group ${local.network_admin_group_name} to manage secret-family in compartment ${local.network_compartment_name}"] 
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = [
@@ -197,8 +198,8 @@ locals {
     "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment_name}",
     "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${local.database_admin_group_name} to manage keys in compartment ${local.database_compartment_name}",
-    "allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.database_compartment_name}"
-  ]
+    "allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.database_compartment_name}",
+    "allow group ${local.database_admin_group_name} to manage secret-family in compartment ${local.database_compartment_name}"]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -259,7 +260,8 @@ locals {
     "allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment_name}",
     "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment_name}",
     "allow group ${local.appdev_admin_group_name} to manage keys in compartment ${local.appdev_compartment_name}",
-    "allow group ${local.appdev_admin_group_name} to use key-delegate in compartment ${local.appdev_compartment_name}"]
+    "allow group ${local.appdev_admin_group_name} to use key-delegate in compartment ${local.appdev_compartment_name}",
+    "allow group ${local.appdev_admin_group_name} to manage secret-family in compartment ${local.appdev_compartment_name}"]
 
   ## AppDev admin grants on Network compartment
   appdev_admin_grants_on_network_cmp = [
@@ -309,8 +311,8 @@ locals {
     "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment_name}",
     "allow group ${local.exainfra_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
     "allow group ${local.exainfra_admin_group_name} to manage keys in compartment ${local.exainfra_compartment_name}",
-    "allow group ${local.exainfra_admin_group_name} to use key-delegate in compartment ${local.exainfra_compartment_name}"
-  ]
+    "allow group ${local.exainfra_admin_group_name} to use key-delegate in compartment ${local.exainfra_compartment_name}",
+    "allow group ${local.exainfra_admin_group_name} to manage secret-family in compartment ${local.exainfra_compartment_name}"]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
@@ -347,8 +349,8 @@ locals {
   ## ADB grants
   autonomous_database_grants = [
     "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment_name}",
-    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment_name}",
-    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.security_compartment_name}"]
+    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.database_compartment_name}",
+    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.database_compartment_name}"]
   
   ## Storage admin grants
   storage_admin_grants = [

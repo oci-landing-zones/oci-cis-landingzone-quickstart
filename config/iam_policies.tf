@@ -30,7 +30,7 @@ locals {
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
-    "allow group ${local.iam_admin_group_name} to manage users in tenancy where all {request.operation != 'ListApiKeys',request.operation != 'ListAuthTokens',request.operation != 'ListCustomerSecretKeys',request.operation != 'UploadApiKey',request.operation != 'DeleteApiKey',request.operation != 'UpdateAuthToken',request.operation != 'CreateAuthToken',request.operation != 'DeleteAuthToken',request.operation != 'CreateSecretKey',request.operation != 'UpdateCustomerSecretKey',request.operation != 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
+    "allow group ${local.iam_admin_group_name} to manage users in tenancy where any {request.operation = 'CreateUser', request.operation = 'UpdateUser', request.operation = 'UpdateUserState', request.operation = 'DeleteUser', request.operation = 'UpdateUserCapabilities', request.operation = 'AddUserToGroup', request.operation = 'RemoveUserFromGroup'}",
     # Users should be manage users and groups permissions via IDP
     "allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
     "allow group ${local.iam_admin_group_name} to read policies in tenancy",

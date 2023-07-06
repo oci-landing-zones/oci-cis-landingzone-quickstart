@@ -1052,7 +1052,7 @@ When you run ```terraform apply``` the defined tags of your components will be u
 
 ### Example 4: Using Custom Group Names
 
-To define group names that follow the company naming convention, create a file `custom_group_names_override.tf` containing the following lines:
+To define group names that follow the company naming convention, create a file `iam_groups_override.tf` containing the following lines:
 
     locals {
       custom_iam_admin_group_name = "grp-iam-admins"

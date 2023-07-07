@@ -485,7 +485,8 @@ locals {
     basic_grants_on_root_cmp = [
       "allow group ${join(",",local.basic_grants_grantees)} to use cloud-shell in tenancy",
       "allow group ${join(",",local.basic_grants_grantees)} to read usage-budgets in tenancy",
-      "allow group ${join(",",local.basic_grants_grantees)} to read usage-reports in tenancy"
+      "allow group ${join(",",local.basic_grants_grantees)} to read usage-reports in tenancy",
+      "allow group ${join(",",local.basic_grants_grantees)} to read objectstorage-namespaces in tenancy"
     ]
 
     root_policies = {

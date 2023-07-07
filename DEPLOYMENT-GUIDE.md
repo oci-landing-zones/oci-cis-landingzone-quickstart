@@ -150,17 +150,17 @@ Two extra compartments can be provisioned based on user choice:
 
 By default, the Landing Zone defines the following personas that account for most organization needs:
 
-- **IAM Administrators**: manages IAM services and resources including compartments, groups, dynamic groups, policies, identity providers, authentication policies, network sources, tag defaults. However, this group is not allowed to manage the out-of-box *Administrators* and *Credential Administrators* groups. It's also not allowed to touch the out-of-box *Tenancy Admin Policy* policy.
-- **Credential Administrators**: manages a users’ capabilities and users credentials in general, including API keys, authentication tokens and secret keys.
-- **Cost Administrators**: manages budgets and usage reports.
+- **IAM Administrators**: manage IAM services and resources including compartments, groups, dynamic groups, policies, identity providers, authentication policies, network sources, tag defaults. However, this group is not allowed to manage the out-of-box *Administrators* and *Credential Administrators* groups. It's also not allowed to touch the out-of-box *Tenancy Admin Policy* policy.
+- **Credential Administrators**: manage users capabilities and users credentials in general, including API keys, authentication tokens and secret keys.
+- **Cost Administrators**: manage budgets and usage reports.
 - **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis_reports.py* script. 
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
-- **Security Administrators**: manages security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
-- **Network Administrators**: manages OCI network family, including VCNs, DRGs, VNICs, IP addresses.
-- **Application Administrators**: manages application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manages database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc. 
-
-- **ExaCS Administrators** (only created when ExaCS compartment is created): manages Exadata infrastructure and VM clusters in the ExaCS compartment.
+- **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
+- **Network Administrators**: manage OCI network family, including VCNs, DRGs, VNICs, IP addresses.
+- **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
+- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc. 
+- **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
+- **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
 
 > **_NOTE:_** following least privilege principle, groups are only entitled to manage, use, read or inspect the necessary resources to fulfill their duties.
 

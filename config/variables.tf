@@ -53,8 +53,8 @@ variable "extend_landing_zone_to_new_region" {
 #-------------------------------------------------------
 variable "use_enclosing_compartment" {
   type        = bool
-  default     = false
-  description = "Whether the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment."
+  default     = true
+  description = "Whether the Landing Zone compartments are created within an enclosing compartment. If false, the Landing Zone compartments are created under the root compartment. The recommendation is to utilize an enclosing compartment."
 }
 variable "existing_enclosing_compartment_ocid" {
   type        = string
@@ -73,6 +73,12 @@ variable "policies_in_root_compartment" {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
     error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
+}
+
+variable "enable_template_policies" {
+  type = bool
+  default = false
+  description = "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the CIS Landing Zone standalone IAM policy module: https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
 }
 
 # ------------------------------------------------------

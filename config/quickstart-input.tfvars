@@ -24,13 +24,14 @@ cis_level            = "1"
 # ------------------------------------------------------
 # ----- IAM - Enclosing compartments
 #-------------------------------------------------------
-# use_enclosing_compartment           = false
+# use_enclosing_compartment           = true
 # existing_enclosing_compartment_ocid = "<ocid>" # Compartment OCID where Landing Zone compartments are created.
 
 # ------------------------------------------------------
 # ----- IAM - Policies
 #-------------------------------------------------------
 # policies_in_root_compartment = "CREATE"
+# enable_template_policies = false
 
 # ------------------------------------------------------
 # ----- IAM - Groups

@@ -6,7 +6,7 @@ output "service_label" {
 }
 
 output "compartments" {
-    value = local.display_outputs == true && var.extend_landing_zone_to_new_region == false ? {for k, v in module.lz_compartments.compartments : k => {name:v.name, id:v.id, parent_id:v.compartment_id, time_created:v.time_created}} : null
+    value = local.display_outputs == true && var.extend_landing_zone_to_new_region == false ? merge({for k, v in module.lz_compartments.compartments : k => {name:v.name, id:v.id, parent_id:v.compartment_id, time_created:v.time_created}}, length(module.lz_top_compartment) > 0 ? {for k, v in module.lz_top_compartment[0].compartments : k => {name:v.name, id:v.id, parent_id:v.compartment_id, time_created:v.time_created}} : {}) : null
 }
 
 output "vcns" {
@@ -63,4 +63,16 @@ output "service_connector_target" {
 
 output "logging_analytics_log_group" {
     value = local.display_outputs == true ? (length(module.lz_logging_analytics) > 0 ? module.lz_logging_analytics[0].log_group : null) : null
+}
+
+output "cis_level" {
+    value = local.display_outputs == true ? var.cis_level : null
+}
+
+output "region" {
+    value = local.display_outputs == true ? var.region : null
+}
+
+output "release" {
+    value = local.display_outputs == true ? (fileexists("${path.module}/../release.txt") ? file("${path.module}/../release.txt") : "unknown") : null
 }

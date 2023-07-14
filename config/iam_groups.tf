@@ -1,97 +1,275 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ### This Terraform configuration provisions Landing Zone groups.
 
 locals {
-  all_groups_defined_tags = {}
-  all_groups_freeform_tags = {}
+  #------------------------------------------------------------------------------------------------------
+  #-- Any of these local variables can be overriden in a _override.tf file
+  #------------------------------------------------------------------------------------------------------
+  custom_groups_defined_tags = null
+  custom_groups_freeform_tags = null
 
-  default_groups = merge(
-    { for i in [1] : (local.network_admin_group_name) => {
-      description   = "Landing Zone group for managing networking in compartment ${local.network_compartment.name}."
-      user_ids      = []
+  custom_iam_admin_group_name = null
+  custom_cred_admin_group_name = null
+  custom_cost_admin_group_name = null
+  custom_network_admin_group_name = null
+  custom_security_admin_group_name = null
+  custom_appdev_admin_group_name = null
+  custom_database_admin_group_name = null
+  custom_exainfra_admin_group_name = null
+  custom_storage_admin_group_name = null
+  custom_auditor_group_name = null
+  custom_announcement_reader_group_name = null
+}
+
+module "lz_groups" {
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/groups"
+  providers    = { oci = oci.home }
+  tenancy_ocid = var.tenancy_ocid
+  groups_configuration = var.extend_landing_zone_to_new_region == false ? local.groups_configuration : local.empty_groups_configuration
+}
+
+locals {
+  #------------------------------------------------------------------------------------------------------
+  #-- These variables are not meant to be overriden
+  #------------------------------------------------------------------------------------------------------
+
+  #-----------------------------------------------------------
+  #----- Tags to apply to groups
+  #-----------------------------------------------------------
+  default_groups_defined_tags = null
+  default_groups_freeform_tags = local.landing_zone_tags
+
+  groups_defined_tags = local.custom_groups_defined_tags != null ? merge(local.custom_groups_defined_tags, local.default_groups_defined_tags) : local.default_groups_defined_tags
+  groups_freeform_tags = local.custom_groups_freeform_tags != null ? merge(local.custom_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
+
+  #--------------------------------------------------------------------
+  #-- IAM Admin
+  #--------------------------------------------------------------------
+  iam_admin_group_key = "${var.service_label}-iam-admin-group"
+  default_iam_admin_group_name = "iam-admin-group"
+  provided_iam_admin_group_name = local.custom_iam_admin_group_name != null ? local.custom_iam_admin_group_name : "${var.service_label}-${local.default_iam_admin_group_name}" 
+  
+  iam_admin_group = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? {
+    (local.iam_admin_group_key) = {
+      name          = local.provided_iam_admin_group_name
+      description   = "CIS Landing Zone group for managing IAM resources in the tenancy."
+      members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_network_admin_group_name)) == 0 },
-    { for i in [1] : (local.security_admin_group_name) => {
-      description   = "Landing Zone group for managing security services in compartment ${local.security_compartment.name}."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_security_admin_group_name)) == 0 },
-    { for i in [1] : (local.appdev_admin_group_name) => {
-      description   = "Landing Zone group for managing app development related services in compartment ${local.appdev_compartment.name}."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_appdev_admin_group_name)) == 0 },
-    { for i in [1] : (local.database_admin_group_name) => {
-      description   = "Landing Zone group for managing databases in compartment ${local.database_compartment.name}."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_database_admin_group_name)) == 0 },
-    { for i in [1] : (local.auditor_group_name) => {
-      description   = "Landing Zone group for auditing the tenancy."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_auditor_group_name)) == 0 },
-    { for i in [1] : (local.announcement_reader_group_name) => {
-      description   = "Landing Zone group for reading Console announcements."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_announcement_reader_group_name)) == 0 },
-    { for i in [1] : (local.iam_admin_group_name) => {
-      description   = "Landing Zone group for managing IAM resources in the tenancy."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_iam_admin_group_name)) == 0 },
-    { for i in [1] : (local.cred_admin_group_name) => {
-      description   = "Landing Zone group for managing users credentials in the tenancy."
-      user_ids      = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_cred_admin_group_name)) == 0 },
-    { for i in [1] : (local.cost_admin_group_name) => {
-      description  = "Landing Zone group for Cost Management."
-      user_ids     = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_cost_admin_group_name)) == 0 },
-    { for i in [1] : (local.storage_admin_group_name) => {
-      description  = "Landing Zone group for Storage Management."
-      user_ids     = []
-      defined_tags  = local.groups_defined_tags
-      freeform_tags = local.groups_freeform_tags
-    } if length(trimspace(var.existing_storage_admin_group_name)) == 0 }
-  )
-  exainfra_group = var.deploy_exainfra_cmp == true && length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? {
-    (local.exainfra_admin_group_name) = {
-      description   = "Landing Zone group for managing Exadata infrastructure in the tenancy."
-      user_ids      = []
+    }
+  } : {} 
+
+  #--------------------------------------------------------------------
+  #-- Credentials Admin
+  #--------------------------------------------------------------------  
+  cred_admin_group_key = "${var.service_label}-cred-admin-group"
+  default_cred_admin_group_name = "cred-admin-group"
+  provided_cred_admin_group_name = local.custom_cred_admin_group_name != null ? local.custom_cred_admin_group_name : "${var.service_label}-${local.default_cred_admin_group_name}"  
+  
+  cred_admin_group = length(trimspace(var.existing_cred_admin_group_name)) == 0 ? {
+    (local.cred_admin_group_key) = {
+      name          = local.provided_cred_admin_group_name
+      description   = "CIS Landing Zone group for managing users credentials in the tenancy."
+      members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
     }
   } : {}
+
+  #--------------------------------------------------------------------
+  #-- Cost Admin
+  #--------------------------------------------------------------------
+  cost_admin_group_key = "${var.service_label}-cost-admin-group"
+  default_cost_admin_group_name = "cost-admin-group"
+  provided_cost_admin_group_name = local.custom_cost_admin_group_name != null ? local.custom_cost_admin_group_name : "${var.service_label}-${local.default_cost_admin_group_name}" 
   
-  groups = merge(local.default_groups,local.exainfra_group)
+  cost_admin_group = length(trimspace(var.existing_cost_admin_group_name)) == 0 ? {
+    (local.cost_admin_group_key) = {
+      name         = local.provided_cost_admin_group_name 
+      description  = "CIS Landing Zone group for Cost management."
+      members      = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
 
-  ### DON'T TOUCH THESE ###
-  default_groups_defined_tags = null
-  default_groups_freeform_tags = local.landing_zone_tags
+  #--------------------------------------------------------------------
+  #-- Network Admin
+  #--------------------------------------------------------------------
+  network_admin_group_key = "${var.service_label}-network-admin-group"
+  default_network_admin_group_name = "network-admin-group"
+  provided_network_admin_group_name = local.custom_network_admin_group_name != null ? local.custom_network_admin_group_name : "${var.service_label}-${local.default_network_admin_group_name}"
+  
+  network_admin_group = length(trimspace(var.existing_network_admin_group_name)) == 0 ? {
+    (local.network_admin_group_key) = {
+      name          = local.provided_network_admin_group_name  
+      description   = "CIS Landing Zone group for network management."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    } 
+  } : {} 
 
-  groups_defined_tags = length(local.all_groups_defined_tags) > 0 ? local.all_groups_defined_tags : local.default_groups_defined_tags
-  groups_freeform_tags = length(local.all_groups_freeform_tags) > 0 ? merge(local.all_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
+  #--------------------------------------------------------------------
+  #-- Security Admin
+  #--------------------------------------------------------------------
+  security_admin_group_key = "${var.service_label}-security-admin-group"
+  default_security_admin_group_name = "security-admin-group"
+  provided_security_admin_group_name = local.custom_security_admin_group_name != null ? local.custom_security_admin_group_name : "${var.service_label}-${local.default_security_admin_group_name}"
+    
+  security_admin_group = length(trimspace(var.existing_security_admin_group_name)) == 0 ? {
+    (local.security_admin_group_key) = {
+      name          = local.provided_security_admin_group_name  
+      description   = "CIS Landing Zone group for security services management."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
 
-}
+  #--------------------------------------------------------------------
+  #-- AppDev Admin
+  #--------------------------------------------------------------------
+  appdev_admin_group_key = "${var.service_label}-appdev-admin-group"
+  default_appdev_admin_group_name = "appdev-admin-group"
+  provided_appdev_admin_group_name = local.custom_appdev_admin_group_name != null ? local.custom_appdev_admin_group_name : "${var.service_label}-${local.default_appdev_admin_group_name}"
+  
+  appdev_admin_group = length(trimspace(var.existing_appdev_admin_group_name)) == 0 ? {
+    (local.appdev_admin_group_key) = {
+      name          = local.provided_appdev_admin_group_name  
+      description   = "CIS Landing Zone group for managing app development related services."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
 
-module "lz_groups" {
-  source       = "../modules/iam/iam-group"
-  providers    = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
-  groups       = var.extend_landing_zone_to_new_region == false ? local.groups : {}
-}
+  #--------------------------------------------------------------------
+  #-- Database Admin
+  #--------------------------------------------------------------------
+  database_admin_group_key = "${var.service_label}-database-admin-group"
+  default_database_admin_group_name = "database-admin-group"
+  provided_database_admin_group_name = local.custom_database_admin_group_name != null ? local.custom_database_admin_group_name : "${var.service_label}-${local.default_database_admin_group_name}"
+  
+  database_admin_group = length(trimspace(var.existing_database_admin_group_name)) == 0 ? {
+    (local.database_admin_group_key) = {
+      name          = local.provided_database_admin_group_name  
+      description   = "CIS Landing Zone group for managing databases."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  #--------------------------------------------------------------------
+  #-- Exainfra Admin
+  #--------------------------------------------------------------------
+  exainfra_admin_group_key = "${var.service_label}-exainfra-admin-group"
+  default_exainfra_admin_group_name = "exainfra-admin-group"
+  provided_exainfra_admin_group_name = local.custom_exainfra_admin_group_name != null ? local.custom_exainfra_admin_group_name : "${var.service_label}-${local.default_exainfra_admin_group_name}"
+    
+  exainfra_admin_group = var.deploy_exainfra_cmp == true && length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? {
+    (local.exainfra_admin_group_key) = {
+      name          = local.provided_exainfra_admin_group_name  
+      description   = "CIS Landing Zone group for managing Exadata Cloud Service infrastructure."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  #------------------------------------------------------------------------
+  #-- Storage admin
+  #------------------------------------------------------------------------
+  storage_admin_group_key = "${var.service_label}-storage-admin-group"
+  default_storage_admin_group_name = "storage-admin-group"
+  provided_storage_admin_group_name = local.custom_storage_admin_group_name != null ? local.custom_storage_admin_group_name : "${var.service_label}-${local.default_storage_admin_group_name}"
+
+  storage_admin_group = length(trimspace(var.existing_storage_admin_group_name)) == 0 ? {
+    (local.storage_admin_group_key) = {
+      name          = local.provided_storage_admin_group_name  
+      description   = "CIS Landing Zone group for storage services management."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    } 
+  } : {}
+
+  #------------------------------------------------------------------------
+  #-- Auditors
+  #------------------------------------------------------------------------
+  auditor_group_key = "${var.service_label}-auditor-group"
+  default_auditor_group_name = "auditor-group"
+  provided_auditor_group_name = local.custom_auditor_group_name != null ? local.custom_auditor_group_name : "${var.service_label}-${local.default_auditor_group_name}"
+  
+  auditor_group = length(trimspace(var.existing_auditor_group_name)) == 0 ? {
+    (local.auditor_group_key) = {
+      name          = local.provided_auditor_group_name  
+      description   = "CIS Landing Zone group for auditing the tenancy."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  #------------------------------------------------------------------------
+  #-- Announcement readers
+  #------------------------------------------------------------------------
+  announcement_reader_group_key = "${var.service_label}-announcement-reader-group"
+  default_announcement_reader_group_name = "announcement-reader-group"
+  provided_announcement_reader_group_name = local.custom_announcement_reader_group_name != null ? local.custom_announcement_reader_group_name : "${var.service_label}-${local.default_announcement_reader_group_name}"
+  
+  announcement_reader_group = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? {
+    (local.announcement_reader_group_key) = {
+      name          = local.provided_announcement_reader_group_name  
+      description   = "CIS Landing Zone group for reading Console announcements."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  #------------------------------------------------------------------------
+  #----- Groups configuration definition. Input to module.
+  #------------------------------------------------------------------------  
+  groups_configuration = {
+    groups : merge(local.iam_admin_group, local.cred_admin_group, local.cost_admin_group,
+                   local.network_admin_group, local.security_admin_group,
+                   local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
+                   local.storage_admin_group, local.auditor_group, local.announcement_reader_group)
+  }
+
+  empty_groups_configuration = {
+    groups : {}
+  }
+
+  #----------------------------------------------------------------------------------
+  #----- Variables with group names per groups module output
+  #----------------------------------------------------------------------------------
+  iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0           ? module.lz_groups.groups[local.iam_admin_group_key].name           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : var.existing_iam_admin_group_name)
+  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0          ? module.lz_groups.groups[local.cred_admin_group_key].name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : var.existing_cred_admin_group_name)
+  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0      ? module.lz_groups.groups[local.security_admin_group_key].name      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : var.existing_security_admin_group_name)
+  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0       ? module.lz_groups.groups[local.network_admin_group_key].name       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : var.existing_network_admin_group_name)
+  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0      ? module.lz_groups.groups[local.database_admin_group_key].name      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : var.existing_database_admin_group_name)
+  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0        ? module.lz_groups.groups[local.appdev_admin_group_key].name        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : var.existing_appdev_admin_group_name)
+  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0             ? module.lz_groups.groups[local.auditor_group_key].name             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : var.existing_auditor_group_name)
+  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? module.lz_groups.groups[local.announcement_reader_group_key].name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : var.existing_announcement_reader_group_name)
+  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? module.lz_groups.groups[local.cost_admin_group_key].name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : var.existing_cost_admin_group_name)
+  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? module.lz_groups.groups[local.storage_admin_group_key].name       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : var.existing_storage_admin_group_name)
+  exainfra_admin_group_name      = var.deploy_exainfra_cmp ? ((trimspace(var.existing_exainfra_admin_group_name)) == 0 ? module.lz_groups.groups[local.exainfra_admin_group_key].name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0 ? data.oci_identity_group.existing_exainfra_admin_group.name : var.existing_exainfra_admin_group_name)) : var.existing_exainfra_admin_group_name
+
+  /* iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0           ? local.provided_iam_admin_group_name           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : var.existing_iam_admin_group_name)
+  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0          ? local.provided_cred_admin_group_name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : var.existing_cred_admin_group_name)
+  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0      ? local.provided_security_admin_group_name      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : var.existing_security_admin_group_name)
+  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0       ? local.provided_network_admin_group_name       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : var.existing_network_admin_group_name)
+  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0      ? local.provided_database_admin_group_name      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : var.existing_database_admin_group_name)
+  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0        ? local.provided_appdev_admin_group_name        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : var.existing_appdev_admin_group_name)
+  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0             ? local.provided_auditor_group_name             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : var.existing_auditor_group_name)
+  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? local.provided_announcement_reader_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : var.existing_announcement_reader_group_name)
+  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? local.provided_cost_admin_group_name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : var.existing_cost_admin_group_name)
+  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? local.provided_storage_admin_group_name       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : var.existing_storage_admin_group_name)
+  exainfra_admin_group_name      = var.deploy_exainfra_cmp ? ((trimspace(var.existing_exainfra_admin_group_name)) == 0 ? local.provided_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0 ? data.oci_identity_group.existing_exainfra_admin_group.name : var.existing_exainfra_admin_group_name)) : var.existing_exainfra_admin_group_name
+ */
+ }

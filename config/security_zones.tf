@@ -26,14 +26,14 @@ module "lz_security_zones" {
 locals {
   ### These variables are NOT meant to be overriden.
   managed_enclosing_target_sz_compartment  = length(module.lz_top_compartment) > 0 ? { 
-    "${local.enclosing_compartment.key}-security-zone" = { 
-      "sz_compartment_name" : module.lz_top_compartment[0].compartments[local.enclosing_compartment.key].name, 
-      "sz_compartment_id" : module.lz_top_compartment[0].compartments[local.enclosing_compartment.key].id 
+    "${local.enclosing_compartment_key}-security-zone" = { 
+      "sz_compartment_name" : module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].name, 
+      "sz_compartment_id" : module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].id 
       } 
   } : {}
   existing_enclosing_target_sz_compartment = length(module.lz_top_compartment) == 0 && local.enclosing_compartment_id != var.tenancy_ocid ? { 
-    "${local.enclosing_compartment.key}-security-zone" = { 
-      "sz_compartment_name" : local.enclosing_compartment.name, 
+    "${local.enclosing_compartment_key}-security-zone" = { 
+      "sz_compartment_name" : local.network_compartment_name, 
       "sz_compartment_id" : local.enclosing_compartment_id 
       } 
   } : {}

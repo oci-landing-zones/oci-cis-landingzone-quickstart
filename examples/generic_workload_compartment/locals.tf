@@ -4,6 +4,10 @@
 locals {
 
   ### Discovering the home region name and region key.
- home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
+  home_region_key           = data.oci_identity_tenancy.this.home_region_key # Home region key obtained from the tenancy data source
+  parent_compartment_name   = data.oci_identity_compartment.parent_compartment_name.name
+  
+  workload_compartment_name = var.workload_compartment_name
+  database_compartment_name = var.database_compartment_name
 
 }

@@ -6,7 +6,6 @@ locals {
     { for i in [1] : ("WORKLOAD-CMP") => {
       name : var.workload_compartment_name,
       description : "Application Workload compartment",
-      #parent_id : "<ENTER THE OCID OF THE PARENT COMPARTMENT>", 
       parent_id : var.parent_compartment_id,
       defined_tags : null,
       freeform_tags : { "cislz" : var.landing_zone_prefix,
@@ -23,7 +22,6 @@ locals {
     { for i in [1] : ("WORKLOAD-DB-CMP") => {
       name : var.database_compartment_name,
       description : "Database compartment for application workload",
-      #parent_id : "<ENTER THE OCID OF THE PARENT COMPARTMENT>", 
       parent_id : var.parent_compartment_id,
       defined_tags : null,
       freeform_tags : { "cislz" : var.landing_zone_prefix,
@@ -36,6 +34,39 @@ locals {
       children : {}
       } if var.create_database_compartment
   })
+ new_compartments = {
+      (local.appdev_compartment_key) : {
+      name : local.provided_appdev_compartment_name
+      ocid : local.appdev_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"application",
+        # "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        # "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
+        "cislz-consumer-groups-database":"${var.database_workload_compartment_user_group_name}",
+        # "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+        # "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+        # "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+        # "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+      }
+    }
+   
+    (local.database_compartment_key) : {
+      name : local.provided_database_compartment_name
+      ocid : local.database_compartment_id
+      cislz_metadata : {
+        "cislz-cmp-type":"database",
+        # "cislz-consumer-groups-security":"${local.security_admin_group_name}",
+        "cislz-consumer-groups-application":"${var.database_workload_compartment_user_group_name}",
+      #   "cislz-consumer-groups-database":"${local.database_admin_group_name}",
+      #   "cislz-consumer-groups-network":"${local.network_admin_group_name}",
+      #   "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
+      #   "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+      #   "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+      # }
+    }
+    }
+ }
+
   
   compartment_policies = [for k, v in module.cislz_compartments.compartments : {
     name = v.name,
@@ -53,7 +84,7 @@ module "cislz_compartments" {
 }
 
 module "cislz_policies" {
-  tenancy_id = var.tenancy_id
+  tenancy_id = var.tenancy_ocid
   source     = "github.com/andrecorreaneto/terraform-oci-cis-landing-zone-policies"
   target_compartments = local.compartment_policies
   enable_debug = true

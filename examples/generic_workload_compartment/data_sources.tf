@@ -2,5 +2,9 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 data "oci_identity_tenancy" "this" {
-  tenancy_id = var.tenancy_id
+  tenancy_id = var.tenancy_ocid
+}
+
+data "oci_identity_compartment" "parent_compartment_name" {
+  id = var.parent_compartment_id
 }

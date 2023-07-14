@@ -3,10 +3,8 @@
 # ------------------------------------------------------
 # ----- Environment
 # ------------------------------------------------------
-# variable "tenancy_ocid" {}
-# variable "user_ocid" {
-#   default = ""
-# }
+variable "tenancy_ocid" {}
+variable "user_ocid" {}
 variable "fingerprint" {
   default = ""
 }
@@ -34,85 +32,85 @@ variable "compartments" {
     parent_id     = string
     defined_tags  = map(string)
     freeform_tags = map(string)
-    children    = map(object({
+    children = map(object({
       name          = string
       description   = string
       defined_tags  = map(string)
       freeform_tags = map(string)
-      children      = map(object({
+      children = map(object({
         name          = string
         description   = string
         defined_tags  = map(string)
         freeform_tags = map(string)
-        children      = map(object({
+        children = map(object({
           name          = string
           description   = string
           defined_tags  = map(string)
           freeform_tags = map(string)
-          children      = map(object({
+          children = map(object({
             name          = string
             description   = string
             defined_tags  = map(string)
             freeform_tags = map(string)
-            children      = map(object({
+            children = map(object({
               name          = string
               description   = string
               defined_tags  = map(string)
               freeform_tags = map(string)
-            }))  
+            }))
           }))
         }))
       }))
-    }))  
+    }))
   }))
   default = {}
 }
 
 variable "enable_compartments_delete" {
   description = "Whether compartments are physically deleted upon destroy."
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "parent_compartment_id" {
   description = "Compartment where the workload compartment will be created in."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "landing_zone_prefix" {
-    description = "Prefix used in your CIS Landing Zone deployment."
-    type = string
-    default = ""
+  description = "Prefix used in your CIS Landing Zone deployment."
+  type        = string
+  default     = ""
 }
 
 variable "workload_compartment_name" {
   description = "Compartment Name of the workload compartment."
-  type = string
-  default = "app-workload-cmp"
+  type        = string
+  default     = "app-workload-cmp"
 }
 
 variable "workload_compartment_user_group_name" {
   description = "OCI User group associated with the workload compartment."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 
 variable "create_database_compartment" {
   description = "Whether a database compartment is created to support the workload."
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "database_compartment_name" {
   description = "Compartment Name of the database compartment for the workload."
-  type = string
-  default = "app-db-workload-cmp"
+  type        = string
+  default     = "app-db-workload-cmp"
 }
 
 variable "database_workload_compartment_user_group_name" {
-    description = "OCI User group associated with workload database compartment."
-    type = string
-    default = ""
+  description = "OCI User group associated with workload database compartment."
+  type        = string
+  default     = ""
 }

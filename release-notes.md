@@ -1,3 +1,56 @@
+#   July 14, 2023 Release Notes - 2.6.0
+1. [Updates to Terraform Template](#2-6-0-tf-updates)
+
+## <a name="2-6-0-tf-updates">Updates to Terraform Template</a>
+Updates:
+- IAM resources, including compartments, groups, dynamic groups and policies are now managed with new remote modules, available in https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam. The old local IAM modules are still kept in this repository.
+- IAM policies can now be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the [new IAM policy module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies). In this approach, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the existing approach, where grants are combined per grantee and attached to the enclosing compartment. This alternative way is enabled by **Enable template policies?** checkbox (if using OCI Resource Manager) or by the **enable_template_policies** variable (if using Terraform CLI). The existing approach of deploying policies remains the default.
+- Some policy grants have been updated, allowing admin groups to manage keys in their own compartments using the OCI Vault in the Security Compartment and deploy private endpoints in Network compartment. Additionally, some grants have been consolidated into a single grant with a comma-separated list of group principals. Service policies have been consolidated into a single policy with the new name *${var.service_label}-services-policy*.
+- Deploying with an enclosing compartment becomes the default. Users who deploy without an enclosing compartment should unset **Use an enclosing compartment?** checkbox (if using OCI Resource Manager) or set **use_enclosing_compartment** variable to false (if using Terraform CLI).
+- Quick Start release number added to cis-landing-zone freeform tag.
+- Application Information tab is now enabled in OCI Resource Manager, displaying basic information about the stack and outputs of latest Terraform apply.
+
+
+#   June 29, 2023 Release Notes - 2.5.12
+1. [Fixes to the CIS Compliance Script](#2-5-12-script-fixes)
+
+## <a name="2-5-12-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+- Fixed a logic issue for Security Lists and Network Security Groups with source ports but no destination ports
+- Removed Deeplink from Exception handling when reading object storage buckets
+- OBP check for budgets now verifies that there is budget with an alert for the root compartment
+
+
+#   June 20, 2023 Release Notes - 2.5.11
+1. [Performance update to the CIS Compliance Script](#2-5-11-script-performance)
+1. [Summary Data update to the CIS Compliance Script](#2-5-11-script-updates)
+1. [Fixes to the CIS Compliance Script](#2-5-11-script-fixes)
+
+## <a name="2-5-11-script-performance">Performance update to the CIS Compliance Script</a>
+Migrate the querying of resources to Resource Search (a module within Oracle’s API).  By using Resource Search, compartment iterations for listing items are ignored.  For items that require more detailed information than Resource Search returns, only those compartments are queried.  This migration reduces script execution time by 8 times.
+
+## <a name="#2-5-11-script-updates">Updates to the CIS Compliance Script</a>
+The CIS Summary report CSV adds two new columns **Compliant Items**, which represents the number of resources that are aligned to that recommendation, and **Total** which is the total number of that resource in tenancy. The **Total** column is also in the screen output.
+
+## <a name="#2-5-11-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes
+- Updated the CIS checks 2.1, 2,2, 2.3, and 2.4 to detect Security Lists and Networks Security Groups that allow egress access to ports 22 or 3389 via allowing all protocols, all ports, or using port ranges.
+- Updated CIS Check 2.5 to only look at Default Security Lists.
+
+
+#   May 12, 2023 Release Notes - 2.5.10
+1. [Support for Security Tokens in the CIS Compliance Script](#2-5-10-script-updates)
+1. [Terraform Template Updates](#2-5-9-tf-updates)
+
+## <a name="2-5-10-script-updates">Support for Security Tokens in the CIS Compliance Script</a>
+New:
+- Added support of Security Tokens for script authentication courtesy of Dave Knot ([dns-prefetch](https://github.com/dns-prefetch)).  For usage example, go to the [compliance-script.md](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/compliance-script.md) and review the **Executing on a local machine via Security Token (oci session authenticate)** example. For more information on security tokens: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
+
+## <a name="2-5-10-tf-updates">Terraform Template Updates</a>
+Fixes:
+- Security rule added for ICMP in Exadata CS security lists, allowing for the initiation of ICMP requests to hosts in the VCN. Changes in [net_exacs_vcns.tf](./config/net_exacs_vcns.tf).
+- VSS targets are now created when the Landing Zone is extended to a new region. Changes in [vss.tf](./config/vss.tf).
+
 #   April 26, 2023 Release Notes - 2.5.9
 1. [Terraform Template Updates](#2-5-9-tf-updates)
 

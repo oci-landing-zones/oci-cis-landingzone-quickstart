@@ -10,7 +10,7 @@ version: "2.6.0"
 locale: "en"
 
 # URL of CIS Landing Zone logo icon used on Application Information tab.
-logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/v91c5BlQGItJUv4HgzQ5C9TpS8hpB4J2Z0cw0OQH06_N7j0Dv1fYbzaHPNUYEoiJ/n/ociateam/b/acgoldrm-appdev-bucket/o/landing_zone_130.png"
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"

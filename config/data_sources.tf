@@ -193,6 +193,10 @@ data "oci_identity_compartments" "network" {
     name = "name"
     values = [local.provided_network_compartment_name]
   }
+  filter {
+    name = "state"
+    values = ["ACTIVE"]
+  }
 }
 
 data "oci_identity_compartments" "security" {
@@ -200,6 +204,10 @@ data "oci_identity_compartments" "security" {
   filter {
     name = "name"
     values = [local.provided_security_compartment_name]
+  }
+  filter {
+    name = "state"
+    values = ["ACTIVE"]
   }
 }
 
@@ -209,6 +217,10 @@ data "oci_identity_compartments" "appdev" {
     name = "name"
     values = [local.provided_appdev_compartment_name]
   }
+  filter {
+    name = "state"
+    values = ["ACTIVE"]
+  }
 }
 
 data "oci_identity_compartments" "database" {
@@ -217,6 +229,10 @@ data "oci_identity_compartments" "database" {
     name = "name"
     values = [local.provided_database_compartment_name]
   }
+  filter {
+    name = "state"
+    values = ["ACTIVE"]
+  }
 }
 
 data "oci_identity_compartments" "exainfra" {
@@ -224,6 +240,10 @@ data "oci_identity_compartments" "exainfra" {
   filter {
     name = "name"
     values = [local.provided_exainfra_compartment_name]
+  }
+  filter {
+    name = "state"
+    values = ["ACTIVE"]
   }
 }
 

@@ -30,6 +30,7 @@ locals {
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
     "allow group ${local.iam_admin_group_name} to inspect users in tenancy",
+    "allow group ${local.iam_admin_group_name} to manage users in tenancy where all {request.operation != 'ListApiKeys',request.operation != 'ListAuthTokens',request.operation != 'ListCustomerSecretKeys',request.operation != 'UploadApiKey',request.operation != 'DeleteApiKey',request.operation != 'UpdateAuthToken',request.operation != 'CreateAuthToken',request.operation != 'DeleteAuthToken',request.operation != 'CreateSecretKey',request.operation != 'UpdateCustomerSecretKey',request.operation != 'DeleteCustomerSecretKey'}",
     # Users should be manage users and groups permissions via IDP
     "allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
     "allow group ${local.iam_admin_group_name} to read policies in tenancy",
@@ -101,7 +102,8 @@ locals {
     "allow group ${local.security_admin_group_name} to read instance-agent-plugins in compartment ${local.security_compartment_name}",
     "allow group ${local.security_admin_group_name} to manage cloudevents-rules in compartment ${local.security_compartment_name}",
     "allow group ${local.security_admin_group_name} to manage alarms in compartment ${local.security_compartment_name}",
-    "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment_name}"]
+    "allow group ${local.security_admin_group_name} to manage metrics in compartment ${local.security_compartment_name}",
+    "allow group ${local.security_admin_group_name} to use key-delegate in compartment ${local.security_compartment_name}"]
 
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = [
@@ -156,7 +158,9 @@ locals {
     "allow group ${local.network_admin_group_name} to manage alarms in compartment ${local.network_compartment_name}",
     "allow group ${local.network_admin_group_name} to manage metrics in compartment ${local.network_compartment_name}",
     "allow group ${local.network_admin_group_name} to read instance-agent-plugins in compartment ${local.network_compartment_name}",
-    "allow group ${local.network_admin_group_name} to manage keys in compartment ${local.network_compartment_name}",] 
+    "allow group ${local.network_admin_group_name} to manage keys in compartment ${local.network_compartment_name}",
+    "allow group ${local.network_admin_group_name} to use key-delegate in compartment ${local.network_compartment_name}",
+    "allow group ${local.network_admin_group_name} to manage secret-family in compartment ${local.network_compartment_name}"] 
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = [
@@ -194,7 +198,8 @@ locals {
     "allow group ${local.database_admin_group_name} to manage data-safe-family in compartment ${local.database_compartment_name}",
     "allow group ${local.database_admin_group_name} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${local.database_admin_group_name} to manage keys in compartment ${local.database_compartment_name}",
-  ]
+    "allow group ${local.database_admin_group_name} to use key-delegate in compartment ${local.database_compartment_name}",
+    "allow group ${local.database_admin_group_name} to manage secret-family in compartment ${local.database_compartment_name}"]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -254,7 +259,9 @@ locals {
     "allow group ${local.appdev_admin_group_name} to manage bastion-session in compartment ${local.appdev_compartment_name}",
     "allow group ${local.appdev_admin_group_name} to manage cloudevents-rules in compartment ${local.appdev_compartment_name}",
     "allow group ${local.appdev_admin_group_name} to read instance-agent-plugins in compartment ${local.appdev_compartment_name}",
-    "allow group ${local.appdev_admin_group_name} to manage keys in compartment ${local.appdev_compartment_name}",]
+    "allow group ${local.appdev_admin_group_name} to manage keys in compartment ${local.appdev_compartment_name}",
+    "allow group ${local.appdev_admin_group_name} to use key-delegate in compartment ${local.appdev_compartment_name}",
+    "allow group ${local.appdev_admin_group_name} to manage secret-family in compartment ${local.appdev_compartment_name}"]
 
   ## AppDev admin grants on Network compartment
   appdev_admin_grants_on_network_cmp = [
@@ -304,7 +311,8 @@ locals {
     "allow group ${local.exainfra_admin_group_name} to manage metrics in compartment ${local.exainfra_compartment_name}",
     "allow group ${local.exainfra_admin_group_name} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
     "allow group ${local.exainfra_admin_group_name} to manage keys in compartment ${local.exainfra_compartment_name}",
-  ]
+    "allow group ${local.exainfra_admin_group_name} to use key-delegate in compartment ${local.exainfra_compartment_name}",
+    "allow group ${local.exainfra_admin_group_name} to manage secret-family in compartment ${local.exainfra_compartment_name}"]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
@@ -327,9 +335,9 @@ locals {
 
   ## Cost admin permissions to be created always at the Root compartment
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq", 
+                           "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report",
                            "allow group ${local.cost_admin_group_name} to manage usage-report in tenancy",
-                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy", 
-                           "endorse group ${local.cost_admin_group_name} to read objects in tenancy usage-report"]
+                           "allow group ${local.cost_admin_group_name} to manage usage-budgets in tenancy"]
 
   ### Dynamic Group Policies ###
   ## Compute Agent grants
@@ -341,8 +349,8 @@ locals {
   ## ADB grants
   autonomous_database_grants = [
     "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment_name}",
-    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.security_compartment_name}",
-    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.security_compartment_name}"]
+    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.database_compartment_name}",
+    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.database_compartment_name}"]
   
   ## Storage admin grants
   storage_admin_grants = [
@@ -477,7 +485,8 @@ locals {
     basic_grants_on_root_cmp = [
       "allow group ${join(",",local.basic_grants_grantees)} to use cloud-shell in tenancy",
       "allow group ${join(",",local.basic_grants_grantees)} to read usage-budgets in tenancy",
-      "allow group ${join(",",local.basic_grants_grantees)} to read usage-reports in tenancy"
+      "allow group ${join(",",local.basic_grants_grantees)} to read usage-reports in tenancy",
+      "allow group ${join(",",local.basic_grants_grantees)} to read objectstorage-namespaces in tenancy"
     ]
 
     root_policies = {
@@ -568,8 +577,7 @@ locals {
 
 module "lz_root_policies" {
   depends_on = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -577,8 +585,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? local.policies_configuration : local.empty_policies_configuration

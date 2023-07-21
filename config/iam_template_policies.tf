@@ -17,8 +17,7 @@ locals {
 
 module "lz_template_policies" {
   depends_on = [module.lz_top_compartment, module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=issue-6-cmp-metadata"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == true ? local.template_policies_configuration : local.empty_template_policies_configuration
@@ -42,6 +41,7 @@ locals {
     template_policies : {
       tenancy_level_settings : {
         groups_with_tenancy_level_roles : [
+          {"name":"${local.iam_admin_group_name}",     "roles":"iam"},
           {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
           {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
           {"name":"${local.security_admin_group_name}","roles":"security,basic"},
@@ -141,7 +141,8 @@ locals {
         "cislz-consumer-groups-database":"${local.database_admin_group_name}",
         "cislz-consumer-groups-network":"${local.network_admin_group_name}",
         "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
+        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
       }
     }
   }
@@ -161,62 +162,6 @@ locals {
       }
     }
   } : {}
-
-  /* cislz_compartments_metadata = {
-    "enclosing" : {
-      "cislz-cmp-type":"enclosing",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
-    },
-    "network" : {
-      "cislz-cmp-type":"network",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
-    },
-    "security" : {
-      "cislz-cmp-type":"security",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-      "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
-    },
-    "application" : {
-      "cislz-cmp-type":"application",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-      "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
-    }, 
-    "database" : {
-      "cislz-cmp-type":"database",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
-    },
-    "exainfra" : {
-      "cislz-cmp-type":"exainfra",
-      "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-      "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-      "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-      "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-      "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-      "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
-    }
-  } */ 
 
   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
   empty_template_policies_configuration = {

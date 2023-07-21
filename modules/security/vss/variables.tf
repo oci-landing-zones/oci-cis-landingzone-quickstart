@@ -80,12 +80,6 @@ variable "vss_targets" {
   }))
 }
 
-variable "vss_policy_name" {
-  description = "The VSS policy name. Use it to override the default policy name, which is either <name-prefix>-vss-policy or vss-policy."
-  type = string
-  default = null
-}
-
 variable "defined_tags" {
   description = "Any defined tags to apply on the VSS resources." 
   type = map(string)

@@ -1,3 +1,18 @@
+#   July 26, 2023 Release Notes - 2.6.1
+1. [Updates to Terraform Template](#2-6-1-tf-updates)
+1. [Documentation Updates](#2-6-1-doc-updates)
+
+## <a name="2-6-1-tf-updates">Updates to Terraform Template</a>
+Fixes:
+- Fixed a defect where missing exainfra admin group name in grants was causing policies creation to fail.
+
+Updates:
+- Set Terraform version upper bound to *< 1.3.0* in [provider.tf](./config/provider.tf).
+
+## <a name="2-6-1-doc-updates">Documentation Updates</a>
+Updates:
+- Added link to CIS Landing Zone Quick Start Live Lab in [README.md](./README.md).
+
 #   July 14, 2023 Release Notes - 2.6.0
 1. [Updates to Terraform Template](#2-6-0-tf-updates)
 

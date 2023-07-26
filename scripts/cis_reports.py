@@ -3485,16 +3485,17 @@ class CIS_Report:
         # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
         # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
         for autonomous_database in self.__autonomous_databases:
-            if not(autonomous_database['whitelisted_ips']) and not(autonomous_database['nsg_ids']):
-                self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
-                self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
-                    autonomous_database)
-            elif autonomous_database['whitelisted_ips']:
-                for value in autonomous_database['whitelisted_ips']:
-                    if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
-                        self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
-                            autonomous_database)
+            if autonomous_database['lifecycle_state']!="UNAVAILABLE":
+                if not(autonomous_database['whitelisted_ips']) and not(autonomous_database['nsg_ids']):
+                    self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
+                    self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                        autonomous_database)
+                elif autonomous_database['whitelisted_ips']:
+                    for value in autonomous_database['whitelisted_ips']:
+                        if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
+                            self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
+                            self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                                autonomous_database)
 
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_1_2['2.8']['Total'] = self.__autonomous_databases

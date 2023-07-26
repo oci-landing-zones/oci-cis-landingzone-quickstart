@@ -3,7 +3,6 @@
 1. [Documentation Updates](#2-6-1-doc-updates)
 1. [Fixes to the CIS Compliance Script](#2-6-1-script-fixes)
 
-
 ## <a name="2-6-1-tf-updates">Updates to Terraform Template</a>
 Fixes:
 - Fixed a defect where missing exainfra admin group name in grants was causing policies creation to fail.
@@ -22,7 +21,6 @@ Fixes:
 
 #   July 14, 2023 Release Notes - 2.6.0
 1. [Updates to Terraform Template](#2-6-0-tf-updates)
-1. [Fixes to the CIS Compliance Script](#2-6-1-script-fixes)
 
 ## <a name="2-6-0-tf-updates">Updates to Terraform Template</a>
 Updates:
@@ -32,11 +30,6 @@ Updates:
 - Deploying with an enclosing compartment becomes the default. Users who deploy without an enclosing compartment should unset **Use an enclosing compartment?** checkbox (if using OCI Resource Manager) or set **use_enclosing_compartment** variable to false (if using Terraform CLI).
 - Quick Start release number added to cis-landing-zone freeform tag.
 - Application Information tab is now enabled in OCI Resource Manager, displaying basic information about the stack and outputs of latest Terraform apply.
-
-
-## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
-Fixes:
--CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
 
 
 #   June 29, 2023 Release Notes - 2.5.12
@@ -118,6 +111,18 @@ Fixes:
 - Fixed console output formatting for CIS Summary report.
 
 
+
+#   March 24, 2023 Release Notes - 2.5.6
+1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
+## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added egress rules to Security Lists and Network Security Groups.
+- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
+
+Fixes:
+- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
+- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

@@ -1,5 +1,28 @@
+#   July 26, 2023 Release Notes - 2.6.1
+1. [Updates to Terraform Template](#2-6-1-tf-updates)
+1. [Documentation Updates](#2-6-1-doc-updates)
+1. [Fixes to the CIS Compliance Script](#2-6-1-script-fixes)
+
+
+## <a name="2-6-1-tf-updates">Updates to Terraform Template</a>
+Fixes:
+- Fixed a defect where missing exainfra admin group name in grants was causing policies creation to fail.
+
+Updates:
+- Set Terraform version upper bound to *< 1.3.0* in [provider.tf](./config/provider.tf).
+
+## <a name="2-6-1-doc-updates">Documentation Updates</a>
+Updates:
+- Added link to CIS Landing Zone Quick Start Live Lab in [README.md](./README.md).
+
+## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+- CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
+
+
 #   July 14, 2023 Release Notes - 2.6.0
 1. [Updates to Terraform Template](#2-6-0-tf-updates)
+1. [Fixes to the CIS Compliance Script](#2-6-1-script-fixes)
 
 ## <a name="2-6-0-tf-updates">Updates to Terraform Template</a>
 Updates:
@@ -9,6 +32,11 @@ Updates:
 - Deploying with an enclosing compartment becomes the default. Users who deploy without an enclosing compartment should unset **Use an enclosing compartment?** checkbox (if using OCI Resource Manager) or set **use_enclosing_compartment** variable to false (if using Terraform CLI).
 - Quick Start release number added to cis-landing-zone freeform tag.
 - Application Information tab is now enabled in OCI Resource Manager, displaying basic information about the stack and outputs of latest Terraform apply.
+
+
+## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+-CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
 
 
 #   June 29, 2023 Release Notes - 2.5.12

@@ -17,7 +17,7 @@ Updates:
 
 ## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
 Fixes:
--CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
+- CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
 
 
 #   July 14, 2023 Release Notes - 2.6.0

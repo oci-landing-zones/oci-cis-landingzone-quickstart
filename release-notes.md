@@ -1,6 +1,8 @@
 #   July 26, 2023 Release Notes - 2.6.1
 1. [Updates to Terraform Template](#2-6-1-tf-updates)
 1. [Documentation Updates](#2-6-1-doc-updates)
+1. [Fixes to the CIS Compliance Script](#2-6-1-script-fixes)
+
 
 ## <a name="2-6-1-tf-updates">Updates to Terraform Template</a>
 Fixes:
@@ -12,6 +14,11 @@ Updates:
 ## <a name="2-6-1-doc-updates">Documentation Updates</a>
 Updates:
 - Added link to CIS Landing Zone Quick Start Live Lab in [README.md](./README.md).
+
+## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+-CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
+
 
 #   July 14, 2023 Release Notes - 2.6.0
 1. [Updates to Terraform Template](#2-6-0-tf-updates)

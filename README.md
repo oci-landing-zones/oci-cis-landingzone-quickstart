@@ -1,6 +1,11 @@
 [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
 
 *If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
+<br>
+<br>
+<img align="left" src="./images/livelab.png">&nbsp;&nbsp;Check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience!
+<br>
+<br>
 # CIS OCI Landing Zone Quick Start Template
 ![Landing_Zone_Logo](images/landing%20zone_300.png)
 ## Table of Contents

@@ -3486,7 +3486,7 @@ class CIS_Report:
         # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
         for autonomous_database in self.__autonomous_databases:
             if autonomous_database['lifecycle_state']!="UNAVAILABLE":
-                if not(autonomous_database['whitelisted_ips']) and not(autonomous_database['nsg_ids']):
+                if not(autonomous_database['whitelisted_ips']) and not(autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
                     self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
                         autonomous_database)

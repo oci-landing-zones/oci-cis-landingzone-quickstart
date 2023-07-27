@@ -5,6 +5,26 @@ data "oci_identity_tenancy" "this" {
   tenancy_id = var.tenancy_ocid
 }
 
-data "oci_identity_compartment" "parent_compartment_name" {
-  id = var.parent_compartment_id
+data "oci_identity_compartment" "existing_lz_enclosing_compartment" {
+  id = var.existing_lz_enclosing_compartment_ocid 
+}
+
+data "oci_identity_compartment" "existing_lz_security_compartment" {
+  id = var.existing_lz_security_compartment_ocid 
+}
+
+data "oci_identity_compartment" "existing_lz_network_compartment" {
+  id = var.existing_lz_network_compartment_ocid 
+}
+
+
+data "oci_identity_regions" "these" {}
+
+data "oci_identity_group" "existing_appdev_admin_group" {
+  group_id = length(trimspace(var.existing_appdev_admin_group_name)) > 0 ? var.existing_appdev_admin_group_name : "nogroup"
+}
+
+
+data "oci_identity_group" "existing_database_admin_group" {
+  group_id = length(trimspace(var.existing_database_admin_group_name)) > 0 ? var.existing_database_admin_group_name : "nogroup"
 }

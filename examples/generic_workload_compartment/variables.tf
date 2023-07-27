@@ -72,13 +72,25 @@ variable "enable_compartments_delete" {
   default     = true
 }
 
-variable "parent_compartment_id" {
+variable "existing_lz_enclosing_compartment_ocid" {
   description = "Compartment where the workload compartment will be created in."
   type        = string
   default     = ""
 }
 
-variable "landing_zone_prefix" {
+variable "existing_lz_security_compartment_ocid" {
+  description = "Existing CIS Landing Zone Security Compartment"
+  type        = string
+  default     = ""
+}
+
+variable "existing_lz_network_compartment_ocid" {
+  description = "Existing CIS Landing Zone Network Compartment"
+  type        = string
+  default     = ""
+}
+
+variable "service_label" {
   description = "Prefix used in your CIS Landing Zone deployment."
   type        = string
   default     = ""
@@ -90,17 +102,13 @@ variable "workload_compartment_name" {
   default     = "app-workload-cmp"
 }
 
-variable "workload_compartment_user_group_name" {
-  description = "OCI User group associated with the workload compartment."
-  type        = string
-  default     = ""
+variable "existing_appdev_admin_group_name" {
+  type    = string
+  default = ""
 }
-
-
-variable "create_database_compartment" {
-  description = "Whether a database compartment is created to support the workload."
-  type        = bool
-  default     = true
+variable "existing_database_admin_group_name" {
+  type    = string
+  default = ""
 }
 
 variable "database_compartment_name" {
@@ -109,8 +117,13 @@ variable "database_compartment_name" {
   default     = "app-db-workload-cmp"
 }
 
-variable "database_workload_compartment_user_group_name" {
-  description = "OCI User group associated with workload database compartment."
-  type        = string
-  default     = ""
+variable "create_database_compartment" {
+  description = "Whether a database compartment is created to support the workload."
+  type        = bool
+  default     = false
+}
+
+variable "workload_team_manages_database" {
+  description = "Select this if your workload team "
+  
 }

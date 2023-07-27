@@ -15,8 +15,10 @@
 # ----- General
 # ------------------------------------------------------
 
-parent_compartment_id = "ocid1.compartment.oc1..aaaaaaaaazpbxtunsnblbdefwuxnmu5z7t7wgrfn4fp74g7ymfhfvnthf3ia" # Required
-create_database_compartment = false
-landing_zone_prefix = "iss216"
-workload_compartment_user_group_name = "iss216-appdev-admin-group"
-database_workload_compartment_user_group_name = "iss216-database-admin-group"
+# existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaaaaaaaazpbxtunsnblbdefwuxnmu5z7t7wgrfn4fp74g7ymfhfvnthf3ia" # Required
+# create_database_compartment = false
+# service_label = "iss216"
+# workload_compartment_user_group_name = "iss216-appdev-admin-group"
+# database_workload_compartment_user_group_name = "iss216-database-admin-group"
+# existing_appdev_admin_group_name = ""
+# existing_database_admin_group_name = "ocid1.group.oc1..aaaaaaaaudosubh7yro3jkre2bgidw7npu3slznlgr6l4l2e4ptbasmm335a"

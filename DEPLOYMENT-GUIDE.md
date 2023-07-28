@@ -156,7 +156,7 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis_reports.py* script. 
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
-- **Network Administrators**: manage OCI network family, including VCNs, DRGs, VNICs, IP addresses.
+- **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
 - **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc. 
 - **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
@@ -169,7 +169,7 @@ By default, the Landing Zone defines the following personas that account for mos
 The Landing Zone defines four dynamic groups to satisfy common needs of workloads that are eventually deployed:
 
 - **Security Functions**: to be used by functions defined in the Security compartment. The matching rule includes all functions in the Security compartment. An example is a function for rotating secrets kept in a Vault.
-- **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and the sending to Object Storage.
+- **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
 

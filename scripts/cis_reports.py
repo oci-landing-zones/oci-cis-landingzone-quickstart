@@ -760,6 +760,9 @@ class CIS_Report:
             if region.is_home_region:
                 self.__home_region = region.region_name
                 print("Home region for tenancy is " + self.__home_region)
+                if self.__home_region != self.__config['region']:               
+                    print_header("It is recommended to run the CIS Complaince script in your home region")
+                    print_header("The current region is: " + self.__config['region'])
                 self.__regions[region.region_name]  = {
                     "is_home_region": region.is_home_region,
                     "region_key": region.region_key,

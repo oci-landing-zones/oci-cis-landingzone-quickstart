@@ -3860,6 +3860,7 @@ class CIS_Report:
                     
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
+                    log_record = {"sch_id": sch_id ,"id" : subnet_id}
                     
                     subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
                     subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
@@ -3880,6 +3881,7 @@ class CIS_Report:
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
                     log_region = log_values['region']
+                    log_record = {"sch_id": sch_id ,"id" : bucket_name}
 
                     bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
                     bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
@@ -3901,6 +3903,7 @@ class CIS_Report:
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
                     log_region = log_values['region']
+                    log_record = {"sch_id": sch_id ,"id" : bucket_name}
 
                     bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
                     bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  

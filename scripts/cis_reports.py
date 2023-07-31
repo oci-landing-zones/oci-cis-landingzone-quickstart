@@ -3867,11 +3867,11 @@ class CIS_Report:
 
                     # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if subnet_log_group_in_sch and not(subnet_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
 
                     # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
                     elif subnet_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
                         
                     # else:
                     #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
@@ -3888,11 +3888,11 @@ class CIS_Report:
 
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
                     
                     # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
                     elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
                     # else:
                     #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
@@ -3910,22 +3910,24 @@ class CIS_Report:
 
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
                     # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
                     elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
         
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
             
             for finding in region_values['VCN']['subnets']:
-                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
+                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets ))
                 # Checking that the subnet has not already been written to OBP 
-                existing_finding = list(filter(lambda subnet: subnet['id'] == finding, self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+                existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
 
                 if logged_subnet and not(existing_finding):
+                    record = logged_subnet[0]
+                    record['sch_id'] = finding['sch_id']
                     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(logged_subnet[0])
                 # else:
                 #     print("Found this subnet being logged but the subnet does not exist: " + str(finding))

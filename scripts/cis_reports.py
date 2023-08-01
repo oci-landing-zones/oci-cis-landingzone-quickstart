@@ -3732,7 +3732,6 @@ class CIS_Report:
             # Only Active SCH with a target that is configured
             if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for source in sch_values['log_sources']:
-                    log_record = {"sch_id": sch_id , "sch_name" : sch_values['display_name'], "id" : source['compartment_id']}
                     try:
                         # Checking if a the compartment being logged is the Tenancy and it has all child compartments
                         if source['compartment_id'] == self.__tenancy.id and source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
@@ -3743,7 +3742,7 @@ class CIS_Report:
                         elif source['log_group_id'].upper() == "_Audit_Include_Subcompartment".upper():
                             self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'] += self.__get_children(source['compartment_id'],dict_of_compartments)
                         elif source['log_group_id'].upper() == "_Audit".upper():
-                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(log_record)
+                            self.__obp_regional_checks[sch_values['region']]['Audit']['compartments'].append(source['compartment_id'])
                     except:
                         # There can be empty log groups
                         pass

@@ -9,6 +9,10 @@ data "oci_identity_compartment" "existing_lz_enclosing_compartment" {
   id = var.existing_lz_enclosing_compartment_ocid 
 }
 
+data "oci_identity_compartment" "existing_lz_appdev_compartment" {
+  id = var.existing_lz_appdev_compartment_ocid 
+}
+
 data "oci_identity_compartment" "existing_lz_security_compartment" {
   id = var.existing_lz_security_compartment_ocid 
 }

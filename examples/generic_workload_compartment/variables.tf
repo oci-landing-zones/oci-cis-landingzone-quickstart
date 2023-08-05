@@ -66,6 +66,12 @@ variable "compartments" {
   default = {}
 }
 
+variable "service_label" {
+  description = "Prefix used in your CIS Landing Zone deployment."
+  type        = string
+  default     = ""
+}
+
 variable "enable_compartments_delete" {
   description = "Whether compartments are physically deleted upon destroy."
   type        = bool
@@ -73,7 +79,7 @@ variable "enable_compartments_delete" {
 }
 
 variable "existing_lz_enclosing_compartment_ocid" {
-  description = "Compartment where the workload compartment will be created in."
+  description = "Enclosing/parent compartment used in your CIS Landing Zone deployment."
   type        = string
   default     = ""
 }
@@ -95,11 +101,6 @@ variable "existing_lz_appdev_compartment_ocid" {
   type        = string
 }
 
-variable "service_label" {
-  description = "Prefix used in your CIS Landing Zone deployment."
-  type        = string
-  default     = ""
-}
 
 variable "workload_names" {
   description = "List of Workload Names, each workload will get a compartment created in the AppDev Compartment. If create workload groups and polices a group will be created for each workload name."
@@ -119,20 +120,6 @@ variable "create_workload_dynamic_groups_and_policies" {
   default = true
 }
 
-variable "existing_appdev_admin_group_name" {
-  type    = string
-  default = ""
-}
-variable "existing_database_admin_group_name" {
-  type    = string
-  default = ""
-}
-
-variable "database_compartment_name" {
-  description = "Compartment Name of the database compartment for the workload."
-  type        = string
-  default     = "app-db-workload-cmp"
-}
 
 # variable "workload_team_manages_database" {
 #   description = "Select this if your workload team "

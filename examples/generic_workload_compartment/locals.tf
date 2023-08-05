@@ -9,8 +9,6 @@ locals {
   existing_lz_appdev_compartment_name = data.oci_identity_compartment.existing_lz_appdev_compartment.name
   security_compartment_name = data.oci_identity_compartment.existing_lz_security_compartment.name
   network_compartment_name = data.oci_identity_compartment.existing_lz_network_compartment.name
-  workload_compartment_name = var.workload_compartment_name
-  database_compartment_name = var.database_compartment_name
 
 
   ### Discovering the home region name and region key.

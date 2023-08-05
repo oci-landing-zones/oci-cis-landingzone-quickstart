@@ -10,7 +10,7 @@ locals {
   #------------------------------------------------------------------------------------------------------
   #-- Any of these local variables can be overriden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
-  
+
   custom_cmps_defined_tags  = null
   custom_cmps_freeform_tags = null
 
@@ -20,12 +20,16 @@ locals {
   custom_appdev_compartment_name    = null
   custom_database_compartment_name  = null
   custom_exainfra_compartment_name  = null
+  workload_compartment_key = "key"
+  workload_compartment_name_prefix       = var.service_label
+  workload_compartment_name_suffix       = "cmp"
+
 }
 
 module "workload_compartments" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/compartments"
-  providers = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
+  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/compartments"
+  providers                  = { oci = oci.home }
+  tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.compartments_configuration
 }
 
@@ -34,46 +38,35 @@ locals {
   #----------------------------------------------------------------------- 
   #-- These variables are NOT meant to be overriden.
   #-----------------------------------------------------------------------
-  default_template_compartment_defined_tags = null
+  default_template_compartment_defined_tags  = null
   default_template_compartment_freeform_tags = local.landing_zone_tags
 
-#   template_policies_defined_tags  = local.custom_template_policies_defined_tags != null ? merge(local.custom_template_policies_defined_tags, local.default_template_compartment_defined_tags) : local.default_template_compartment_defined_tags
-#   template_policies_freeform_tags = local.custom_template_policies_freeform_tags != null ? merge(local.custom_template_policies_freeform_tags, local.default_template_compartment_freeform_tags) : local.default_template_compartment_freeform_tags
-  
-   workload_compartment_key = "Workload-Compartment"
-   database_compartment_key = "Workload-DB-Compartment"
-   
-   enclosing_lz_compartment_id = var.existing_lz_enclosing_compartment_ocid
-   enclosing_lz_compartment_name = data.oci_identity_compartment.existing_lz_enclosing_compartment.name 
-   
-   
-   provided_database_compartment_name = local.custom_database_compartment_name != null ? local.custom_database_compartment_name : "${var.service_label}-${var.database_compartment_name}"
-   provided_appdev_compartment_name = local.custom_appdev_compartment_name != null ? local.custom_appdev_compartment_name : "${var.service_label}-${var.workload_compartment_name}"
+  # template_policies_defined_tags  = local.custom_template_policies_defined_tags != null ? merge(local.custom_template_policies_defined_tags, local.default_template_compartment_defined_tags) : local.default_template_compartment_defined_tags
+  # template_policies_freeform_tags = local.custom_template_policies_freeform_tags != null ? merge(local.custom_template_policies_freeform_tags, local.default_template_compartment_freeform_tags) : local.default_template_compartment_freeform_tags
 
-  
-    workload_compartments = merge(
-    { for i in [1] : local.workload_compartment_key => {
-      name : local.provided_appdev_compartment_name,
-      description : "Application Workload compartment",
-      parent_ocid : local.enclosing_lz_compartment_id,
-      defined_tags : local.default_template_compartment_defined_tags,
-      freeform_tags : local.default_template_compartment_freeform_tags,
-      children : {}
-      }
-    },
 
-    { for i in [1] : local.database_compartment_key => {
-      name : local.provided_database_compartment_name,
-      description : "Database compartment for application workload",
-      parent_ocid : local.enclosing_lz_compartment_id,
-      defined_tags : local.default_template_compartment_defined_tags,
-      freeform_tags : local.default_template_compartment_freeform_tags,
-      children : {}
-      } if var.create_database_compartment
-  })
+  enclosing_lz_compartment_id   = var.existing_lz_enclosing_compartment_ocid
+  enclosing_lz_compartment_name = data.oci_identity_compartment.existing_lz_enclosing_compartment.name
+
+
+  #   provided_database_compartment_name = local.custom_database_compartment_name != null ? local.custom_database_compartment_name : "${var.service_label}-${var.database_compartment_name}"
+  #   provided_appdev_compartment_name   = local.custom_appdev_compartment_name != null ? local.custom_appdev_compartment_name : "${var.service_label}-${var.workload_compartment_name}"
+
+
+  workload_compartments = { for cmp in var.workload_names : "${cmp}-${local.workload_compartment_key}" => {
+    name : "${local.workload_compartment_name_prefix}-${cmp}-${local.workload_compartment_name_suffix}",
+    workload_name : cmp, # This is used for dynamic groups module
+    description : "${cmp} workload compartment",
+    parent_ocid : var.existing_lz_appdev_compartment_ocid,
+    defined_tags : local.default_template_compartment_defined_tags,
+    freeform_tags : local.default_template_compartment_freeform_tags,
+    children : {}
+    }
+  }
+
   compartments_configuration = {
     # default_parent_ocid = local.enclosing_lz_compartment_id,
-        # default_parent_ocid = null,
+    # default_parent_ocid = null,
 
     compartments = local.workload_compartments
   }

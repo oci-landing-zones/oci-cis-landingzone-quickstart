@@ -134,7 +134,7 @@ variable "database_compartment_name" {
   default     = "app-db-workload-cmp"
 }
 
-variable "workload_team_manages_database" {
-  description = "Select this if your workload team "
+# variable "workload_team_manages_database" {
+#   description = "Select this if your workload team "
   
-}
+# }

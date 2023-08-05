@@ -19,7 +19,7 @@ depends_on = [ module.workload_compartments ]
   source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/dynamic-groups"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  dynamic_groups_configuration = var.create_workload_dynamic_groups_and_policies == false ? local.custom_dynamic_groups_configuration : local.empty_dynamic_groups_configuration
+  dynamic_groups_configuration = var.create_workload_dynamic_groups_and_policies ? local.custom_dynamic_groups_configuration : local.empty_dynamic_groups_configuration
 }
 
 locals {

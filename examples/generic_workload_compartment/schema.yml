@@ -10,20 +10,19 @@ locale: "en"
 variableGroups:
   - title: "Environment"
     variables:
-      - "landing_zone_prefix"
+      - "service_label"
       - "enable_compartments_delete"
-      - "parent_compartment_id"
+      - "existing_lz_enclosing_compartment_ocid"
+      - "existing_lz_security_compartment_ocid"
+      - "existing_lz_network_compartment_ocid"
   
-  - title: "Workload Compartment Variables"
+  - title: "Workload Variables"
     variables:
-      - "workload_compartment_name"
-      - "workload_compartment_user_group_name"
-  
-  - title: "Workload Database Compartment"
-    variables:  
-      - "create_database_compartment"
-      - "database_compartment_name"
-      - "database_workload_compartment_user_group_name"
+      - "existing_lz_appdev_compartment_ocid"
+      - "workload_names"
+      - "create_workload_groups_and_policies"
+      - "create_workload_dynamic_groups_and_policies"
+
 
   - title: "Hidden Variables"
     visible: false
@@ -37,12 +36,12 @@ variableGroups:
       - "home_region"
 
 variables:
-  landing_zone_prefix:
+  service_label:
     type: string
     minLength: 1
     maxLength: 8
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "The unique label that was used in your CIS Landing Zone deployment."
+    description: "The unique label that was used in your workload deployment."
     required: true
   
   enable_compartments_delete:
@@ -51,40 +50,50 @@ variables:
     description: "Whether compartments are physically deleted upon destroy."
     default: false
 
-  parent_compartment_id:
+  existing_lz_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
-    title: "Existing parent compartment"
-    description: "Compartment where the workload compartment(s) will be created in."
+    title: "Existing CIS Landing Zone Enclosing compartment"
+    description: "Enclosing/parent compartment used/created in your CIS Landing Zone deployment."
     required: true
 
-  workload_compartment_name:
-    type: string
-    title: "Compartment Name of the workload compartment."
-    default: "app-workload-cmp"
+  existing_lz_security_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone Security compartment"
+    description: "Security Compartment created in your CIS Landing Zone deployment."
     required: true
   
-  workload_compartment_user_group_name:
-    type: string
-    title: "Existing Application group name."
-    description: "OCI User group name associated with the workload compartment."
+  existing_lz_network_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone Network compartment"
+    description: "Network Compartment created in your CIS Landing Zone deployment."
+    required: true
+
+  existing_lz_appdev_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone AppDev compartment"
+    description: "AppDev Compartment created in your CIS Landing Zone deployment, where the workload compartments will be created."
+    required: true
+
+
+  workload_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Names of Workloads"
+    description: "The workload names will be used to create compartments in the AppDev compartment"
     required: true
   
-  create_database_compartment:
+  create_workload_groups_and_policies:
     type: boolean
-    title: "Create Database Compartment"
-    description: "Whether a database compartment is created to support the workload."
-    default: false
+    description: "If true, the workload names will be used to create groups for each workload compartment"
+    title: "Create Workload Groups and Policies"
 
-  database_compartment_name:
-    type: string
-    title: "Database Compartment Name"
-    description: "Compartment Name of the database compartment for the workload."
-  
-  database_workload_compartment_user_group_name:
-    type: string
-    title: "Database Workload Compartment User Group Name"
-    description: "OCI User group associated with workload database compartment."
-  
+  create_workload_dynamic_groups_and_policies:
+    type: boolean
+    description: "If true, the workload names will be used to create dynamic groups for each workload compartment"
+    title: "Create Workload Dynamic Groups"
+
   # Variables not required to display to user
   tenancy_id:
     type: string

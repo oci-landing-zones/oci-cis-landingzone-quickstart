@@ -35,7 +35,7 @@ except Exception:
 
 RELEASE_VERSION = "2.6.2"
 PYTHON_SDK_VERSION = "2.106.0"
-UPDATED_DATE = "August 9, 2023"
+UPDATED_DATE = "August 8, 2023"
 
 
 ##########################################################################
@@ -5041,7 +5041,5 @@ def execute_report():
 ##########################################################################
 # Main
 ##########################################################################
-try:
+if __name__ == "__main__":
     execute_report()
-except KeyboardInterrupt:
-    print('Interrupted')

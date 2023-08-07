@@ -5041,8 +5041,7 @@ def execute_report():
 ##########################################################################
 # Main
 ##########################################################################
-if __name__ == "__main__":
-    try:
-        execute_report()
-    except KeyboardInterrupt:
-        print('Interrupted')
+try:
+    execute_report()
+except KeyboardInterrupt:
+    print('Interrupted')

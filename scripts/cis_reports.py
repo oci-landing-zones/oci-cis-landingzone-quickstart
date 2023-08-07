@@ -3863,17 +3863,18 @@ class CIS_Report:
                     
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
+                    log_record = {"sch_id": sch_id , "sch_name" : sch_values['display_name'], "id" : subnet_id}
                     
                     subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources'] ))
                     subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources'] ))
 
                     # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if subnet_log_group_in_sch and not(subnet_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
 
                     # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
                     elif subnet_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(subnet_id)
+                        self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
                         
                     # else:
                     #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
@@ -3883,17 +3884,18 @@ class CIS_Report:
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
                     log_region = log_values['region']
+                    log_record = {"sch_id": sch_id , "sch_name" : sch_values['display_name'], "id" : bucket_name}
 
                     bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
                     bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
                     
                     # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
                     elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
                     # else:
                     #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
@@ -3904,42 +3906,51 @@ class CIS_Report:
                     log_id = log_values['log_id']
                     log_group_id = log_values['log_group_id']
                     log_region = log_values['region']
+                    log_record = {"sch_id": sch_id , "sch_name" : sch_values['display_name'], "id" : bucket_name}
 
                     bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources'] ))
                     bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))  
 
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group 
                     if bucket_log_group_in_sch and not(bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
                     # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
                     elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(bucket_name)
+                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
         
         ### Consolidating regional SERVICE LOGGING findings into centralized finding report 
         for region_key, region_values in self.__obp_regional_checks.items():
             
             for finding in region_values['VCN']['subnets']:
-                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding, self.__network_subnets ))
+                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets ))
                 # Checking that the subnet has not already been written to OBP 
-                existing_finding = list(filter(lambda subnet: subnet['id'] == finding, self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
-
+                existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+                record = logged_subnet[0].copy()
+                record['sch_id'] = finding['sch_id']
+                record['sch_name'] = finding['sch_name']
+                
                 if logged_subnet and not(existing_finding):
-                    self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(logged_subnet[0])
+                    self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(record)
                 # else:
                 #     print("Found this subnet being logged but the subnet does not exist: " + str(finding))
 
             for finding in region_values['Write_Bucket']['buckets']:
-                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
+                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets ))
+                record = logged_bucket[0].copy()
+                record['sch_id'] = finding['sch_id']
+                record['sch_name'] = finding['sch_name']
                 if logged_bucket:
-                    self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(logged_bucket[0])
+                    self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(record)
 
             for finding in region_values['Read_Bucket']['buckets']:
-                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding, self.__buckets ))
-                
+                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets ))
+                record = logged_bucket[0].copy()
+                record['sch_id'] = finding['sch_id']
+                record['sch_name'] = finding['sch_name']
                 if logged_bucket:
-                    self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(logged_bucket[0])
+                    self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(record)
 
 
         # Finding looking at all buckets and seeing if they meet one of the OBPs in one of the regions

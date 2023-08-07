@@ -15,17 +15,16 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
+1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)
     1. [Compliance Checking](compliance-script.md)
 1. [Blog Posts](#documentation)
-1. [Acknowledgements](#acknowledgements)
-1. [The Team](#team)
+1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
 1. [Feedback](#feedback)
 1. [Known Issues](#known-issues)
 1. [Contribute](#CONTRIBUTING.md)
 1. [Frequently Asked Questions](FAQ.md)
-1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 
 ## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.2](https://www.cisecurity.org/benchmark/oracle_cloud/).    
@@ -117,13 +116,19 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Creating a Secure Multi-Region Landing Zone](https://www.ateam-oracle.com/post/creating-a-secure-multi-region-landing-zone)
 - [The Center for Internet Security Oracle Cloud Infrastructure Foundations Benchmark 1.2 Release update](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update)
 
-## <a name="acknowledgements"></a>Acknowledgements
-- Parts of the Terraform code reuses and adapts from [Oracle Terraform Modules](https://github.com/oracle-terraform-modules).
-- The Compliance Checking script builds on [Adi Zohar's showoci OCI Reporting tool](https://github.com/adizohar/showoci).
+## <a name="modules"></a>CIS OCI Foundations Benchmark Modules
 
-## <a name="team"></a>The Team
-- **Owners**: [Andre Correa](https://github.com/andrecorreaneto), [Josh Hammer](https://github.com/Halimer).
-- **Contributors**: [Chad Russell](https://github.com/chad-russell-git), [Johannes Murmman](https://github.com/jomurmann), [KC Flynn](https://github.com/flynnkc), [Logan Kleier](https://github.com/herosjourney), [Olaf Heimburger](https://github.com/oheimburger), Pulkit Sharma.
+This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
+- [Identity & Access Management](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
+- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking)
+- [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
+- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+
+The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
+
+Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
+
 
 ## <a name="feedback"></a>Feedback
 We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	

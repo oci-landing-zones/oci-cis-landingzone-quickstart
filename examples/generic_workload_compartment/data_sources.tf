@@ -23,12 +23,3 @@ data "oci_identity_compartment" "existing_lz_network_compartment" {
 
 
 data "oci_identity_regions" "these" {}
-
-data "oci_identity_group" "existing_appdev_admin_group" {
-  group_id = length(trimspace(var.existing_appdev_admin_group_name)) > 0 ? var.existing_appdev_admin_group_name : "nogroup"
-}
-
-
-data "oci_identity_group" "existing_database_admin_group" {
-  group_id = length(trimspace(var.existing_database_admin_group_name)) > 0 ? var.existing_database_admin_group_name : "nogroup"
-}

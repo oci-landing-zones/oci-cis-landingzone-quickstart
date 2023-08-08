@@ -1,3 +1,25 @@
+#   August 8, 2023 Release Notes - 2.6.2
+1. [Fixes to the CIS Compliance Script](#2-6-2-script-updates)
+1. [Updates to the CIS Compliance Script](#2-6-2-script-updates)
+1. [Updates to the Readme](#2-6-2-readme-updates)
+
+
+## <a name="2-6-2-script-updates">Updates to the CIS Compliance Script</a>
+Updates:
+- Added Service Connector Hub ID and Name to OBP Best practices for VCN Flow Logs and Object Storage Buckets
+- Alert users when the cis_reports.py is not run in home region which can impact budgets collection
+
+## <a name="2-6-2-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes: 
+- Updated CIS 2.8 check updated to exclude ADB-S that are in a VCN but not attached to Network Security Group.  Closes issue [#105](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/105)
+- Cleaned up 1900+ Flake8 
+
+## <a name="2-6-2-readme-updates">Updates to the Readme</a>
+Updates:
+- Removed team section
+- Added the CIS Terraform Modules Section
+
+
 #   July 26, 2023 Release Notes - 2.6.1
 1. [Updates to Terraform Template](#2-6-1-tf-updates)
 1. [Documentation Updates](#2-6-1-doc-updates)

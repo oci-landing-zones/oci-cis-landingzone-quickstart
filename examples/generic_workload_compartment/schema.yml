@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI CIS Landing Zone Generic Workload"
-stackDescription: "A stack that deploys an application workload compartment and optionally a database compartment to go with the workload compartment and the associated policies."
+stackDescription: "A stack that deploys a workload compartments in the AppDev compartment and with the associated groups and policies."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
@@ -32,8 +32,6 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
-      - "compartments"
-      - "home_region"
 
 variables:
   service_label:
@@ -74,7 +72,6 @@ variables:
     description: "AppDev Compartment created in your CIS Landing Zone deployment, where the workload compartments will be created."
     required: true
 
-
   workload_names:
     type: array
     items:
@@ -107,11 +104,5 @@ variables:
   private_key_path:
     type: string
 
-  compartments:
-    type: string
-
   private_key_password:
     type: password
-  
-  home_region: 
-    type: string

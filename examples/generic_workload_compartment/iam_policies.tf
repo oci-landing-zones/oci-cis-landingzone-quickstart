@@ -41,6 +41,12 @@ locals {
   # db_dev_tenancy_level_roles  = var.workload_team_manages_database ? null : { "name" : "${local.database_admin_group_name}", "roles" : "database,basic" }
   tenancy_level_roles = local.app_dev_tenancy_level_roles
   
+  empty_template_policies_configuration = {
+    enable_cis_benchmark_checks : false
+    template_policies : null
+    defined_tags : null
+    freeform_tags : null
+  }
 
   template_policies_configuration = {
     enable_cis_benchmark_checks : true
@@ -48,7 +54,7 @@ locals {
       tenancy_level_settings : {
         groups_with_tenancy_level_roles : local.tenancy_level_roles
         oci_services : {
-          enable_all_policies : true
+          enable_all_policies : false
         }
         policy_name_prefix : var.service_label
       }
@@ -59,6 +65,7 @@ locals {
     defined_tags : local.template_policies_defined_tags
     freeform_tags : local.template_policies_freeform_tags
   }
+
 
   # List of groups to apply Apdev 
   cislz-consumer-groups-workloads = join(",", [for group in module.workload_groups.groups : group.name])
@@ -109,20 +116,12 @@ locals {
       }
   } })
 }
-# # #   # Helper object meaning no policies. It satisfies Terraform's ternary operator.
-# # #   empty_template_policies_configuration = {
-# # #     enable_cis_benchmark_checks : false
-# # #     template_policies : null
-# # #     defined_tags : null
-# # #     freeform_tags : null
-# # #   }
-# # # }
 
 module "lz_template_policies" {
   depends_on             = [module.workload_compartments, module.workload_groups]
   source                 = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
-  policies_configuration = local.template_policies_configuration
+  policies_configuration = var.create_workload_groups_and_policies ? local.template_policies_configuration : local.empty_template_policies_configuration
 
 }

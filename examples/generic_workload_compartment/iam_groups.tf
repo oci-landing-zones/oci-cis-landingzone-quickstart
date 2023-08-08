@@ -21,10 +21,6 @@ locals {
   groups_defined_tags  = local.custom_groups_defined_tags != null ? merge(local.custom_groups_defined_tags, local.default_groups_defined_tags) : local.default_groups_defined_tags
   groups_freeform_tags = local.custom_groups_freeform_tags != null ? merge(local.custom_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
 
-  #--------------------------------------------------------------------
-  #-- Workload Admin Groups
-  #--------------------------------------------------------------------
-
   #------------------------------------------------------------------------
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
@@ -40,11 +36,15 @@ locals {
     }
 
   }
+
+  empty_groups_configuration = {
+    groups : {}
+  }
 }
 
 module "workload_groups" {
   source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/groups"
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
-  groups_configuration = local.groups_configuration
+  groups_configuration = var.create_workload_groups_and_policies ? local.groups_configuration : local.empty_groups_configuration
 }

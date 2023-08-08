@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # ------------------------------------------------------
 # ----- Environment
@@ -24,47 +24,47 @@ variable "region" {
 #-------------------------------------------------------------
 #-- Arbitrary compartments topology
 #-------------------------------------------------------------
-variable "compartments" {
-  description = "The compartments structure, given as a map of objects nested up to 6 levels."
-  type = map(object({
-    name          = string
-    description   = string
-    parent_id     = string
-    defined_tags  = map(string)
-    freeform_tags = map(string)
-    children = map(object({
-      name          = string
-      description   = string
-      defined_tags  = map(string)
-      freeform_tags = map(string)
-      children = map(object({
-        name          = string
-        description   = string
-        defined_tags  = map(string)
-        freeform_tags = map(string)
-        children = map(object({
-          name          = string
-          description   = string
-          defined_tags  = map(string)
-          freeform_tags = map(string)
-          children = map(object({
-            name          = string
-            description   = string
-            defined_tags  = map(string)
-            freeform_tags = map(string)
-            children = map(object({
-              name          = string
-              description   = string
-              defined_tags  = map(string)
-              freeform_tags = map(string)
-            }))
-          }))
-        }))
-      }))
-    }))
-  }))
-  default = {}
-}
+# variable "compartments" {
+#   description = "The compartments structure, given as a map of objects nested up to 6 levels."
+#   type = map(object({
+#     name          = string
+#     description   = string
+#     parent_id     = string
+#     defined_tags  = map(string)
+#     freeform_tags = map(string)
+#     children = map(object({
+#       name          = string
+#       description   = string
+#       defined_tags  = map(string)
+#       freeform_tags = map(string)
+#       children = map(object({
+#         name          = string
+#         description   = string
+#         defined_tags  = map(string)
+#         freeform_tags = map(string)
+#         children = map(object({
+#           name          = string
+#           description   = string
+#           defined_tags  = map(string)
+#           freeform_tags = map(string)
+#           children = map(object({
+#             name          = string
+#             description   = string
+#             defined_tags  = map(string)
+#             freeform_tags = map(string)
+#             children = map(object({
+#               name          = string
+#               description   = string
+#               defined_tags  = map(string)
+#               freeform_tags = map(string)
+#             }))
+#           }))
+#         }))
+#       }))
+#     }))
+#   }))
+#   default = {}
+# }
 
 variable "service_label" {
   description = "Prefix used in your CIS Landing Zone deployment."

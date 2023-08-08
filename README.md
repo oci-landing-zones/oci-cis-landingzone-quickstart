@@ -23,7 +23,7 @@
 1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
 1. [Feedback](#feedback)
 1. [Known Issues](#known-issues)
-1. [Contribute](#CONTRIBUTING.md)
+1. [Contribute](CONTRIBUTING.md)
 1. [Frequently Asked Questions](FAQ.md)
 
 ## <a name="overview"></a>Overview

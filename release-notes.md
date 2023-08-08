@@ -17,7 +17,7 @@ Fixes:
 ## <a name="2-6-2-readme-updates">Updates to the Readme</a>
 Updates:
 - Removed team section
-- A
+- Added the CIS Terraform Modules Section
 
 
 #   July 26, 2023 Release Notes - 2.6.1

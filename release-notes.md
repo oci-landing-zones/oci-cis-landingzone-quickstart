@@ -3,7 +3,6 @@
 1. [Updates to the CIS Compliance Script](#2-6-2-script-updates)
 1. [Updates to the Readme](#2-6-2-readme-updates)
 
-
 ## <a name="2-6-2-script-updates">Updates to the CIS Compliance Script</a>
 Updates:
 - Added Service Connector Hub ID and Name to OBP Best practices for VCN Flow Logs and Object Storage Buckets
@@ -18,7 +17,6 @@ Fixes:
 Updates:
 - Removed team section
 - Added the CIS Terraform Modules Section
-
 
 #   July 26, 2023 Release Notes - 2.6.1
 1. [Updates to Terraform Template](#2-6-1-tf-updates)
@@ -133,6 +131,18 @@ Fixes:
 - Fixed console output formatting for CIS Summary report.
 
 
+
+#   March 24, 2023 Release Notes - 2.5.6
+1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
+## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added egress rules to Security Lists and Network Security Groups.
+- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
+
+Fixes:
+- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
+- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

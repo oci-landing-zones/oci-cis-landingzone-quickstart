@@ -7,26 +7,26 @@ locals {
   #------------------------------------------------------------------------------------------------------
   custom_dynamic_groups_configuration = null
 
-  custom_dynamic_groups_defined_tags   = null
-  custom_dynamic_groups_freeform_tags  = null
-appdev_dynamic_group_name_prefix = var.service_label
-appdev_dynamic_group_name_suffix = "fun-dynamic-group"
+  custom_dynamic_groups_defined_tags  = null
+  custom_dynamic_groups_freeform_tags = null
+  appdev_dynamic_group_name_prefix    = var.service_label
+  appdev_dynamic_group_name_suffix    = "fun-dynamic-group"
 
 }
 
 module "lz_dynamic_groups" {
-depends_on = [ module.workload_compartments ]
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/dynamic-groups"
-  providers  = { oci = oci.home }
-  tenancy_ocid = var.tenancy_ocid
-  dynamic_groups_configuration = var.create_workload_dynamic_groups_and_policies ? local.custom_dynamic_groups_configuration : local.empty_dynamic_groups_configuration
+  depends_on                   = [module.workload_compartments]
+  source                       = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/dynamic-groups"
+  providers                    = { oci = oci.home }
+  tenancy_ocid                 = var.tenancy_ocid
+  dynamic_groups_configuration = var.create_workload_dynamic_groups_and_policies ? local.dynamic_groups_configuration : local.empty_dynamic_groups_configuration
 }
 
 locals {
   #------------------------------------------------------------------------------------------------------
   #-- These variables are not meant to be overriden
   #------------------------------------------------------------------------------------------------------
-appdev_dynamic_group_key = "key"
+  appdev_dynamic_group_key = "key"
 
   #-----------------------------------------------------------
   #----- Tags to apply to dynamic groups
@@ -43,11 +43,11 @@ appdev_dynamic_group_key = "key"
 
   appdev_functions_dynamic_group = var.create_workload_dynamic_groups_and_policies ? { for cmp in local.workload_compartments : ("${cmp.workload_name}-${local.appdev_dynamic_group_key}") => {
 
-      name          = "${local.appdev_dynamic_group_name_prefix}-${cmp.workload_name}-${local.appdev_dynamic_group_name_suffix}"
-      description   = "Dynamic group for application functions execution for workload ${cmp.workload_name}."
-      matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${cmp.name}'}"
-      defined_tags  = local.dynamic_groups_defined_tags
-      freeform_tags = local.dynamic_groups_freeform_tags
+    name          = "${local.appdev_dynamic_group_name_prefix}-${cmp.workload_name}-${local.appdev_dynamic_group_name_suffix}"
+    description   = "Dynamic group for application functions execution for workload ${cmp.workload_name}."
+    matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${cmp.name}'}"
+    defined_tags  = local.dynamic_groups_defined_tags
+    freeform_tags = local.dynamic_groups_freeform_tags
     }
   } : {}
 
@@ -57,7 +57,7 @@ appdev_dynamic_group_key = "key"
   #------------------------------------------------------------------------
   dynamic_groups_configuration = {
     dynamic_groups : local.appdev_functions_dynamic_group,
-                           
+
   }
 
   empty_dynamic_groups_configuration = {

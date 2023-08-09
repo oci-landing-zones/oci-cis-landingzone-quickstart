@@ -16,10 +16,6 @@ locals {
   regions_map_reverse = { for r in data.oci_identity_regions.these.regions : r.name => r.key } # All regions indexed by region name.
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
   
-  enable_cmp_delete = true
-
-  # Delay in seconds for slowing down resource creation
-  delay_in_secs = 70
 
   # Outputs display
   display_outputs = true

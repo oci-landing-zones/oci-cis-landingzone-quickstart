@@ -31,8 +31,6 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
-      - "enable_compartments_delete"
-
 
 variables:
   service_label:
@@ -42,12 +40,6 @@ variables:
     pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
     description: "The unique label that was used in your workload deployment."
     required: true
-  
-  enable_compartments_delete:
-    type: boolean
-    title: "Enable Compartment Delete"
-    description: "Whether compartments are physically deleted upon destroy."
-    default: false
 
   existing_lz_enclosing_compartment_ocid:
     type: oci:identity:compartment:id

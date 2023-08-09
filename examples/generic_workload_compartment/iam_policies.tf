@@ -54,7 +54,7 @@ locals {
       tenancy_level_settings : {
         groups_with_tenancy_level_roles : local.tenancy_level_roles
         oci_services : {
-          enable_all_policies : false
+          enable_all_policies : true
         }
         policy_name_prefix : var.service_label
       }
@@ -111,7 +111,7 @@ locals {
       ocid : cmp.id,
       cislz_metadata : {
         "cislz-cmp-type" : "application",
-        "cislz-consumer-groups-application" : "${local.cislz-consumer-groups-workloads}",
+        "cislz-consumer-groups-application" : "${lookup(local.workload_compartments, cmp.name).workload_group_name}",
         # "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
       }
   } })

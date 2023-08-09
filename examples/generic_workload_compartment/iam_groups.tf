@@ -5,9 +5,6 @@ locals {
   custom_groups_defined_tags  = null
   custom_groups_freeform_tags = null
 
-  workload_group_prefix                 = var.service_label
-  workload_group_suffix                 = "workload-group"
-
   #------------------------------------------------------------------------------------------------------
   #-- These variables are not meant to be overriden
   #------------------------------------------------------------------------------------------------------
@@ -25,9 +22,9 @@ locals {
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
   groups_configuration = {
-    groups : { for group in var.workload_names : "${local.workload_group_prefix}-${group}-${local.workload_group_suffix}" => {
-      name : "${local.workload_group_prefix}-${group}-${local.workload_group_suffix}",
-      description : "${group} workload group",
+    groups : { for group in local.workload_compartments : (group.workload_group_name) => {
+      name : group.workload_group_name,
+      description : "${group.workload_group_name} workload group",
       members : [],
       defined_tags  = local.groups_defined_tags,
       freeform_tags = local.groups_freeform_tags

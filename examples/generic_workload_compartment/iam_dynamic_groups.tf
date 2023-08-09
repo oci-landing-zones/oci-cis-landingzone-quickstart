@@ -9,8 +9,7 @@ locals {
 
   custom_dynamic_groups_defined_tags  = null
   custom_dynamic_groups_freeform_tags = null
-  appdev_dynamic_group_name_prefix    = var.service_label
-  appdev_dynamic_group_name_suffix    = "fun-dynamic-group"
+
 
 }
 

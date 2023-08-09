@@ -34,7 +34,7 @@ locals {
     # Users should be manage users and groups permissions via IDP
     "allow group ${local.iam_admin_group_name} to inspect groups in tenancy",
     "allow group ${local.iam_admin_group_name} to read policies in tenancy",
-    "allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != '${local.cred_admin_group_name}'}",
+    "allow group ${local.iam_admin_group_name} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != ${local.cred_admin_group_name}}",
     "allow group ${local.iam_admin_group_name} to inspect identity-providers in tenancy",
     "allow group ${local.iam_admin_group_name} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
     "allow group ${local.iam_admin_group_name} to manage dynamic-groups in tenancy",
@@ -501,7 +501,7 @@ locals {
       (local.security_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.security_admin_root_policy_name
-        description    = "CIS Landing Zone ${local.security_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.security_admin_group_name} group."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.security_admin_grants_on_root_cmp
@@ -509,7 +509,7 @@ locals {
       (local.iam_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.iam_admin_root_policy_name
-        description    = "CIS Landing Zone ${local.iam_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.iam_admin_group_name} group."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.iam_admin_grants_on_root_cmp
@@ -517,7 +517,7 @@ locals {
       (local.auditor_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.auditor_policy_name
-        description    = "CIS Landing Zone ${local.auditor_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.auditor_group_name} group."
         defined_tags = local.policies_defined_tags
         freeform_tags = local.policies_freeform_tags
         statements = [
@@ -543,7 +543,7 @@ locals {
       (local.announcement_reader_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.announcement_reader_policy_name
-        description    = "CIS Landing Zone ${local.announcement_reader_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.announcement_reader_group_name} group."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = [
@@ -554,7 +554,7 @@ locals {
       (local.cred_admin_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.cred_admin_policy_name
-        description    = "CIS Landing Zone ${local.cred_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.cred_admin_group_name} group."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements = [
@@ -567,7 +567,7 @@ locals {
       (local.cost_admin_root_policy_name) = {
         compartment_ocid = var.tenancy_ocid
         name = local.cost_admin_root_policy_name
-        description    = "CIS Landing Zone ${local.cost_admin_group_name}'s root compartment policy."
+        description    = "CIS Landing Zone root compartment policy for ${local.cost_admin_group_name} group."
         defined_tags   = local.policies_defined_tags
         freeform_tags  = local.policies_freeform_tags
         statements     = local.cost_root_permissions

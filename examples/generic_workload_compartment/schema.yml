@@ -11,7 +11,6 @@ variableGroups:
   - title: "Environment"
     variables:
       - "service_label"
-      - "enable_compartments_delete"
       - "existing_lz_enclosing_compartment_ocid"
       - "existing_lz_security_compartment_ocid"
       - "existing_lz_network_compartment_ocid"
@@ -32,6 +31,8 @@ variableGroups:
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
+      - "enable_compartments_delete"
+
 
 variables:
   service_label:

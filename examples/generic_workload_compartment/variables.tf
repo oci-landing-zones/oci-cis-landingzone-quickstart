@@ -72,12 +72,6 @@ variable "service_label" {
   default     = ""
 }
 
-variable "enable_compartments_delete" {
-  description = "Whether compartments are physically deleted upon destroy."
-  type        = bool
-  default     = true
-}
-
 variable "existing_lz_enclosing_compartment_ocid" {
   description = "Enclosing/parent compartment used in your CIS Landing Zone deployment."
   type        = string
@@ -103,25 +97,19 @@ variable "existing_lz_appdev_compartment_ocid" {
 
 
 variable "workload_names" {
-  description = "List of Workload Names, each workload will get a compartment created in the AppDev Compartment. If create workload groups and polices a group will be created for each workload name."
+  description = "List of workload names, each workload will get a compartment created in the AppDev Compartment. The names must be unique within the AppDev compartment."
   type        = list
   
 }
 
 variable "create_workload_groups_and_policies" {
-  description = "If select a group will be created to align to each workload group created."
+  description = "If *true* an OCI IAM group and corresponding policies will be created to align to the workload compartment group created."
   type = bool
   default = true
 }
 
 variable "create_workload_dynamic_groups_and_policies" {
-  description = "If select a dynamic group for functions in the will be created to align to each workload group created."
+  description = "If *true* a dynamic group and corresponding policies will be created to align to the workload compartment group created."
   type = bool
   default = true
 }
-
-
-# variable "workload_team_manages_database" {
-#   description = "Select this if your workload team "
-  
-# }

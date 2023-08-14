@@ -39,6 +39,14 @@ UPDATED_DATE = "August 8, 2023"
 
 
 ##########################################################################
+# debug print
+##########################################################################
+DEBUG = True
+def debug(msg):
+    if DEBUG:
+        print(msg)
+
+##########################################################################
 # Print header centered
 ##########################################################################
 def print_header(name):
@@ -680,6 +688,7 @@ class CIS_Report:
         self.__groups_to_users = []
         self.__tag_defaults = []
         self.__dynamic_groups = []
+        self.__identity_domains = []
 
         # For Networking checks
         self.__network_security_groups = []
@@ -1031,6 +1040,49 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in identity_read_compartments: " + str(e.args))
 
+    ##########################################################################
+    # Load Identity Domains
+    ##########################################################################
+    def __identity_read_domains(self):
+        print("Processing Identity Domains...")
+        raw_identity_domains = []
+        # Finding all Identity Domains in the tenancy
+        try:
+            for compartment in self.__compartments:
+                debug("Getting Identity Domains for Compartment :" + str(compartment.name))
+
+                raw_identity_domains += oci.pagination.list_call_get_all_results(
+                self.__regions[self.__home_region]['identity_client'].list_domains,
+                compartment_id = compartment.id,
+                lifecycle_state = "ACTIVE"
+            ).data
+
+            debug("Identity Domains is enabled")
+            self.__identity_doamins_enabled = True
+        except:
+            self.__identity_doamins_enabled = False
+            debug("Identity Domains is not enabled")
+            return self.__identity_doamins_enabled
+    
+        for domain in raw_identity_domains:
+            debug("Getting passowrd policy for domain: " + domain.display_name)
+            domain_dict =  oci.util.to_dict(domain)
+            try: 
+                pwd_policy_dict =  oci.util.to_dict(oci.identity_domains.IdentityDomainsClient(\
+                    config=self.__config, service_endpoint=domain.url).list_password_policies().data.resources)
+                domain_dict['password_policy'] = pwd_policy_dict
+                domain_dict['errors'] = None 
+            except Exception as e:
+                domain_dict['password_policy'] = None
+                domain_dict['errors'] = str(e)
+            
+            self.__identity_domains.append(domain_dict)
+
+        print("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
+        self.__identity_doamins_enabled = True
+        return self.__identity_doamins_enabled 
+
+    
     ##########################################################################
     # Load Groups and Group membership
     ##########################################################################
@@ -4464,6 +4516,8 @@ class CIS_Report:
         thread_compartments.join()
         thread_identity_groups.join()
 
+        self.__identity_read_domains()
+        exit(0)
         print("\nProcessing Home Region resources...")
 
         cis_home_region_functions = [

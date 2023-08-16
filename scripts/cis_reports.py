@@ -1047,9 +1047,23 @@ class CIS_Report:
                     self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
                     compartment_id=self.__tenancy.id,
                     group_id=grp.id).data
-
+                # For empty groups just print one record with the group info
+                grp_deep_link = self.__oci_groups_uri + grp.id
+                if not membership:
+                    group_record = {
+                        "id": grp.id,
+                        "name": grp.name,
+                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                        "description": grp.description,
+                        "lifecycle_state": grp.lifecycle_state,
+                        "time_created": grp.time_created.strftime(self.__iso_time_format),
+                        "user_id": "",
+                        "user_id_link": ""
+                    }
+                    # Adding a record per empty group
+                    self.__groups_to_users.append(group_record)
+                # For groups with members print one record per user per group
                 for member in membership:
-                    grp_deep_link = self.__oci_groups_uri + grp.id
                     user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
                         "id": grp.id,

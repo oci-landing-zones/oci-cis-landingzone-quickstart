@@ -25,6 +25,7 @@ import itertools
 from threading import Thread
 import hashlib
 import re
+import requests
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -1047,41 +1048,46 @@ class CIS_Report:
         print("Processing Identity Domains...")
         raw_identity_domains = []
         # Finding all Identity Domains in the tenancy
-        try:
-            for compartment in self.__compartments:
-                debug("Getting Identity Domains for Compartment :" + str(compartment.name))
+        for compartment in self.__compartments:
+            try:
+                debug("__identity_read_domains Getting Identity Domains for Compartment :" + str(compartment.name))
 
                 raw_identity_domains += oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_domains,
                 compartment_id = compartment.id,
                 lifecycle_state = "ACTIVE"
             ).data
-
-            debug("Identity Domains is enabled")
-            self.__identity_doamins_enabled = True
-        except:
-            self.__identity_doamins_enabled = False
-            debug("Identity Domains is not enabled")
-            return self.__identity_doamins_enabled
-    
+            except Exception as e:
+                debug("__identity_read_domains Exception collecting Identity Domains \n" + str(e))
         for domain in raw_identity_domains:
-            debug("Getting passowrd policy for domain: " + domain.display_name)
+            debug("__identity_read_domainsGetting passowrd policy for domain: " + domain.display_name)
             domain_dict =  oci.util.to_dict(domain)
             try: 
+                debug("__identity_read_domains Getting Identity Domain Password Policy")
+                idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
+                raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
+                raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
+
                 pwd_policy_dict =  oci.util.to_dict(oci.identity_domains.IdentityDomainsClient(\
-                    config=self.__config, service_endpoint=domain.url).list_password_policies().data.resources)
+                     config=self.__config, service_endpoint=domain.url).get_password_policy(\
+                        password_policy_id=raw_pwd_policy_dict['ocid']).data)
+                
                 domain_dict['password_policy'] = pwd_policy_dict
                 domain_dict['errors'] = None 
             except Exception as e:
+                debug("Identity Domains Error is " + str(e))
                 domain_dict['password_policy'] = None
                 domain_dict['errors'] = str(e)
             
             self.__identity_domains.append(domain_dict)
 
-        print("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
-        self.__identity_doamins_enabled = True
-        return self.__identity_doamins_enabled 
-
+        if not(self.__identity_domains):
+            self.__identity_doamins_enabled = False
+            return self.__identity_doamins_enabled
+        else:
+            self.__identity_doamins_enabled = True
+            ("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
+            return self.__identity_doamins_enabled 
     
     ##########################################################################
     # Load Groups and Group membership
@@ -2719,67 +2725,73 @@ class CIS_Report:
                         "defined_tags": log_group.defined_tags,
                         "freeform_tags": log_group.freeform_tags,
                         "region": region_key,
-                        "logs": []
+                        "logs": [],
+                        "notes" : ""
                     }
 
-                    logs = oci.pagination.list_call_get_all_results(
-                        region_values['logging_client'].list_logs,
-                        log_group_id=log_group.identifier
-                    ).data
-                    for log in logs:
-                        deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
-                        log_record = {
-                            "compartment_id": log.compartment_id,
-                            "display_name": log.display_name,
-                            "deep_link": self.__generate_csv_hyperlink(deep_link, log.display_name),
-                            "id": log.id,
-                            "is_enabled": log.is_enabled,
-                            "lifecycle_state": log.lifecycle_state,
-                            "log_group_id": log.log_group_id,
-                            "log_type": log.log_type,
-                            "retention_duration": log.retention_duration,
-                            "time_created": log.time_created.strftime(self.__iso_time_format),
-                            "time_last_modified": str(log.time_last_modified),
-                            "defined_tags": log.defined_tags,
-                            "freeform_tags": log.freeform_tags
-                        }
-                        try:
-                            if log.configuration:
-                                log_record["configuration_compartment_id"] = log.configuration.compartment_id,
-                                log_record["source_category"] = log.configuration.source.category,
-                                log_record["source_parameters"] = log.configuration.source.parameters,
-                                log_record["source_resource"] = log.configuration.source.resource,
-                                log_record["source_service"] = log.configuration.source.service,
-                                log_record["source_source_type"] = log.configuration.source.source_type
-                                log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
+                    try: 
+                        logs = oci.pagination.list_call_get_all_results(
+                            region_values['logging_client'].list_logs,
+                            log_group_id=log_group.identifier
+                        ).data
+                        for log in logs:
+                            deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
+                            log_record = {
+                                "compartment_id": log.compartment_id,
+                                "display_name": log.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, log.display_name),
+                                "id": log.id,
+                                "is_enabled": log.is_enabled,
+                                "lifecycle_state": log.lifecycle_state,
+                                "log_group_id": log.log_group_id,
+                                "log_type": log.log_type,
+                                "retention_duration": log.retention_duration,
+                                "time_created": log.time_created.strftime(self.__iso_time_format),
+                                "time_last_modified": str(log.time_last_modified),
+                                "defined_tags": log.defined_tags,
+                                "freeform_tags": log.freeform_tags
+                            }
+                            try:
+                                if log.configuration:
+                                    log_record["configuration_compartment_id"] = log.configuration.compartment_id,
+                                    log_record["source_category"] = log.configuration.source.category,
+                                    log_record["source_parameters"] = log.configuration.source.parameters,
+                                    log_record["source_resource"] = log.configuration.source.resource,
+                                    log_record["source_service"] = log.configuration.source.service,
+                                    log_record["source_source_type"] = log.configuration.source.source_type
+                                    log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
 
-                            if log.configuration.source.service == 'flowlogs':
-                                self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
+                                if log.configuration.source.service == 'flowlogs':
+                                    self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
 
-                            elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                # Only write logs
-                                self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
+                                    # Only write logs
+                                    self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                            elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                # Only read logs
-                                self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
+                                    # Only read logs
+                                    self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                            elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                self.__load_balancer_error_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                self.__load_balancer_access_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                self.__api_gateway_access_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                self.__api_gateway_error_logs.append(
-                                    log.configuration.source.resource)
-                        except Exception:
-                            pass
-                        # Append Log to log List
-                        record['logs'].append(log_record)
+                                elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
+                                    self.__load_balancer_error_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
+                                    self.__load_balancer_access_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
+                                    self.__api_gateway_access_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
+                                    self.__api_gateway_error_logs.append(
+                                        log.configuration.source.resource)
+                            except Exception:
+                                pass
+                            # Append Log to log List
+                            record['logs'].append(log_record)
+                    except Exception as e:
+                        record['notes'] = str(e)
+                        
+
                     self.__logging_list.append(record)
 
             print("\tProcessed " + str(len(self.__logging_list)) + " Log Group Logs")
@@ -3226,7 +3238,6 @@ class CIS_Report:
                     break
 
         # 1.2 Check
-
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
@@ -3268,6 +3279,37 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
         else:
             self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
+
+        # 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
+        if self.__identity_doamins_enabled:
+            for domain in self.__identity_domains:
+                if domain['password_policy']:
+                    debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
+                    debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
+
+                    if domain['password_policy']['password_expires_after']:
+                        if domain['password_policy']['password_expires_after'] > 365:
+                            self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
+                    
+
+                    if domain['password_policy']['num_passwords_in_history']:
+                        if domain['password_policy']['num_passwords_in_history'] < 24:
+                            self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+
+                else:
+                    debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")
+                    self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
+                    self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+        
+        if self.cis_foundations_benchmark_1_2['1.5']['Findings']:
+            self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
+
+        if self.cis_foundations_benchmark_1_2['1.6']['Findings']:
+            self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
@@ -4517,7 +4559,8 @@ class CIS_Report:
         thread_identity_groups.join()
 
         self.__identity_read_domains()
-        exit(0)
+
+
         print("\nProcessing Home Region resources...")
 
         cis_home_region_functions = [
@@ -4612,6 +4655,10 @@ class CIS_Report:
 
         report_file_name = self.__print_to_csv_file(
             self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+            self.__report_directory, "raw_data", "identity_domains", self.__identity_domains)
         list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(

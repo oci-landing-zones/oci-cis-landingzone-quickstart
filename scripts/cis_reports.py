@@ -2201,7 +2201,8 @@ class CIS_Report:
                     for adb in autonomous_databases:
                         try:
                             deep_link = self.__oci_adb_uri + adb.id + '?region=' + region_key
-                            if (adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED or adb.lifecycle_state != oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING):
+                            # Issue 295 fixed
+                            if adb.lifecycle_state not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                                 record = {
                                     "id": adb.id,
                                     "display_name": adb.display_name,
@@ -3475,9 +3476,10 @@ class CIS_Report:
         self.cis_foundations_benchmark_1_2['2.7']['Total'] = self.__analytics_instances
 
         # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
-        # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0
+        # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
+        # Issue 295 fixed
         for autonomous_database in self.__autonomous_databases:
-            if autonomous_database['lifecycle_state'] != "UNAVAILABLE":
+            if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
                     self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(

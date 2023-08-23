@@ -21,17 +21,17 @@ Variable Name | Description | Required | Default Value
 **extend_landing_zone_to_new_region** | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. |  No | false
 **policies_in_root_compartment** | The Landing Zone requires policies attached to the root compartment to work at full capacity. For instance, security administrators are expect to manage Cloud Guard, Tag Namespaces, Tag Defaults, Event Rules, and others. Likewise, IAM administrators are expected to manage IAM resources in general. Such capabilities are only enabled if policies are created at the root compartment, as they apply to the tenancy as a whole. A *narrower-permissioned* user will not likely have the permissions to create such policies. As a consequence, it is expected that these policies are previously created by a *wide-permissioned* user. Therefore, **when provisioning the Landing Zone as a _narrower-permissioned_ user, make sure to set this variable value to "USE", in which case permissions are not created at the root compartment**. Default is "CREATE", meaning the module will provision the policies at the root compartment, as long as the executing user has the required permissions. | Yes | "CREATE"
 **enable_template_policies** | Whether policies should be created based on metadata associated with compartments. This is an alternative way of managing policies, enabled by the [CIS Landing Zone standalone IAM policy module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies). When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the existing approach, where grants are combined per grantee and attached to the enclosing compartment. | No | false
-**existing_iam_admin_group_name** | The name or OCID of an existing group for IAM administrators. | No | None
-**existing_cred_admin_group_name** | The name or OCID of an existing group for credential administrators. | No | None
-**existing_security_admin_group_name** | The name or OCID of an existing group for security administrators. | No | None
-**existing_network_admin_group_name** | The name or OCID of an existing group for network administrators. | No | None
-**existing_appdev_admin_group_name** | The name or OCID of an existing group for application development administrators. | No | None
-**existing_database_admin_group_name** | The name or OCID of an existing group for database administrators. | No | None
-**existing_exainfra_admin_group_name** | The name or OCID of an existing group for Exadata Cloud Service infrastructure administrators. | No | None
-**existing_auditor_group_name** | The name or OCID of an existing group for auditors. | No | None
-**existing_announcement_reader_group_name** | The name or OCID of an existing group for announcement readers. | No | None
-**existing_cost_admin_group_name** | The name or OCID of an existing group for cost administrators. | No | None
-**existing_storage_admin_group_name** | The name or OCID of an existing group for storage administrators. | No | None
+**existing_iam_admin_group_name** | The names of existing groups for IAM administrators.  Spaces in the names are allowed. | No | None
+**existing_cred_admin_group_name** | The names of existing groups for credential administrators.  Spaces in the names are allowed. | No | None
+**existing_security_admin_group_name** | The names of existing groups for security administrators.  Spaces in the names are allowed. | No | None
+**existing_network_admin_group_name** | The names of existing groups for network administrators.  Spaces in the names are allowed. | No | None
+**existing_appdev_admin_group_name** | The names of existing groups for application development administrators.  Spaces in the names are allowed. | No | None
+**existing_database_admin_group_name** | The names of an existing groups for database administrators.  Spaces in the names are allowed. | No | None
+**existing_exainfra_admin_group_name** | The names of existing groups for Exadata Cloud Service infrastructure administrators.  Spaces in the names are allowed. | No | None
+**existing_auditor_group_name** | The names of existing groups for auditors.  Spaces in the names are allowed. | No | None
+**existing_announcement_reader_group_name** | The names of existing groups for announcement readers.  Spaces in the names are allowed. | No | None
+**existing_cost_admin_group_name** | The names of existing groups for cost administrators.  Spaces in the names are allowed. | No | None
+**existing_storage_admin_group_name** | The names of existing groups for storage administrators.  Spaces in the names are allowed. | No | None
 **existing_security_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the Security compartment. | No | None
 **existing_appdev_fun_dyn_group_name** | The name of an existing dynamic group to be used by OCI Functions in the AppDev compartment. | No | None
 **existing_compute_agent_dyn_group_name** | The name of an existing dynamic group to be used by Compute's management agent in the AppDev compartment. | No | None

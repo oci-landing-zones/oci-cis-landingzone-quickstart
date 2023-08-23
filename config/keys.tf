@@ -118,7 +118,7 @@ locals {
       key_shape_algorithm = "AES"
       key_shape_length    = 32
       service_grantees    = ["objectstorage-${var.region}"]
-      group_grantees      = [local.database_admin_group_name,local.appdev_admin_group_name]
+      group_grantees      = concat(local.database_admin_group_name,local.appdev_admin_group_name)
     }
   } : {}
 
@@ -138,7 +138,7 @@ locals {
       key_id            = var.existing_bucket_key_id 
       compartment_id    = var.existing_bucket_vault_compartment_id 
       service_grantees  = ["objectstorage-${var.region}"]
-      group_grantees    = [local.database_admin_group_name,local.appdev_admin_group_name]
+      group_grantees    = concat(local.database_admin_group_name,local.appdev_admin_group_name)
     }
   } : {}
 

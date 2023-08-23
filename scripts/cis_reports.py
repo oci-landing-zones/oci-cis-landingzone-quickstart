@@ -42,7 +42,7 @@ UPDATED_DATE = "August 8, 2023"
 ##########################################################################
 # debug print
 ##########################################################################
-DEBUG = True
+# DEBUG = False
 def debug(msg):
     if DEBUG:
         print(msg)
@@ -134,7 +134,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -765,6 +765,10 @@ class CIS_Report:
             self.__print_to_screen = True
         else:
             self.__print_to_screen = False
+
+        ## By Default debugging is disabled by default
+        global DEBUG 
+        DEBUG = debug
 
         # creating list of regions to run
         try:
@@ -2939,8 +2943,9 @@ class CIS_Report:
         try:
             self.__cloud_guard_config = self.__regions[self.__home_region]['cloud_guard_client'].get_configuration(
                 self.__tenancy.id).data
+            debug("__cloud_guard_read_cloud_guard_configuration Cloud Guard Configuration is: " + str(self.__cloud_guard_config))
             self.__cloud_guard_config_status = self.__cloud_guard_config.status
-
+            
             print("\tProcessed Cloud Guard Configuration.")
             return self.__cloud_guard_config_status
 
@@ -3638,6 +3643,7 @@ class CIS_Report:
         self.cis_foundations_benchmark_1_2['3.14']['Total'] = self.__network_subnets
 
         # CIS Check 3.15 - Cloud Guard enabled
+        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
         if self.__cloud_guard_config_status == 'ENABLED':
             self.cis_foundations_benchmark_1_2['3.15']['Status'] = True
         else:
@@ -4571,11 +4577,11 @@ class CIS_Report:
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
+            self.__cloud_guard_read_cloud_guard_configuration
         ]
 
         # Budgets is global construct
         if self.__obp_checks:
-            self.__cloud_guard_read_cloud_guard_configuration()
             obp_home_region_functions = [
                 self.__budget_read_budgets,
                 self.__cloud_guard_read_cloud_guard_targets
@@ -5088,9 +5094,12 @@ def execute_report():
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
-    parser.add_argument('-st', action='store_true', default=False, dest='is_security_token', help='Authenticate using Security Token')
+    parser.add_argument('-st', action='store_true', default=False, 
+                        dest='is_security_token', help='Authenticate using Security Token')
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.')
+    parser.add_argument('--debug', action='store_true', default=False,
+                        dest='debug', help='Enables debugging messages. This feature is in beta')    
     cmd = parser.parse_args()
 
     if cmd.version:
@@ -5099,7 +5108,8 @@ def execute_report():
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

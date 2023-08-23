@@ -3925,9 +3925,10 @@ class CIS_Report:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets))
                 # Checking that the subnet has not already been written to OBP
                 existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
-                record = logged_subnet[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_subnet) != 0:
+                    record = logged_subnet[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_subnet and not (existing_finding):
                     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(record)
@@ -3936,18 +3937,20 @@ class CIS_Report:
 
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
-                record = logged_bucket[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_bucket) != 0:
+                    record = logged_bucket[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(record)
 
             for finding in region_values['Read_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
-                record = logged_bucket[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_bucket) != 0:
+                    record = logged_bucket[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(record)

@@ -4595,11 +4595,12 @@ class CIS_Report:
         thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
         thread_identity_groups.start()
 
+        thread_identity_domains = Thread(target=self.__identity_read_domains)
+        thread_identity_domains.start()
+
         thread_compartments.join()
         thread_identity_groups.join()
-
-        self.__identity_read_domains()
-
+        thread_identity_domains.join()
 
         print("\nProcessing Home Region resources...")
 

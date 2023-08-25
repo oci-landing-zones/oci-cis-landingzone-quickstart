@@ -672,7 +672,26 @@ class CIS_Report:
                 "volume-family": ["request.permission!=VOLUME_BACKUP_DELETE", "request.permission!=VOLUME_DELETE", "request.permission!=BOOT_VOLUME_BACKUP_DELETE"],
                 "volumes": ["request.permission!=VOLUME_DELETE"],
                 "volume-backups": ["request.permission!=VOLUME_BACKUP_DELETE"],
-                "boot-volume-backups": ["request.permission!=BOOT_VOLUME_BACKUP_DELETE"]}}
+                "boot-volume-backups": ["request.permission!=BOOT_VOLUME_BACKUP_DELETE"]},
+            "1.14-storage-admin": {
+                "all-resources": [
+                    "request.permission=BUCKET_DELETE", "request.permission=OBJECT_DELETE", "request.permission=EXPORT_SET_DELETE",
+                    "request.permission=MOUNT_TARGET_DELETE", "request.permission=FILE_SYSTEM_DELETE", "request.permission=VOLUME_BACKUP_DELETE",
+                    "request.permission=VOLUME_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"
+                ],
+                "file-family": [
+                    "request.permission=EXPORT_SET_DELETE", "request.permission=MOUNT_TARGET_DELETE",
+                    "request.permission=FILE_SYSTEM_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"
+                ],
+                "file-systems": ["request.permission=FILE_SYSTEM_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"],
+                "mount-targets": ["request.permission=MOUNT_TARGET_DELETE"],
+                "object-family": ["request.permission=BUCKET_DELETE", "request.permission=OBJECT_DELETE"],
+                "buckets": ["request.permission=BUCKET_DELETE"],
+                "objects": ["request.permission=OBJECT_DELETE"],
+                "volume-family": ["request.permission=VOLUME_BACKUP_DELETE", "request.permission=VOLUME_DELETE", "request.permission=BOOT_VOLUME_BACKUP_DELETE"],
+                "volumes": ["request.permission=VOLUME_DELETE"],
+                "volume-backups": ["request.permission=VOLUME_BACKUP_DELETE"],
+                "boot-volume-backups": ["request.permission=BOOT_VOLUME_BACKUP_DELETE"]}}
 
         # Tenancy Data
         self.__tenancy = None
@@ -1065,7 +1084,7 @@ class CIS_Report:
                 debug("__identity_read_domains Exception collecting Identity Domains \n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
                 break
-            
+
         # Check if tenancy has Identity Domains otherwise breaking out
         if not(self.__identity_domains):
             self.__identity_doamins_enabled = False
@@ -3451,10 +3470,20 @@ class CIS_Report:
                             split_statement = statement.split("where")
                             if len(split_statement) == 2:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
-                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource]):
+                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14-storage-admin'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data no permissions to delete storage : " + str(policy['name']))
+
+                                    pass
+                                # Checking if this is the Storage admin with allowed 
+                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14-storage-admin'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data storage admin policy is : " + str(policy['name']))
                                     pass
                                 else:
                                     self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+                                    debug("__report_cis_analyze_tenancy_data else policy is /n: " + str(policy['name']))
+
                             else:
                                 self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
 

@@ -1063,6 +1063,14 @@ class CIS_Report:
             ).data
             except Exception as e:
                 debug("__identity_read_domains Exception collecting Identity Domains \n" + str(e))
+                # If this fails the tenancy likely doesn't have identity domains or the permissions are off
+                break
+            
+        # Check if tenancy has Identity Domains otherwise breaking out
+        if not(self.__identity_domains):
+            self.__identity_doamins_enabled = False
+            return self.__identity_doamins_enabled
+        
         for domain in raw_identity_domains:
             debug("__identity_read_domainsGetting passowrd policy for domain: " + domain.display_name)
             domain_dict =  oci.util.to_dict(domain)
@@ -1085,9 +1093,6 @@ class CIS_Report:
             
             self.__identity_domains.append(domain_dict)
 
-        if not(self.__identity_domains):
-            self.__identity_doamins_enabled = False
-            return self.__identity_doamins_enabled
         else:
             self.__identity_doamins_enabled = True
             ("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        

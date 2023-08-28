@@ -787,8 +787,14 @@ class CIS_Report:
             raise RuntimeError("Failed to get identity information." + str(e.args))
 
         try:
+            #Find the budget home region to ensure the budget client is run against the home region
+            budget_home_region = next(
+                (obj.region_name for obj in regions if obj.is_home_region),None)
+            budget_config = self.__config.copy()
+            budget_config["region"] = budget_home_region
+            
             self.__budget_client = oci.budget.BudgetClient(
-                self.__config, signer=self.__signer)
+                budget_config, signer=self.__signer)
             if proxy:
                 self.__budget_client.base_client.session.proxies = {'https': proxy}
         except Exception as e:

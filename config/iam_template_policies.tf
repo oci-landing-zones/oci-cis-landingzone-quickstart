@@ -69,14 +69,6 @@ locals {
   }
 
   #-- This map satisfies managed, existing, and no enclosing compartments. It is merged with managed compartments in supplied_compartments attribute above.
-  /* enclosing_compartment_map = {
-    (local.enclosing_compartment_key) : {
-      name : local.enclosing_compartment_name
-      id : local.enclosing_compartment_id
-      freeform_tags : {"cislz-cmp-type" : "enclosing"}
-    }
-  } */
-
   enclosing_compartment_map = {
     (local.enclosing_compartment_key) : {
       name : local.enclosing_compartment_name

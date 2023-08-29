@@ -17,7 +17,8 @@ locals {
 
 module "lz_template_policies" {
   depends_on = [module.lz_top_compartment, module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/policies"
+  source = "/Users/gsaurez/Oracle Content/LZCODE/cislzModules/terraform-oci-cis-landing-zone-iam/policies"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == true ? local.template_policies_configuration : local.empty_template_policies_configuration
@@ -40,19 +41,21 @@ locals {
     enable_cis_benchmark_checks : true
     template_policies : {
       tenancy_level_settings : {
-        groups_with_tenancy_level_roles : [
-          {"name":"${local.iam_admin_group_name}",     "roles":"iam"},
-          {"name":"${local.cred_admin_group_name}",    "roles":"cred"},
-          {"name":"${local.cost_admin_group_name}",    "roles":"cost"},
-          {"name":"${local.security_admin_group_name}","roles":"security,basic"},
-          {"name":"${local.network_admin_group_name}", "roles":"network,basic"},
-          {"name":"${local.appdev_admin_group_name}",  "roles":"application,basic"},
-          {"name":"${local.database_admin_group_name}","roles":"database,basic"},
-          {"name":"${local.exainfra_admin_group_name}","roles":"exainfra,basic"},
-          {"name":"${local.storage_admin_group_name}", "roles":"basic"},
-          {"name":"${local.auditor_group_name}",       "roles":"auditor"},
-          {"name":"${local.announcement_reader_group_name}","roles":"announcement-reader"}
-        ]
+        groups_with_tenancy_level_roles : concat(
+          [for group in local.iam_admin_group_name           : {"name"=group,"roles"="iam"}],
+          [for group in local.cred_admin_group_name          : {"name"=group,"roles"="cred"}],
+          [for group in local.cost_admin_group_name          : {"name"=group,"roles"="cost"}],
+          [for group in local.security_admin_group_name      : {"name"=group,"roles"="security,basic"}],
+          [for group in local.appdev_admin_group_name        : {"name"=group,"roles"="application,basic"}],
+          [for group in local.auditor_group_name             : {"name"=group,"roles"="auditor"}],
+          [for group in local.database_admin_group_name      : {"name"=group,"roles"="database,basic"}],
+          [for group in local.exainfra_admin_group_name      : {"name"=group,"roles"="exainfra,basic"}],
+          [for group in local.storage_admin_group_name       : {"name"=group,"roles"="basic"}],
+          [for group in local.network_admin_group_name       : {"name"=group,"roles"="network,basic"}],
+          [for group in local.announcement_reader_group_name : {"name"=group,"roles"="announcement-reader"}]
+
+        )
+
         oci_services : {
           enable_all_policies : true
         }
@@ -81,11 +84,11 @@ locals {
       name : local.enclosing_compartment_name
       ocid : local.enclosing_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"enclosing",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
-      }
+      "cislz-cmp-type":"enclosing",
+      "cislz-consumer-groups-security":"vision-security-admin-group",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-iam":"vision-iam-admin-group"
+    }
     }
   }
 
@@ -94,56 +97,56 @@ locals {
       name : local.provided_security_compartment_name
       ocid : local.security_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"security",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
-      }
+      "cislz-cmp-type":"security",
+      "cislz-consumer-groups-security":"vision-security-admin-group,'LZ Group One'",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-database":"vision-database-admin-group",
+      "cislz-consumer-groups-network":"vision-network-admin-group",
+      "cislz-consumer-groups-storage":"vision-storage-admin-group",
+      "cislz-consumer-groups-exainfra":"vision-exainfra-admin-group",
+      "cislz-consumer-groups-dyn-database-kms":"vision-database-kms-dynamic-group"
+    }
     }
     (local.network_compartment_key) : {
       name : local.provided_network_compartment_name
       ocid : local.network_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"network",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
-      }
+      "cislz-cmp-type":"network",
+      "cislz-consumer-groups-security":"vision-security-admin-group",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-database":"vision-database-admin-group",
+      "cislz-consumer-groups-network":"vision-network-admin-group",
+      "cislz-consumer-groups-storage":"vision-storage-admin-group",
+      "cislz-consumer-groups-exainfra":"vision-exainfra-admin-group"
+    }
     }
     (local.appdev_compartment_key) : {
       name : local.provided_appdev_compartment_name
       ocid : local.appdev_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"application",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
-      }
+      "cislz-cmp-type":"application",
+      "cislz-consumer-groups-security":"vision-security-admin-group",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-database":"vision-database-admin-group",
+      "cislz-consumer-groups-network":"vision-network-admin-group",
+      "cislz-consumer-groups-storage":"vision-storage-admin-group",
+      "cislz-consumer-groups-exainfra":"vision-exainfra-admin-group",
+      "cislz-consumer-groups-dyn-compute-agent":"vision-appdev-computeagent-dynamic-group"
+    }
     }
     (local.database_compartment_key) : {
       name : local.provided_database_compartment_name
       ocid : local.database_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"database",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
-      }
+      "cislz-cmp-type":"database",
+      "cislz-consumer-groups-security":"vision-security-admin-group",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-database":"vision-database-admin-group",
+      "cislz-consumer-groups-network":"vision-network-admin-group",
+      "cislz-consumer-groups-storage":"vision-storage-admin-group",
+      "cislz-consumer-groups-exainfra":"vision-exainfra-admin-group",
+      "cislz-consumer-groups-dyn-database-kms":"vision-database-kms-dynamic-group"
+    }
     }
   }
 
@@ -152,14 +155,14 @@ locals {
       name : local.provided_exainfra_compartment_name
       ocid : local.exainfra_compartment_id
       cislz_metadata : {
-        "cislz-cmp-type":"exainfra",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
-      }
+      "cislz-cmp-type":"exainfra",
+      "cislz-consumer-groups-security":"vision-security-admin-group",
+      "cislz-consumer-groups-application":"vision-app-admin-group",
+      "cislz-consumer-groups-database":"vision-database-admin-group",
+      "cislz-consumer-groups-network":"vision-network-admin-group",
+      "cislz-consumer-groups-storage":"vision-storage-admin-group",
+      "cislz-consumer-groups-exainfra":"vision-exainfra-admin-group"
+    }
     }
   } : {}
 

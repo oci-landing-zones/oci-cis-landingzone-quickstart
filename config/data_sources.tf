@@ -20,147 +20,55 @@ data "oci_identity_group" "existing_iam_admin_group" {
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_iam_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_iam_admin_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_cred_admin_group" {
   for_each = length(trimspace(var.rm_existing_cred_admin_group_name)) > 0 ? toset([var.rm_existing_cred_admin_group_name]) : toset(var.existing_cred_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
-
-/* data "oci_identity_groups" "existing_cred_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_cred_admin_group_name]
-  }
-} */
-
-#data "oci_identity_group" "existing_security_admin_group" {
-#  group_id = length(trimspace(var.rm_existing_security_admin_group_name)) > 0 ? var.rm_existing_security_admin_group_name : "nogroup"
-#}
 
 data "oci_identity_group" "existing_security_admin_group" {
   for_each = length(trimspace(var.rm_existing_security_admin_group_name)) > 0 ? toset([var.rm_existing_security_admin_group_name]) : toset(var.existing_security_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_security_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_security_admin_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_network_admin_group" {
   for_each = length(trimspace(var.rm_existing_network_admin_group_name)) > 0 ? toset([var.rm_existing_network_admin_group_name]) : toset(var.existing_network_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
-
-/* data "oci_identity_groups" "existing_network_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_network_admin_group_name]
-  }
-} */
 
 data "oci_identity_group" "existing_appdev_admin_group" {
   for_each = length(trimspace(var.rm_existing_appdev_admin_group_name)) > 0 ? toset([var.rm_existing_appdev_admin_group_name]) : toset(var.existing_appdev_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_appdev_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_appdev_admin_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_database_admin_group" {
   for_each = length(trimspace(var.rm_existing_database_admin_group_name)) > 0 ? toset([var.rm_existing_database_admin_group_name]) : toset(var.existing_database_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
-
-/* data "oci_identity_groups" "existing_database_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_database_admin_group_name]
-  }
-} */
 
 data "oci_identity_group" "existing_auditor_group" {
   for_each = length(trimspace(var.rm_existing_auditor_group_name)) > 0 ? toset([var.rm_existing_auditor_group_name]) : toset(var.existing_auditor_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_auditor_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_auditor_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_announcement_reader_group" {
   for_each = length(trimspace(var.rm_existing_announcement_reader_group_name)) > 0 ? toset([var.rm_existing_announcement_reader_group_name]) : toset(var.existing_announcement_reader_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
-
-/* data "oci_identity_groups" "existing_announcement_reader_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_announcement_reader_group_name]
-  }
-} */
 
 data "oci_identity_group" "existing_exainfra_admin_group" {
   for_each = length(trimspace(var.rm_existing_exainfra_admin_group_name)) > 0 ? toset([var.rm_existing_exainfra_admin_group_name]) : toset(var.existing_exainfra_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_exainfra_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_exainfra_admin_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_cost_admin_group" {
   for_each = length(trimspace(var.rm_existing_cost_admin_group_name)) > 0 ? toset([var.rm_existing_cost_admin_group_name]) : toset(var.existing_cost_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_groups" "existing_cost_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_cost_admin_group_name]
-  }
-} */
-
 data "oci_identity_group" "existing_storage_admin_group" {
   for_each = length(trimspace(var.rm_existing_storage_admin_group_name)) > 0 ? toset([var.rm_existing_storage_admin_group_name]) : toset(var.existing_storage_admin_group_name)
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
-
-/* data "oci_identity_groups" "existing_storage_admin_group" {
-  compartment_id = var.tenancy_ocid
-  filter {
-    name   = "name"
-    values = [var.existing_storage_admin_group_name]
-  }
-} */
 
 /* data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
   compartment_id = var.tenancy_ocid

@@ -75,9 +75,9 @@ locals {
       ocid : local.enclosing_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"enclosing",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-iam":"${local.iam_admin_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-iam":"${join(",",local.iam_admin_group_name)}"
       }
     }
   }
@@ -88,13 +88,13 @@ locals {
       ocid : local.security_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"security",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-database":"${join(",",local.database_admin_group_name)}",
+        "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
+        "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
+        "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
+        "cislz-consumer-groups-dyn-database-kms":"${join(",",local.database_kms_dynamic_group_name)}"
       }
     }
     (local.network_compartment_key) : {
@@ -102,12 +102,12 @@ locals {
       ocid : local.network_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"network",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-database":"${join(",",local.database_admin_group_name)}",
+        "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
+        "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
+        "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}"
       }
     }
     (local.appdev_compartment_key) : {
@@ -115,13 +115,13 @@ locals {
       ocid : local.appdev_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"application",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-database":"${join(",",local.database_admin_group_name)}",
+        "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
+        "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
+        "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
+        "cislz-consumer-groups-dyn-compute-agent":"${join(",",local.appdev_computeagent_dynamic_group_name)}"
       }
     }
     (local.database_compartment_key) : {
@@ -129,13 +129,13 @@ locals {
       ocid : local.database_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"database",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}",
-        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-database":"${join(",",local.database_admin_group_name)}",
+        "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
+        "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
+        "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
+        "cislz-consumer-groups-dyn-database-kms":"${join(",",local.database_kms_dynamic_group_name)}"
       }
     }
   }
@@ -146,12 +146,12 @@ locals {
       ocid : local.exainfra_compartment_id
       cislz_metadata : {
         "cislz-cmp-type":"exainfra",
-        "cislz-consumer-groups-security":"${local.security_admin_group_name}",
-        "cislz-consumer-groups-application":"${local.appdev_admin_group_name}",
-        "cislz-consumer-groups-database":"${local.database_admin_group_name}",
-        "cislz-consumer-groups-network":"${local.network_admin_group_name}",
-        "cislz-consumer-groups-storage":"${local.storage_admin_group_name}",
-        "cislz-consumer-groups-exainfra":"${local.exainfra_admin_group_name}"
+        "cislz-consumer-groups-security":"${join(",",local.security_admin_group_name)}",
+        "cislz-consumer-groups-application":"${join(",",local.appdev_admin_group_name)}",
+        "cislz-consumer-groups-database":"${join(",",local.database_admin_group_name)}",
+        "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
+        "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
+        "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}"
       }
     }
   } : {}

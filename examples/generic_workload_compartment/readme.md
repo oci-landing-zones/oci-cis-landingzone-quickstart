@@ -4,7 +4,7 @@
 
 ## Overview
 
-The terraform code in this folder expands an existing CIS Landing Zone deployment.  It does this by adding one or more workload compartment(s) in the AppDev compartment and optional the associated OCI IAM groups, dynamic groups, and OCI IAM policies to manage OCI resources in the workload compartment.
+The terraform code in this folder expands an existing CIS Landing Zone deployment.  It does this by adding one or more workload compartment(s) in the AppDev compartment and, optionally, the associated OCI IAM groups, dynamic groups, and OCI IAM policies to manage OCI resources in the workload compartment.
 
 ## Architecture 
 ![Workloads_Architecture](images/Workloads_Architecture.png)
@@ -41,9 +41,6 @@ Variable Name | Description | Required | Default Value
 1. terraform init
 1. terraform plan
 1. terraforom apply
-
-
-
 
 ## CIS OCI Foundations Benchmark Modules Collection
 

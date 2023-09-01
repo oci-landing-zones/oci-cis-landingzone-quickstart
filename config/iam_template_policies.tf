@@ -94,7 +94,7 @@ locals {
         "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
         "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
         "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
-        "cislz-consumer-groups-dyn-database-kms":"${join(",",local.database_kms_dynamic_group_name)}"
+        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
       }
     }
     (local.network_compartment_key) : {
@@ -121,7 +121,7 @@ locals {
         "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
         "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
         "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
-        "cislz-consumer-groups-dyn-compute-agent":"${join(",",local.appdev_computeagent_dynamic_group_name)}"
+        "cislz-consumer-groups-dyn-compute-agent":"${local.appdev_computeagent_dynamic_group_name}"
       }
     }
     (local.database_compartment_key) : {
@@ -135,7 +135,7 @@ locals {
         "cislz-consumer-groups-network":"${join(",",local.network_admin_group_name)}",
         "cislz-consumer-groups-storage":"${join(",",local.storage_admin_group_name)}",
         "cislz-consumer-groups-exainfra":"${join(",",local.exainfra_admin_group_name)}",
-        "cislz-consumer-groups-dyn-database-kms":"${join(",",local.database_kms_dynamic_group_name)}"
+        "cislz-consumer-groups-dyn-database-kms":"${local.database_kms_dynamic_group_name}"
       }
     }
   }

@@ -26,7 +26,11 @@ locals {
   cost_admin_root_policy_name     = "${var.service_label}-cost-admin-root-policy"
   storage_admin_policy_name       = "${var.service_label}-storage-admin-policy"
 
-  iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
+  #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
+  iam_grants_condition = [for g in local.cred_admin_group_name : substr(g,0,1) == "'" && substr(g,length(g)-1,1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"]
+
+ 
+
   ### User Group Policies ###
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [

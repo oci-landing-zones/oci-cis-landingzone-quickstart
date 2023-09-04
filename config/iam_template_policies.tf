@@ -58,13 +58,12 @@ locals {
         oci_services : {
           enable_all_policies : true
         }
-        policy_name_prefix : var.service_label
       }
       compartment_level_settings : {
-        #supplied_compartments : var.enable_template_policies == true ? {for k, v in merge(module.lz_compartments.compartments, local.enclosing_compartment_map) : k => {"name": v.name, "ocid": v.id, "cislz_metadata": local.cislz_compartments_metadata[v.freeform_tags["cislz-cmp-type"]]}} : {}
         supplied_compartments : merge(local.enclosing_compartment_map, local.enclosed_compartments_map, local.exainfra_compartment_map)
       }
     }
+    policy_name_prefix : var.service_label
     defined_tags : local.template_policies_defined_tags
     freeform_tags : local.template_policies_freeform_tags
   }

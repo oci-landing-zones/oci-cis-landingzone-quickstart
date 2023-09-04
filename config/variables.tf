@@ -84,49 +84,115 @@ variable "enable_template_policies" {
 # ------------------------------------------------------
 # ----- IAM - Groups
 #-------------------------------------------------------
+variable "rm_existing_iam_admin_group_name" {
+  type    = string
+  default = ""
+}
 variable "existing_iam_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for iam administrators."
+}
+
+variable "rm_existing_cred_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_cred_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for credential administrators."
+}
+
+variable "rm_existing_security_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_security_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for security administrators."
+}
+
+
+variable "rm_existing_network_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_network_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for network administrators."
+}
+
+variable "rm_existing_appdev_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_appdev_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for appdev administrators."
+}
+
+variable "rm_existing_database_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_database_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for database administrators."
+}
+
+variable "rm_existing_auditor_group_name" {
   type    = string
   default = ""
 }
 variable "existing_auditor_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for auditors."
+}
+
+variable "rm_existing_announcement_reader_group_name" {
   type    = string
   default = ""
 }
 variable "existing_announcement_reader_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for announcement readers."
+}
+
+variable "rm_existing_exainfra_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_exainfra_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for exainfra administrators."
+}
+
+variable "rm_existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_cost_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for cost administrators."
+}
+
+variable "rm_existing_storage_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_storage_admin_group_name" {
-  type    = string
-  default = ""
+  type        = list(string)
+  default     = []
+  description = "List of groups for storage administrators."
 }
 
 # ------------------------------------------------------

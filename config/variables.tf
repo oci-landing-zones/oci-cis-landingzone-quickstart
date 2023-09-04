@@ -84,49 +84,115 @@ variable "enable_template_policies" {
 # ------------------------------------------------------
 # ----- IAM - Groups
 #-------------------------------------------------------
+variable "rm_existing_iam_admin_group_name" {
+  type    = string
+  default = ""
+}
 variable "existing_iam_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for iam administrators."
+}
+
+variable "rm_existing_cred_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_cred_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for credential administrators."
+}
+
+variable "rm_existing_security_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_security_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for security administrators."
+}
+
+
+variable "rm_existing_network_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_network_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for network administrators."
+}
+
+variable "rm_existing_appdev_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_appdev_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for appdev administrators."
+}
+
+variable "rm_existing_database_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_database_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for database administrators."
+}
+
+variable "rm_existing_auditor_group_name" {
   type    = string
   default = ""
 }
 variable "existing_auditor_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for auditors."
+}
+
+variable "rm_existing_announcement_reader_group_name" {
   type    = string
   default = ""
 }
 variable "existing_announcement_reader_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for announcement readers."
+}
+
+variable "rm_existing_exainfra_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_exainfra_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for exainfra administrators."
+}
+
+variable "rm_existing_cost_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_cost_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for cost administrators."
+}
+
+variable "rm_existing_storage_admin_group_name" {
   type    = string
   default = ""
 }
 variable "existing_storage_admin_group_name" {
-  type    = string
-  default = ""
+  type        = list(string)
+  default     = []
+  description = "List of groups for storage administrators."
 }
 
 # ------------------------------------------------------
@@ -360,8 +426,12 @@ variable "network_admin_email_endpoints" {
   default     = []
   description = "List of email addresses for all network related notifications."
   validation {
+    condition = length(var.network_admin_email_endpoints) > 0
+    error_message = "Validation failed for network_admin_email_endpoints: at least one valid email address must be provided."
+  }
+  validation {
     condition     = length([for e in var.network_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.network_admin_email_endpoints)
-    error_message = "Validation failed network_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for network_admin_email_endpoints: invalid email address."
   }
 }
 variable "security_admin_email_endpoints" {
@@ -369,8 +439,12 @@ variable "security_admin_email_endpoints" {
   default     = []
   description = "List of email addresses for all security related notifications."
   validation {
+    condition = length(var.security_admin_email_endpoints) > 0
+    error_message = "Validation failed for security_admin_email_endpoints: at least one valid email address must be provided."
+  }
+  validation {
     condition     = length([for e in var.security_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.security_admin_email_endpoints)
-    error_message = "Validation failed security_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for security_admin_email_endpoints: invalid email address."
   }
 }
 variable "storage_admin_email_endpoints" {
@@ -379,7 +453,7 @@ variable "storage_admin_email_endpoints" {
   description = "List of email addresses for all storage related notifications."
   validation {
     condition     = length([for e in var.storage_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.storage_admin_email_endpoints)
-    error_message = "Validation failed storage_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for storage_admin_email_endpoints: invalid email address."
   }
 }
 variable "compute_admin_email_endpoints" {
@@ -388,7 +462,7 @@ variable "compute_admin_email_endpoints" {
   description = "List of email addresses for all compute related notifications."
   validation {
     condition     = length([for e in var.compute_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.compute_admin_email_endpoints)
-    error_message = "Validation failed compute_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for compute_admin_email_endpoints: invalid email address."
   }
 }
 variable "budget_admin_email_endpoints" {
@@ -397,7 +471,7 @@ variable "budget_admin_email_endpoints" {
   description = "List of email addresses for all budget related notifications."
   validation {
     condition     = length([for e in var.budget_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_admin_email_endpoints)
-    error_message = "Validation failed budget_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for budget_admin_email_endpoints: invalid email address."
   }
 }
 variable "database_admin_email_endpoints" {
@@ -406,7 +480,7 @@ variable "database_admin_email_endpoints" {
   description = "List of email addresses for all database related notifications."
   validation {
     condition     = length([for e in var.database_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.database_admin_email_endpoints)
-    error_message = "Validation failed database_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for database_admin_email_endpoints: invalid email address."
   }
 }
 variable "exainfra_admin_email_endpoints" {
@@ -415,7 +489,7 @@ variable "exainfra_admin_email_endpoints" {
   description = "List of email addresses for all Exadata infrastrcture related notifications. Only applicable if deploy_exainfra_cmp is true."
   validation {
     condition     = length([for e in var.exainfra_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.exainfra_admin_email_endpoints)
-    error_message = "Validation failed exainfra_admin_email_endpoints: invalid email address."
+    error_message = "Validation failed for exainfra_admin_email_endpoints: invalid email address."
   }
 }
 variable "create_alarms_as_enabled" {

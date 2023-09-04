@@ -38,3 +38,8 @@ moved {
   from = module.lz_cloud_guard
   to   = module.lz_cloud_guard[0]
 }
+
+moved {
+  from = module.lz_template_policies
+  to   = module.lz_template_policies[0]
+}

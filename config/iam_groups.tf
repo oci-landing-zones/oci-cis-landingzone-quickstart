@@ -51,7 +51,8 @@ locals {
   default_iam_admin_group_name = "iam-admin-group"
   provided_iam_admin_group_name = local.custom_iam_admin_group_name != null ? local.custom_iam_admin_group_name : "${var.service_label}-${local.default_iam_admin_group_name}" 
   
-  iam_admin_group = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? {
+  #iam_admin_group = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? {
+  iam_admin_group = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? {
     (local.iam_admin_group_key) = {
       name          = local.provided_iam_admin_group_name
       description   = "CIS Landing Zone group for managing IAM resources in the tenancy."
@@ -68,7 +69,7 @@ locals {
   default_cred_admin_group_name = "cred-admin-group"
   provided_cred_admin_group_name = local.custom_cred_admin_group_name != null ? local.custom_cred_admin_group_name : "${var.service_label}-${local.default_cred_admin_group_name}"  
   
-  cred_admin_group = length(trimspace(var.existing_cred_admin_group_name)) == 0 ? {
+  cred_admin_group = length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0 ? {
     (local.cred_admin_group_key) = {
       name          = local.provided_cred_admin_group_name
       description   = "CIS Landing Zone group for managing users credentials in the tenancy."
@@ -85,7 +86,7 @@ locals {
   default_cost_admin_group_name = "cost-admin-group"
   provided_cost_admin_group_name = local.custom_cost_admin_group_name != null ? local.custom_cost_admin_group_name : "${var.service_label}-${local.default_cost_admin_group_name}" 
   
-  cost_admin_group = length(trimspace(var.existing_cost_admin_group_name)) == 0 ? {
+  cost_admin_group = length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? {
     (local.cost_admin_group_key) = {
       name         = local.provided_cost_admin_group_name 
       description  = "CIS Landing Zone group for Cost management."
@@ -102,7 +103,7 @@ locals {
   default_network_admin_group_name = "network-admin-group"
   provided_network_admin_group_name = local.custom_network_admin_group_name != null ? local.custom_network_admin_group_name : "${var.service_label}-${local.default_network_admin_group_name}"
   
-  network_admin_group = length(trimspace(var.existing_network_admin_group_name)) == 0 ? {
+  network_admin_group = length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0 ? {
     (local.network_admin_group_key) = {
       name          = local.provided_network_admin_group_name  
       description   = "CIS Landing Zone group for network management."
@@ -119,7 +120,7 @@ locals {
   default_security_admin_group_name = "security-admin-group"
   provided_security_admin_group_name = local.custom_security_admin_group_name != null ? local.custom_security_admin_group_name : "${var.service_label}-${local.default_security_admin_group_name}"
     
-  security_admin_group = length(trimspace(var.existing_security_admin_group_name)) == 0 ? {
+  security_admin_group = length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0 ? {
     (local.security_admin_group_key) = {
       name          = local.provided_security_admin_group_name  
       description   = "CIS Landing Zone group for security services management."
@@ -136,7 +137,7 @@ locals {
   default_appdev_admin_group_name = "appdev-admin-group"
   provided_appdev_admin_group_name = local.custom_appdev_admin_group_name != null ? local.custom_appdev_admin_group_name : "${var.service_label}-${local.default_appdev_admin_group_name}"
   
-  appdev_admin_group = length(trimspace(var.existing_appdev_admin_group_name)) == 0 ? {
+  appdev_admin_group = length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0 ? {
     (local.appdev_admin_group_key) = {
       name          = local.provided_appdev_admin_group_name  
       description   = "CIS Landing Zone group for managing app development related services."
@@ -153,7 +154,7 @@ locals {
   default_database_admin_group_name = "database-admin-group"
   provided_database_admin_group_name = local.custom_database_admin_group_name != null ? local.custom_database_admin_group_name : "${var.service_label}-${local.default_database_admin_group_name}"
   
-  database_admin_group = length(trimspace(var.existing_database_admin_group_name)) == 0 ? {
+  database_admin_group = length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0 ? {
     (local.database_admin_group_key) = {
       name          = local.provided_database_admin_group_name  
       description   = "CIS Landing Zone group for managing databases."
@@ -170,7 +171,7 @@ locals {
   default_exainfra_admin_group_name = "exainfra-admin-group"
   provided_exainfra_admin_group_name = local.custom_exainfra_admin_group_name != null ? local.custom_exainfra_admin_group_name : "${var.service_label}-${local.default_exainfra_admin_group_name}"
     
-  exainfra_admin_group = var.deploy_exainfra_cmp == true && length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? {
+  exainfra_admin_group = var.deploy_exainfra_cmp == true && length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? {
     (local.exainfra_admin_group_key) = {
       name          = local.provided_exainfra_admin_group_name  
       description   = "CIS Landing Zone group for managing Exadata Cloud Service infrastructure."
@@ -187,7 +188,7 @@ locals {
   default_storage_admin_group_name = "storage-admin-group"
   provided_storage_admin_group_name = local.custom_storage_admin_group_name != null ? local.custom_storage_admin_group_name : "${var.service_label}-${local.default_storage_admin_group_name}"
 
-  storage_admin_group = length(trimspace(var.existing_storage_admin_group_name)) == 0 ? {
+  storage_admin_group = length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? {
     (local.storage_admin_group_key) = {
       name          = local.provided_storage_admin_group_name  
       description   = "CIS Landing Zone group for storage services management."
@@ -204,7 +205,7 @@ locals {
   default_auditor_group_name = "auditor-group"
   provided_auditor_group_name = local.custom_auditor_group_name != null ? local.custom_auditor_group_name : "${var.service_label}-${local.default_auditor_group_name}"
   
-  auditor_group = length(trimspace(var.existing_auditor_group_name)) == 0 ? {
+  auditor_group = length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0 ? {
     (local.auditor_group_key) = {
       name          = local.provided_auditor_group_name  
       description   = "CIS Landing Zone group for auditing the tenancy."
@@ -221,7 +222,7 @@ locals {
   default_announcement_reader_group_name = "announcement-reader-group"
   provided_announcement_reader_group_name = local.custom_announcement_reader_group_name != null ? local.custom_announcement_reader_group_name : "${var.service_label}-${local.default_announcement_reader_group_name}"
   
-  announcement_reader_group = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? {
+  announcement_reader_group = length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0 ? {
     (local.announcement_reader_group_key) = {
       name          = local.provided_announcement_reader_group_name  
       description   = "CIS Landing Zone group for reading Console announcements."
@@ -248,28 +249,15 @@ locals {
   #----------------------------------------------------------------------------------
   #----- Variables with group names per groups module output
   #----------------------------------------------------------------------------------
-  iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0           ? module.lz_groups.groups[local.iam_admin_group_key].name           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : var.existing_iam_admin_group_name)
-  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0          ? module.lz_groups.groups[local.cred_admin_group_key].name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : var.existing_cred_admin_group_name)
-  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0      ? module.lz_groups.groups[local.security_admin_group_key].name      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : var.existing_security_admin_group_name)
-  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0       ? module.lz_groups.groups[local.network_admin_group_key].name       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : var.existing_network_admin_group_name)
-  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0      ? module.lz_groups.groups[local.database_admin_group_key].name      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : var.existing_database_admin_group_name)
-  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0        ? module.lz_groups.groups[local.appdev_admin_group_key].name        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : var.existing_appdev_admin_group_name)
-  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0             ? module.lz_groups.groups[local.auditor_group_key].name             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : var.existing_auditor_group_name)
-  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? module.lz_groups.groups[local.announcement_reader_group_key].name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : var.existing_announcement_reader_group_name)
-  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? module.lz_groups.groups[local.cost_admin_group_key].name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : var.existing_cost_admin_group_name)
-  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? module.lz_groups.groups[local.storage_admin_group_key].name       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : var.existing_storage_admin_group_name)
-  exainfra_admin_group_name      = var.deploy_exainfra_cmp ? (length(trimspace(var.existing_exainfra_admin_group_name)) == 0 ? module.lz_groups.groups[local.exainfra_admin_group_key].name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0 ? data.oci_identity_group.existing_exainfra_admin_group.name : var.existing_exainfra_admin_group_name)) : var.existing_exainfra_admin_group_name
-
-  /* iam_admin_group_name           = length(trimspace(var.existing_iam_admin_group_name)) == 0           ? local.provided_iam_admin_group_name           : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name)) > 0           ? data.oci_identity_group.existing_iam_admin_group.name           : var.existing_iam_admin_group_name)
-  cred_admin_group_name          = length(trimspace(var.existing_cred_admin_group_name)) == 0          ? local.provided_cred_admin_group_name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name)) > 0          ? data.oci_identity_group.existing_cred_admin_group.name          : var.existing_cred_admin_group_name)
-  security_admin_group_name      = length(trimspace(var.existing_security_admin_group_name)) == 0      ? local.provided_security_admin_group_name      : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name)) > 0      ? data.oci_identity_group.existing_security_admin_group.name      : var.existing_security_admin_group_name)
-  network_admin_group_name       = length(trimspace(var.existing_network_admin_group_name)) == 0       ? local.provided_network_admin_group_name       : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name)) > 0       ? data.oci_identity_group.existing_network_admin_group.name       : var.existing_network_admin_group_name)
-  database_admin_group_name      = length(trimspace(var.existing_database_admin_group_name)) == 0      ? local.provided_database_admin_group_name      : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name)) > 0      ? data.oci_identity_group.existing_database_admin_group.name      : var.existing_database_admin_group_name)
-  appdev_admin_group_name        = length(trimspace(var.existing_appdev_admin_group_name)) == 0        ? local.provided_appdev_admin_group_name        : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name)) > 0        ? data.oci_identity_group.existing_appdev_admin_group.name        : var.existing_appdev_admin_group_name)
-  auditor_group_name             = length(trimspace(var.existing_auditor_group_name)) == 0             ? local.provided_auditor_group_name             : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name)) > 0             ? data.oci_identity_group.existing_auditor_group.name             : var.existing_auditor_group_name)
-  announcement_reader_group_name = length(trimspace(var.existing_announcement_reader_group_name)) == 0 ? local.provided_announcement_reader_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : var.existing_announcement_reader_group_name)
-  cost_admin_group_name          = length(trimspace(var.existing_cost_admin_group_name)) == 0          ? local.provided_cost_admin_group_name          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : var.existing_cost_admin_group_name)
-  storage_admin_group_name       = length(trimspace(var.existing_storage_admin_group_name)) == 0       ? local.provided_storage_admin_group_name       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : var.existing_storage_admin_group_name)
-  exainfra_admin_group_name      = var.deploy_exainfra_cmp ? ((trimspace(var.existing_exainfra_admin_group_name)) == 0 ? local.provided_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0 ? data.oci_identity_group.existing_exainfra_admin_group.name : var.existing_exainfra_admin_group_name)) : var.existing_exainfra_admin_group_name
- */
- }
+  iam_admin_group_name           = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0                       ? [module.lz_groups.groups[local.iam_admin_group_key].name]            : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_iam_admin_group_name)) > 0            ? ["'${data.oci_identity_group.existing_iam_admin_group[var.rm_existing_iam_admin_group_name].name}'"]                 : [ for i,v in var.existing_iam_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name[i])) > 0                      ? "'${data.oci_identity_group.existing_iam_admin_group[v].name}'"            :  "'${v}'")])
+  cred_admin_group_name          = length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0                     ? [module.lz_groups.groups[local.cred_admin_group_key].name]           : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cred_admin_group_name)) > 0           ? ["'${data.oci_identity_group.existing_cred_admin_group[var.rm_existing_cred_admin_group_name].name}'"]               : [ for i,v in var.existing_cred_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name[i])) > 0                    ? "'${data.oci_identity_group.existing_cred_admin_group[v].name}'"           :  "'${v}'")])
+  security_admin_group_name      = length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0             ? [module.lz_groups.groups[local.security_admin_group_key].name]       : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_security_admin_group_name)) > 0       ? ["'${data.oci_identity_group.existing_security_admin_group[var.rm_existing_security_admin_group_name].name}'"]       : [ for i,v in var.existing_security_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name[i])) > 0            ? "'${data.oci_identity_group.existing_security_admin_group[v].name}'"       :  "'${v}'")])
+  network_admin_group_name       = length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0              ? [module.lz_groups.groups[local.network_admin_group_key].name]        : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_network_admin_group_name)) > 0        ? ["'${data.oci_identity_group.existing_network_admin_group[var.rm_existing_network_admin_group_name].name}'"]         : [ for i,v in var.existing_network_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name[i])) > 0              ? "'${data.oci_identity_group.existing_network_admin_group[v].name}'"        :  "'${v}'")])
+  database_admin_group_name      = length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0             ? [module.lz_groups.groups[local.database_admin_group_key].name]       : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_database_admin_group_name)) > 0       ? ["'${data.oci_identity_group.existing_database_admin_group[var.rm_existing_database_admin_group_name].name}'"]       : [ for i,v in var.existing_database_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name[i])) > 0            ? "'${data.oci_identity_group.existing_database_admin_group[v].name}'"       :  "'${v}'")])
+  appdev_admin_group_name        = length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0                 ? [module.lz_groups.groups[local.appdev_admin_group_key].name]         : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_appdev_admin_group_name)) > 0         ? ["'${data.oci_identity_group.existing_appdev_admin_group[var.rm_existing_appdev_admin_group_name].name}'"]           : [ for i,v in var.existing_appdev_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name[i])) > 0                ? "'${data.oci_identity_group.existing_appdev_admin_group[v].name}'"         :  "'${v}'")])
+  auditor_group_name             = length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0                           ? [module.lz_groups.groups[local.auditor_group_key].name]              : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_auditor_group_name)) > 0              ? ["'${data.oci_identity_group.existing_auditor_group[var.rm_existing_auditor_group_name].name}'"]                     : [ for i,v in var.existing_auditor_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name[i])) > 0                          ? "'${data.oci_identity_group.existing_auditor_group[v].name}'"         :  "'${v}'")])
+  announcement_reader_group_name = length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0   ? [module.lz_groups.groups[local.announcement_reader_group_key].name]  : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_announcement_reader_group_name)) > 0  ? ["'${data.oci_identity_group.existing_announcement_reader_group[var.rm_existing_announcement_reader_group_name].name}'"]  : [ for i,v in var.existing_announcement_reader_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name[i])) > 0  ? "'${data.oci_identity_group.existing_announcement_reader_group[v].name}'"  :  "'${v}'")])
+  cost_admin_group_name          = length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0                     ? [module.lz_groups.groups[local.cost_admin_group_key].name]           : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cost_admin_group_name)) > 0           ? ["'${data.oci_identity_group.existing_cost_admin_group[var.rm_existing_cost_admin_group_name].name}'"]               : [ for i,v in var.existing_cost_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name[i])) > 0                    ? "'${data.oci_identity_group.existing_cost_admin_group[v].name}'"           :  "'${v}'")])
+  storage_admin_group_name       = length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0               ? [module.lz_groups.groups[local.storage_admin_group_key].name]        : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_storage_admin_group_name)) > 0        ? ["'${data.oci_identity_group.existing_storage_admin_group[var.rm_existing_storage_admin_group_name].name}'"]        : [ for i,v in var.existing_storage_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name[i])) > 0              ? "'${data.oci_identity_group.existing_storage_admin_group[v].name}'"        :  "'${v}'")])
+  exainfra_admin_group_name      = var.deploy_exainfra_cmp ? (length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? [module.lz_groups.groups[local.exainfra_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_exainfra_admin_group_name)) > 0  ? ["'${data.oci_identity_group.existing_exainfra_admin_group[var.rm_existing_exainfra_admin_group_name].name}'"]  : [ for i,v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name[i])) > 0  ? "'${data.oci_identity_group.existing_exainfra_admin_group[v].name}'" :  "'${v}'")])) : [for grp in var.existing_exainfra_admin_group_name : "'${grp}'"]
+}

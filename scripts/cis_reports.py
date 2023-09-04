@@ -444,7 +444,7 @@ class CIS_Report:
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Network Gateways act as routers between VCNs and the Internet, Oracle Services Networks, other VCNS, and on-premise networks.\n Monitoring and alerting on changes to Network Gateways will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
-                "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment.",
+                "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment,Compartment, Service Gateway – Create, Service Gateway – Delete Begin, Service Gateway – Delete End, Service Gateway – Update, Service Gateway – Attach Service, Service Gateway – Detach Service, Service Gateway – Change Compartment.",
                 "Recommendation": "",
                 "Observation": ""
             },
@@ -787,8 +787,14 @@ class CIS_Report:
             raise RuntimeError("Failed to get identity information." + str(e.args))
 
         try:
+            #Find the budget home region to ensure the budget client is run against the home region
+            budget_home_region = next(
+                (obj.region_name for obj in regions if obj.is_home_region),None)
+            budget_config = self.__config.copy()
+            budget_config["region"] = budget_home_region
+            
             self.__budget_client = oci.budget.BudgetClient(
-                self.__config, signer=self.__signer)
+                budget_config, signer=self.__signer)
             if proxy:
                 self.__budget_client.base_client.session.proxies = {'https': proxy}
         except Exception as e:
@@ -1047,9 +1053,23 @@ class CIS_Report:
                     self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
                     compartment_id=self.__tenancy.id,
                     group_id=grp.id).data
-
+                # For empty groups just print one record with the group info
+                grp_deep_link = self.__oci_groups_uri + grp.id
+                if not membership:
+                    group_record = {
+                        "id": grp.id,
+                        "name": grp.name,
+                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                        "description": grp.description,
+                        "lifecycle_state": grp.lifecycle_state,
+                        "time_created": grp.time_created.strftime(self.__iso_time_format),
+                        "user_id": "",
+                        "user_id_link": ""
+                    }
+                    # Adding a record per empty group
+                    self.__groups_to_users.append(group_record)
+                # For groups with members print one record per user per group
                 for member in membership:
-                    grp_deep_link = self.__oci_groups_uri + grp.id
                     user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
                         "id": grp.id,
@@ -3524,7 +3544,7 @@ class CIS_Report:
             except Exception:
                 print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
                 event_dict = {}
-            # Issue 256: 'eventtpye' not in event_dict (i.e. missing in event condition)
+            # Issue 256: 'eventtype' not in event_dict (i.e. missing in event condition)
             if event_dict and 'eventtype' in event_dict:
                 for key, changes in self.cis_monitoring_checks.items():
                     # Checking if all cis change list is a subset of event condition
@@ -3925,9 +3945,10 @@ class CIS_Report:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets))
                 # Checking that the subnet has not already been written to OBP
                 existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
-                record = logged_subnet[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_subnet) != 0:
+                    record = logged_subnet[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_subnet and not (existing_finding):
                     self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(record)
@@ -3936,18 +3957,20 @@ class CIS_Report:
 
             for finding in region_values['Write_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
-                record = logged_bucket[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_bucket) != 0:
+                    record = logged_bucket[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(record)
 
             for finding in region_values['Read_Bucket']['buckets']:
                 logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
-                record = logged_bucket[0].copy()
-                record['sch_id'] = finding['sch_id']
-                record['sch_name'] = finding['sch_name']
+                if len(logged_bucket) != 0:
+                    record = logged_bucket[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
 
                 if logged_bucket:
                     self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['OBP'].append(record)

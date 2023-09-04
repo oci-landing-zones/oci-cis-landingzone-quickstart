@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-#-- This file supports the creation of tag based policies, which are policies created based on tags that are applied to compartments.
+#-- This file supports the creation of policies based on metadata associated with compartments.
 #-- This functionality is supported by the policy module in https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies
 #-- The default approach is using the supplied policies, defined in iam_policies.tf file.
 #-- For using tag based policies, set variable enable_template_policies to true.

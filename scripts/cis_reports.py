@@ -771,6 +771,9 @@ class CIS_Report:
         # For Service Connector
         self.__service_connectors = {}
 
+        # Error Data
+        self.__errors = []
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -1195,6 +1198,8 @@ class CIS_Report:
                     if user.id == group['user_id']:
                         record['groups'].append(group['name'])
 
+                if self.__identity_doamins_enabled:
+                    debug("****This is an identity domain***" * 4 )
                 record['api_keys'] = self.__identity_read_user_api_key(user.id)
                 record['auth_tokens'] = self.__identity_read_user_auth_token(
                     user.id)
@@ -1206,6 +1211,7 @@ class CIS_Report:
             return self.__users
 
         except Exception as e:
+            debug("__identity_read_users: User ID is: " + str(user))
             raise RuntimeError(
                 "Error in __identity_read_users: " + str(e.args))
 
@@ -1235,6 +1241,9 @@ class CIS_Report:
             return api_keys
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID"})
+            debug("__identity_read_user_api_key: Failed to API Keys for User ID: " + user_ocid)
+            return api_keys
             raise RuntimeError(
                 "Error in identity_read_user_api_key: " + str(e.args))
 
@@ -1268,6 +1277,9 @@ class CIS_Report:
             return auth_tokens
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to auth tokens for User ID"})
+            debug("__identity_read_user_auth_token: Failed to auth tokens for User ID: " + user_ocid)
+            return auth_tokens
             raise RuntimeError(
                 "Error in identity_read_user_auth_token: " + str(e.args))
 
@@ -1299,6 +1311,9 @@ class CIS_Report:
             return customer_secret_key
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to customer secrets for User ID"})
+            debug("__identity_read_user_customer_secret_key: Failed to customer secrets for User ID: " + user_ocid)
+            return customer_secret_key
             raise RuntimeError(
                 "Error in identity_read_user_customer_secret_key: " + str(e.args))
 
@@ -4841,7 +4856,7 @@ class CIS_Report:
     # Print to CSV
     ##########################################################################
     def __print_to_csv_file(self, report_directory, header, file_subject, data):
-
+        debug("__print_to_csv_file: " + header + "_" + file_subject)
         try:
             # Creating report directory
             if not os.path.isdir(report_directory):
@@ -4925,6 +4940,15 @@ class CIS_Report:
 
         if self.__output_raw_data:
             self.__report_generate_raw_data_output()
+
+        if self.__errors:
+            error_report = self.__print_to_csv_file(
+                self.__report_directory, "error", "report", self.__errors)
+
+        if self.__output_bucket:
+            if error_report:
+                self.__os_copy_report_to_object_storage(
+                    self.__output_bucket, error_report)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))

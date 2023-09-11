@@ -1,5 +1,27 @@
+#   September 4, 2023 Release Notes - 2.6.3
+1. [Fixes to the CIS Compliance Script](#2-6-3-script-fixes)
+1. [Updates to the CIS Compliance Script](#2-6-3-script-updates)
+1. [Updates to Terraform Template](#2-6-3-terraform-updates)
+
+## <a name="2-6-3-script-fixes">Fixes to the CIS Compliance Script</a>
+Fixes:
+- Index of out range exception in obp checks for subnets and buckets in some exceptional cases.
+- No budget returned if script executed from non-home region in Cloud Shell. Budgets are now returned in all cases.
+
+## <a name="2-6-3-script-updates">Updates to the CIS Compliance Script</a>
+Updates:
+- Event types added to remediation in HTML report for check 3.13.
+- All OCI groups are now returned in raw output, including groups with no users.
+- Databases in "UNAVAILABLE" state are no longer returned in check 2.8.
+
+## <a name="2-6-3-terraform-updates">Updates to Terraform Template</a>
+Updates:
+- Existing groups can now have spaces in their names. Useful when referring to synchronized groups from external identity providers, where spaces are allowed in group names.
+- Variables for existing groups (*existing_xxxxx_admin_group_name*) can be assigned multiple groups. Feature only available through Terraform CLI. Not available in OCI Resource Manager.
+- *network_admin_email_endpoints* and *security_admin_email_endpoints* variables now enforce non-emptiness in Terrafom CLI.
+
 #   August 8, 2023 Release Notes - 2.6.2
-1. [Fixes to the CIS Compliance Script](#2-6-2-script-updates)
+1. [Fixes to the CIS Compliance Script](#2-6-2-script-fixes)
 1. [Updates to the CIS Compliance Script](#2-6-2-script-updates)
 1. [Updates to the Readme](#2-6-2-readme-updates)
 
@@ -39,7 +61,6 @@ Updates:
 ## <a name="2-6-1-script-fixes">Fixes to the CIS Compliance Script</a>
 Fixes:
 - CIS check 2.8 now skips autonomous database in the UNAVAILABLE state
-
 
 #   July 14, 2023 Release Notes - 2.6.0
 1. [Updates to Terraform Template](#2-6-0-tf-updates)

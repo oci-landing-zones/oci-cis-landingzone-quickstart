@@ -36,17 +36,17 @@ cis_level            = "1"
 # ------------------------------------------------------
 # ----- IAM - Groups
 #-------------------------------------------------------
-# existing_iam_admin_group_name           = "<existing_iam_admin_group_name>"
-# existing_cred_admin_group_name          = "<existing_cred_admin_group_name>"
-# existing_security_admin_group_name      = "<existing_security_admin_group_name>"
-# existing_network_admin_group_name       = "<existing_network_admin_group_name>"
-# existing_appdev_admin_group_name        = "<existing_appdev_admin_group_name>"
-# existing_database_admin_group_name      = "<existing_database_admin_group_name>"
-# existing_auditor_group_name             = "<existing_auditor_group_name>"
-# existing_announcement_reader_group_name = "<existing_announcement_reader_group_name>"
-# existing_exainfra_admin_group_name      = "<existing_exainfra_admin_group_name>"
-# existing_cost_admin_group_name          = "<existing_cost_admin_group_name>"
-# existing_storage_admin_group_name       = "<existing_storage_admin_group_name>"
+# existing_iam_admin_group_name           = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_cred_admin_group_name          = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_security_admin_group_name      = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_network_admin_group_name       = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_appdev_admin_group_name        = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_database_admin_group_name      = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_auditor_group_name             = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_announcement_reader_group_name = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_exainfra_admin_group_name      = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_cost_admin_group_name          = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
+# existing_storage_admin_group_name       = ["<group 1>","<group 2>","...","<group n>"] # list of groups to be used.  Spaces in names are allowed.
 
 # ------------------------------------------------------
 # ----- IAM - Dynamic Groups

@@ -3366,14 +3366,14 @@ class CIS_Report:
                     self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
                     self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
         
-        if self.cis_foundations_benchmark_1_2['1.5']['Findings']:
+        if self.cis_foundations_benchmark_1_2['1.5']['Findings'] and self.__identity_doamins_enabled:
             self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
-        else:
+        if not(self.cis_foundations_benchmark_1_2['1.5']['Findings']) and self.__identity_doamins_enabled:
             self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
 
-        if self.cis_foundations_benchmark_1_2['1.6']['Findings']:
+        if self.cis_foundations_benchmark_1_2['1.6']['Findings'] and self.__identity_doamins_enabled:
             self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
-        else:
+        if not(self.cis_foundations_benchmark_1_2['1.6']['Findings']) and self.__identity_doamins_enabled:
             self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA

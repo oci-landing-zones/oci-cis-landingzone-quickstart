@@ -1082,7 +1082,7 @@ class CIS_Report:
         # Finding all Identity Domains in the tenancy
         for compartment in self.__compartments:
             try:
-                debug("__identity_read_domains Getting Identity Domains for Compartment :" + str(compartment.name))
+                debug("__identity_read_domains: Getting Identity Domains for Compartment :" + str(compartment.name))
 
                 raw_identity_domains += oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_domains,
@@ -1090,7 +1090,7 @@ class CIS_Report:
                 lifecycle_state = "ACTIVE"
             ).data
             except Exception as e:
-                debug("__identity_read_domains Exception collecting Identity Domains \n" + str(e))
+                debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
                 break
 
@@ -1100,10 +1100,10 @@ class CIS_Report:
             return self.__identity_doamins_enabled
         
         for domain in raw_identity_domains:
-            debug("__identity_read_domainsGetting passowrd policy for domain: " + domain.display_name)
+            debug("__identity_read_domains: Getting passowrd policy for domain: " + domain.display_name)
             domain_dict =  oci.util.to_dict(domain)
             try: 
-                debug("__identity_read_domains Getting Identity Domain Password Policy")
+                debug("__identity_read_domains: Getting Identity Domain Password Policy")
                 idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
                 raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
                 raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)

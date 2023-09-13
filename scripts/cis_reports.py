@@ -2848,11 +2848,12 @@ class CIS_Report:
                                 elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
                                     self.__api_gateway_error_logs.append(
                                         log.configuration.source.resource)
-                            except Exception:
-                                pass
+                            except Exception as e:
+                                self.__errors.append({"id" : log.id, "error" : str(e)})
                             # Append Log to log List
                             record['logs'].append(log_record)
                     except Exception as e:
+                        self.__errors.append({"id" : log_group.identifier, "error" : str(e) })
                         record['notes'] = str(e)
                         
 
@@ -3024,6 +3025,7 @@ class CIS_Report:
                     # Getting a compartments target
                     cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
                         compartment_id=compartment.id).data.items
+                    debug("__cloud_guard_read_cloud_guard_targets: " + str(cg_targets) )
                     # Looping throufh targets to get target data
                     for target in cg_targets:
                         try:

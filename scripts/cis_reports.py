@@ -2991,6 +2991,7 @@ class CIS_Report:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__audit_retention_period = -1
                 print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to audit retention requires the user to be part of the Administrator group ***"})
             else:
                 raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
 

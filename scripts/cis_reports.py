@@ -3068,6 +3068,7 @@ class CIS_Report:
 
                         except Exception:
                             print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
+                            self.__errors.append({"id" :  target.id, "error" : "Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id })
 
             print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")
             return self.__cloud_guard_targets

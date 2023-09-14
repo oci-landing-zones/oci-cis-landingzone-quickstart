@@ -1222,7 +1222,7 @@ class CIS_Report:
                         record['groups'].append(group['name'])
 
                 if self.__identity_domains_enabled:
-                    debug("****This is an identity domain***" * 4 )
+                    debug("__identity_read_users: ****This is an identity domain***")
                 record['api_keys'] = self.__identity_read_user_api_key(user.id)
                 record['auth_tokens'] = self.__identity_read_user_auth_token(
                     user.id)
@@ -3022,62 +3022,64 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_targets(self):
-        cloud_guard_targets = 0
-        try:
-            for compartment in self.__compartments:
-                if self.__if_not_managed_paas_compartment(compartment.name):
-                    # Getting a compartments target
-                    cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
-                        compartment_id=compartment.id).data.items
-                    debug("__cloud_guard_read_cloud_guard_targets: " + str(cg_targets) )
-                    # Looping throufh targets to get target data
-                    for target in cg_targets:
-                        try:
-                            # Getting Target data like recipes
+        if self.__cloud_guard_config_status == "ENABLED":
+            cloud_guard_targets = 0
+            try:
+                for compartment in self.__compartments:
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        # Getting a compartments target
+                        cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
+                            compartment_id=compartment.id).data.items
+                        debug("__cloud_guard_read_cloud_guard_targets: " + str(cg_targets) )
+                        # Looping throufh targets to get target data
+                        for target in cg_targets:
                             try:
-                                target_data = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].get_target(
-                                    target_id=target.id
-                                ).data
+                                # Getting Target data like recipes
+                                try:
+                                    target_data = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].get_target(
+                                        target_id=target.id
+                                    ).data
+
+                                except Exception:
+                                    target_data = None
+                                deep_link = self.__oci_cgtarget_uri + target.id
+                                record = {
+                                    "compartment_id": target.compartment_id,
+                                    "defined_tags": target.defined_tags,
+                                    "display_name": target.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, target.display_name),
+                                    "freeform_tags": target.freeform_tags,
+                                    "id": target.id,
+                                    "lifecycle_state": target.lifecycle_state,
+                                    "lifecyle_details": target.lifecyle_details,
+                                    "system_tags": target.system_tags,
+                                    "recipe_count": target.recipe_count,
+                                    "target_resource_id": target.target_resource_id,
+                                    "target_resource_type": target.target_resource_type,
+                                    "time_created": target.time_created.strftime(self.__iso_time_format),
+                                    "time_updated": str(target.time_updated),
+                                    "inherited_by_compartments": target_data.inherited_by_compartments if target_data else "",
+                                    "description": target_data.description if target_data else "",
+                                    "target_details": target_data.target_details if target_data else "",
+                                    "target_detector_recipes": target_data.target_detector_recipes if target_data else "",
+                                    "target_responder_recipes": target_data.target_responder_recipes if target_data else ""
+                                }
+                                # Indexing by compartment_id
+
+                                self.__cloud_guard_targets[compartment.id] = record
+
+                                cloud_guard_targets += 1
 
                             except Exception:
-                                target_data = None
-                            deep_link = self.__oci_cgtarget_uri + target.id
-                            record = {
-                                "compartment_id": target.compartment_id,
-                                "defined_tags": target.defined_tags,
-                                "display_name": target.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, target.display_name),
-                                "freeform_tags": target.freeform_tags,
-                                "id": target.id,
-                                "lifecycle_state": target.lifecycle_state,
-                                "lifecyle_details": target.lifecyle_details,
-                                "system_tags": target.system_tags,
-                                "recipe_count": target.recipe_count,
-                                "target_resource_id": target.target_resource_id,
-                                "target_resource_type": target.target_resource_type,
-                                "time_created": target.time_created.strftime(self.__iso_time_format),
-                                "time_updated": str(target.time_updated),
-                                "inherited_by_compartments": target_data.inherited_by_compartments if target_data else "",
-                                "description": target_data.description if target_data else "",
-                                "target_details": target_data.target_details if target_data else "",
-                                "target_detector_recipes": target_data.target_detector_recipes if target_data else "",
-                                "target_responder_recipes": target_data.target_responder_recipes if target_data else ""
-                            }
-                            # Indexing by compartment_id
+                                print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
+                                self.__errors.append({"id" :  target.id, "error" : "Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id })
 
-                            self.__cloud_guard_targets[compartment.id] = record
+                print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")
+                return self.__cloud_guard_targets
 
-                            cloud_guard_targets += 1
-
-                        except Exception:
-                            print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
-                            self.__errors.append({"id" :  target.id, "error" : "Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id })
-
-            print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")
-            return self.__cloud_guard_targets
-
-        except Exception:
-            print("*** Cloud Guard service requires a PayGo account ***")
+            except Exception as e:
+                print("*** Cloud Guard service requires a PayGo account ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "Cloud Guard service requires a PayGo account. Error is: " + str(e)})
 
     ##########################################################################
     # Identity Password Policy
@@ -4644,7 +4646,11 @@ class CIS_Report:
         thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
         thread_identity_groups.start()
 
+        thread_cloud_guard_config = Thread(target=self.__cloud_guard_read_cloud_guard_configuration)
+        thread_cloud_guard_config.start()
+
         thread_compartments.join()
+        thread_cloud_guard_config.join()
         thread_identity_groups.join()
 
         print("\nProcessing Home Region resources...")
@@ -4658,7 +4664,6 @@ class CIS_Report:
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
-            self.__cloud_guard_read_cloud_guard_configuration
         ]
 
         # Budgets is global construct

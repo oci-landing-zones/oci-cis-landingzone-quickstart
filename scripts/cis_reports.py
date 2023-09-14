@@ -1085,19 +1085,22 @@ class CIS_Report:
                 debug("__identity_read_domains: Getting Identity Domains for Compartment :" + str(compartment.name))
 
                 raw_identity_domains += oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_domains,
-                compartment_id = compartment.id,
-                lifecycle_state = "ACTIVE"
-            ).data
+                        self.__regions[self.__home_region]['identity_client'].list_domains,
+                        compartment_id = compartment.id,
+                        lifecycle_state = "ACTIVE"
+                    ).data
+                # If this succeeds it is likely there are identity Domains
+                self.__identity_domains_enabled = True
+
             except Exception as e:
                 debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
                 break
 
         # Check if tenancy has Identity Domains otherwise breaking out
-        if not(self.__identity_domains):
-            self.__identity_doamins_enabled = False
-            return self.__identity_doamins_enabled
+        if not(raw_identity_domains):
+            self.__identity_domains_enabled = False
+            return self.__identity_domains_enabled
         
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting passowrd policy for domain: " + domain.display_name)
@@ -1122,9 +1125,9 @@ class CIS_Report:
             self.__identity_domains.append(domain_dict)
 
         else:
-            self.__identity_doamins_enabled = True
+            self.__identity_domains_enabled = True
             ("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
-            return self.__identity_doamins_enabled 
+            return self.__identity_domains_enabled 
     
     ##########################################################################
     # Load Groups and Group membership
@@ -1218,7 +1221,7 @@ class CIS_Report:
                     if user.id == group['user_id']:
                         record['groups'].append(group['name'])
 
-                if self.__identity_doamins_enabled:
+                if self.__identity_domains_enabled:
                     debug("****This is an identity domain***" * 4 )
                 record['api_keys'] = self.__identity_read_user_api_key(user.id)
                 record['auth_tokens'] = self.__identity_read_user_auth_token(
@@ -3350,7 +3353,8 @@ class CIS_Report:
             self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
 
         # 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
-        if self.__identity_doamins_enabled:
+        debug("__report_cis_analyze_tenancy_data: Identity Domains Enabled is: " + str(self.__identity_domains_enabled))
+        if self.__identity_domains_enabled:
             for domain in self.__identity_domains:
                 if domain['password_policy']:
                     debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
@@ -3369,16 +3373,17 @@ class CIS_Report:
                     debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")
                     self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
                     self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
-        
-        if self.cis_foundations_benchmark_1_2['1.5']['Findings'] and self.__identity_doamins_enabled:
-            self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
-        if not(self.cis_foundations_benchmark_1_2['1.5']['Findings']) and self.__identity_doamins_enabled:
-            self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
 
-        if self.cis_foundations_benchmark_1_2['1.6']['Findings'] and self.__identity_doamins_enabled:
-            self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
-        if not(self.cis_foundations_benchmark_1_2['1.6']['Findings']) and self.__identity_doamins_enabled:
-            self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
+
+            if self.cis_foundations_benchmark_1_2['1.5']['Findings']:
+                self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
+            else:
+                self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
+
+            if self.cis_foundations_benchmark_1_2['1.6']['Findings']:
+                self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
+            else:
+                self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
@@ -4639,12 +4644,8 @@ class CIS_Report:
         thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
         thread_identity_groups.start()
 
-        thread_identity_domains = Thread(target=self.__identity_read_domains)
-        thread_identity_domains.start()
-
         thread_compartments.join()
         thread_identity_groups.join()
-        thread_identity_domains.join()
 
         print("\nProcessing Home Region resources...")
 
@@ -4652,6 +4653,7 @@ class CIS_Report:
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
+            self.__identity_read_domains,
             self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,

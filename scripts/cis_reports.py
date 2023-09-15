@@ -3096,6 +3096,7 @@ class CIS_Report:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__tenancy_password_policy = None
                 print("\t*** Access to password policies in this tenancy requires elevated permissions. ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to password policies in this tenancy requires elevated permissions. ***"})
             else:
                 raise RuntimeError("Error in __identity_read_tenancy_password_policy " + str(e.args))
 

@@ -14,7 +14,7 @@ CIS compliance checking scripts adds collection of Identity Domains password pol
     - Improved OCI logging error handling
 
 ## <a name="2-6-4-workload-updates">Workload Expansion Terraform for Quick Start</a>
-
+The terraform code in this folder expands an existing CIS Landing Zone deployment.  It does this by adding one or more workload compartment(s) in the AppDev compartment and, optionally, the associated OCI IAM groups, dynamic groups, and OCI IAM policies to manage OCI resources in the workload compartment. For more information please see the [readme.md](./workloads/generic_workload_compartments/readme.md)
 
 #   September 4, 2023 Release Notes - 2.6.3
 1. [Fixes to the CIS Compliance Script](#2-6-3-script-fixes)

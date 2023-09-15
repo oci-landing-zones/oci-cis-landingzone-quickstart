@@ -4355,7 +4355,7 @@ class CIS_Report:
                 else:
                     compliant_output = "No"
                 record = {
-                    "Recommendation #": f"'{key}'",
+                    "Recommendation #": f"{key}", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
@@ -4464,12 +4464,15 @@ class CIS_Report:
                 # Creating table header
                 html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')
                 html_file.write('<title>' + html_title + '</title>')
-                html_file.write("""<link data-wscss href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\">
-                <link data-wscss href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\" onerror=\"this.rel='stylesheet'\">
-                <noscript><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"stylesheet\"></noscript>
-                <link data-wsjs data-reqjq href=\"https://www.oracle.com/asset/web/js/ocom-v1-base.js\" rel=\"preload\" as=\"script\">
-                <link data-wsjs data-reqjq href=\"https://www.oracle.com/asset/web/js/ocom-v1-lib.js\" rel=\"preload\" as=\"script\">
-                <script data-wsjs src=\"https://www.oracle.com/asset/web/js/jquery-min.js\" async onload=\"$('head link[data-reqjq][rel=preload]').each(function(){var a = document.createElement('script');a.async=false;a.src=$(this).attr('href');this.parentNode.insertBefore(a, this);});$(function(){$('script[data-reqjq][data-src]').each(function(){this.async=true;this.src=$(this).data('src');});});\"></script>
+                html_file.write("""
+                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\">
+                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\" onerror=\"this.rel='stylesheet'\">
+                <link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
+                <link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
+                <noscript><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\"></noscript>
+                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-base.js\" rel=\"preload\" as=\"script\">
+                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-lib.js\" rel=\"preload\" as=\"script\">
+                <script src=\"https://www.oracle.com/asset/web/js/jquery-min.js\" async onload=\"$('head link[data-reqjq][rel=preload]').each(function(){var a = document.createElement('script');a.async=false;a.src=$(this).attr('href');this.parentNode.insertBefore(a, this);});$(function(){$('script[data-reqjq][data-src]').each(function(){this.async=true;this.src=$(this).data('src');});});\"></script>
                 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
                 <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-32.png\" sizes=\"32x32\">
                 <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-128.png\" sizes=\"128x128\">
@@ -4479,23 +4482,38 @@ class CIS_Report:
                 <link rel=\"apple-touch-icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-180.png\" sizes=\"180x180\">
                 <meta name=\"msapplication-TileColor\" content=\"#fcfbfa\"/><meta name=\"msapplication-square70x70logo\" content=\"favicon-128.png\"/>
                 <meta name=\"msapplication-square150x150logo\" content=\"favicon-270.png\"/><meta name=\"msapplication-TileImage\" content=\"favicon-270.png\"/>
-                <meta name=\"msapplication-config\" content=\"none\"/><meta name=\"referrer\" content=\"no-referrer-when-downgrade\"/>
-                </head><body class=\"f11 f11v6\"><div class=\"f11w1\">
+                <meta name=\"msapplication-config\" content=\"none\"/><meta name=\"referrer\" content=\"no-referrer-when-downgrade\"/></head>
+                <body class=\"f11 f11v6\"><div class=\"f11w1\">
                 <style>#u30{opacity:1 !important;filter:opacity(100%) !important;position:sticky;top:0} .u30v3{background:#3a3632;height:50px;overflow:hidden;border-top:5px solid #3a3632;border-bottom:5px solid #3a3632}
                  #u30nav,#u30tools{visibility:hidden} .u30v3 #u30logo {width:121px;height: 44px;display: inline-flex;justify-content: flex-start;} #u30:not (.u30mobile)
                  .u30-oicn-mobile,#u30.u30mobile .u30-oicn{display:none} #u30logo svg{height:auto;align-self:center}
                  .u30brand{height:50px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:1344px;padding:0 48px;margin:0 auto}
                  .u30brandw1{display:flex;flex-direction:row;color:#fff;text-decoration:none;align-items:center} @media (max-width:1024px){.u30brand{padding:0 24px}}
-                 #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl}</style>
-                <style>	#td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
-                <section id=\"u30\" class=\"u30 u30v3 pause\" data-trackas=\"header\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" data-lbl=\"logo\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section><section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
-                html_file.write('<h5 id="table_top">' + html_title.replace('-', '&ndash;') + '</h5>')
+                 #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl} #td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
+                <section id=\"u30\" class=\"u30 u30v3 pause\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section><section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
+                html_file.write('<h2 id="table_top">' + html_title.replace('-', '&ndash;') + '</h2>')
                 html_file.write('<h4>Tenancy Name: ' + self.__tenancy.name + '</h4>')
                 # Get the extract date
                 r = result[0]
-                extract_date = r['extract_date'].replace('T', ' ')
-                html_file.write('<h3>Extract Date: ' + extract_date + ' UTC</h3>')
-                html_file.write('</div></section><section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth"><div class="otable otable-scrolling"><div class="otable-w1">')
+                extract_date = r['extract_date'].replace('T',' ')
+                html_file.write('<h5>Extract Date: ' + extract_date + ' UTC</h5>')
+                html_file.write("</div></section>")
+                # Navigation
+                html_file.write('<section class="rt01 rt01v0 rt01detached">')
+                html_file.write('<div class="rt01w1 cwidth">')
+                html_file.write('<ul class="rw-inpagetabs rw-tabinit" role="tablist">')
+                html_file.write('<li role="none" class="active"><a href="#compliant" aria-current="true" tabindex="0">Compliant</a></li>')
+                html_file.write('<li role="none"><a href="#noncompliant">Non-compliant</a></li>')
+                html_file.write('<li role="none"><a href="#details">Details</a></li>')
+                html_file.write('<li role="none"><a href="#resources">Resources</a></li>')
+                html_file.write('</ul></div></section>')
+                # Line
+                html_file.write('<section class="cb133 cb133v0" id="compliant">')
+                html_file.write('<div class="cb133w1 cwidth"><h4>Compliant Recommendations</h4></div>')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
+                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
                 html_file.write('<table class="otable-w2"><thead><tr>')
                 for th in fields:
                     column_width = '63%'
@@ -4518,19 +4536,24 @@ class CIS_Report:
                     compliant = row['Compliant']
                     text_color = 'green'
                     if compliant == 'No':
-                        html_appendix.append(row['Recommendation #'].replace("'", ""))
-                        text_color = 'red'
+                        continue
                     # Print the row
                     html_file.write("<tr>")
-                    v = row['Recommendation #'].replace("'", "")
+                    v = row['Recommendation #']
                     if compliant == 'No':
                         html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
                     else:
                         html_file.write('<td>' + v + '</td>\n')
-                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b></td>\n')
+                    total = row['Total']
+                    tmp = ''
+                    if total != ' ':
+                        tmp = '<br><br><b>' + str(total) + '</b> item'
+                        if int(total) > 1:
+                            tmp += 's'
+                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b>' + tmp + '</td>\n')
                     html_file.write("<td>" + str(row['Section']) + "</td>\n")
                     # Details
-                    html_file.write('<td><table><tr><td width="10%"><b>Title</b></td>')
+                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
                     html_file.write('<td colspan="3">' + str(row['Title']) + '</td></tr>')
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write('<td colspan="3">' + str(row['Remediation']) + '</td></tr>')
@@ -4538,8 +4561,8 @@ class CIS_Report:
                     html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
                     html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
-                    html_file.write('<tr><td width="">' + str(row['Level']) + '</td>')
-                    html_file.write('<td>' + str(row['CIS v8']).replace('[', '').replace(']', '').replace("'", '') + '</td>')
+                    html_file.write('<tr><td>' + str(row['Level']) + '</td>')
+                    html_file.write('<td>' + str(row['CIS v8']).replace('[','').replace(']','').replace("'",'') + '</td>')
                     html_file.write('<td>' + str(row['CCCS Guard Rail']) + '</td>')
                     v = str(row['Filename'])
                     if v == ' ':
@@ -4549,22 +4572,95 @@ class CIS_Report:
                     html_file.write('</tr></table></td>')
                     html_file.write("</tr>")
 
-                html_file.write("</tbody></table></div></div></section>\n")
-                html_file.write('<section class="cb132 cb132v0 cpad"><div class="cb132w1 cwidth">')
+                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
+                # Line
+                html_file.write('<section class="cb133 cb133v0 cpad" id="noncompliant">')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<h4>Non-compliant Recommendations</h4>')
+                html_file.write('</div>')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
+                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
+                html_file.write('<table class="otable-w2"><thead><tr>')
+                for th in fields:
+                    column_width = '63%'
+                    if th == 'extract_date':
+                        th = th.replace('_', ' ').title()
+                        continue
+                    elif th == 'Recommendation #':
+                        column_width = '15%'
+                    elif th == 'Compliant':
+                        column_width = '10%'
+                    elif th == 'Section':
+                        column_width = '12%'
+                    else:
+                        column_width = '63%'
+                    html_file.write('<th class="otable-col-head" style=" width:' + column_width + ';">' + th + '</th>')
+                html_file.write('</tr></thead><tbody>')
+                # Creating HTML Table of the summary report
+                html_appendix = []
+                for row in result:
+                    compliant = row['Compliant']
+                    if compliant == 'Yes':
+                        continue
+                    html_appendix.append(row['Recommendation #'])
+                    text_color = 'red'
+                    # Print the row
+                    html_file.write("<tr>")
+                    v = row['Recommendation #']
+                    if compliant == 'No':
+                        html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
+                    else:
+                        html_file.write('<td>' + v + '</td>\n')
+                    f = row['Findings'] 
+                    t = row['Total']
+                    tmp = ''
+                    if t != ' ':
+                        tmp = '<br><br><b>' + str(f) + '</b> of <b>' + str(t) + '</b> item'
+                        if int(t) > 1:
+                            tmp += 's'
+                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b>' + tmp + '</td>\n')
+                    html_file.write("<td>" + str(row['Section']) + "</td>\n")
+                    # Details
+                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
+                    html_file.write('<td colspan="3">' + str(row['Title']) + '</td></tr>')
+                    html_file.write('<tr><td><b>Remediation</b></td>')
+                    html_file.write('<td colspan="3">' + str(row['Remediation']) + '</td></tr>')
+                    html_file.write('<tr><td><b>Level</b></td>')
+                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
+                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
+                    html_file.write('<tr><td>' + str(row['Level']) + '</td>')
+                    html_file.write('<td>' + str(row['CIS v8']).replace('[','').replace(']','').replace("'",'') + '</td>')
+                    html_file.write('<td>' + str(row['CCCS Guard Rail']) + '</td>')
+                    v = str(row['Filename'])
+                    if v == ' ':
+                        html_file.write('<td> </td>')
+                    else:
+                        html_file.write('<td><a href="' + v + '">' + v + '</a></td>')
+                    html_file.write('</tr></table></td>')
+                    html_file.write("</tr>")
+
+                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
+                html_file.write('<section class="cb132 cb132v0 cpad" id="details">')
+                html_file.write('<div class="cb133w1 cwidth"><h4>Details for non-compliant Recommendations</h4></div>')
+                html_file.write('<div class="cb132w1 cwidth">')
                 # Creating appendix for the report
                 for finding in html_appendix:
-                    html_file.write(f'<hr id="{finding}" /><h5>{finding} &ndash; {self.cis_foundations_benchmark_1_2[finding]["Title"]}</h5>\n')
+                    fing = self.cis_foundations_benchmark_1_2[finding]
+                    html_file.write(f'<hr id="{finding}" /><h4>{finding} &ndash; {fing["Title"]}</h4>\n')
                     for item_key, item_value in self.cis_report_data[finding].items():
                         if item_value != "":
-                            html_file.write(f"<h4>{item_key.title()}</h4>")
+                            html_file.write(f"<h5>{item_key.title()}</h5>")
                             if item_key == 'Observation':
-                                html_file.write(f"<p><b>{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))}</b> {item_value}</p>\n")
+                                html_file.write(f"<p><b>{str(len(fing['Findings']))}</b> of <b>{str(len(fing['Total']))}</b> {item_value}</p>\n")
                             else:
                                 v = item_value.replace('<pre>', '<pre style="font-size: 1.4rem;">')
                                 html_file.write(f"<p>{v}</p>\n")
                 html_file.write("</div></section>\n")
                 # Closing HTML
-                html_file.write("""<div class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
+                html_file.write("""<div id="resources" class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
                 <div class="u10w2"><div class="u10w3" aria-labelledby="resourcesfor"><a class="u10btn" tabindex="-1" aria-labelledby="resourcesfor"></a>
                 <h4 class="u10ttl" id="resourcesfor">Resources</h4><ul>
                 <li><a href="https://www.cisecurity.org/benchmark/Oracle_Cloud">CIS OCI Foundation Benchmark</a></li>
@@ -4572,7 +4668,7 @@ class CIS_Report:
                 <li><a href="https://docs.oracle.com/en/solutions/oci-security-checklist/index.html">Security checklist for Oracle Cloud Infrastructure</a></li>
                 <li><a href="https://docs.oracle.com/en-us/iaas/Content/Security/Concepts/security.htm">OCI Documentation – Securely configure your Oracle Cloud Infrastructure services and resources</a></li>
                 <li><a href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">Best practices framework for Oracle Cloud Infrastructure</a></li>
-                <li><a href="https://www.oracle.com/uk/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
+                <li><a href="https://www.oracle.com/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
                 </ul></div></div><div class="u10w4"><hr></div></nav>
                 <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">
                 <ul class="u10-links"><li></li><li><a href="https://www.oracle.com/legal/copyright.html">© 2023 Oracle</a></li>

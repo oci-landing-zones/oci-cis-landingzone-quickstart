@@ -1221,8 +1221,6 @@ class CIS_Report:
                     if user.id == group['user_id']:
                         record['groups'].append(group['name'])
 
-                if self.__identity_domains_enabled:
-                    debug("__identity_read_users: ****This is an identity domain***")
                 record['api_keys'] = self.__identity_read_user_api_key(user.id)
                 record['auth_tokens'] = self.__identity_read_user_auth_token(
                     user.id)

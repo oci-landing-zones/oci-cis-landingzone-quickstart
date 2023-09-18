@@ -36,7 +36,7 @@ except Exception:
 
 RELEASE_VERSION = "2.6.4"
 PYTHON_SDK_VERSION = "'2.110.0"
-UPDATED_DATE = "September 15, 2023"
+UPDATED_DATE = "September 18, 2023"
 
 
 ##########################################################################

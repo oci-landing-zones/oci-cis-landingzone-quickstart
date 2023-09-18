@@ -1,0 +1,101 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "OCI CIS Landing Zone Generic Workload"
+stackDescription: "A stack that deploys a workload compartments in the AppDev compartment and with the associated groups and policies."
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "service_label"
+      - "existing_lz_enclosing_compartment_ocid"
+      - "existing_lz_security_compartment_ocid"
+      - "existing_lz_network_compartment_ocid"
+  
+  - title: "Workload Variables"
+    variables:
+      - "existing_lz_appdev_compartment_ocid"
+      - "workload_names"
+      - "create_workload_groups_and_policies"
+      - "create_workload_dynamic_groups_and_policies"
+
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_id"
+      - "user_id"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+
+variables:
+  service_label:
+    type: string
+    minLength: 1
+    maxLength: 8
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "The unique label that was used in your workload deployment."
+    required: true
+
+  existing_lz_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone Enclosing compartment"
+    description: "Enclosing/parent compartment used/created in your CIS Landing Zone deployment."
+    required: true
+
+  existing_lz_security_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone Security compartment"
+    description: "Security Compartment created in your CIS Landing Zone deployment."
+    required: true
+  
+  existing_lz_network_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone Network compartment"
+    description: "Network Compartment created in your CIS Landing Zone deployment."
+    required: true
+
+  existing_lz_appdev_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing CIS Landing Zone AppDev compartment"
+    description: "AppDev Compartment created in your CIS Landing Zone deployment, where the workload compartments will be created."
+    required: true
+
+  workload_names:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Names of Workloads"
+    description: "The workload names will be used to create compartments in the AppDev compartment"
+    required: true
+  
+  create_workload_groups_and_policies:
+    type: boolean
+    description: "If true, the workload names will be used to create groups for each workload compartment"
+    title: "Create Workload Groups and Policies"
+
+  create_workload_dynamic_groups_and_policies:
+    type: boolean
+    description: "If true, the workload names will be used to create dynamic groups for each workload compartment"
+    title: "Create Workload Dynamic Groups"
+
+  # Variables not required to display to user
+  tenancy_id:
+    type: string
+
+  user_id:
+    type: string
+
+  fingerprint:
+    type: string
+
+  private_key_path:
+    type: string
+
+  private_key_password:
+    type: password

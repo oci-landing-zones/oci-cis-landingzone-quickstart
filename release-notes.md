@@ -1,3 +1,22 @@
+#   September 18, 2023 Release Notes - 2.6.4
+1. [CIS Compliance Script Adds Identity Domains](#2-6-4-identity-domains)
+1. [Updates to the CIS Compliance Script](#2-6-4-script-updates)
+1. [Workload Expansion Terraform for Quick Start](#2-6-4-workload-updates)
+
+## <a name="2-6-4-identity-domains">CIS Compliance Script Adds Identity Domains</a>
+CIS compliance checking scripts adds collection of Identity Domains password policy.  This allows the compliance checking script to access CIS recommendation 1.5 Ensure IAM password policy expires passwords within 365 days and recommendation 1.6 Ensure IAM password policy prevents password reuse.
+
+## <a name="2-6-4-script-updates">Updates to the CIS Compliance Script</a>
+- Updates:
+    - Improved navigation for CIS Summary Report HTML
+    - Added `error_report.csv` for errors when collection OCI resources
+- Fixes:
+    - Improved OCI logging error handling
+    - Fixed compliance for Storage Admin policies for CIS recommendation 1.14 Ensure storage service-level admins cannot delete resources they manage
+
+## <a name="2-6-4-workload-updates">Workload Expansion Terraform for Quick Start</a>
+The terraform code in this folder expands an existing CIS Landing Zone deployment.  It does this by adding one or more workload compartment(s) in the AppDev compartment and, optionally, the associated OCI IAM groups, dynamic groups, and OCI IAM policies to manage OCI resources in the workload compartment. For more information please see the [readme.md](./workloads/generic_workload_compartments/readme.md)
+
 #   September 4, 2023 Release Notes - 2.6.3
 1. [Fixes to the CIS Compliance Script](#2-6-3-script-fixes)
 1. [Updates to the CIS Compliance Script](#2-6-3-script-updates)
@@ -25,6 +44,7 @@ Updates:
 1. [Updates to the CIS Compliance Script](#2-6-2-script-updates)
 1. [Updates to the Readme](#2-6-2-readme-updates)
 
+
 ## <a name="2-6-2-script-updates">Updates to the CIS Compliance Script</a>
 Updates:
 - Added Service Connector Hub ID and Name to OBP Best practices for VCN Flow Logs and Object Storage Buckets
@@ -39,6 +59,7 @@ Fixes:
 Updates:
 - Removed team section
 - Added the CIS Terraform Modules Section
+
 
 #   July 26, 2023 Release Notes - 2.6.1
 1. [Updates to Terraform Template](#2-6-1-tf-updates)
@@ -152,18 +173,6 @@ Fixes:
 - Fixed console output formatting for CIS Summary report.
 
 
-
-#   March 24, 2023 Release Notes - 2.5.6
-1. [Compliance Checking Script Updates](#2-5-6-script-updates)
-
-## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
-Updates:
-- Added egress rules to Security Lists and Network Security Groups.
-- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
-
-Fixes:
-- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
-- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
 #   March 24, 2023 Release Notes - 2.5.6
 1. [Compliance Checking Script Updates](#2-5-6-script-updates)

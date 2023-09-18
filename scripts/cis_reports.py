@@ -25,6 +25,7 @@ import itertools
 from threading import Thread
 import hashlib
 import re
+import requests
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -33,10 +34,18 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.2"
-PYTHON_SDK_VERSION = "2.106.0"
-UPDATED_DATE = "August 8, 2023"
+RELEASE_VERSION = "2.6.4"
+PYTHON_SDK_VERSION = "'2.110.0"
+UPDATED_DATE = "September 18, 2023"
 
+
+##########################################################################
+# debug print
+##########################################################################
+# DEBUG = False
+def debug(msg):
+    if DEBUG:
+        print(msg)
 
 ##########################################################################
 # Print header centered
@@ -125,7 +134,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -444,7 +453,7 @@ class CIS_Report:
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Network Gateways act as routers between VCNs and the Internet, Oracle Services Networks, other VCNS, and on-premise networks.\n Monitoring and alerting on changes to Network Gateways will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
-                "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment,Compartment, Service Gateway – Create, Service Gateway – Delete Begin, Service Gateway – Delete End, Service Gateway – Update, Service Gateway – Attach Service, Service Gateway – Detach Service, Service Gateway – Change Compartment.",
+                "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete End, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment,Compartment, Service Gateway – Create, Service Gateway – Delete Begin, Service Gateway – Delete End, Service Gateway – Update, Service Gateway – Attach Service, Service Gateway – Detach Service, Service Gateway – Change Compartment.",
                 "Recommendation": "",
                 "Observation": ""
             },
@@ -663,7 +672,26 @@ class CIS_Report:
                 "volume-family": ["request.permission!=VOLUME_BACKUP_DELETE", "request.permission!=VOLUME_DELETE", "request.permission!=BOOT_VOLUME_BACKUP_DELETE"],
                 "volumes": ["request.permission!=VOLUME_DELETE"],
                 "volume-backups": ["request.permission!=VOLUME_BACKUP_DELETE"],
-                "boot-volume-backups": ["request.permission!=BOOT_VOLUME_BACKUP_DELETE"]}}
+                "boot-volume-backups": ["request.permission!=BOOT_VOLUME_BACKUP_DELETE"]},
+            "1.14-storage-admin": {
+                "all-resources": [
+                    "request.permission=BUCKET_DELETE", "request.permission=OBJECT_DELETE", "request.permission=EXPORT_SET_DELETE",
+                    "request.permission=MOUNT_TARGET_DELETE", "request.permission=FILE_SYSTEM_DELETE", "request.permission=VOLUME_BACKUP_DELETE",
+                    "request.permission=VOLUME_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"
+                ],
+                "file-family": [
+                    "request.permission=EXPORT_SET_DELETE", "request.permission=MOUNT_TARGET_DELETE",
+                    "request.permission=FILE_SYSTEM_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"
+                ],
+                "file-systems": ["request.permission=FILE_SYSTEM_DELETE", "request.permission=FILE_SYSTEM_DELETE_SNAPSHOT"],
+                "mount-targets": ["request.permission=MOUNT_TARGET_DELETE"],
+                "object-family": ["request.permission=BUCKET_DELETE", "request.permission=OBJECT_DELETE"],
+                "buckets": ["request.permission=BUCKET_DELETE"],
+                "objects": ["request.permission=OBJECT_DELETE"],
+                "volume-family": ["request.permission=VOLUME_BACKUP_DELETE", "request.permission=VOLUME_DELETE", "request.permission=BOOT_VOLUME_BACKUP_DELETE"],
+                "volumes": ["request.permission=VOLUME_DELETE"],
+                "volume-backups": ["request.permission=VOLUME_BACKUP_DELETE"],
+                "boot-volume-backups": ["request.permission=BOOT_VOLUME_BACKUP_DELETE"]}}
 
         # Tenancy Data
         self.__tenancy = None
@@ -680,6 +708,7 @@ class CIS_Report:
         self.__groups_to_users = []
         self.__tag_defaults = []
         self.__dynamic_groups = []
+        self.__identity_domains = []
 
         # For Networking checks
         self.__network_security_groups = []
@@ -742,6 +771,9 @@ class CIS_Report:
         # For Service Connector
         self.__service_connectors = {}
 
+        # Error Data
+        self.__errors = []
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -755,6 +787,10 @@ class CIS_Report:
             self.__print_to_screen = True
         else:
             self.__print_to_screen = False
+
+        ## By Default debugging is disabled by default
+        global DEBUG 
+        DEBUG = debug
 
         # creating list of regions to run
         try:
@@ -1038,6 +1074,62 @@ class CIS_Report:
                 "Error in identity_read_compartments: " + str(e.args))
 
     ##########################################################################
+    # Load Identity Domains
+    ##########################################################################
+    def __identity_read_domains(self):
+        print("Processing Identity Domains...")
+        raw_identity_domains = []
+        # Finding all Identity Domains in the tenancy
+        for compartment in self.__compartments:
+            try:
+                debug("__identity_read_domains: Getting Identity Domains for Compartment :" + str(compartment.name))
+
+                raw_identity_domains += oci.pagination.list_call_get_all_results(
+                        self.__regions[self.__home_region]['identity_client'].list_domains,
+                        compartment_id = compartment.id,
+                        lifecycle_state = "ACTIVE"
+                    ).data
+                # If this succeeds it is likely there are identity Domains
+                self.__identity_domains_enabled = True
+
+            except Exception as e:
+                debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
+                # If this fails the tenancy likely doesn't have identity domains or the permissions are off
+                break
+
+        # Check if tenancy has Identity Domains otherwise breaking out
+        if not(raw_identity_domains):
+            self.__identity_domains_enabled = False
+            return self.__identity_domains_enabled
+        
+        for domain in raw_identity_domains:
+            debug("__identity_read_domains: Getting passowrd policy for domain: " + domain.display_name)
+            domain_dict =  oci.util.to_dict(domain)
+            try: 
+                debug("__identity_read_domains: Getting Identity Domain Password Policy")
+                idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
+                raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
+                raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
+
+                pwd_policy_dict =  oci.util.to_dict(oci.identity_domains.IdentityDomainsClient(\
+                     config=self.__config, service_endpoint=domain.url).get_password_policy(\
+                        password_policy_id=raw_pwd_policy_dict['ocid']).data)
+                
+                domain_dict['password_policy'] = pwd_policy_dict
+                domain_dict['errors'] = None 
+            except Exception as e:
+                debug("Identity Domains Error is " + str(e))
+                domain_dict['password_policy'] = None
+                domain_dict['errors'] = str(e)
+            
+            self.__identity_domains.append(domain_dict)
+
+        else:
+            self.__identity_domains_enabled = True
+            ("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
+            return self.__identity_domains_enabled 
+    
+    ##########################################################################
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
@@ -1140,6 +1232,7 @@ class CIS_Report:
             return self.__users
 
         except Exception as e:
+            debug("__identity_read_users: User ID is: " + str(user))
             raise RuntimeError(
                 "Error in __identity_read_users: " + str(e.args))
 
@@ -1169,6 +1262,9 @@ class CIS_Report:
             return api_keys
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID"})
+            debug("__identity_read_user_api_key: Failed to API Keys for User ID: " + user_ocid)
+            return api_keys
             raise RuntimeError(
                 "Error in identity_read_user_api_key: " + str(e.args))
 
@@ -1202,6 +1298,9 @@ class CIS_Report:
             return auth_tokens
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to auth tokens for User ID"})
+            debug("__identity_read_user_auth_token: Failed to auth tokens for User ID: " + user_ocid)
+            return auth_tokens
             raise RuntimeError(
                 "Error in identity_read_user_auth_token: " + str(e.args))
 
@@ -1233,6 +1332,9 @@ class CIS_Report:
             return customer_secret_key
 
         except Exception as e:
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to customer secrets for User ID"})
+            debug("__identity_read_user_customer_secret_key: Failed to customer secrets for User ID: " + user_ocid)
+            return customer_secret_key
             raise RuntimeError(
                 "Error in identity_read_user_customer_secret_key: " + str(e.args))
 
@@ -2688,67 +2790,74 @@ class CIS_Report:
                         "defined_tags": log_group.defined_tags,
                         "freeform_tags": log_group.freeform_tags,
                         "region": region_key,
-                        "logs": []
+                        "logs": [],
+                        "notes" : ""
                     }
 
-                    logs = oci.pagination.list_call_get_all_results(
-                        region_values['logging_client'].list_logs,
-                        log_group_id=log_group.identifier
-                    ).data
-                    for log in logs:
-                        deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
-                        log_record = {
-                            "compartment_id": log.compartment_id,
-                            "display_name": log.display_name,
-                            "deep_link": self.__generate_csv_hyperlink(deep_link, log.display_name),
-                            "id": log.id,
-                            "is_enabled": log.is_enabled,
-                            "lifecycle_state": log.lifecycle_state,
-                            "log_group_id": log.log_group_id,
-                            "log_type": log.log_type,
-                            "retention_duration": log.retention_duration,
-                            "time_created": log.time_created.strftime(self.__iso_time_format),
-                            "time_last_modified": str(log.time_last_modified),
-                            "defined_tags": log.defined_tags,
-                            "freeform_tags": log.freeform_tags
-                        }
-                        try:
-                            if log.configuration:
-                                log_record["configuration_compartment_id"] = log.configuration.compartment_id,
-                                log_record["source_category"] = log.configuration.source.category,
-                                log_record["source_parameters"] = log.configuration.source.parameters,
-                                log_record["source_resource"] = log.configuration.source.resource,
-                                log_record["source_service"] = log.configuration.source.service,
-                                log_record["source_source_type"] = log.configuration.source.source_type
-                                log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
+                    try: 
+                        logs = oci.pagination.list_call_get_all_results(
+                            region_values['logging_client'].list_logs,
+                            log_group_id=log_group.identifier
+                        ).data
+                        for log in logs:
+                            deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
+                            log_record = {
+                                "compartment_id": log.compartment_id,
+                                "display_name": log.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(deep_link, log.display_name),
+                                "id": log.id,
+                                "is_enabled": log.is_enabled,
+                                "lifecycle_state": log.lifecycle_state,
+                                "log_group_id": log.log_group_id,
+                                "log_type": log.log_type,
+                                "retention_duration": log.retention_duration,
+                                "time_created": log.time_created.strftime(self.__iso_time_format),
+                                "time_last_modified": str(log.time_last_modified),
+                                "defined_tags": log.defined_tags,
+                                "freeform_tags": log.freeform_tags
+                            }
+                            try:
+                                if log.configuration:
+                                    log_record["configuration_compartment_id"] = log.configuration.compartment_id,
+                                    log_record["source_category"] = log.configuration.source.category,
+                                    log_record["source_parameters"] = log.configuration.source.parameters,
+                                    log_record["source_resource"] = log.configuration.source.resource,
+                                    log_record["source_service"] = log.configuration.source.service,
+                                    log_record["source_source_type"] = log.configuration.source.source_type
+                                    log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
 
-                            if log.configuration.source.service == 'flowlogs':
-                                self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
+                                if log.configuration.source.service == 'flowlogs':
+                                    self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
 
-                            elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                # Only write logs
-                                self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
+                                    # Only write logs
+                                    self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                            elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                # Only read logs
-                                self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
+                                    # Only read logs
+                                    self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                            elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                self.__load_balancer_error_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                self.__load_balancer_access_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                self.__api_gateway_access_logs.append(
-                                    log.configuration.source.resource)
-                            elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                self.__api_gateway_error_logs.append(
-                                    log.configuration.source.resource)
-                        except Exception:
-                            pass
-                        # Append Log to log List
-                        record['logs'].append(log_record)
+                                elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
+                                    self.__load_balancer_error_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
+                                    self.__load_balancer_access_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
+                                    self.__api_gateway_access_logs.append(
+                                        log.configuration.source.resource)
+                                elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
+                                    self.__api_gateway_error_logs.append(
+                                        log.configuration.source.resource)
+                            except Exception as e:
+                                self.__errors.append({"id" : log.id, "error" : str(e)})
+                            # Append Log to log List
+                            record['logs'].append(log_record)
+                    except Exception as e:
+                        self.__errors.append({"id" : log_group.identifier, "error" : str(e) })
+                        record['notes'] = str(e)
+                        
+
                     self.__logging_list.append(record)
 
             print("\tProcessed " + str(len(self.__logging_list)) + " Log Group Logs")
@@ -2883,6 +2992,7 @@ class CIS_Report:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__audit_retention_period = -1
                 print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to audit retention requires the user to be part of the Administrator group ***"})
             else:
                 raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
 
@@ -2896,8 +3006,9 @@ class CIS_Report:
         try:
             self.__cloud_guard_config = self.__regions[self.__home_region]['cloud_guard_client'].get_configuration(
                 self.__tenancy.id).data
+            debug("__cloud_guard_read_cloud_guard_configuration Cloud Guard Configuration is: " + str(self.__cloud_guard_config))
             self.__cloud_guard_config_status = self.__cloud_guard_config.status
-
+            
             print("\tProcessed Cloud Guard Configuration.")
             return self.__cloud_guard_config_status
 
@@ -2909,60 +3020,64 @@ class CIS_Report:
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_targets(self):
-        cloud_guard_targets = 0
-        try:
-            for compartment in self.__compartments:
-                if self.__if_not_managed_paas_compartment(compartment.name):
-                    # Getting a compartments target
-                    cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
-                        compartment_id=compartment.id).data.items
-                    # Looping throufh targets to get target data
-                    for target in cg_targets:
-                        try:
-                            # Getting Target data like recipes
+        if self.__cloud_guard_config_status == "ENABLED":
+            cloud_guard_targets = 0
+            try:
+                for compartment in self.__compartments:
+                    if self.__if_not_managed_paas_compartment(compartment.name):
+                        # Getting a compartments target
+                        cg_targets = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].list_targets(
+                            compartment_id=compartment.id).data.items
+                        debug("__cloud_guard_read_cloud_guard_targets: " + str(cg_targets) )
+                        # Looping throufh targets to get target data
+                        for target in cg_targets:
                             try:
-                                target_data = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].get_target(
-                                    target_id=target.id
-                                ).data
+                                # Getting Target data like recipes
+                                try:
+                                    target_data = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client'].get_target(
+                                        target_id=target.id
+                                    ).data
+
+                                except Exception:
+                                    target_data = None
+                                deep_link = self.__oci_cgtarget_uri + target.id
+                                record = {
+                                    "compartment_id": target.compartment_id,
+                                    "defined_tags": target.defined_tags,
+                                    "display_name": target.display_name,
+                                    "deep_link": self.__generate_csv_hyperlink(deep_link, target.display_name),
+                                    "freeform_tags": target.freeform_tags,
+                                    "id": target.id,
+                                    "lifecycle_state": target.lifecycle_state,
+                                    "lifecyle_details": target.lifecyle_details,
+                                    "system_tags": target.system_tags,
+                                    "recipe_count": target.recipe_count,
+                                    "target_resource_id": target.target_resource_id,
+                                    "target_resource_type": target.target_resource_type,
+                                    "time_created": target.time_created.strftime(self.__iso_time_format),
+                                    "time_updated": str(target.time_updated),
+                                    "inherited_by_compartments": target_data.inherited_by_compartments if target_data else "",
+                                    "description": target_data.description if target_data else "",
+                                    "target_details": target_data.target_details if target_data else "",
+                                    "target_detector_recipes": target_data.target_detector_recipes if target_data else "",
+                                    "target_responder_recipes": target_data.target_responder_recipes if target_data else ""
+                                }
+                                # Indexing by compartment_id
+
+                                self.__cloud_guard_targets[compartment.id] = record
+
+                                cloud_guard_targets += 1
 
                             except Exception:
-                                target_data = None
-                            deep_link = self.__oci_cgtarget_uri + target.id
-                            record = {
-                                "compartment_id": target.compartment_id,
-                                "defined_tags": target.defined_tags,
-                                "display_name": target.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, target.display_name),
-                                "freeform_tags": target.freeform_tags,
-                                "id": target.id,
-                                "lifecycle_state": target.lifecycle_state,
-                                "lifecyle_details": target.lifecyle_details,
-                                "system_tags": target.system_tags,
-                                "recipe_count": target.recipe_count,
-                                "target_resource_id": target.target_resource_id,
-                                "target_resource_type": target.target_resource_type,
-                                "time_created": target.time_created.strftime(self.__iso_time_format),
-                                "time_updated": str(target.time_updated),
-                                "inherited_by_compartments": target_data.inherited_by_compartments if target_data else "",
-                                "description": target_data.description if target_data else "",
-                                "target_details": target_data.target_details if target_data else "",
-                                "target_detector_recipes": target_data.target_detector_recipes if target_data else "",
-                                "target_responder_recipes": target_data.target_responder_recipes if target_data else ""
-                            }
-                            # Indexing by compartment_id
+                                print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
+                                self.__errors.append({"id" :  target.id, "error" : "Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id })
 
-                            self.__cloud_guard_targets[compartment.id] = record
+                print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")
+                return self.__cloud_guard_targets
 
-                            cloud_guard_targets += 1
-
-                        except Exception:
-                            print("\t Failed to Cloud Guard Target Data for: " + target.display_name + " id: " + target.id)
-
-            print("\tProcessed " + str(cloud_guard_targets) + " Cloud Guard Targets")
-            return self.__cloud_guard_targets
-
-        except Exception:
-            print("*** Cloud Guard service requires a PayGo account ***")
+            except Exception as e:
+                print("*** Cloud Guard service requires a PayGo account ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "Cloud Guard service requires a PayGo account. Error is: " + str(e)})
 
     ##########################################################################
     # Identity Password Policy
@@ -2979,6 +3094,7 @@ class CIS_Report:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__tenancy_password_policy = None
                 print("\t*** Access to password policies in this tenancy requires elevated permissions. ***")
+                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to password policies in this tenancy requires elevated permissions. ***"})
             else:
                 raise RuntimeError("Error in __identity_read_tenancy_password_policy " + str(e.args))
 
@@ -3195,7 +3311,6 @@ class CIS_Report:
                     break
 
         # 1.2 Check
-
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
@@ -3237,6 +3352,39 @@ class CIS_Report:
                 self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
         else:
             self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
+
+        # 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
+        debug("__report_cis_analyze_tenancy_data: Identity Domains Enabled is: " + str(self.__identity_domains_enabled))
+        if self.__identity_domains_enabled:
+            for domain in self.__identity_domains:
+                if domain['password_policy']:
+                    debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
+                    debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
+
+                    if domain['password_policy']['password_expires_after']:
+                        if domain['password_policy']['password_expires_after'] > 365:
+                            self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
+                    
+
+                    if domain['password_policy']['num_passwords_in_history']:
+                        if domain['password_policy']['num_passwords_in_history'] < 24:
+                            self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+
+                else:
+                    debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")
+                    self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
+                    self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+
+
+            if self.cis_foundations_benchmark_1_2['1.5']['Findings']:
+                self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
+            else:
+                self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
+
+            if self.cis_foundations_benchmark_1_2['1.6']['Findings']:
+                self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
+            else:
+                self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
@@ -3368,10 +3516,20 @@ class CIS_Report:
                             split_statement = statement.split("where")
                             if len(split_statement) == 2:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
-                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource]):
+                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14-storage-admin'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data no permissions to delete storage : " + str(policy['name']))
+
+                                    pass
+                                # Checking if this is the Storage admin with allowed 
+                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14-storage-admin'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.14'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data storage admin policy is : " + str(policy['name']))
                                     pass
                                 else:
                                     self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+                                    debug("__report_cis_analyze_tenancy_data else policy is /n: " + str(policy['name']))
+
                             else:
                                 self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
 
@@ -3566,6 +3724,7 @@ class CIS_Report:
         self.cis_foundations_benchmark_1_2['3.14']['Total'] = self.__network_subnets
 
         # CIS Check 3.15 - Cloud Guard enabled
+        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
         if self.__cloud_guard_config_status == 'ENABLED':
             self.cis_foundations_benchmark_1_2['3.15']['Status'] = True
         else:
@@ -4195,7 +4354,7 @@ class CIS_Report:
                 else:
                     compliant_output = "No"
                 record = {
-                    "Recommendation #": f"'{key}'",
+                    "Recommendation #": f"{key}", 
                     "Section": recommendation['section'],
                     "Level": str(recommendation['Level']),
                     "Compliant": compliant_output if compliant_output != "Not Applicable" else "N/A",
@@ -4304,12 +4463,15 @@ class CIS_Report:
                 # Creating table header
                 html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')
                 html_file.write('<title>' + html_title + '</title>')
-                html_file.write("""<link data-wscss href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\">
-                <link data-wscss href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\" onerror=\"this.rel='stylesheet'\">
-                <noscript><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"stylesheet\"></noscript>
-                <link data-wsjs data-reqjq href=\"https://www.oracle.com/asset/web/js/ocom-v1-base.js\" rel=\"preload\" as=\"script\">
-                <link data-wsjs data-reqjq href=\"https://www.oracle.com/asset/web/js/ocom-v1-lib.js\" rel=\"preload\" as=\"script\">
-                <script data-wsjs src=\"https://www.oracle.com/asset/web/js/jquery-min.js\" async onload=\"$('head link[data-reqjq][rel=preload]').each(function(){var a = document.createElement('script');a.async=false;a.src=$(this).attr('href');this.parentNode.insertBefore(a, this);});$(function(){$('script[data-reqjq][data-src]').each(function(){this.async=true;this.src=$(this).data('src');});});\"></script>
+                html_file.write("""
+                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\">
+                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\" onerror=\"this.rel='stylesheet'\">
+                <link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
+                <link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
+                <noscript><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\"></noscript>
+                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-base.js\" rel=\"preload\" as=\"script\">
+                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-lib.js\" rel=\"preload\" as=\"script\">
+                <script src=\"https://www.oracle.com/asset/web/js/jquery-min.js\" async onload=\"$('head link[data-reqjq][rel=preload]').each(function(){var a = document.createElement('script');a.async=false;a.src=$(this).attr('href');this.parentNode.insertBefore(a, this);});$(function(){$('script[data-reqjq][data-src]').each(function(){this.async=true;this.src=$(this).data('src');});});\"></script>
                 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
                 <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-32.png\" sizes=\"32x32\">
                 <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-128.png\" sizes=\"128x128\">
@@ -4319,23 +4481,38 @@ class CIS_Report:
                 <link rel=\"apple-touch-icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-180.png\" sizes=\"180x180\">
                 <meta name=\"msapplication-TileColor\" content=\"#fcfbfa\"/><meta name=\"msapplication-square70x70logo\" content=\"favicon-128.png\"/>
                 <meta name=\"msapplication-square150x150logo\" content=\"favicon-270.png\"/><meta name=\"msapplication-TileImage\" content=\"favicon-270.png\"/>
-                <meta name=\"msapplication-config\" content=\"none\"/><meta name=\"referrer\" content=\"no-referrer-when-downgrade\"/>
-                </head><body class=\"f11 f11v6\"><div class=\"f11w1\">
+                <meta name=\"msapplication-config\" content=\"none\"/><meta name=\"referrer\" content=\"no-referrer-when-downgrade\"/></head>
+                <body class=\"f11 f11v6\"><div class=\"f11w1\">
                 <style>#u30{opacity:1 !important;filter:opacity(100%) !important;position:sticky;top:0} .u30v3{background:#3a3632;height:50px;overflow:hidden;border-top:5px solid #3a3632;border-bottom:5px solid #3a3632}
                  #u30nav,#u30tools{visibility:hidden} .u30v3 #u30logo {width:121px;height: 44px;display: inline-flex;justify-content: flex-start;} #u30:not (.u30mobile)
                  .u30-oicn-mobile,#u30.u30mobile .u30-oicn{display:none} #u30logo svg{height:auto;align-self:center}
                  .u30brand{height:50px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:1344px;padding:0 48px;margin:0 auto}
                  .u30brandw1{display:flex;flex-direction:row;color:#fff;text-decoration:none;align-items:center} @media (max-width:1024px){.u30brand{padding:0 24px}}
-                 #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl}</style>
-                <style>	#td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
-                <section id=\"u30\" class=\"u30 u30v3 pause\" data-trackas=\"header\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" data-lbl=\"logo\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section><section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
-                html_file.write('<h5 id="table_top">' + html_title.replace('-', '&ndash;') + '</h5>')
+                 #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl} #td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
+                <section id=\"u30\" class=\"u30 u30v3 pause\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section><section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
+                html_file.write('<h2 id="table_top">' + html_title.replace('-', '&ndash;') + '</h2>')
                 html_file.write('<h4>Tenancy Name: ' + self.__tenancy.name + '</h4>')
                 # Get the extract date
                 r = result[0]
-                extract_date = r['extract_date'].replace('T', ' ')
-                html_file.write('<h3>Extract Date: ' + extract_date + ' UTC</h3>')
-                html_file.write('</div></section><section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth"><div class="otable otable-scrolling"><div class="otable-w1">')
+                extract_date = r['extract_date'].replace('T',' ')
+                html_file.write('<h5>Extract Date: ' + extract_date + ' UTC</h5>')
+                html_file.write("</div></section>")
+                # Navigation
+                html_file.write('<section class="rt01 rt01v0 rt01detached">')
+                html_file.write('<div class="rt01w1 cwidth">')
+                html_file.write('<ul class="rw-inpagetabs rw-tabinit" role="tablist">')
+                html_file.write('<li role="none" class="active"><a href="#compliant" aria-current="true" tabindex="0">Compliant</a></li>')
+                html_file.write('<li role="none"><a href="#noncompliant">Non-compliant</a></li>')
+                html_file.write('<li role="none"><a href="#details">Details</a></li>')
+                html_file.write('<li role="none"><a href="#resources">Resources</a></li>')
+                html_file.write('</ul></div></section>')
+                # Line
+                html_file.write('<section class="cb133 cb133v0" id="compliant">')
+                html_file.write('<div class="cb133w1 cwidth"><h4>Compliant Recommendations</h4></div>')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
+                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
                 html_file.write('<table class="otable-w2"><thead><tr>')
                 for th in fields:
                     column_width = '63%'
@@ -4358,19 +4535,24 @@ class CIS_Report:
                     compliant = row['Compliant']
                     text_color = 'green'
                     if compliant == 'No':
-                        html_appendix.append(row['Recommendation #'].replace("'", ""))
-                        text_color = 'red'
+                        continue
                     # Print the row
                     html_file.write("<tr>")
-                    v = row['Recommendation #'].replace("'", "")
+                    v = row['Recommendation #']
                     if compliant == 'No':
                         html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
                     else:
                         html_file.write('<td>' + v + '</td>\n')
-                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b></td>\n')
+                    total = row['Total']
+                    tmp = ''
+                    if total != ' ':
+                        tmp = '<br><br><b>' + str(total) + '</b> item'
+                        if int(total) > 1:
+                            tmp += 's'
+                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b>' + tmp + '</td>\n')
                     html_file.write("<td>" + str(row['Section']) + "</td>\n")
                     # Details
-                    html_file.write('<td><table><tr><td width="10%"><b>Title</b></td>')
+                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
                     html_file.write('<td colspan="3">' + str(row['Title']) + '</td></tr>')
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write('<td colspan="3">' + str(row['Remediation']) + '</td></tr>')
@@ -4378,8 +4560,8 @@ class CIS_Report:
                     html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
                     html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
-                    html_file.write('<tr><td width="">' + str(row['Level']) + '</td>')
-                    html_file.write('<td>' + str(row['CIS v8']).replace('[', '').replace(']', '').replace("'", '') + '</td>')
+                    html_file.write('<tr><td>' + str(row['Level']) + '</td>')
+                    html_file.write('<td>' + str(row['CIS v8']).replace('[','').replace(']','').replace("'",'') + '</td>')
                     html_file.write('<td>' + str(row['CCCS Guard Rail']) + '</td>')
                     v = str(row['Filename'])
                     if v == ' ':
@@ -4389,22 +4571,95 @@ class CIS_Report:
                     html_file.write('</tr></table></td>')
                     html_file.write("</tr>")
 
-                html_file.write("</tbody></table></div></div></section>\n")
-                html_file.write('<section class="cb132 cb132v0 cpad"><div class="cb132w1 cwidth">')
+                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
+                # Line
+                html_file.write('<section class="cb133 cb133v0 cpad" id="noncompliant">')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<h4>Non-compliant Recommendations</h4>')
+                html_file.write('</div>')
+                html_file.write('<div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
+                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
+                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
+                html_file.write('<table class="otable-w2"><thead><tr>')
+                for th in fields:
+                    column_width = '63%'
+                    if th == 'extract_date':
+                        th = th.replace('_', ' ').title()
+                        continue
+                    elif th == 'Recommendation #':
+                        column_width = '15%'
+                    elif th == 'Compliant':
+                        column_width = '10%'
+                    elif th == 'Section':
+                        column_width = '12%'
+                    else:
+                        column_width = '63%'
+                    html_file.write('<th class="otable-col-head" style=" width:' + column_width + ';">' + th + '</th>')
+                html_file.write('</tr></thead><tbody>')
+                # Creating HTML Table of the summary report
+                html_appendix = []
+                for row in result:
+                    compliant = row['Compliant']
+                    if compliant == 'Yes':
+                        continue
+                    html_appendix.append(row['Recommendation #'])
+                    text_color = 'red'
+                    # Print the row
+                    html_file.write("<tr>")
+                    v = row['Recommendation #']
+                    if compliant == 'No':
+                        html_file.write('<td><a href="#' + v + '">' + v + '</a></td>\n')
+                    else:
+                        html_file.write('<td>' + v + '</td>\n')
+                    f = row['Findings'] 
+                    t = row['Total']
+                    tmp = ''
+                    if t != ' ':
+                        tmp = '<br><br><b>' + str(f) + '</b> of <b>' + str(t) + '</b> item'
+                        if int(t) > 1:
+                            tmp += 's'
+                    html_file.write('<td><b style="color:' + text_color + ';">' + str(compliant) + '</b>' + tmp + '</td>\n')
+                    html_file.write("<td>" + str(row['Section']) + "</td>\n")
+                    # Details
+                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
+                    html_file.write('<td colspan="3">' + str(row['Title']) + '</td></tr>')
+                    html_file.write('<tr><td><b>Remediation</b></td>')
+                    html_file.write('<td colspan="3">' + str(row['Remediation']) + '</td></tr>')
+                    html_file.write('<tr><td><b>Level</b></td>')
+                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
+                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
+                    html_file.write('<tr><td>' + str(row['Level']) + '</td>')
+                    html_file.write('<td>' + str(row['CIS v8']).replace('[','').replace(']','').replace("'",'') + '</td>')
+                    html_file.write('<td>' + str(row['CCCS Guard Rail']) + '</td>')
+                    v = str(row['Filename'])
+                    if v == ' ':
+                        html_file.write('<td> </td>')
+                    else:
+                        html_file.write('<td><a href="' + v + '">' + v + '</a></td>')
+                    html_file.write('</tr></table></td>')
+                    html_file.write("</tr>")
+
+                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
+                html_file.write('<section class="cb132 cb132v0 cpad" id="details">')
+                html_file.write('<div class="cb133w1 cwidth"><h4>Details for non-compliant Recommendations</h4></div>')
+                html_file.write('<div class="cb132w1 cwidth">')
                 # Creating appendix for the report
                 for finding in html_appendix:
-                    html_file.write(f'<hr id="{finding}" /><h5>{finding} &ndash; {self.cis_foundations_benchmark_1_2[finding]["Title"]}</h5>\n')
+                    fing = self.cis_foundations_benchmark_1_2[finding]
+                    html_file.write(f'<hr id="{finding}" /><h4>{finding} &ndash; {fing["Title"]}</h4>\n')
                     for item_key, item_value in self.cis_report_data[finding].items():
                         if item_value != "":
-                            html_file.write(f"<h4>{item_key.title()}</h4>")
+                            html_file.write(f"<h5>{item_key.title()}</h5>")
                             if item_key == 'Observation':
-                                html_file.write(f"<p><b>{str(len(self.cis_foundations_benchmark_1_2[finding]['Findings']))}</b> {item_value}</p>\n")
+                                html_file.write(f"<p><b>{str(len(fing['Findings']))}</b> of <b>{str(len(fing['Total']))}</b> {item_value}</p>\n")
                             else:
                                 v = item_value.replace('<pre>', '<pre style="font-size: 1.4rem;">')
                                 html_file.write(f"<p>{v}</p>\n")
                 html_file.write("</div></section>\n")
                 # Closing HTML
-                html_file.write("""<div class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
+                html_file.write("""<div id="resources" class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
                 <div class="u10w2"><div class="u10w3" aria-labelledby="resourcesfor"><a class="u10btn" tabindex="-1" aria-labelledby="resourcesfor"></a>
                 <h4 class="u10ttl" id="resourcesfor">Resources</h4><ul>
                 <li><a href="https://www.cisecurity.org/benchmark/Oracle_Cloud">CIS OCI Foundation Benchmark</a></li>
@@ -4412,7 +4667,7 @@ class CIS_Report:
                 <li><a href="https://docs.oracle.com/en/solutions/oci-security-checklist/index.html">Security checklist for Oracle Cloud Infrastructure</a></li>
                 <li><a href="https://docs.oracle.com/en-us/iaas/Content/Security/Concepts/security.htm">OCI Documentation – Securely configure your Oracle Cloud Infrastructure services and resources</a></li>
                 <li><a href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">Best practices framework for Oracle Cloud Infrastructure</a></li>
-                <li><a href="https://www.oracle.com/uk/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
+                <li><a href="https://www.oracle.com/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
                 </ul></div></div><div class="u10w4"><hr></div></nav>
                 <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">
                 <ul class="u10-links"><li></li><li><a href="https://www.oracle.com/legal/copyright.html">© 2023 Oracle</a></li>
@@ -4486,7 +4741,11 @@ class CIS_Report:
         thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
         thread_identity_groups.start()
 
+        thread_cloud_guard_config = Thread(target=self.__cloud_guard_read_cloud_guard_configuration)
+        thread_cloud_guard_config.start()
+
         thread_compartments.join()
+        thread_cloud_guard_config.join()
         thread_identity_groups.join()
 
         print("\nProcessing Home Region resources...")
@@ -4495,6 +4754,7 @@ class CIS_Report:
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
+            self.__identity_read_domains,
             self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
@@ -4503,7 +4763,6 @@ class CIS_Report:
 
         # Budgets is global construct
         if self.__obp_checks:
-            self.__cloud_guard_read_cloud_guard_configuration()
             obp_home_region_functions = [
                 self.__budget_read_budgets,
                 self.__cloud_guard_read_cloud_guard_targets
@@ -4583,6 +4842,10 @@ class CIS_Report:
 
         report_file_name = self.__print_to_csv_file(
             self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_csv_file(
+            self.__report_directory, "raw_data", "identity_domains", self.__identity_domains)
         list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(
@@ -4724,7 +4987,7 @@ class CIS_Report:
     # Print to CSV
     ##########################################################################
     def __print_to_csv_file(self, report_directory, header, file_subject, data):
-
+        debug("__print_to_csv_file: " + header + "_" + file_subject)
         try:
             # Creating report directory
             if not os.path.isdir(report_directory):
@@ -4808,6 +5071,15 @@ class CIS_Report:
 
         if self.__output_raw_data:
             self.__report_generate_raw_data_output()
+
+        if self.__errors:
+            error_report = self.__print_to_csv_file(
+                self.__report_directory, "error", "report", self.__errors)
+
+        if self.__output_bucket:
+            if error_report:
+                self.__os_copy_report_to_object_storage(
+                    self.__output_bucket, error_report)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
@@ -5012,9 +5284,12 @@ def execute_report():
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
-    parser.add_argument('-st', action='store_true', default=False, dest='is_security_token', help='Authenticate using Security Token')
+    parser.add_argument('-st', action='store_true', default=False, 
+                        dest='is_security_token', help='Authenticate using Security Token')
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.')
+    parser.add_argument('--debug', action='store_true', default=False,
+                        dest='debug', help='Enables debugging messages. This feature is in beta')    
     cmd = parser.parse_args()
 
     if cmd.version:
@@ -5023,7 +5298,8 @@ def execute_report():
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, cmd.regions, cmd.raw, cmd.obp, cmd.redact_output)
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

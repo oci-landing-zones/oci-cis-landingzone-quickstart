@@ -29,6 +29,8 @@ Allow group Auditor-Group to read file-family in tenancy
 Allow group Auditor-Group to read network-security-groups in tenancy
 Allow group Auditor-Group to read users in tenancy
 Allow group Auditor-Group to use cloud-shell in tenancy
+Allow group Auditor-Group to read dynamic-groups in tenancy
+Allow group Auditor-Group to read tag-defaults in tenancy
 ```
 
 ### Setup the script to run on a local machine

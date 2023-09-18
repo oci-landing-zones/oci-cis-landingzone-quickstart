@@ -1,3 +1,22 @@
+#   September 18, 2023 Release Notes - 2.6.4
+1. [CIS Compliance Script Adds Identity Domains](#2-6-4-identity-domains)
+1. [Updates to the CIS Compliance Script](#2-6-4-script-updates)
+1. [Workload Expansion Terraform for Quick Start](#2-6-4-workload-updates)
+
+## <a name="2-6-4-identity-domains">CIS Compliance Script Adds Identity Domains</a>
+CIS compliance checking scripts adds collection of Identity Domains password policy.  This allows the compliance checking script to access CIS recommendation 1.5 Ensure IAM password policy expires passwords within 365 days and recommendation 1.6 Ensure IAM password policy prevents password reuse.
+
+## <a name="2-6-4-script-updates">Updates to the CIS Compliance Script</a>
+- Updates:
+    - Improved navigation for CIS Summary Report HTML
+    - Added `error_report.csv` for errors when collection OCI resources
+- Fixes:
+    - Improved OCI logging error handling
+    - Fixed compliance for Storage Admin policies for CIS recommendation 1.14 Ensure storage service-level admins cannot delete resources they manage
+
+## <a name="2-6-4-workload-updates">Workload Expansion Terraform for Quick Start</a>
+The terraform code in this folder expands an existing CIS Landing Zone deployment.  It does this by adding one or more workload compartment(s) in the AppDev compartment and, optionally, the associated OCI IAM groups, dynamic groups, and OCI IAM policies to manage OCI resources in the workload compartment. For more information please see the [readme.md](./workloads/generic_workload_compartments/readme.md)
+
 #   September 4, 2023 Release Notes - 2.6.3
 1. [Fixes to the CIS Compliance Script](#2-6-3-script-fixes)
 1. [Updates to the CIS Compliance Script](#2-6-3-script-updates)

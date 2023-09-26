@@ -1180,6 +1180,7 @@ class CIS_Report:
                     self.__groups_to_users.append(group_record)
             return self.__groups_to_users
         except Exception as e:
+            self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
             debug("__identity_read_groups_and_membership: error reading" + str(e))
             RuntimeError(
                 "Error in __identity_read_groups_and_membership" + str(e.args))
@@ -1236,6 +1237,7 @@ class CIS_Report:
             return self.__users
 
         except Exception as e:
+            self.__errors.append({"id" : user.id, "error" : str(e)})
             debug("__identity_read_users: User ID is: " + str(user))
             raise RuntimeError(
                 "Error in __identity_read_users: " + str(e.args))

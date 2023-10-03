@@ -33,7 +33,7 @@ locals {
   #-- AppDev functions Dynamic Group
   #--------------------------------------------------------------------
 
-  appdev_functions_dynamic_group = var.create_workload_dynamic_groups_and_policies ? { for key,cmp in local.workload_compartments : ("${cmp.name}-${local.appdev_dynamic_group_key}") => {
+  appdev_functions_dynamic_group = var.create_workload_dynamic_groups_and_policies ? { for key,cmp in local.workload_compartments : ("${key}-${local.appdev_dynamic_group_key}") => {
 
     name          = "${local.appdev_dynamic_group_name_prefix}-${cmp.workload_name}-${local.appdev_dynamic_group_name_suffix}"
     description   = "Dynamic group for application functions execution for workload ${cmp.workload_name}."

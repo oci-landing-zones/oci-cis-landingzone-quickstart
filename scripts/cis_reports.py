@@ -34,7 +34,7 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.4"
+RELEASE_VERSION = "2.6.5"
 PYTHON_SDK_VERSION = "'2.110.0"
 UPDATED_DATE = "September 18, 2023"
 
@@ -1237,7 +1237,6 @@ class CIS_Report:
             return self.__users
 
         except Exception as e:
-            self.__errors.append({"id" : user.id, "error" : str(e)})
             debug("__identity_read_users: User ID is: " + str(user))
             raise RuntimeError(
                 "Error in __identity_read_users: " + str(e.args))

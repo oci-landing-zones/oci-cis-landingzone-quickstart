@@ -1,3 +1,22 @@
+#   October 6, 2023 Release Notes - 2.6.5
+1. [CIS Compliance Script Updates](#2-6-5-script-updates)
+1. [Terraform Quick Start Updates](#2-6-5-quickstart-updates)
+1. [Terraform Workloads Updates](#2-6-5-workload-updates)
+
+## <a name="2-6-5-script-updates">Updates to the CIS Compliance Script</a>
+Updates:
+    - Added debugging Identity Groups collection
+
+## <a name="2-6-5-quickstart-updates">Terraform Quick Start Updates</a>
+Updates:
+- Compartments management has been pinned to Compartments module v0.1.6.
+
+## <a name="2-6-5-workload-updates">Terraform Quick Start Updates</a>
+Updates:
+    - Generic Workloads outputs compartments created
+Fixes:
+- Dynamic Group AppDev
+
 #   September 18, 2023 Release Notes - 2.6.4
 1. [CIS Compliance Script Adds Identity Domains](#2-6-4-identity-domains)
 1. [Updates to the CIS Compliance Script](#2-6-4-script-updates)

@@ -34,9 +34,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.4"
+RELEASE_VERSION = "2.6.5"
 PYTHON_SDK_VERSION = "'2.110.0"
-UPDATED_DATE = "September 18, 2023"
+UPDATED_DATE = "October 6, 2023"
 
 
 ##########################################################################
@@ -1135,12 +1135,14 @@ class CIS_Report:
     def __identity_read_groups_and_membership(self):
         try:
             # Getting all Groups in the Tenancy
+            debug("processing __identity_read_groups_and_membership ")
             groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_groups,
                 compartment_id=self.__tenancy.id
             ).data
             # For each group in the tenacy getting the group's membership
             for grp in groups_data:
+                debug("__identity_read_groups_and_membership: reading group data " + str(grp.name))
                 membership = oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
                     compartment_id=self.__tenancy.id,
@@ -1162,6 +1164,7 @@ class CIS_Report:
                     self.__groups_to_users.append(group_record)
                 # For groups with members print one record per user per group
                 for member in membership:
+                    debug("__identity_read_groups_and_membership: reading members data in group" + str(grp.name))
                     user_deep_link = self.__oci_users_uri + member.user_id
                     group_record = {
                         "id": grp.id,
@@ -1177,6 +1180,8 @@ class CIS_Report:
                     self.__groups_to_users.append(group_record)
             return self.__groups_to_users
         except Exception as e:
+            self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
+            debug("__identity_read_groups_and_membership: error reading" + str(e))
             RuntimeError(
                 "Error in __identity_read_groups_and_membership" + str(e.args))
 

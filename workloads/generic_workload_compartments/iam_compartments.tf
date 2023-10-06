@@ -25,7 +25,7 @@ locals {
 }
 
 module "workload_compartments" {
-  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/compartments"
+  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.compartments_configuration
@@ -57,7 +57,7 @@ locals {
     workload_group_name : "${local.workload_group_prefix}-${cmp}-${local.workload_group_suffix}", # For policeis
     workload_dynamic_group_name : "${local.appdev_dynamic_group_name_prefix}-${cmp}-${local.appdev_dynamic_group_name_suffix}", # For dynamic groups and policies
     description : "${cmp} workload compartment",
-    parent_ocid : var.existing_lz_appdev_compartment_ocid,
+    parent_id : var.existing_lz_appdev_compartment_ocid,
     defined_tags : local.default_template_compartment_defined_tags,
     freeform_tags : local.default_template_compartment_freeform_tags,
     children : {}

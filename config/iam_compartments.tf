@@ -19,14 +19,14 @@ locals {
 
 module "lz_top_compartment" {
   count     = var.extend_landing_zone_to_new_region == false && var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid == null ? 1 : 0
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/compartments"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
 }
 
 module "lz_compartments" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/compartments"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   compartments_configuration = var.extend_landing_zone_to_new_region == false ? local.enclosed_compartments_configuration : local.empty_compartments_configuration
@@ -149,7 +149,7 @@ locals {
   #----- Enclosing compartment configuration definition. Input to module.
   #------------------------------------------------------------------------  
   enclosing_compartment_configuration = {
-    default_parent_ocid : var.tenancy_ocid
+    default_parent_id : var.tenancy_ocid
     compartments : local.enclosing_cmp
   }
 
@@ -157,12 +157,12 @@ locals {
   #----- Enclosing compartment configuration definition. Input to module.
   #------------------------------------------------------------------------
   enclosed_compartments_configuration = {
-    default_parent_ocid : local.enclosing_compartment_id
+    default_parent_id : local.enclosing_compartment_id
     compartments : merge(local.network_cmp, local.security_cmp, local.appdev_cmp, local.database_cmp, local.exainfra_cmp)
   }
 
   empty_compartments_configuration = {
-    default_parent_ocid : null
+    default_parent_id : null
     compartments : {}
   }
 

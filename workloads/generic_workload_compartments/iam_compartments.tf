@@ -25,7 +25,6 @@ locals {
 }
 
 module "workload_compartments" {
-  
   source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid

@@ -93,7 +93,10 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, all_resources=True):
+
+        # Determine if All resource from Search service should be queried
+        self.__all_resources = all_resources
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -3081,6 +3084,48 @@ class CIS_Report:
         return self.__resources_in_root_compartment
 
     ##########################################################################
+    # All Resources in Tenancy
+    ##########################################################################
+    def __search_resources_all_resources_in_tenancy(self):
+        
+        def search_query_resource_type(resource_type):
+            try:
+                query = f"query {resource_type} resources return allAdditionalFields"
+                results = oci.pagination.list_call_get_all_results(
+                    search_client.search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query=query)
+                ).data
+                
+                return oci.util.to_dict(results)
+            except Exception as e:
+                return []
+
+        # query = []
+        # resources_in_root_data = []
+        # record = []
+        self.__all_resources_json = {}
+        query_all_resources = "query all resources"
+        # resources_in_root_data = self.__search_run_structured_query(query)
+
+        for region_key, region_values in self.__regions.items():
+            try:
+                all_regional_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query all resources")
+                ).data
+                self.__all_resources_json[region_key] = all_regional_resources
+
+            except Exception as e:
+                raise RuntimeError(
+                    "Error in __search_resources_all_resources_in_tenancy " + str(e.args))
+        
+        print("\tProcessed " + str(len(self.__all_resources_json)) + " resources in the tenancy")
+        print(self.__all_resources_json)                        
+        return self.__all_resources_json
+
+    ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
@@ -4323,8 +4368,17 @@ class CIS_Report:
         else: 
             obp_functions = []
 
+        # Search Query Get all resources
+        if self.__all_resources:
+            print("Get all Resources")
+            all_resource_function = [
+                self.__search_resources_all_resources_in_tenancy
+            ]
+        else:
+            all_resource_function = []
+
         # Starting execution of functions
-        for func in cis_regional_functions + obp_functions:
+        for func in cis_regional_functions + obp_functions + all_resource_function:
             t = Thread(target = func)
             t.start()
             regional_threads.append(t)

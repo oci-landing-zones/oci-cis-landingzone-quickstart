@@ -136,7 +136,10 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
+
+        # Determine if All resource from Search service should be queried
+        self.__all_resources = all_resources
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -3347,6 +3350,57 @@ class CIS_Report:
         return self.__resources_in_root_compartment
 
     ##########################################################################
+    # All Resources in Tenancy
+    ##########################################################################
+    def __search_resources_all_resources_in_tenancy(self):
+        
+        # This function runs gets a resource and it's additional fields
+        def search_query_resource_type(resource_type, search_client):
+            try:
+                query = f"query {resource_type} resources return allAdditionalFields"
+                results = oci.pagination.list_call_get_all_results(
+                    search_client.search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query=query)
+                ).data
+                
+                return oci.util.to_dict(results)
+            except Exception as e:
+                return []
+
+        # query = []
+        # resources_in_root_data = []
+        # record = []
+        self.__all_resources_json = {}
+        query_all_resources = "query all resources"
+        # resources_in_root_data = self.__search_run_structured_query(query)
+
+        for region_key, region_values in self.__regions.items():
+            self.__all_resources_json[region_key] = {}
+            try:
+                all_regional_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query all resources")
+                ).data
+                # self.__all_resources_json[region_key] = all_regional_resources
+                for item in all_regional_resources:
+                    if not(item.resource_type in self.__all_resources_json[region_key]):
+                        self.__all_resources_json[region_key][item.resource_type] = []
+
+                for type in self.__all_resources_json[region_key]:
+                    self.__all_resources_json[region_key][type] += search_query_resource_type(type, region_values['search_client'])
+                    
+            except Exception as e:
+                raise RuntimeError(
+                    "Error in __search_resources_all_resources_in_tenancy " + str(e.args))
+        
+        print("\tProcessed " + str(len(self.__all_resources_json)) + " resources in the tenancy")
+        # print(self.__all_resources_json)                        
+        return self.__all_resources_json
+    
+    
+    ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
@@ -4873,13 +4927,22 @@ class CIS_Report:
         else:
             obp_functions = []
 
+        # All OCI Resources via Search Service
+
+        if self.__all_resources:
+            all_resources = [
+                self.__search_resources_all_resources_in_tenancy
+            ]
+        else:
+            all_resources = []
+
         def execute_function(func):
             func()
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Submit each function to the executor
             futures = []
-            for func in cis_regional_functions + obp_functions:
+            for func in cis_regional_functions + obp_functions + all_resources:
                 futures.append(executor.submit(execute_function, func))
 
             # Wait for all functions to complete
@@ -5013,6 +5076,11 @@ class CIS_Report:
             self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
         list_report_file_names.append(report_file_name)
 
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
+        list_report_file_names.append(report_file_name)
+
+
         if self.__output_bucket:
             for raw_report in list_report_file_names:
                 if raw_report:
@@ -5104,6 +5172,48 @@ class CIS_Report:
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
 
+    ##########################################################################
+    # Print to JSON
+    ##########################################################################
+    def __print_to_json_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".json"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Serializing JSON to string
+            json_object = json.dumps(data, indent=4)
+          
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                items_to_redact = re.findall(self.__oci_ocid_pattern,json_object)
+                for redact_me in items_to_redact:
+                    json_object = json_object.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+
+
+            # Writing to json file
+            with open(file_path, mode='w', newline='') as json_file:
+                json_file.write(json_object)
+           
+        except Exception as e:
+            raise Exception("Error in print_to_json_file: " + str(e.args))
+    
     ##########################################################################
     # Orchestrates Data collection and reports
     ##########################################################################

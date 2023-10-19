@@ -2317,8 +2317,8 @@ class CIS_Report:
     # Collect Network Topology Data
     ############################################
     def __network_topology_dump(self):
-        
-        topology_dict = {}
+        debug("__network_topology_dump: Starting")
+        self.__network_topology_json = {}
         
         def api_function(region_key, region_values, tenancy_id):
             try:
@@ -2326,12 +2326,17 @@ class CIS_Report:
                     compartment_id=tenancy_id,
                     access_level="ACCESSIBLE",
                     query_compartment_subtree=True)
+                debug("__network_topology_dump: Successful queried network topology for region: " + region_key)
+
             except Exception as e:
                 if "(-1, null, false)" in e.message:
+  
                     return None #This error is benign. The API shows an error when there is no topology data to pull.
+                debug("__network_topology_dump: ERROR querying network topology for region: " + region_key)
+                self.__errors.append({"id" : region_key + "_network_topology_dump", "error" : str(e) })
                 print(e)
             else:
-                topology_dict[region_key]=get_vcn_topology_response.data
+                self.__network_topology_json[region_key]=get_vcn_topology_response.data
                 print(f"\tProcessed {region_key} Network Topology")
 
         # Parallelize API Calls. See https://github.com/oracle/oci-python-sdk/blob/master/examples/parallel_api_collection.py
@@ -2342,10 +2347,9 @@ class CIS_Report:
             thread_pool.submit(api_function, region_key, region_values, self.__tenancy.id)
 
         thread_pool.shutdown(wait=True)
-            
         # Save the topology data for offline analysis.
         with open('oci_network_topologies.pkl', 'wb') as file:
-            pickle.dump(topology_dict, file)
+            pickle.dump(self.__network_topology_json, file)
 
         # To open the topology data
         # import pickle
@@ -4906,7 +4910,6 @@ class CIS_Report:
             self.__network_read_network_security_lists,
             self.__network_read_network_security_groups_rules,
             self.__network_read_network_subnets,
-            self.__network_topology_dump,
             self.__adb_read_adbs,
             self.__oic_read_oics,
             self.__oac_read_oacs,
@@ -4931,7 +4934,9 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__search_resources_all_resources_in_tenancy
+                self.__search_resources_all_resources_in_tenancy,
+                self.__network_topology_dump,
+
             ]
         else:
             all_resources = []
@@ -5080,6 +5085,13 @@ class CIS_Report:
                 self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
         list_report_file_names.append(report_file_name)
 
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", oci.util.to_dict(self.__network_topology_json))
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_pkl_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", self.__network_topology_json)
+        list_report_file_names.append(report_file_name)
 
         if self.__output_bucket:
             for raw_report in list_report_file_names:
@@ -5213,6 +5225,40 @@ class CIS_Report:
            
         except Exception as e:
             raise Exception("Error in print_to_json_file: " + str(e.args))
+    
+    ##########################################################################
+    # Print to PKL
+    ##########################################################################
+    def __print_to_pkl_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".pkl"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Writing to json file
+            with open(file_path, 'wb') as pkl_file:
+                pickle.dump(data,pkl_file)
+           
+        except Exception as e:
+            raise Exception("Error in __print_to_pkl_file: " + str(e.args))
+    
+
     
     ##########################################################################
     # Orchestrates Data collection and reports

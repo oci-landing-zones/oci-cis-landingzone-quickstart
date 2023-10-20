@@ -70,6 +70,9 @@ def show_version(verbose=False):
         print('Please use --help for more info')
         print('\nTested    oci-python-sdk version: ' + PYTHON_SDK_VERSION)
         print('Installed oci-python-sdk version: ' + str(oci.__version__))
+        print('The command line arguments are:')
+        for i in sys.argv:
+            print(i)
     else:
         print(script_updated)
 

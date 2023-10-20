@@ -1381,12 +1381,14 @@ class CIS_Report:
     ############################################
     def __identity_read_dynamic_groups(self):
         try:
+            debug("processing __identity_read_dynamic_groups")
             dynamic_groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
                 compartment_id=self.__tenancy.id).data
             for dynamic_group in dynamic_groups_data:
                 deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                 # try:
+                debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
                 record = {
                     "id": dynamic_group.id,
                     "name": dynamic_group.name,
@@ -1421,6 +1423,8 @@ class CIS_Report:
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")
             return self.__dynamic_groups
         except Exception as e:
+            self.__errors.append({"id" : "__identity_read_dynamic_groups", "error" : str(e)})
+            debug("__identity_read_dynamic_groups: error reading" + str(e))
             raise RuntimeError("Error in __identity_read_dynamic_groups: " + str(e.args))
         pass
 

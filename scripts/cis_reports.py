@@ -906,6 +906,7 @@ class CIS_Report:
     def __create_regional_signers(self, proxy):
         print("Creating regional signers and configs...")
         for region_key, region_values in self.__regions.items():
+            debug("processing __create_regional_signers ")
             # Creating regional configs and signers
             region_signer = self.__signer
             region_signer.region_name = region_key
@@ -914,6 +915,7 @@ class CIS_Report:
 
             try:
                 identity = oci.identity.IdentityClient(region_config, signer=region_signer)
+                debug("__create_regional_signers: reading config data " + str(self.__config))
                 if proxy:
                     identity.base_client.session.proxies = {'https': proxy}
                 region_values['identity_client'] = identity
@@ -994,6 +996,8 @@ class CIS_Report:
                 region_values['sch_client'] = sch
 
             except Exception as e:
+                debug("__create_regional_signers: error reading" + str(self.__config))
+                self.__errors.append({"id" : "__create_regional_signers", "error" : str(e)})
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
 
     ##########################################################################

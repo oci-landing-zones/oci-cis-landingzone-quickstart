@@ -136,10 +136,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
-
-        # Determine if All resource from Search service should be queried
-        self.__all_resources = all_resources
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=False):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -779,6 +776,10 @@ class CIS_Report:
         # Error Data
         self.__errors = []
 
+        # All Resources
+        self.__all_resources_json = {}
+
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -904,6 +905,13 @@ class CIS_Report:
 
         # Determining if CSV report OCIDs will be redacted
         self.__redact_output = redact_output
+
+        # Determine if All resource from Search service should be queried
+        self.__all_resources = all_resources
+        if all_resources:
+            self.__all_resources = all_resources
+            self.__redact_output = True
+            self.__output_raw_data = True
 
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
@@ -3375,7 +3383,6 @@ class CIS_Report:
         # query = []
         # resources_in_root_data = []
         # record = []
-        self.__all_resources_json = {}
         query_all_resources = "query all resources"
         # resources_in_root_data = self.__search_run_structured_query(query)
 
@@ -4926,6 +4933,7 @@ class CIS_Report:
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
                 self.__sch_read_service_connectors,
+                self.__network_topology_dump
             ]
         else:
             obp_functions = []
@@ -4935,8 +4943,6 @@ class CIS_Report:
         if self.__all_resources:
             all_resources = [
                 self.__search_resources_all_resources_in_tenancy,
-                self.__network_topology_dump,
-
             ]
         else:
             all_resources = []

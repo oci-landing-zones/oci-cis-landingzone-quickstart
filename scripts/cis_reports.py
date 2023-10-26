@@ -4570,7 +4570,7 @@ class CIS_Report:
                     if compliant == 'No':
                         html_file.write(f'<td><a href="#{v}">{v}</a></td>\n')
                     else:
-                        html_file.write('<td>{v}</td>\n')
+                        html_file.write(f'<td>{v}</td>\n')
                     total = row['Total']
                     tmp = ''
                     if total != ' ':

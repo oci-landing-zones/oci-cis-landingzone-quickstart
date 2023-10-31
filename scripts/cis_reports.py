@@ -136,7 +136,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -3380,24 +3380,15 @@ class CIS_Report:
             except Exception as e:
                 return []
 
-        # query = []
-        # resources_in_root_data = []
-        # record = []
-        query_all_resources = "query all resources"
-        # resources_in_root_data = self.__search_run_structured_query(query)
-
         for region_key, region_values in self.__regions.items():
             self.__all_resources_json[region_key] = {}
             try:
                 all_regional_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query all resources")
-                ).data
+                    region_values['search_client'].list_resource_types).data
                 # self.__all_resources_json[region_key] = all_regional_resources
                 for item in all_regional_resources:
-                    if not(item.resource_type in self.__all_resources_json[region_key]):
-                        self.__all_resources_json[region_key][item.resource_type] = []
+                    if not(item.name in self.__all_resources_json[region_key]):
+                        self.__all_resources_json[region_key][item.name] = []
 
                 for type in self.__all_resources_json[region_key]:
                     self.__all_resources_json[region_key][type] += search_query_resource_type(type, region_values['search_client'])
@@ -5494,8 +5485,10 @@ def execute_report():
                         help='Outputs all resource data into CSV files')
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices')
+    parser.add_argument('--all_resources', action='store_true', default=False,
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON.')
     parser.add_argument('--redact_output', action='store_true', default=False,
-                        help='Redacts OCIDs in output CSV files')
+                        help='Redacts OCIDs in output CSV and JSON files')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -5515,7 +5508,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

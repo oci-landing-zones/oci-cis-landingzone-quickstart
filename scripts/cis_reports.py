@@ -910,7 +910,7 @@ class CIS_Report:
         self.__all_resources = all_resources
         if all_resources:
             self.__all_resources = all_resources
-            self.__redact_output = True
+            self.__obp_checks = True
             self.__output_raw_data = True
 
     ##########################################################################

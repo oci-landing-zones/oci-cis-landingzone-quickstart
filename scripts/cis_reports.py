@@ -1348,6 +1348,7 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_tenancy_policies(self):
         try:
+            debug("__identity_read_tenancy_policies: Getting Tenancy policies :")
             policies_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['search_client'].search_resources,
                 search_details=oci.resource_search.models.StructuredSearchDetails(
@@ -1355,6 +1356,7 @@ class CIS_Report:
             ).data
 
             for policy in policies_data:
+                debug("__identity_read_tenancy_policies: Reading Tenancy policies :" +policy.display_name)
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1370,6 +1372,8 @@ class CIS_Report:
             return self.__policies
 
         except Exception as e:
+            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies :" +policy.display_name)
+            self.__errors.append({"id" : "__identity_read_tenancy_policies", "error" : str(e)})
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
     ############################################

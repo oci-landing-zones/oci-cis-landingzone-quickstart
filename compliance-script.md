@@ -9,9 +9,13 @@
 ## <a name="overview"></a>Overview
 The Compliance Checking script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. In addition to CIS checks it can be check for alignment to OCI Best Practices  by using the `--obp` flag.  These checks review the following OCI best practices in your tenancy:
 - Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
-- A Budget for cost track is created in your tenancy
-- Network connectivity to on-premises is redundant 
+  - Aggregate Oracle Cloud Infrastructure Service Logs Using Third-Party SIEMs: [https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html](https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html)
+- A Budget for cost tracking is created in your tenancy with a notification
+  - Budgets Overview: [https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview](https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview)
+- Network connectivity to on-premises is redundant
+  - DRG and Redundant Connections : [https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm](https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm)
 - Cloud Guard is configured at the root compartment with detectors and responders 
+  - Cloud Guard Tuning: [https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard](https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard)
 
 The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
 
@@ -266,35 +270,43 @@ Cloud_Guard_Config       		False		1
 ### Arguments
 ```
 % python3 cis_reports.py -h       
-usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--redact_output] [-ip] [-dt]
+usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY]
+                      [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--all_resources] [--redact_output] [-ip] [-dt] [-st] [-v] [--debug]
 
 options:
-  -h, --help            show this help message and exit
-  -c FILE_LOCATION      OCI config file location
-  -t CONFIG_PROFILE     Config file section to use (tenancy profile)
-  -p PROXY              Set Proxy (i.e. www-proxy-server.com:80)
-  --output-to-bucket OUTPUT_BUCKET
-                        Set Output bucket name (i.e. my-reporting-bucket)
-  --report-directory REPORT_DIRECTORY
-                        Set Output report directory by default it is the current date (i.e. reports-date)
-  --print-to-screen PRINT_TO_SCREEN
-                        Set to False if you want to see only non-compliant findings (i.e. False)
-  --level LEVEL         CIS Recommendation Level options are: 1 or 2. Set to 2 by default
-  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
-  --raw                 Outputs all resource data into CSV files
-  --obp                 Checks for OCI best practices
-  --redact_output       Redacts OCIDs in output CSV files
-  -ip                   Use Instance Principals for Authentication
-  -dt                   Use Delegation Token for Authentication in Cloud Shell                 Use Delegation Token for Authentication in Cloud Shell
+  -h, --help                           show this help message and exit
+  -c FILE_LOCATION                     OCI config file location
+  -t CONFIG_PROFILE                    Config file section to use (tenancy profile)
+  -p PROXY                             Set Proxy (i.e. www-proxy-server.com:80)
+  --output-to-bucket OUTPUT_BUCKET     Set Output bucket name (i.e. my-reporting-bucket)
+  --report-directory REPORT_DIRECTORY  Set Output report directory by default it is the current date (i.e. reports-date)
+  --print-to-screen PRINT_TO_SCREEN    Set to False if you want to see only non-compliant findings (i.e. False)
+  --level LEVEL                        CIS Recommendation Level options are: 1 or 2. Set to 2 by default
+  --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
+  --raw                                Outputs all resource data into CSV files
+  --obp                                Checks for OCI best practices
+  --all_resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags. 
+  --redact_output                      Redacts OCIDs in output CSV and JSON files
+  -ip                                  Use Instance Principals for Authentication
+  -dt                                  Use Delegation Token for Authentication in Cloud Shell
+  -st                                  Authenticate using Security Token
+  -v                                   Show the version of the script and exit.
+  --debug                              Enables debugging messages. This feature is in beta
 % 
 ```
 
 ### Usage Examples
 
 #### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
-To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files.
+To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology files.
 ```
 % python3 cis_reports.py -dt --obp --raw
+``` 
+
+#### Executing in Cloud Shell to check CIS, OCI Best Practices with raw data, and get all resource via the Advanced Search Query service
+To run using Cloud Shell in all regions and check for OCI Best Practices with raw data, network topology and get all resource via the Advanced Search Query service
+```
+% python3 cis_reports.py -dt --all_resources
 ``` 
 
 #### Executing on local machine with a specific OCI Config file

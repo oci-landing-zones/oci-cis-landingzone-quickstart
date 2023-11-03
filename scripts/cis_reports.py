@@ -566,7 +566,7 @@ class CIS_Report:
             'SIEM_Write_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
-            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": ""},
+            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -4500,16 +4500,20 @@ class CIS_Report:
 
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")
+        summary_files = []
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        self.__report_generate_html_summary_report(
+        summary_file_name = self.__report_generate_html_summary_report(
             self.__report_directory, "cis", "html_summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        # Outputting to a bucket if I have one
-        if summary_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(
-                self.__output_bucket, summary_file_name)
+        # Outputing to a bucket if I have one
+        if summary_files and self.__output_bucket:
+            for summary_file in summary_files:
+                self.__os_copy_report_to_object_storage(
+                    self.__output_bucket, summary_file)
 
         for key, recommendation in self.cis_foundations_benchmark_1_2.items():
             if recommendation['Level'] <= level:
@@ -5219,7 +5223,12 @@ class CIS_Report:
             # Writing to json file
             with open(file_path, mode='w', newline='') as json_file:
                 json_file.write(json_object)
-           
+            
+            print("JSON: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+        
         except Exception as e:
             raise Exception("Error in print_to_json_file: " + str(e.args))
     
@@ -5251,7 +5260,14 @@ class CIS_Report:
             # Writing to json file
             with open(file_path, 'wb') as pkl_file:
                 pickle.dump(data,pkl_file)
-           
+            
+            
+            print("PKL: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+
+
         except Exception as e:
             raise Exception("Error in __print_to_pkl_file: " + str(e.args))
     
@@ -5486,7 +5502,7 @@ def execute_report():
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices')
     parser.add_argument('--all_resources', action='store_true', default=False,
-                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON.')
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files')
     parser.add_argument('-ip', action='store_true', default=False,

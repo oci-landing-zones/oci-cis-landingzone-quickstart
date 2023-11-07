@@ -327,25 +327,33 @@ variables:
     visible: env_advanced_options  
  
   existing_security_fun_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing security dynamic group name"
     description: "Existing security dynamic group to run functions."
     visible: env_advanced_options
 
   existing_appdev_fun_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing appdev dynamic group name"
     description: "Existing appdev dynamic group."
     visible: env_advanced_options
 
   existing_compute_agent_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing compute agent dynamic group name"
     description: "Existing compute agent dynamic group for management agent access."
     visible: env_advanced_options
 
   existing_database_kms_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing database dynamic group name"
     description: "Existing database dynamic group for database to access keys."
     visible: env_advanced_options

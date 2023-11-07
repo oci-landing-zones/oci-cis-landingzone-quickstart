@@ -36,9 +36,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.5"
+RELEASE_VERSION = "2.6.6"
 PYTHON_SDK_VERSION = "'2.110.0"
-UPDATED_DATE = "October 6, 2023"
+UPDATED_DATE = "November 9, 2023"
 
 
 ##########################################################################
@@ -73,6 +73,7 @@ def show_version(verbose=False):
         print('\nTested    oci-python-sdk version: ' + PYTHON_SDK_VERSION)
         print('Installed oci-python-sdk version: ' + str(oci.__version__))
         print('The command line arguments are:' + str(sys.argv))
+
     else:
         print(script_updated)
 
@@ -156,14 +157,14 @@ class CIS_Report:
             '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
             '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.8'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
 
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
-            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
 
             '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail': '11', 'Remediation': []},
             '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
@@ -567,7 +568,7 @@ class CIS_Report:
             'SIEM_Write_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
-            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": ""},
+            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -920,7 +921,6 @@ class CIS_Report:
     def __create_regional_signers(self, proxy):
         print("Creating regional signers and configs...")
         for region_key, region_values in self.__regions.items():
-            debug("processing __create_regional_signers ")
             # Creating regional configs and signers
             region_signer = self.__signer
             region_signer.region_name = region_key
@@ -929,7 +929,6 @@ class CIS_Report:
 
             try:
                 identity = oci.identity.IdentityClient(region_config, signer=region_signer)
-                debug("__create_regional_signers: reading config data " + str(self.__config))
                 if proxy:
                     identity.base_client.session.proxies = {'https': proxy}
                 region_values['identity_client'] = identity
@@ -1016,8 +1015,6 @@ class CIS_Report:
                 region_values['topology_client'] = topology
 
             except Exception as e:
-                debug("__create_regional_signers: error reading" + str(self.__config))
-                self.__errors.append({"id" : "__create_regional_signers", "error" : str(e)})
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
 
     ##########################################################################
@@ -1401,7 +1398,6 @@ class CIS_Report:
     ############################################
     def __identity_read_dynamic_groups(self):
         try:
-            debug("processing __identity_read_dynamic_groups")
             dynamic_groups_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
                 compartment_id=self.__tenancy.id).data
@@ -5347,15 +5343,12 @@ def check_service_error(code):
             code == 'IncorrectState' or
             code == 'LimitExceeded')
 
-            code == 'LimitExceeded')
-
 
 ##########################################################################
 # Create signer for Authentication
 # Input - config_profile and is_instance_principals and is_delegation_token
 # Output - config and signer objects
 ##########################################################################
-def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token, is_security_token):
 def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token, is_security_token):
 
     # if instance principals authentications
@@ -5433,42 +5426,11 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
 
         except Exception:
             raise
-    # ---------------------------------------------------------------------------
-    # Security Token - Credit to Dave Knot (https://github.com/dns-prefetch)
-    # ---------------------------------------------------------------------------
-    elif is_security_token:
-
-        try:
-            # Read the token file from the security_token_file parameter of the .config file
-            config = oci.config.from_file(
-                oci.config.DEFAULT_LOCATION,
-                (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
-            )
-
-            token_file = config['security_token_file']
-            token = None
-            with open(token_file, 'r') as f:
-                token = f.read()
-
-            # Read the private key specified by the .config file.
-            private_key = oci.signer.load_private_key_from_file(config['key_file'])
-
-            signer = oci.auth.signers.SecurityTokenSigner(token, private_key)
-
-            return config, signer
-
-        except KeyError:
-            print("* Key Error obtaining security_token_file")
-            raise SystemExit
-
-        except Exception:
-            raise
 
     # -----------------------------
     # config file authentication
     # -----------------------------
     else:
-
 
         try:
             config = oci.config.from_file(
@@ -5517,14 +5479,12 @@ def set_parser_arguments():
     return result
 
 
-
 ##########################################################################
 # execute_report
 ##########################################################################
 def execute_report():
 
     # Get Command Line Parser
-    parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100, width=180))
     parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100, width=180))
     parser.add_argument('-c', default="", dest='file_location',
                         help='OCI config file location')
@@ -5560,13 +5520,6 @@ def execute_report():
                         dest='version', help='Show the version of the script and exit.')
     parser.add_argument('--debug', action='store_true', default=False,
                         dest='debug', help='Enables debugging messages. This feature is in beta')    
-                        dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
-    parser.add_argument('-st', action='store_true', default=False, 
-                        dest='is_security_token', help='Authenticate using Security Token')
-    parser.add_argument('-v', action='store_true', default=False,
-                        dest='version', help='Show the version of the script and exit.')
-    parser.add_argument('--debug', action='store_true', default=False,
-                        dest='debug', help='Enables debugging messages. This feature is in beta')    
     cmd = parser.parse_args()
 
     if cmd.version:
@@ -5585,7 +5538,6 @@ def execute_report():
             for csvfile in glob.glob(csv_report_directory + '/*.csv'):
 
                 worksheet_name = csvfile.split(os.path.sep)[-1].replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
-                worksheet_name = csvfile.split(os.path.sep)[-1].replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
 
                 if "Identity_and_Access_Management" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Identity_and_Access_Management", "IAM")
@@ -5595,14 +5547,12 @@ def execute_report():
                     worksheet_name = worksheet_name.replace("raw_identity", "raw_iam")
                 elif "Cost_Tracking_Budgets_Best_Practices" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Cost_Tracking_", "")
-                    worksheet_name = worksheet_name.replace("Cost_Tracking_", "")
                 elif "Storage_File_Storage_Service" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Storage_File_Storage_Service", "FSS")
                 elif "raw_cloud_guard_target" in worksheet_name:
                     # cloud guard targets are too large for a cell
                     continue
                 elif len(worksheet_name) > 31:
-                    worksheet_name = worksheet_name.replace("_", "")
                     worksheet_name = worksheet_name.replace("_", "")
 
                 worksheet = workbook.add_worksheet(worksheet_name)
@@ -5617,7 +5567,6 @@ def execute_report():
     except Exception as e:
         print("**Failed to output to excel. Please use CSV files.**")
         print(e)
-
 
 
 ##########################################################################

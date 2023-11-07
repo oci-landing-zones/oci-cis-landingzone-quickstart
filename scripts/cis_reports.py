@@ -36,9 +36,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.5"
+RELEASE_VERSION = "2.6.6"
 PYTHON_SDK_VERSION = "'2.110.0"
-UPDATED_DATE = "October 6, 2023"
+UPDATED_DATE = "November 9, 2023"
 
 
 ##########################################################################
@@ -72,6 +72,8 @@ def show_version(verbose=False):
         print('Please use --help for more info')
         print('\nTested    oci-python-sdk version: ' + PYTHON_SDK_VERSION)
         print('Installed oci-python-sdk version: ' + str(oci.__version__))
+        print('The command line arguments are:' + str(sys.argv))
+
     else:
         print(script_updated)
 

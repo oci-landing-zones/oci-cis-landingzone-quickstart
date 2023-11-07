@@ -13,3 +13,5 @@ test/**
 *.csv
 *.xlsx
 *.html
+**/scripts/**/*.json
+**/scripts/**/*.pkl

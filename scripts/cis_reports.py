@@ -26,6 +26,8 @@ from threading import Thread
 import hashlib
 import re
 import requests
+import pickle
+#test
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -135,7 +137,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -154,14 +156,14 @@ class CIS_Report:
             '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
             '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.8'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
 
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
+            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Findings': [], 'CISv8': ['4.4','12.3'], 'CCCS Guard Rail' : '2,3,5,7,9','Remediation':[]},
 
             '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail': '11', 'Remediation': []},
             '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
@@ -775,6 +777,10 @@ class CIS_Report:
         # Error Data
         self.__errors = []
 
+        # All Resources
+        self.__all_resources_json = {}
+
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -901,6 +907,13 @@ class CIS_Report:
         # Determining if CSV report OCIDs will be redacted
         self.__redact_output = redact_output
 
+        # Determine if All resource from Search service should be queried
+        self.__all_resources = all_resources
+        if all_resources:
+            self.__all_resources = all_resources
+            self.__obp_checks = True
+            self.__output_raw_data = True
+
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
     ##########################################################################
@@ -995,6 +1008,12 @@ class CIS_Report:
                 if proxy:
                     sch.base_client.session.proxies = {'https': proxy}
                 region_values['sch_client'] = sch
+
+                topology = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
+                if proxy:
+                    topology.base_client.session.proxies = {'https': proxy}
+                topology.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
+                region_values['topology_client'] = topology
 
             except Exception as e:
                 debug("__create_regional_signers: error reading" + str(self.__config))
@@ -2310,6 +2329,50 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_ip_sec_connections " + str(e.args))
+        
+    ############################################
+    # Collect Network Topology Data
+    ############################################
+    def __network_topology_dump(self):
+        debug("__network_topology_dump: Starting")
+        self.__network_topology_json = {}
+        
+        def api_function(region_key, region_values, tenancy_id):
+            try:
+                get_vcn_topology_response = region_values['topology_client'].get_networking_topology(
+                    compartment_id=tenancy_id,
+                    access_level="ACCESSIBLE",
+                    query_compartment_subtree=True)
+                debug("__network_topology_dump: Successful queried network topology for region: " + region_key)
+
+            except Exception as e:
+                if "(-1, null, false)" in e.message:
+  
+                    return None #This error is benign. The API shows an error when there is no topology data to pull.
+                debug("__network_topology_dump: ERROR querying network topology for region: " + region_key)
+                self.__errors.append({"id" : region_key + "_network_topology_dump", "error" : str(e) })
+                print(e)
+            else:
+                self.__network_topology_json[region_key]=get_vcn_topology_response.data
+                print(f"\tProcessed {region_key} Network Topology")
+
+        # Parallelize API Calls. See https://github.com/oracle/oci-python-sdk/blob/master/examples/parallel_api_collection.py
+               
+        thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+        
+        for region_key, region_values in self.__regions.items():
+            thread_pool.submit(api_function, region_key, region_values, self.__tenancy.id)
+
+        thread_pool.shutdown(wait=True)
+        # Save the topology data for offline analysis.
+        with open('oci_network_topologies.pkl', 'wb') as file:
+            pickle.dump(self.__network_topology_json, file)
+
+        # To open the topology data
+        # import pickle
+        # with open ('oci_network_topologies.pkl','rb') as file:
+        #    topology_data = pickle.load(file)
+        # print(topology_data['us-ashburn-1'])
 
     ############################################
     # Load Autonomous Databases
@@ -3307,6 +3370,47 @@ class CIS_Report:
         print("\tProcessed " + str(len(self.__resources_in_root_compartment)) + " resources in the root compartment")
         return self.__resources_in_root_compartment
 
+    ##########################################################################
+    # All Resources in Tenancy
+    ##########################################################################
+    def __search_resources_all_resources_in_tenancy(self):
+        
+        # This function runs gets a resource and it's additional fields
+        def search_query_resource_type(resource_type, search_client):
+            try:
+                query = f"query {resource_type} resources return allAdditionalFields"
+                results = oci.pagination.list_call_get_all_results(
+                    search_client.search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query=query)
+                ).data
+                
+                return oci.util.to_dict(results)
+            except Exception as e:
+                return []
+
+        for region_key, region_values in self.__regions.items():
+            self.__all_resources_json[region_key] = {}
+            try:
+                all_regional_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].list_resource_types).data
+                # self.__all_resources_json[region_key] = all_regional_resources
+                for item in all_regional_resources:
+                    if not(item.name in self.__all_resources_json[region_key]):
+                        self.__all_resources_json[region_key][item.name] = []
+
+                for type in self.__all_resources_json[region_key]:
+                    self.__all_resources_json[region_key][type] += search_query_resource_type(type, region_values['search_client'])
+                    
+            except Exception as e:
+                raise RuntimeError(
+                    "Error in __search_resources_all_resources_in_tenancy " + str(e.args))
+        
+        print("\tProcessed " + str(len(self.__all_resources_json)) + " resources in the tenancy")
+        # print(self.__all_resources_json)                        
+        return self.__all_resources_json
+    
+    
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
@@ -4405,16 +4509,20 @@ class CIS_Report:
 
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")
+        summary_files = []
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        self.__report_generate_html_summary_report(
+        summary_file_name = self.__report_generate_html_summary_report(
             self.__report_directory, "cis", "html_summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        # Outputting to a bucket if I have one
-        if summary_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(
-                self.__output_bucket, summary_file_name)
+        # Outputing to a bucket if I have one
+        if summary_files and self.__output_bucket:
+            for summary_file in summary_files:
+                self.__os_copy_report_to_object_storage(
+                    self.__output_bucket, summary_file)
 
         for key, recommendation in self.cis_foundations_benchmark_1_2.items():
             if recommendation['Level'] <= level:
@@ -4829,9 +4937,19 @@ class CIS_Report:
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
                 self.__sch_read_service_connectors,
+                self.__network_topology_dump
             ]
         else:
             obp_functions = []
+
+        # All OCI Resources via Search Service
+
+        if self.__all_resources:
+            all_resources = [
+                self.__search_resources_all_resources_in_tenancy,
+            ]
+        else:
+            all_resources = []
 
         def execute_function(func):
             func()
@@ -4839,7 +4957,7 @@ class CIS_Report:
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Submit each function to the executor
             futures = []
-            for func in cis_regional_functions + obp_functions:
+            for func in cis_regional_functions + obp_functions + all_resources:
                 futures.append(executor.submit(execute_function, func))
 
             # Wait for all functions to complete
@@ -4973,6 +5091,18 @@ class CIS_Report:
             self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
         list_report_file_names.append(report_file_name)
 
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", oci.util.to_dict(self.__network_topology_json))
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_pkl_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", self.__network_topology_json)
+        list_report_file_names.append(report_file_name)
+
         if self.__output_bucket:
             for raw_report in list_report_file_names:
                 if raw_report:
@@ -5065,6 +5195,94 @@ class CIS_Report:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
 
     ##########################################################################
+    # Print to JSON
+    ##########################################################################
+    def __print_to_json_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".json"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Serializing JSON to string
+            json_object = json.dumps(data, indent=4)
+          
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                items_to_redact = re.findall(self.__oci_ocid_pattern,json_object)
+                for redact_me in items_to_redact:
+                    json_object = json_object.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+
+
+            # Writing to json file
+            with open(file_path, mode='w', newline='') as json_file:
+                json_file.write(json_object)
+            
+            print("JSON: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+        
+        except Exception as e:
+            raise Exception("Error in print_to_json_file: " + str(e.args))
+    
+    ##########################################################################
+    # Print to PKL
+    ##########################################################################
+    def __print_to_pkl_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".pkl"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Writing to json file
+            with open(file_path, 'wb') as pkl_file:
+                pickle.dump(data,pkl_file)
+            
+            
+            print("PKL: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+
+
+        except Exception as e:
+            raise Exception("Error in __print_to_pkl_file: " + str(e.args))
+    
+
+    
+    ##########################################################################
     # Orchestrates Data collection and reports
     ##########################################################################
     def generate_reports(self, level=2):
@@ -5129,12 +5347,15 @@ def check_service_error(code):
             code == 'IncorrectState' or
             code == 'LimitExceeded')
 
+            code == 'LimitExceeded')
+
 
 ##########################################################################
 # Create signer for Authentication
 # Input - config_profile and is_instance_principals and is_delegation_token
 # Output - config and signer objects
 ##########################################################################
+def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token, is_security_token):
 def create_signer(file_location, config_profile, is_instance_principals, is_delegation_token, is_security_token):
 
     # if instance principals authentications
@@ -5212,11 +5433,42 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
 
         except Exception:
             raise
+    # ---------------------------------------------------------------------------
+    # Security Token - Credit to Dave Knot (https://github.com/dns-prefetch)
+    # ---------------------------------------------------------------------------
+    elif is_security_token:
+
+        try:
+            # Read the token file from the security_token_file parameter of the .config file
+            config = oci.config.from_file(
+                oci.config.DEFAULT_LOCATION,
+                (config_profile if config_profile else oci.config.DEFAULT_PROFILE)
+            )
+
+            token_file = config['security_token_file']
+            token = None
+            with open(token_file, 'r') as f:
+                token = f.read()
+
+            # Read the private key specified by the .config file.
+            private_key = oci.signer.load_private_key_from_file(config['key_file'])
+
+            signer = oci.auth.signers.SecurityTokenSigner(token, private_key)
+
+            return config, signer
+
+        except KeyError:
+            print("* Key Error obtaining security_token_file")
+            raise SystemExit
+
+        except Exception:
+            raise
 
     # -----------------------------
     # config file authentication
     # -----------------------------
     else:
+
 
         try:
             config = oci.config.from_file(
@@ -5265,12 +5517,14 @@ def set_parser_arguments():
     return result
 
 
+
 ##########################################################################
 # execute_report
 ##########################################################################
 def execute_report():
 
     # Get Command Line Parser
+    parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100, width=180))
     parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100, width=180))
     parser.add_argument('-c', default="", dest='file_location',
                         help='OCI config file location')
@@ -5292,11 +5546,20 @@ def execute_report():
                         help='Outputs all resource data into CSV files')
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices')
+    parser.add_argument('--all_resources', action='store_true', default=False,
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
-                        help='Redacts OCIDs in output CSV files')
+                        help='Redacts OCIDs in output CSV and JSON files')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
+                        dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
+    parser.add_argument('-st', action='store_true', default=False, 
+                        dest='is_security_token', help='Authenticate using Security Token')
+    parser.add_argument('-v', action='store_true', default=False,
+                        dest='version', help='Show the version of the script and exit.')
+    parser.add_argument('--debug', action='store_true', default=False,
+                        dest='debug', help='Enables debugging messages. This feature is in beta')    
                         dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
     parser.add_argument('-st', action='store_true', default=False, 
                         dest='is_security_token', help='Authenticate using Security Token')
@@ -5313,7 +5576,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:
@@ -5321,6 +5584,7 @@ def execute_report():
             workbook = Workbook(csv_report_directory + '/Consolidated_Report.xlsx', {'in_memory': True})
             for csvfile in glob.glob(csv_report_directory + '/*.csv'):
 
+                worksheet_name = csvfile.split(os.path.sep)[-1].replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
                 worksheet_name = csvfile.split(os.path.sep)[-1].replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
 
                 if "Identity_and_Access_Management" in worksheet_name:
@@ -5331,12 +5595,14 @@ def execute_report():
                     worksheet_name = worksheet_name.replace("raw_identity", "raw_iam")
                 elif "Cost_Tracking_Budgets_Best_Practices" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Cost_Tracking_", "")
+                    worksheet_name = worksheet_name.replace("Cost_Tracking_", "")
                 elif "Storage_File_Storage_Service" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Storage_File_Storage_Service", "FSS")
                 elif "raw_cloud_guard_target" in worksheet_name:
                     # cloud guard targets are too large for a cell
                     continue
                 elif len(worksheet_name) > 31:
+                    worksheet_name = worksheet_name.replace("_", "")
                     worksheet_name = worksheet_name.replace("_", "")
 
                 worksheet = workbook.add_worksheet(worksheet_name)
@@ -5351,6 +5617,7 @@ def execute_report():
     except Exception as e:
         print("**Failed to output to excel. Please use CSV files.**")
         print(e)
+
 
 
 ##########################################################################

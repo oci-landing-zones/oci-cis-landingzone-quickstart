@@ -205,6 +205,18 @@ Fixes:
 - For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
 - Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
 
+#   March 24, 2023 Release Notes - 2.5.6
+1. [Compliance Checking Script Updates](#2-5-6-script-updates)
+
+## <a name="2-5-6-script-updates">CIS Compliance Script Updates</a>
+Updates:
+- Added egress rules to Security Lists and Network Security Groups.
+- Added DRG Upgrade status as *Upgrade_status* to the `raw_data_network_drgs.csv` file.
+
+Fixes:
+- For CIS Recommendations 1.5 and 1.6 now show *Not Applicable* instead of *Yes* or *No* as this is not yet checked by the script.
+- Removed filenames for findings with zero findings from the `cis_summary_report.csv` and `cis_html_summary_report.html` reports.
+
 #   March 2, 2023 Release Notes - 2.5.5
 1. [OCI IAM Policy Fix for Database Admin Group](#2-5-5-adb-policy-fix)
 1. [OCI IAM Service Policy Update](#2-5-5-oci-iam-service-policy)

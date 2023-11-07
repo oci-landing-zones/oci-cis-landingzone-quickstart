@@ -418,7 +418,7 @@ locals {
       (local.database_dynamic_group_policy_name) = {
         compartment_ocid = local.enclosing_compartment_id
         name             = local.database_dynamic_group_policy_name
-        description      = "Landing Zone policy for ${local.database_kms_dynamic_group_name} group to use keys in compartment ${local.security_compartment_name}."
+        description      = "Landing Zone policy for ${local.database_kms_dynamic_group_name} group to use Vault service."
         defined_tags     = local.policies_defined_tags
         freeform_tags    = local.policies_freeform_tags
         statements       = local.autonomous_database_grants

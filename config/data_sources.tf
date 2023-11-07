@@ -70,7 +70,12 @@ data "oci_identity_group" "existing_storage_admin_group" {
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
-/* data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
+data "oci_identity_dynamic_groups" "all" {
+  compartment_id = var.tenancy_ocid
+}
+
+/*
+data "oci_identity_dynamic_groups" "existing_security_fun_dyn_group" {
   compartment_id = var.tenancy_ocid
   filter {
     name   = "name"

@@ -1376,6 +1376,7 @@ class CIS_Report:
             ).data
 
             for policy in policies_data:
+                debug("__identity_read_tenancy_policies: Reading Tenancy policies : " + policy.display_name)
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1391,6 +1392,8 @@ class CIS_Report:
             return self.__policies
 
         except Exception as e:
+            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies : " + policy.display_name)
+            self.__errors.append({"id" : "__identity_read_tenancy_policies", "error" : str(e)})
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
     ############################################

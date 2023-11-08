@@ -1449,7 +1449,9 @@ class CIS_Report:
     ############################################
     def __identity_read_availability_domains(self):
         try:
+            debug("__identity_read_availability_domains: Getting Availability Domains for regions :")
             for region_key, region_values in self.__regions.items():
+                debug("__identity_read_availability_domains: reading Availability Domains for regions :" +region_key)
                 region_values['availability_domains'] = oci.pagination.list_call_get_all_results(
                     region_values['identity_client'].list_availability_domains,
                     compartment_id=self.__tenancy.id
@@ -1457,6 +1459,8 @@ class CIS_Report:
                 print("\tProcessed " + str(len(region_values['availability_domains'])) + " Availability Domains in " + region_key)
 
         except Exception as e:
+            debug("__identity_read_availability_domains: reading availability domain" + str(region_key))
+            self.__errors.append({"id" : "__identity_read_availability_domains" + "_" + str(region_key), "error" : str(e)})
             raise RuntimeError(
                 "Error in __identity_read_availability_domains: " + str(e.args))
 

@@ -1047,6 +1047,7 @@ class CIS_Report:
 
             # Need to convert for raw output
             for compartment in self.__compartments:
+                debug("__identity_read_compartments: Getting Compartments:" + compartment.name)
                 deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
                     'id': compartment.id,
@@ -1091,6 +1092,8 @@ class CIS_Report:
             return self.__compartments
 
         except Exception as e:
+            debug("__identity_read_compartments: Error Getting Compartments:" + compartment.name)
+            self.__errors.append({"id" : "__identity_read_compartments", "error" : str(e)})
             raise RuntimeError(
                 "Error in identity_read_compartments: " + str(e.args))
 

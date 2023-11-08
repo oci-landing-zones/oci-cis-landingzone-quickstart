@@ -1436,7 +1436,7 @@ class CIS_Report:
 
         except Exception as e:
             debug("__identity_read_availability_domains: reading availability domain" + str(region_key))
-            self.__errors.append({"id" : "__identity_read_availability_domains", "error" : str(e)})
+            self.__errors.append({"id" : "__identity_read_availability_domains" + "_" + str(region_key), "error" : str(e)})
             raise RuntimeError(
                 "Error in __identity_read_availability_domains: " + str(e.args))
 

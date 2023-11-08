@@ -92,6 +92,12 @@ module "lz_groups" {
         user_ids = []
         defined_tags  = local.groups_defined_tags
         freeform_tags = local.groups_freeform_tags
-      } if length(trimspace(var.existing_cost_admin_group_name)) == 0}
+      } if length(trimspace(var.existing_cost_admin_group_name)) == 0},
+      { for i in [1] : "${each.value.group_name_prefix}${local.storage_admin_group_name_suffix}" => {
+        description = "Landing Zone group for Storage Management."
+        user_ids = []
+        defined_tags  = local.groups_defined_tags
+        freeform_tags = local.groups_freeform_tags
+      } if length(trimspace(var.existing_storage_admin_group_name)) == 0}
     )
 }

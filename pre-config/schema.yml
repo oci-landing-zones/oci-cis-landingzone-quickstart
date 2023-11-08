@@ -35,6 +35,7 @@ variableGroups:
       - "existing_announcement_reader_group_name"
       - "existing_exainfra_admin_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_storage_admin_group_name"
     visible: advanced_options  
   
   - title: "Dynamic Groups"
@@ -200,6 +201,14 @@ variables:
     title: "Existing Cost Admin group name"
     description: "Existing group to which Cost management policies will be granted to."
     visible: use_existing_groups
+
+  existing_storage_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Storage Admin group name"
+    description: "Existing group to which Storage management policies will be granted to."
+    visible: use_existing_groups  
 
   existing_security_fun_dyn_group_name:
     type: string

@@ -6,7 +6,7 @@ The OCI CIS Landing Zone Quick Start Terraform configures services and resources
 The diagram below shows how the services and resources deployed in a single VCN deployment map to the CIS OCI Benchmark v1.2.
 
 ![Architecture_Single_VCN](images/Architecture_Single_VCN_CIS.png)
-## Terraform to CIS OCI Benchmark
+## Mapping to CIS OCI Benchmark
 The table below documents how the services and resources are configured to meet the CIS OCI Benchmark.
 
 

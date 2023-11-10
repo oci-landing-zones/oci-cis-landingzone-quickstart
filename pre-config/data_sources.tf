@@ -1,3 +1,7 @@
+data "oci_identity_group" "existing_provisioning_group" {
+  group_id = length(trimspace(var.existing_provisioning_group_name)) > 0 ? var.existing_provisioning_group_name : "nogroup"
+}
+
 data "oci_identity_groups" "existing_provisioning_group" {
   compartment_id = var.tenancy_ocid
   filter {

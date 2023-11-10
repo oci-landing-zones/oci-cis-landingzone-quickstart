@@ -1089,7 +1089,7 @@ outputs:
   bastions:
     type: json
     title: Bastions   
-
+    
 outputGroups:
   - title: Environment
     outputs:

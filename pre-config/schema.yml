@@ -216,10 +216,9 @@ variables:
   deploy_dynamic_groups:
     type: boolean
     title: "Deploy Dynamic Groups?"
-    description: "Whether dynamic groups should be deployed. When checked, one set with four dynamic groups is created for each compartment specified in \"Enclosing Compartment Names\". For the dynamic group names, see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#dynamic_group_names\">Dynamic Group Names"</a>. When unchecked, no dynamic groups are created.
+    description: "Whether dynamic groups should be deployed. When checked, one set with four dynamic groups is created for each compartment specified in \"Enclosing Compartment Names\". For the dynamic group names, see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#dynamic_group_names\">Dynamic Group Names</a>. When unchecked, no dynamic groups are created."
     default: true
-    required: true
-
+  
   tenancy_ocid:
     type: string
 

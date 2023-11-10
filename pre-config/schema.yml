@@ -1,11 +1,15 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zone Quick Start Pre-config"
-stackDescription: "A stack to pre configure a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI."
+title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start Pre Configuration"
+stackDescription: "This stack preconfigures a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. It is only required when users that will subsenquently deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
+description: "This stack preconfigures a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. It is only required when users that will subsenquently deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
 schemaVersion: 1.1.0
-version: "0.0.1"
+version: "2.7.0"
 locale: "en"
+
+# URL of CIS Landing Zone logo icon used on Application Information tab.
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"
@@ -40,10 +44,7 @@ variableGroups:
   
   - title: "Dynamic Groups"
     variables:
-      - "existing_security_fun_dyn_group_name"
-      - "existing_appdev_fun_dyn_group_name"
-      - "existing_compute_agent_dyn_group_name"
-      - "existing_database_kms_dyn_group_name"
+      - "deploy_dynamic_groups"
     visible: advanced_options
 
   - title: "Policies"
@@ -78,7 +79,7 @@ variables:
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
+    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s); 5) one set of dynamic groups. For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
     default: false
 
   enclosing_compartment_names:
@@ -210,25 +211,12 @@ variables:
     description: "Existing group to which Storage management policies will be granted to."
     visible: use_existing_groups  
 
-  existing_security_fun_dyn_group_name:
-    type: string
-    title: "Existing security dynamic group name"
-    description: "Existing dynamic group to be used by security functions."
-
-  existing_appdev_fun_dyn_group_name:
-    type: string
-    title: "Existing appdev dynamic group name"
-    description: "Existing dynamic group to be used by application related functions."
-
-  existing_compute_agent_dyn_group_name:
-    type: string
-    title: "Existing compute agent dynamic group name"
-    description: "Existing dynamic group to be used by Compute's management agent."
-
-  existing_database_kms_dyn_group_name:
-    type: string
-    title: "Existing database dynamic group name"
-    description: "Existing dynamic group to be used by databases to manage vaults and keys."
+  deploy_dynamic_groups:
+    type: boolean
+    title: "Deploy Dynamic Groups?"
+    description: "Whether dynamic groups should be deployed. If checked, one set with four dynamic groups is deployed in association to each compartment specified in 'Enclosing Compartment Names'."
+    default: true
+    required: true
 
   tenancy_ocid:
     type: string
@@ -244,3 +232,43 @@ variables:
 
   private_key_password:
     type: password
+
+outputs:
+  release:
+    type: string
+    title: CIS Landing Zone Release
+
+  home_region:
+    type: string
+    title: Home Region
+
+  unique_prefix:
+    type: string
+    title: Unique Prefix
+
+  lz_top_compartments:
+    type: json
+    title: Compartments (use these as existing enclosing compartments for deploying CIS Landing Zones) 
+
+  lz_provisioning_groups:
+    type: json
+    title: Provisioning Groups (use these to provision CIS Landing Zones in the respective compartment)
+
+  lz_groups:
+    type: json
+    title: Management Groups (use these as existing groups when deploying CIS Landing Zones)
+
+  lz_dynamic_groups:
+    type: json
+    title: Dynamic Groups (use these as existing dynamic groups when deploying CIS Landing Zones)  
+
+outputGroups:
+  - title: Outputs
+    outputs:
+      - ${release}
+      - ${home_region}
+      - ${unique_prefix}
+      - ${lz_top_compartments}
+      - ${lz_provisioning_groups}
+      - ${lz_groups}
+      - ${lz_dynamic_groups}

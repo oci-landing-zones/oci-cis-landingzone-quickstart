@@ -16,3 +16,5 @@ test-admin/**
 *.html
 **/creds/**
 **/tfvars/**
+**/scripts/**/*.json
+**/scripts/**/*.pkl

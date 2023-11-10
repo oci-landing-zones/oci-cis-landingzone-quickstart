@@ -31,7 +31,7 @@ data "oci_identity_users" "these" {
 
 locals {
   groups = { for g in oci_identity_group.these : g.name => g }
-  users  = { for u in data.oci_identity_users.these.users : u.name => u }
+  users  = { for u in (data.oci_identity_users.these.users != null ? data.oci_identity_users.these.users : []) : u.name => u }
 
   group_memberships = flatten([
     for k, v in var.groups : [

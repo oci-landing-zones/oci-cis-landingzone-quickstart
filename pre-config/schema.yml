@@ -1,15 +1,10 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "Pre-configuration for CIS (Center for Internet Security) OCI Landing Zone Quick Start"
-stackDescription: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level. For details on the supported variables please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#pre_config_input_variables"
-description: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
+stackDescription: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create IAM resources at the Root compartment. For details, see https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator"
 schemaVersion: 1.1.0
 version: "2.7.0"
 locale: "en"
-
-# URL of CIS Landing Zone logo icon used on Application Information tab.
-logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "Environment"
@@ -79,7 +74,7 @@ variables:
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s); 5) one set of dynamic groups. For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
+    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s); 5) one set of dynamic groups. For details, see <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">CIS Landing Zone Pre-config documentation</a>."
     default: false
 
   enclosing_compartment_names:
@@ -233,43 +228,3 @@ variables:
 
   private_key_password:
     type: password
-
-outputs:
-  release:
-    type: string
-    title: CIS Landing Zone Release
-
-  home_region:
-    type: string
-    title: Home Region
-
-  unique_prefix:
-    type: string
-    title: Unique Prefix
-
-  lz_top_compartments:
-    type: json
-    title: Compartments (use these as existing enclosing compartments for deploying CIS Landing Zones) 
-
-  lz_provisioning_groups:
-    type: json
-    title: Provisioning Groups (use these to provision CIS Landing Zones in the respective compartment)
-
-  lz_groups:
-    type: json
-    title: Management Groups (use these as existing groups when deploying CIS Landing Zones)
-
-  lz_dynamic_groups:
-    type: json
-    title: Dynamic Groups (use these as existing dynamic groups when deploying CIS Landing Zones)  
-
-outputGroups:
-  - title: Outputs
-    outputs:
-      - ${release}
-      - ${home_region}
-      - ${unique_prefix}
-      - ${lz_top_compartments}
-      - ${lz_provisioning_groups}
-      - ${lz_groups}
-      - ${lz_dynamic_groups}

@@ -110,26 +110,8 @@ variable "existing_storage_admin_group_name" {
   default = ""
 }
 
-variable "existing_security_fun_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by security functions."
+variable "deploy_dynamic_groups" {
+  type    = bool
+  default = true
+  description = "Whether dynamic groups should be deployed. If true, one set with four dynamic groups is deployed in association to each compartment specified in 'enclosing_compartment_names'."
 }
-
-variable "existing_appdev_fun_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by application related functions."
-}
-
-variable "existing_compute_agent_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by Compute's management agent."
-}
-
-variable "existing_database_kms_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by databases to manage vaults and keys."
-}  

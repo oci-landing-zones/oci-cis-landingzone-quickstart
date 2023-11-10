@@ -1,9 +1,9 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start Pre Configuration"
-stackDescription: "This stack preconfigures a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. It is only required when users that will subsenquently deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
-description: "This stack preconfigures a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. It is only required when users that will subsenquently deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
+title: "Pre-configuration for CIS (Center for Internet Security) OCI Landing Zone Quick Start"
+stackDescription: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level. For details on the supported variables please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#pre_config_input_variables\">Pre Config Module Input Variables"</a>
+description: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. It creates compartments, groups, groups policies and dynamic groups, hence meant to be executed by users with the required permissions at the Root compartment. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create such resources at the Root compartment level."
 schemaVersion: 1.1.0
 version: "2.7.0"
 locale: "en"
@@ -107,19 +107,21 @@ variables:
   use_existing_provisioning_group:
     type: boolean
     title: "Use Existing Group for Provisioning the Landing Zone?"
-    description: "Whether an existing group should be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by \"Enclosing compartment names\"."
+    description: "Whether an existing group should be used for Landing Zone provisioning. If unchecked, one group is created for each compartment specified in \"Enclosing Compartment Names\"."
     default: false
 
   existing_provisioning_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing Group Name for Provisioning the Landing Zone"
-    description: "The name of an existing group to be used for provisioning all resources in the compartments defined by \"Enclosing compartment names\"."
+    description: "The name of an existing group to be used for provisioning all resources in the compartments specified in \"Enclosing Compartment Names\"."
     visible :  use_existing_provisioning_group
       
   use_existing_groups:
     type: boolean
     title: "Use Existing Groups for Managing the Landing Zone?"
-    description: "Whether existing groups should be reused for managing the Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
+    description: "Whether existing groups should be reused for managing the Landing Zone. When unchecked, one set of groups is created for each compartment specified in \"Enclosing Compartment Names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
     default: false
     required: true
   
@@ -214,7 +216,7 @@ variables:
   deploy_dynamic_groups:
     type: boolean
     title: "Deploy Dynamic Groups?"
-    description: "Whether dynamic groups should be deployed. If checked, one set with four dynamic groups is deployed in association to each compartment specified in 'Enclosing Compartment Names'."
+    description: "Whether dynamic groups should be deployed. When checked, one set with four dynamic groups is created for each compartment specified in \"Enclosing Compartment Names\". For the dynamic group names, see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#dynamic_group_names\">Dynamic Group Names"</a>. When unchecked, no dynamic groups are created.
     default: true
     required: true
 

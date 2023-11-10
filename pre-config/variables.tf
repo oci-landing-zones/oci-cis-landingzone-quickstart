@@ -41,7 +41,7 @@ variable "use_existing_provisioning_group" {
 variable "existing_provisioning_group_name" {
   type        = string
   default     = ""
-  description = "The name of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false."
+  description = "The name or OCID of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false."
 }
 variable "enclosing_compartment_names" {
     type    = list(string)
@@ -113,5 +113,5 @@ variable "existing_storage_admin_group_name" {
 variable "deploy_dynamic_groups" {
   type    = bool
   default = true
-  description = "Whether dynamic groups should be deployed. If true, one set with four dynamic groups is deployed in association to each compartment specified in 'enclosing_compartment_names'."
+  description = "Whether dynamic groups should be created. If true, one set with four dynamic groups is created for each compartment specified in 'enclosing_compartment_names'. When false, no dynamic groups are created."
 }

@@ -5,7 +5,7 @@ title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start"
 stackDescription: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
 description: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">CIS OCI Landing Zone Quick Start</a>."
 schemaVersion: 1.1.0
-version: "2.6.1"
+version: "2.7.0"
 locale: "en"
 
 # URL of CIS Landing Zone logo icon used on Application Information tab.
@@ -327,25 +327,33 @@ variables:
     visible: env_advanced_options  
  
   existing_security_fun_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing security dynamic group name"
     description: "Existing security dynamic group to run functions."
     visible: env_advanced_options
 
   existing_appdev_fun_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing appdev dynamic group name"
     description: "Existing appdev dynamic group."
     visible: env_advanced_options
 
   existing_compute_agent_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing compute agent dynamic group name"
     description: "Existing compute agent dynamic group for management agent access."
     visible: env_advanced_options
 
   existing_database_kms_dyn_group_name:
-    type: string
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing database dynamic group name"
     description: "Existing database dynamic group for database to access keys."
     visible: env_advanced_options
@@ -1081,7 +1089,7 @@ outputs:
   bastions:
     type: json
     title: Bastions   
-
+    
 outputGroups:
   - title: Environment
     outputs:

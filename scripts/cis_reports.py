@@ -38,7 +38,7 @@ except Exception:
 
 RELEASE_VERSION = "2.7.0"
 PYTHON_SDK_VERSION = "2.115.1"
-UPDATED_DATE = "November 15, 2023"
+UPDATED_DATE = "November 16, 2023"
 
 
 ##########################################################################
@@ -1048,7 +1048,7 @@ class CIS_Report:
 
             # Need to convert for raw output
             for compartment in self.__compartments:
-                debug("__identity_read_compartments: Getting Compartments:" +compartment.name)
+                debug("__identity_read_compartments: Getting Compartments:" + compartment.name)
                 deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
                     'id': compartment.id,
@@ -1093,7 +1093,7 @@ class CIS_Report:
             return self.__compartments
 
         except Exception as e:
-            debug("__identity_read_compartments: Error Getting Compartments:" +compartment.name)
+            debug("__identity_read_compartments: Error Getting Compartments:" + compartment.name)
             self.__errors.append({"id" : "__identity_read_compartments", "error" : str(e)})
             raise RuntimeError(
                 "Error in identity_read_compartments: " + str(e.args))
@@ -1381,7 +1381,7 @@ class CIS_Report:
             ).data
 
             for policy in policies_data:
-                debug("__identity_read_tenancy_policies: Reading Tenancy policies :" +policy.display_name)
+                debug("__identity_read_tenancy_policies: Reading Tenancy policies : " + policy.display_name)
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1397,7 +1397,7 @@ class CIS_Report:
             return self.__policies
 
         except Exception as e:
-            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies :" +policy.display_name)
+            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies : " + policy.display_name)
             self.__errors.append({"id" : "__identity_read_tenancy_policies", "error" : str(e)})
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
@@ -1412,6 +1412,7 @@ class CIS_Report:
             for dynamic_group in dynamic_groups_data:
                 deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                 # try:
+                debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
                 record = {
                     "id": dynamic_group.id,
                     "name": dynamic_group.name,
@@ -1446,6 +1447,8 @@ class CIS_Report:
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")
             return self.__dynamic_groups
         except Exception as e:
+            self.__errors.append({"id" : "__identity_read_dynamic_groups", "error" : str(e)})
+            debug("__identity_read_dynamic_groups: error reading" + str(e))
             raise RuntimeError("Error in __identity_read_dynamic_groups: " + str(e.args))
         pass
 

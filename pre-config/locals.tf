@@ -16,7 +16,7 @@ locals {
   # Whether compartments should be deleted in terraform destroy or upon resource removal.
   enable_cmp_delete = false
   enclosing_compartments     = length(var.enclosing_compartment_names) > 0 ? {for c in var.enclosing_compartment_names : c => {parent_id: local.top_compartment_parent_id, name: length(var.unique_prefix) > 0 ? "${var.unique_prefix}-${c}" : c, description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = local.compartment_defined_tags, freeform_tags = local.compartment_freeform_tags}} : {"${local.unique_prefix}-top-cmp" : {parent_id: local.top_compartment_parent_id, name: "${local.unique_prefix}-top-cmp", description: "Landing Zone enclosing compartment", enable_delete: local.enable_cmp_delete, defined_tags = local.compartment_defined_tags, freeform_tags = local.compartment_freeform_tags}}
-  provisioning_group_names   = var.use_existing_provisioning_group == false ? {for k in keys(local.enclosing_compartments) : k => {group_name: "${k}-provisioning-group"}} : {(local.unique_prefix) : {group_name : var.existing_provisioning_group_name}}
+  provisioning_group_names   = var.use_existing_provisioning_group == false ? ({for k in keys(local.enclosing_compartments) : k => {group_name: "${k}-provisioning-group"}}) : {(local.unique_prefix) : {group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_provisioning_group_name)) > 0 ? data.oci_identity_group.existing_provisioning_group.name : data.oci_identity_groups.existing_provisioning_group.groups[0].name)}}
   
   lz_group_names             = var.use_existing_groups == false ? {for k in keys(local.enclosing_compartments) : k => {group_name_prefix:"${k}-"}} : {(local.unique_prefix) : {group_name_prefix: ""}}
 
@@ -30,6 +30,7 @@ locals {
   announcement_reader_group_name_suffix = var.use_existing_groups == false ? "announcement-reader-group" : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name)) > 0 ? data.oci_identity_group.existing_announcement_reader_group.name : data.oci_identity_groups.existing_announcement_reader_group.groups[0].name)
   exainfra_admin_group_name_suffix      = var.use_existing_groups == false ? "exainfra-admin-group"      : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name)) > 0      ? data.oci_identity_group.existing_exainfra_admin_group.name      : data.oci_identity_groups.existing_exainfra_admin_group.groups[0].name)
   cost_admin_group_name_suffix          = var.use_existing_groups == false ? "cost-admin-group"          : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name)) > 0          ? data.oci_identity_group.existing_cost_admin_group.name          : data.oci_identity_groups.existing_cost_admin_group.groups[0].name)
+  storage_admin_group_name_suffix       = var.use_existing_groups == false ? "storage-admin-group"       : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name)) > 0       ? data.oci_identity_group.existing_storage_admin_group.name       : data.oci_identity_groups.existing_storage_admin_group.groups[0].name)
   
   grant_tenancy_level_mgmt_policies = true
 

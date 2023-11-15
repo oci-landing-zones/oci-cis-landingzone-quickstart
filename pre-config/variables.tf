@@ -41,7 +41,7 @@ variable "use_existing_provisioning_group" {
 variable "existing_provisioning_group_name" {
   type        = string
   default     = ""
-  description = "The name of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false."
+  description = "The name or OCID of an existing group to be used for provisioning all resources in the compartments defined by enclosing_compartment_names variable. Ignored if use_existing_provisioning_group is false."
 }
 variable "enclosing_compartment_names" {
     type    = list(string)
@@ -105,26 +105,13 @@ variable "existing_cost_admin_group_name" {
   default = ""
 }
 
-variable "existing_security_fun_dyn_group_name" {
+variable "existing_storage_admin_group_name" {
   type    = string
   default = ""
-  description = "Existing dynamic group to be used by security functions."
 }
 
-variable "existing_appdev_fun_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by application related functions."
+variable "deploy_dynamic_groups" {
+  type    = bool
+  default = true
+  description = "Whether dynamic groups should be created. If true, one set with four dynamic groups is created for each compartment specified in 'enclosing_compartment_names'. When false, no dynamic groups are created."
 }
-
-variable "existing_compute_agent_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by Compute's management agent."
-}
-
-variable "existing_database_kms_dyn_group_name" {
-  type    = string
-  default = ""
-  description = "Existing dynamic group to be used by databases to manage vaults and keys."
-}  

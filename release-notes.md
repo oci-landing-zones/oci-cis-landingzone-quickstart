@@ -1,3 +1,28 @@
+#   November 16, 2023 Release Notes - 2.7.0
+1. [CIS Compliance Script Gets Network Topology](#2-7-0-script-network-topology)
+1. [CIS Compliance Script Gets All Resources](#2-7-0-script-all-resources)
+1. [Landing Zone Architecture to CIS OCI Benchmark Documentation](#2-7-0-terraform-mapping)
+1. [Terraform Pre-config Updates](#2-7-0-preconfig-updates)
+
+## <a name="#2-7-0-script-network-topology">CIS Compliance Script Gets Network Topology</a>
+The CIS compliance Script now queries the [OCI Network Visualizer](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/network_visualizer.htm) to download a text version of the tenancy's network topology in JSON and PKL file format.  This feature is run using the `--obp --raw` flags or the `all-resources` flag. 
+
+## <a name="#2-7-0-script-all-resources">CIS Compliance Script Gets All Resources</a>
+The CIS compliance Script now uses the [Search](https://docs.oracle.com/en-us/iaas/Content/Search/Concepts/queryoverview.htm#Overview_of_Search) service to query all available resources in a tenancy. The data returned is in a JSON file and is limited to resource types supported by Search and the fields for each resource are limited to the additional details available to the Search service.  This feature is run using the `--all-resources` flag.
+
+## <a name="#2-7-0-terraform-mapping">Landing Zone Architecture to CIS OCI Benchmark Documentation</a>
+The [CIS OCI Benchmark to CIS Landing Zone Architecture Mapping](cis-architecture-mapping.md) document details how the OCI CIS Landing Zone configuration aligns with the CIS Benchmark v1.2.
+
+## <a name="2-7-0-preconfig-updates">Updates to the CIS Compliance Script</a>
+Landing Zone:
+* Added drop downs for picking existing dynamic groups
+
+Landing Zone Pre-config:
+* Added Storage Admin Group and existing Storage Admin Group
+* Added drop down for selecting existing provisioning group
+* Removed dynamic groups policies and use existing dynamic groups from pre-config as both can be managed in the Landing Zone deployment
+* Added a check box "Deploy Dynamic Groups?" which if selected creates the dynamic groups.
+
 #   October 6, 2023 Release Notes - 2.6.5
 1. [CIS Compliance Script Updates](#2-6-5-script-updates)
 1. [Terraform Quick Start Updates](#2-6-5-quickstart-updates)

@@ -2,7 +2,7 @@
 1. [CIS Compliance Script Gets Network Topology](#2-7-0-script-network-topology)
 1. [CIS Compliance Script Gets All Resources](#2-7-0-script-all-resources)
 1. [Landing Zone Architecture to CIS OCI Benchmark Documentation](#2-7-0-terraform-mapping)
-1. [Terraform Pre-config Updates](#2-7-0-preconfig-updates)
+1. [Terraform Updates](#2-7-0-tf-updates)
 
 ## <a name="#2-7-0-script-network-topology">CIS Compliance Script Gets Network Topology</a>
 The CIS compliance Script now queries the [OCI Network Visualizer](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/network_visualizer.htm) to download a text version of the tenancy's network topology in JSON and PKL file format.  This feature is run using the `--obp --raw` flags or the `all-resources` flag. 
@@ -13,15 +13,19 @@ The CIS compliance Script now uses the [Search](https://docs.oracle.com/en-us/ia
 ## <a name="#2-7-0-terraform-mapping">Landing Zone Architecture to CIS OCI Benchmark Documentation</a>
 The [CIS OCI Benchmark to CIS Landing Zone Architecture Mapping](cis-architecture-mapping.md) document details how the OCI CIS Landing Zone configuration aligns with the CIS Benchmark v1.2.
 
-## <a name="2-7-0-preconfig-updates">Updates to the CIS Compliance Script</a>
-Landing Zone:
-* Added drop downs for picking existing dynamic groups
+## <a name="2-7-0-tf-updates">Terraform Updates</a>
+**config module**
+* Existing dynamic groups can now be selected in Resource Manager UI.
+* All IAM remote modules have pinned to version 0.1.7. If you are managing your landing zone with terraform CLI, make sure to run *terraform init -upgrade* when adopting this release.
+* **Bug fix**: when extending Landing Zone to another region, groups were being processed and an "invalid index" error generated during *terraform plan*. With this fix, groups are no longer processed when extending the Landing Zone. 
+* **Bug fix**: when running Landing Zone config as a user with limited permissions, service policies were being processed and failing during *terraform apply* due to insufficient permissions. With this fix, service policies are no longer processed when running config as a user with limited permissions.
 
-Landing Zone Pre-config:
-* Added Storage Admin Group and existing Storage Admin Group
-* Added drop down for selecting existing provisioning group
-* Removed dynamic groups policies and use existing dynamic groups from pre-config as both can be managed in the Landing Zone deployment
-* Added a check box "Deploy Dynamic Groups?" which if selected creates the dynamic groups.
+**pre-config module**
+* Storage admin group has been added.
+* Existing provisioning group can now be selected in Resource Manager UI.
+* Policies for dynamic groups have been removed, as they can be managed in the config module.
+* Ability to use existing dynamic groups has been removed, as the feature is already present in the config module.
+* *deploy_dynamic_groups* variable added, set to true by default. If reusing existing dynamic groups is needed, set this variable to false and select the existing dynamic groups in the config module.
 
 #   October 6, 2023 Release Notes - 2.6.5
 1. [CIS Compliance Script Updates](#2-6-5-script-updates)

@@ -163,15 +163,15 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 
 
 * **OCI Compartment Deletion**
-    * By design, OCI compartments are not deleted upon Terraform destroy by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
+    * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
 
 * **OCI Vault Deletion**
-    * By design, OCI vaults and keys are not deleted immediately upon Terraform destroy, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
+    * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
 
 * **Enabling no internet access on an existing deployment**
-    * Enabling *no_internet_access* on currently deployed stack fails to apply due to timeout.  This is due to OCI Terraform provider not being able remove Internet Gateway(s) and and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
+    * Enabling *no_internet_access* on a currently deployed stack fails to apply due to timeout. This is due to OCI Terraform provider not being able remove Internet Gateway(s) and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
 
 
 * **Resource Manager does not allow elements with same value in array type** 
@@ -180,4 +180,4 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
     ![ORM Array Issue](images/orm_array_issue.png)
 
 * **Support for free tier tenancies***
-    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available.  If you want to try the Landing Zone please upgrade your account to a pay-go. 
+    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a pay-go. 

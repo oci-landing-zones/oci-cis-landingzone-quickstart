@@ -16,7 +16,7 @@ The [CIS OCI Benchmark to CIS Landing Zone Architecture Mapping](cis-architectur
 ## <a name="2-7-0-tf-updates">Terraform Updates</a>
 **config module**
 * Existing dynamic groups can now be selected in Resource Manager UI.
-* All IAM remote modules have pinned to version 0.1.7. If you are managing your landing zone with terraform CLI, make sure to run *terraform init -upgrade* when adopting this release.
+* All IAM remote modules have been pinned to version 0.1.7. If you are managing the Landing Zone with terraform CLI, make sure to run *terraform init -upgrade* when adopting this release.
 * **Bug fix**: when extending Landing Zone to another region, groups were being processed and an "invalid index" error generated during *terraform plan*. With this fix, groups are no longer processed when extending the Landing Zone. 
 * **Bug fix**: when running Landing Zone config as a user with limited permissions, service policies were being processed and failing during *terraform apply* due to insufficient permissions. With this fix, service policies are no longer processed when running config as a user with limited permissions.
 

@@ -34,7 +34,8 @@ module "lz_provisioning_tenancy_group_policy" {
         "Allow group ${each.value.group_name} to read dynamic-groups in tenancy",                       # for dynamic-groups lookup        
         "Allow group ${each.value.group_name} to inspect tenancies in tenancy",                         # for home region lookup
         "Allow group ${each.value.group_name} to manage usage-budgets in tenancy",                      # for budget creation   
-        "Allow group ${each.value.group_name} to inspect users in tenancy"]                             # for users lookup
+        "Allow group ${each.value.group_name} to inspect users in tenancy",                             # for users lookup
+        "Allow group ${each.value.group_name} to read audit-events in tenancy"]                         # for audit events lookup
     }
   }
 }

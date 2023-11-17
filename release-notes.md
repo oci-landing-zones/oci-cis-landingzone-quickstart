@@ -1,4 +1,4 @@
-#   November 16, 2023 Release Notes - 2.7.0
+#   November 17, 2023 Release Notes - 2.7.0
 1. [CIS Compliance Script Gets Network Topology](#2-7-0-script-network-topology)
 1. [CIS Compliance Script Gets All Resources](#2-7-0-script-all-resources)
 1. [Landing Zone Architecture to CIS OCI Benchmark Documentation](#2-7-0-terraform-mapping)

@@ -3,7 +3,10 @@
 *If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
 <br>
 <br>
-<img align="left" src="./images/livelab.png">&nbsp;&nbsp;Check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience!
+<img align="left" src="./images/the_o.png" height="30" width="30">&nbsp;&nbsp;Check [CIS Landing Zone course](https://mylearn.oracle.com/ou/course/oci-landing-zone/123962/193003) in Oracle University for a comprehensive introduction.
+<br>
+<br>
+<img align="left" src="./images/livelab.png" height="30" width="30">&nbsp;&nbsp;And don't miss our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience.
 <br>
 <br>
 # CIS OCI Landing Zone Quick Start Template

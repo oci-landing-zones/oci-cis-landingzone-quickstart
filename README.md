@@ -6,7 +6,7 @@
 <img align="left" src="./images/the_o.png" height="30" width="30">&nbsp;&nbsp;Check [CIS Landing Zone course](https://mylearn.oracle.com/ou/course/oci-landing-zone/123962/193003) in Oracle University for a comprehensive introduction.
 <br>
 <br>
-<img align="left" src="./images/livelab.png" height="30" width="30">&nbsp;&nbsp;And don't miss our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience.
+<img align="left" src="./images/livelab.png" height="30" width="30">&nbsp;&nbsp;Also check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience.
 <br>
 <br>
 # CIS OCI Landing Zone Quick Start Template
@@ -120,7 +120,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Creating a Secure Multi-Region Landing Zone](https://www.ateam-oracle.com/post/creating-a-secure-multi-region-landing-zone)
 - [The Center for Internet Security Oracle Cloud Infrastructure Foundations Benchmark 1.2 Release update](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update)
 
-## <a name="modules"></a>CIS OCI Foundations Benchmark Modules
+## <a name="modules"></a>CIS OCI Foundations Benchmark Modules Collection
 
 This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 - [Identity & Access Management](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
@@ -182,5 +182,5 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 
     ![ORM Array Issue](images/orm_array_issue.png)
 
-* **Support for free tier tenancies***
+* **Support for free tier tenancies**
     * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a pay-go. 

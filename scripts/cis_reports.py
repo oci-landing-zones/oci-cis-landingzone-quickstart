@@ -5510,7 +5510,7 @@ def execute_report():
                         help='Outputs all resource data into CSV files')
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices')
-    parser.add_argument('--all_resources', action='store_true', default=False,
+    parser.add_argument('--all-resources', action='store_true', default=False,
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files')

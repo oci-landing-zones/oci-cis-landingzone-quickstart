@@ -2372,15 +2372,7 @@ class CIS_Report:
             thread_pool.submit(api_function, region_key, region_values, self.__tenancy.id)
 
         thread_pool.shutdown(wait=True)
-        # Save the topology data for offline analysis.
-        with open('oci_network_topologies.pkl', 'wb') as file:
-            pickle.dump(self.__network_topology_json, file)
 
-        # To open the topology data
-        # import pickle
-        # with open ('oci_network_topologies.pkl','rb') as file:
-        #    topology_data = pickle.load(file)
-        # print(topology_data['us-ashburn-1'])
 
     ############################################
     # Load Autonomous Databases

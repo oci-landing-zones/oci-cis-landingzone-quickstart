@@ -273,7 +273,7 @@ Cloud_Guard_Config       		False		1
 ```
 % python3 cis_reports.py -h       
 usage: cis_reports.py [-h] [-c FILE_LOCATION] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET] [--report-directory REPORT_DIRECTORY]
-                      [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--all_resources] [--redact_output] [-ip] [-dt] [-st] [-v] [--debug]
+                      [--print-to-screen PRINT_TO_SCREEN] [--level LEVEL] [--regions REGIONS] [--raw] [--obp] [--all-resources] [--redact_output] [-ip] [-dt] [-st] [-v] [--debug]
 
 options:
   -h, --help                           show this help message and exit
@@ -287,7 +287,7 @@ options:
   --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
   --raw                                Outputs all resource data into CSV files
   --obp                                Checks for OCI best practices
-  --all_resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags. 
+  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags. 
   --redact_output                      Redacts OCIDs in output CSV and JSON files
   -ip                                  Use Instance Principals for Authentication
   -dt                                  Use Delegation Token for Authentication in Cloud Shell
@@ -308,7 +308,7 @@ To run using Cloud Shell in all regions and check for OCI Best Practices with ra
 #### Executing in Cloud Shell to check CIS, OCI Best Practices with raw data, and get all resource via the Advanced Search Query service
 To run using Cloud Shell in all regions and check for OCI Best Practices with raw data, network topology and get all resource via the Advanced Search Query service
 ```
-% python3 cis_reports.py -dt --all_resources
+% python3 cis_reports.py -dt --all-resources
 ``` 
 
 #### Executing on local machine with a specific OCI Config file

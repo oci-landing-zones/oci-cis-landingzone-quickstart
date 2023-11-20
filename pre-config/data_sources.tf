@@ -1,3 +1,7 @@
+data "oci_identity_group" "existing_provisioning_group" {
+  group_id = length(trimspace(var.existing_provisioning_group_name)) > 0 ? var.existing_provisioning_group_name : "nogroup"
+}
+
 data "oci_identity_groups" "existing_provisioning_group" {
   compartment_id = var.tenancy_ocid
   filter {
@@ -124,5 +128,17 @@ data "oci_identity_groups" "existing_cost_admin_group" {
   filter {
     name   = "name"
     values = [var.existing_cost_admin_group_name]
+  }
+}
+
+data "oci_identity_group" "existing_storage_admin_group" {
+  group_id = length(trimspace(var.existing_storage_admin_group_name)) > 0 ? var.existing_storage_admin_group_name : "nogroup"
+}
+
+data "oci_identity_groups" "existing_storage_admin_group" {
+  compartment_id = var.tenancy_ocid
+  filter {
+    name   = "name"
+    values = [var.existing_storage_admin_group_name]
   }
 }

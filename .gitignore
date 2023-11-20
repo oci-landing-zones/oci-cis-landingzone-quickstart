@@ -10,6 +10,11 @@
 **/terraform_*.tfvars
 **/vars_*.tfvars
 test/**
+test-admin/**
 *.csv
 *.xlsx
 *.html
+**/creds/**
+**/tfvars/**
+**/scripts/**/*.json
+**/scripts/**/*.pkl

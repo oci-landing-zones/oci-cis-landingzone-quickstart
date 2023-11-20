@@ -26,6 +26,8 @@ from threading import Thread
 import hashlib
 import re
 import requests
+import pickle
+#test
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -34,9 +36,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.6.5"
-PYTHON_SDK_VERSION = "'2.110.0"
-UPDATED_DATE = "October 6, 2023"
+RELEASE_VERSION = "2.7.0"
+PYTHON_SDK_VERSION = "2.115.1"
+UPDATED_DATE = "November 20, 2023"
 
 
 ##########################################################################
@@ -70,6 +72,8 @@ def show_version(verbose=False):
         print('Please use --help for more info')
         print('\nTested    oci-python-sdk version: ' + PYTHON_SDK_VERSION)
         print('Installed oci-python-sdk version: ' + str(oci.__version__))
+        print('The command line arguments are:' + str(sys.argv))
+
     else:
         print(script_updated)
 
@@ -134,7 +138,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 1.2
         self.cis_foundations_benchmark_1_2 = {
@@ -564,7 +568,7 @@ class CIS_Report:
             'SIEM_Write_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
-            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": ""},
+            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -774,6 +778,10 @@ class CIS_Report:
         # Error Data
         self.__errors = []
 
+        # All Resources
+        self.__all_resources_json = {}
+
+
         # Setting list of regions to run in
 
         # Start print time info
@@ -900,6 +908,13 @@ class CIS_Report:
         # Determining if CSV report OCIDs will be redacted
         self.__redact_output = redact_output
 
+        # Determine if All resource from Search service should be queried
+        self.__all_resources = all_resources
+        if all_resources:
+            self.__all_resources = all_resources
+            self.__obp_checks = True
+            self.__output_raw_data = True
+
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
     ##########################################################################
@@ -993,6 +1008,12 @@ class CIS_Report:
                     sch.base_client.session.proxies = {'https': proxy}
                 region_values['sch_client'] = sch
 
+                topology = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
+                if proxy:
+                    topology.base_client.session.proxies = {'https': proxy}
+                topology.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
+                region_values['topology_client'] = topology
+
             except Exception as e:
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
 
@@ -1017,6 +1038,7 @@ class CIS_Report:
     def __identity_read_compartments(self):
         print("\nProcessing Compartments...")
         try:
+            debug("__identity_read_compartments: Processing Compartments:")
             self.__compartments = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_compartments,
                 compartment_id=self.__tenancy.id,
@@ -1026,6 +1048,7 @@ class CIS_Report:
 
             # Need to convert for raw output
             for compartment in self.__compartments:
+                debug("__identity_read_compartments: Getting Compartments:" + compartment.name)
                 deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
                     'id': compartment.id,
@@ -1070,6 +1093,8 @@ class CIS_Report:
             return self.__compartments
 
         except Exception as e:
+            debug("__identity_read_compartments: Error Getting Compartments:" + compartment.name)
+            self.__errors.append({"id" : "__identity_read_compartments", "error" : str(e)})
             raise RuntimeError(
                 "Error in identity_read_compartments: " + str(e.args))
 
@@ -1348,6 +1373,7 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_tenancy_policies(self):
         try:
+            debug("__identity_read_tenancy_policies: Getting Tenancy policies :")
             policies_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['search_client'].search_resources,
                 search_details=oci.resource_search.models.StructuredSearchDetails(
@@ -1355,6 +1381,7 @@ class CIS_Report:
             ).data
 
             for policy in policies_data:
+                debug("__identity_read_tenancy_policies: Reading Tenancy policies : " + policy.display_name)
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1370,6 +1397,8 @@ class CIS_Report:
             return self.__policies
 
         except Exception as e:
+            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies : " + policy.display_name)
+            self.__errors.append({"id" : "__identity_read_tenancy_policies", "error" : str(e)})
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
     ############################################
@@ -1383,6 +1412,7 @@ class CIS_Report:
             for dynamic_group in dynamic_groups_data:
                 deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
                 # try:
+                debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
                 record = {
                     "id": dynamic_group.id,
                     "name": dynamic_group.name,
@@ -1417,6 +1447,8 @@ class CIS_Report:
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")
             return self.__dynamic_groups
         except Exception as e:
+            self.__errors.append({"id" : "__identity_read_dynamic_groups", "error" : str(e)})
+            debug("__identity_read_dynamic_groups: error reading" + str(e))
             raise RuntimeError("Error in __identity_read_dynamic_groups: " + str(e.args))
         pass
 
@@ -1425,7 +1457,9 @@ class CIS_Report:
     ############################################
     def __identity_read_availability_domains(self):
         try:
+            debug("__identity_read_availability_domains: Getting Availability Domains for regions :")
             for region_key, region_values in self.__regions.items():
+                debug("__identity_read_availability_domains: reading Availability Domains for regions :" +region_key)
                 region_values['availability_domains'] = oci.pagination.list_call_get_all_results(
                     region_values['identity_client'].list_availability_domains,
                     compartment_id=self.__tenancy.id
@@ -1433,6 +1467,8 @@ class CIS_Report:
                 print("\tProcessed " + str(len(region_values['availability_domains'])) + " Availability Domains in " + region_key)
 
         except Exception as e:
+            debug("__identity_read_availability_domains: reading availability domain" + str(region_key))
+            self.__errors.append({"id" : "__identity_read_availability_domains" + "_" + str(region_key), "error" : str(e)})
             raise RuntimeError(
                 "Error in __identity_read_availability_domains: " + str(e.args))
 
@@ -2301,6 +2337,42 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_ip_sec_connections " + str(e.args))
+        
+    ############################################
+    # Collect Network Topology Data
+    ############################################
+    def __network_topology_dump(self):
+        debug("__network_topology_dump: Starting")
+        self.__network_topology_json = {}
+        
+        def api_function(region_key, region_values, tenancy_id):
+            try:
+                get_vcn_topology_response = region_values['topology_client'].get_networking_topology(
+                    compartment_id=tenancy_id,
+                    access_level="ACCESSIBLE",
+                    query_compartment_subtree=True)
+                debug("__network_topology_dump: Successful queried network topology for region: " + region_key)
+
+            except Exception as e:
+                if "(-1, null, false)" in e.message:
+  
+                    return None #This error is benign. The API shows an error when there is no topology data to pull.
+                debug("__network_topology_dump: ERROR querying network topology for region: " + region_key)
+                self.__errors.append({"id" : region_key + "_network_topology_dump", "error" : str(e) })
+                print(e)
+            else:
+                self.__network_topology_json[region_key]=get_vcn_topology_response.data
+                print(f"\tProcessed {region_key} Network Topology")
+
+        # Parallelize API Calls. See https://github.com/oracle/oci-python-sdk/blob/master/examples/parallel_api_collection.py
+               
+        thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+        
+        for region_key, region_values in self.__regions.items():
+            thread_pool.submit(api_function, region_key, region_values, self.__tenancy.id)
+
+        thread_pool.shutdown(wait=True)
+
 
     ############################################
     # Load Autonomous Databases
@@ -3019,6 +3091,7 @@ class CIS_Report:
 
         except Exception:
             self.__cloud_guard_config_status = 'DISABLED'
+            self.__errors.append({"id" : "__cloud_guard_read_cloud_guard_configuration", "error" : "*** Cloud Guard service requires a PayGo account ***"})
             print("*** Cloud Guard service requires a PayGo account ***")
 
     ##########################################################################
@@ -3298,6 +3371,47 @@ class CIS_Report:
         print("\tProcessed " + str(len(self.__resources_in_root_compartment)) + " resources in the root compartment")
         return self.__resources_in_root_compartment
 
+    ##########################################################################
+    # All Resources in Tenancy
+    ##########################################################################
+    def __search_resources_all_resources_in_tenancy(self):
+        
+        # This function runs gets a resource and it's additional fields
+        def search_query_resource_type(resource_type, search_client):
+            try:
+                query = f"query {resource_type} resources return allAdditionalFields"
+                results = oci.pagination.list_call_get_all_results(
+                    search_client.search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                    query=query)
+                ).data
+                
+                return oci.util.to_dict(results)
+            except Exception as e:
+                return []
+
+        for region_key, region_values in self.__regions.items():
+            self.__all_resources_json[region_key] = {}
+            try:
+                all_regional_resources = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].list_resource_types).data
+                # self.__all_resources_json[region_key] = all_regional_resources
+                for item in all_regional_resources:
+                    if not(item.name in self.__all_resources_json[region_key]):
+                        self.__all_resources_json[region_key][item.name] = []
+
+                for type in self.__all_resources_json[region_key]:
+                    self.__all_resources_json[region_key][type] += search_query_resource_type(type, region_values['search_client'])
+                    
+            except Exception as e:
+                raise RuntimeError(
+                    "Error in __search_resources_all_resources_in_tenancy " + str(e.args))
+        
+        print("\tProcessed " + str(len(self.__all_resources_json)) + " resources in the tenancy")
+        # print(self.__all_resources_json)                        
+        return self.__all_resources_json
+    
+    
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
@@ -4396,16 +4510,20 @@ class CIS_Report:
 
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")
+        summary_files = []
         summary_file_name = self.__print_to_csv_file(
             self.__report_directory, "cis", "summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        self.__report_generate_html_summary_report(
+        summary_file_name = self.__report_generate_html_summary_report(
             self.__report_directory, "cis", "html_summary_report", summary_report)
+        summary_files.append(summary_file_name)
 
-        # Outputting to a bucket if I have one
-        if summary_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(
-                self.__output_bucket, summary_file_name)
+        # Outputing to a bucket if I have one
+        if summary_files and self.__output_bucket:
+            for summary_file in summary_files:
+                self.__os_copy_report_to_object_storage(
+                    self.__output_bucket, summary_file)
 
         for key, recommendation in self.cis_foundations_benchmark_1_2.items():
             if recommendation['Level'] <= level:
@@ -4820,9 +4938,19 @@ class CIS_Report:
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
                 self.__sch_read_service_connectors,
+                self.__network_topology_dump
             ]
         else:
             obp_functions = []
+
+        # All OCI Resources via Search Service
+
+        if self.__all_resources:
+            all_resources = [
+                self.__search_resources_all_resources_in_tenancy,
+            ]
+        else:
+            all_resources = []
 
         def execute_function(func):
             func()
@@ -4830,7 +4958,7 @@ class CIS_Report:
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Submit each function to the executor
             futures = []
-            for func in cis_regional_functions + obp_functions:
+            for func in cis_regional_functions + obp_functions + all_resources:
                 futures.append(executor.submit(execute_function, func))
 
             # Wait for all functions to complete
@@ -4964,6 +5092,18 @@ class CIS_Report:
             self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
         list_report_file_names.append(report_file_name)
 
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_json_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", oci.util.to_dict(self.__network_topology_json))
+        list_report_file_names.append(report_file_name)
+
+        report_file_name = self.__print_to_pkl_file(
+                self.__report_directory, "raw_data", "oci_network_topologies", self.__network_topology_json)
+        list_report_file_names.append(report_file_name)
+
         if self.__output_bucket:
             for raw_report in list_report_file_names:
                 if raw_report:
@@ -5055,6 +5195,94 @@ class CIS_Report:
         except Exception as e:
             raise Exception("Error in print_to_csv_file: " + str(e.args))
 
+    ##########################################################################
+    # Print to JSON
+    ##########################################################################
+    def __print_to_json_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".json"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Serializing JSON to string
+            json_object = json.dumps(data, indent=4)
+          
+            # If this flag is set all OCIDs are Hashed to redact them
+            if self.__redact_output:
+                items_to_redact = re.findall(self.__oci_ocid_pattern,json_object)
+                for redact_me in items_to_redact:
+                    json_object = json_object.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
+
+
+            # Writing to json file
+            with open(file_path, mode='w', newline='') as json_file:
+                json_file.write(json_object)
+            
+            print("JSON: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+        
+        except Exception as e:
+            raise Exception("Error in print_to_json_file: " + str(e.args))
+    
+    ##########################################################################
+    # Print to PKL
+    ##########################################################################
+    def __print_to_pkl_file(self, report_directory, header, file_subject, data):
+        try:
+            # Creating report directory
+            if not os.path.isdir(report_directory):
+                os.mkdir(report_directory)
+
+        except Exception as e:
+            raise Exception(
+                "Error in creating report directory: " + str(e.args))
+
+        try:
+            # if no data
+            if len(data) == 0:
+                return None
+            
+            # get the file name of the CSV
+            
+            file_name = header + "_" + file_subject
+            file_name = (file_name.replace(" ", "_")
+                         ).replace(".", "-").replace("_-_","_") + ".pkl"
+            file_path = os.path.join(report_directory, file_name)
+
+            # Writing to json file
+            with open(file_path, 'wb') as pkl_file:
+                pickle.dump(data,pkl_file)
+            
+            
+            print("PKL: " + file_subject.ljust(22) + " --> " + file_path)
+            
+            # Used by Upload
+            return file_path
+
+
+        except Exception as e:
+            raise Exception("Error in __print_to_pkl_file: " + str(e.args))
+    
+
+    
     ##########################################################################
     # Orchestrates Data collection and reports
     ##########################################################################
@@ -5283,8 +5511,10 @@ def execute_report():
                         help='Outputs all resource data into CSV files')
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices')
+    parser.add_argument('--all-resources', action='store_true', default=False,
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
-                        help='Redacts OCIDs in output CSV files')
+                        help='Redacts OCIDs in output CSV and JSON files')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication ')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -5304,7 +5534,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

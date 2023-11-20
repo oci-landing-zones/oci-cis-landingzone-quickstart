@@ -3091,6 +3091,7 @@ class CIS_Report:
 
         except Exception:
             self.__cloud_guard_config_status = 'DISABLED'
+            self.__errors.append({"id" : "__cloud_guard_read_cloud_guard_configuration", "error" : "*** Cloud Guard service requires a PayGo account ***"})
             print("*** Cloud Guard service requires a PayGo account ***")
 
     ##########################################################################

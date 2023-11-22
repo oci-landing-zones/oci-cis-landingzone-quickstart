@@ -3,7 +3,10 @@
 *If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
 <br>
 <br>
-<img align="left" src="./images/livelab.png">&nbsp;&nbsp;Check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience!
+<img align="left" src="./images/the_o.png" height="30" width="30">&nbsp;&nbsp;Check [CIS Landing Zone course](https://mylearn.oracle.com/ou/course/oci-landing-zone/123962/193003) in Oracle University for a comprehensive introduction.
+<br>
+<br>
+<img align="left" src="./images/livelab.png" height="30" width="30">&nbsp;&nbsp;Also check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience.
 <br>
 <br>
 # CIS OCI Landing Zone Quick Start Template
@@ -15,6 +18,7 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
+    1. [Mapping to CIS OCI Benchmark v1.2](cis-architecture-mapping.md)
 1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)
@@ -116,7 +120,7 @@ The greyed out icons in the AppDev and Database compartments indicate services n
 - [Creating a Secure Multi-Region Landing Zone](https://www.ateam-oracle.com/post/creating-a-secure-multi-region-landing-zone)
 - [The Center for Internet Security Oracle Cloud Infrastructure Foundations Benchmark 1.2 Release update](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update)
 
-## <a name="modules"></a>CIS OCI Foundations Benchmark Modules
+## <a name="modules"></a>CIS OCI Foundations Benchmark Modules Collection
 
 This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 - [Identity & Access Management](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
@@ -162,15 +166,15 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 
 
 * **OCI Compartment Deletion**
-    * By design, OCI compartments are not deleted upon Terraform destroy by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
+    * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
 
 * **OCI Vault Deletion**
-    * By design, OCI vaults and keys are not deleted immediately upon Terraform destroy, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
+    * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
 
 * **Enabling no internet access on an existing deployment**
-    * Enabling *no_internet_access* on currently deployed stack fails to apply due to timeout.  This is due to OCI Terraform provider not being able remove Internet Gateway(s) and and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
+    * Enabling *no_internet_access* on a currently deployed stack fails to apply due to timeout. This is due to OCI Terraform provider not being able remove Internet Gateway(s) and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
 
 
 * **Resource Manager does not allow elements with same value in array type** 
@@ -178,5 +182,5 @@ We welcome your feedback. To post feedback, submit feature ideas or report bugs,
 
     ![ORM Array Issue](images/orm_array_issue.png)
 
-* **Support for free tier tenancies***
-    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available.  If you want to try the Landing Zone please upgrade your account to a pay-go. 
+* **Support for free tier tenancies**
+    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a pay-go. 

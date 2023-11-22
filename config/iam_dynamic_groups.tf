@@ -17,7 +17,7 @@ locals {
 }
 
 module "lz_dynamic_groups" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/dynamic-groups"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//dynamic-groups?ref=v0.1.7"
   providers  = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   dynamic_groups_configuration = var.extend_landing_zone_to_new_region == false ? (local.custom_dynamic_groups_configuration != null ? local.custom_dynamic_groups_configuration : local.dynamic_groups_configuration) : local.empty_dynamic_groups_configuration
@@ -117,6 +117,8 @@ locals {
     dynamic_groups : {}
   }
 
+  all_existing_dynamic_groups = {for dg in data.oci_identity_dynamic_groups.all.dynamic_groups : dg.id => {"name" : dg.name}}
+
   #----------------------------------------------------------------------------------------
   #----- We cannot reference the module output for obtaining dynamic group names, 
   #----- because it creates a TF cycle issue with the compartments module that may
@@ -125,9 +127,9 @@ locals {
   #----- Hence the usage of provided_* local variables instead of the dynamic groups 
   #----- module output for the true case in the assignments below.
   #----------------------------------------------------------------------------------------
-  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ? local.provided_security_functions_dynamic_group_name : var.existing_security_fun_dyn_group_name
-  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0    ? local.provided_appdev_functions_dynamic_group_name : var.existing_appdev_fun_dyn_group_name
-  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : var.existing_compute_agent_dyn_group_name
-  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ? local.provided_database_kms_dynamic_group_name : var.existing_database_kms_dyn_group_name
+  security_functions_dynamic_group_name  = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0  ? local.provided_security_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_security_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_security_fun_dyn_group_name].name : var.existing_security_fun_dyn_group_name)
+  appdev_functions_dynamic_group_name    = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0    ? local.provided_appdev_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_appdev_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_appdev_fun_dyn_group_name].name : var.existing_appdev_fun_dyn_group_name)
+  appdev_computeagent_dynamic_group_name = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_compute_agent_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_compute_agent_dyn_group_name].name : var.existing_compute_agent_dyn_group_name)
+  database_kms_dynamic_group_name        = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0  ? local.provided_database_kms_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_database_kms_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_database_kms_dyn_group_name].name : var.existing_database_kms_dyn_group_name)
 }
 

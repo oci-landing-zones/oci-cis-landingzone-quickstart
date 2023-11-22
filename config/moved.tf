@@ -43,3 +43,8 @@ moved {
   from = module.lz_template_policies
   to   = module.lz_template_policies[0]
 }
+
+moved {
+  from = module.lz_services_policy
+  to   = module.lz_services_policy[0]
+}

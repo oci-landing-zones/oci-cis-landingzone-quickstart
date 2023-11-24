@@ -56,7 +56,7 @@ wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-qui
 All required python libraries are already available in the Cloud shell environment.
 
 
-## <a name="output">Output
+## <a name="output"></a>Output
 The script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
 
 - **Num**: the recommendation number in the CIS Benchmark document.
@@ -263,7 +263,7 @@ Cloud_Guard_Config       		False		1
 ```
 
 
-## <a name="usage">Usage
+## <a name="usage"></a>Usage
 
 ### Arguments
 ```
@@ -296,7 +296,7 @@ options:
 ### Usage Examples
 
 #### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
-To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files.
+To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py -dt --obp --raw
 

@@ -13,3 +13,7 @@ test/**
 *.csv
 *.xlsx
 *.html
+**/creds/**
+**/tfvars/**
+**/scripts/**/*.json
+**/scripts/**/*.pkl

@@ -19,14 +19,14 @@ locals {
 
 module "lz_top_compartment" {
   count     = var.extend_landing_zone_to_new_region == false && var.use_enclosing_compartment == true && var.existing_enclosing_compartment_ocid == null ? 1 : 0
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.7"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
 }
 
 module "lz_compartments" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.6"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.7"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
   compartments_configuration = var.extend_landing_zone_to_new_region == false ? local.enclosed_compartments_configuration : local.empty_compartments_configuration

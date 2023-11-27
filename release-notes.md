@@ -1,3 +1,32 @@
+#   November 17, 2023 Release Notes - 2.7.0
+1. [CIS Compliance Script Gets Network Topology](#2-7-0-script-network-topology)
+1. [CIS Compliance Script Gets All Resources](#2-7-0-script-all-resources)
+1. [Landing Zone Architecture to CIS OCI Benchmark Documentation](#2-7-0-terraform-mapping)
+1. [Terraform Updates](#2-7-0-tf-updates)
+
+## <a name="#2-7-0-script-network-topology">CIS Compliance Script Gets Network Topology</a>
+The CIS compliance Script now queries the [OCI Network Visualizer](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/network_visualizer.htm) to download a text version of the tenancy's network topology in JSON and PKL file format.  This feature is run using the `--obp --raw` flags or the `all-resources` flag. 
+
+## <a name="#2-7-0-script-all-resources">CIS Compliance Script Gets All Resources</a>
+The CIS compliance Script now uses the [Search](https://docs.oracle.com/en-us/iaas/Content/Search/Concepts/queryoverview.htm#Overview_of_Search) service to query all available resources in a tenancy. The data returned is in a JSON file and is limited to resource types supported by Search and the fields for each resource are limited to the additional details available to the Search service.  This feature is run using the `--all-resources` flag.
+
+## <a name="#2-7-0-terraform-mapping">Landing Zone Architecture to CIS OCI Benchmark Documentation</a>
+The [CIS OCI Benchmark to CIS Landing Zone Architecture Mapping](cis-architecture-mapping.md) document details how the OCI CIS Landing Zone configuration aligns with the CIS Benchmark v1.2.
+
+## <a name="2-7-0-tf-updates">Terraform Updates</a>
+**config module**
+* Existing dynamic groups can now be selected in Resource Manager UI.
+* All IAM remote modules have been pinned to version 0.1.7. If you are managing the Landing Zone with terraform CLI, make sure to run *terraform init -upgrade* when adopting this release.
+* **Bug fix**: when extending Landing Zone to another region, groups were being processed and an "invalid index" error generated during *terraform plan*. With this fix, groups are no longer processed when extending the Landing Zone. 
+* **Bug fix**: when running Landing Zone config as a user with limited permissions, service policies were being processed and failing during *terraform apply* due to insufficient permissions. With this fix, service policies are no longer processed when running config as a user with limited permissions.
+
+**pre-config module**
+* Storage admin group has been added.
+* Existing provisioning group can now be selected in Resource Manager UI.
+* Policies for dynamic groups have been removed, as they can be managed in the config module.
+* Ability to use existing dynamic groups has been removed, as the feature is already present in the config module.
+* *deploy_dynamic_groups* variable added, set to true by default. If reusing existing dynamic groups is needed, set this variable to false and select the existing dynamic groups in the config module.
+
 #   October 6, 2023 Release Notes - 2.6.5
 1. [CIS Compliance Script Updates](#2-6-5-script-updates)
 1. [Terraform Quick Start Updates](#2-6-5-quickstart-updates)

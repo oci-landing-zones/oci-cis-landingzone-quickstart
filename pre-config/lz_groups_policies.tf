@@ -34,7 +34,8 @@ module "lz_provisioning_tenancy_group_policy" {
         "Allow group ${each.value.group_name} to read dynamic-groups in tenancy",                       # for dynamic-groups lookup        
         "Allow group ${each.value.group_name} to inspect tenancies in tenancy",                         # for home region lookup
         "Allow group ${each.value.group_name} to manage usage-budgets in tenancy",                      # for budget creation   
-        "Allow group ${each.value.group_name} to inspect users in tenancy"]                             # for users lookup
+        "Allow group ${each.value.group_name} to inspect users in tenancy",                             # for users lookup
+        "Allow group ${each.value.group_name} to read audit-events in tenancy"]                         # for audit events lookup
     }
   }
 }
@@ -168,22 +169,6 @@ module "lz_groups_read_only_policy" {
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read usage-reports in tenancy",                        
         "Allow group ${each.value.group_name_prefix}${local.auditor_group_name_suffix} to read data-safe-family in tenancy"
       ]
-    }
-  }
-}
-
-### Landing Zone compartment level Dynamic Group policy
-module "lz_provisioning_topcmp_dynamic_group_policy" {
-  for_each   = local.enclosing_compartments
-  depends_on = [null_resource.slow_down_compartments, null_resource.slow_down_groups]
-  source     = "../modules/iam/iam-policy"
-  policies = {
-    "${each.value.name}-adb-kms-policy" = {
-      compartment_id = module.lz_top_compartments.compartments[each.key].id
-      description    = "Landing Zone provisioning policy for managing vaults and keys in ${each.value.name} compartment."
-      defined_tags   = local.groups_policies_defined_tags
-      freeform_tags  = local.groups_policies_freeform_tags
-      statements     = length(trimspace(var.existing_database_kms_dyn_group_name)) > 0 ? ["Allow dynamic-group ${var.existing_database_kms_dyn_group_name} to manage vaults in compartment ${each.value.name}","Allow dynamic-group ${var.existing_database_kms_dyn_group_name} to manage keys in compartment ${each.value.name}"] : ["Allow dynamic-group ${each.key}-database-kms-dynamic-group to manage vaults in compartment ${each.value.name}", "Allow dynamic-group ${each.key}-database-kms-dynamic-group to manage keys in compartment ${each.value.name}"]
     }
   }
 }

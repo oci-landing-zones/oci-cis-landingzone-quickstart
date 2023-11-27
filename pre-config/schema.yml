@@ -1,10 +1,9 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS OCI Landing Zone Quick Start Pre-config"
-stackDescription: "A stack to pre configure a tenancy for CIS (Center for Internet Security) Landing Zones deployment in OCI."
+stackDescription: "This stack pre-configures a tenancy for CIS Landing Zones deployment in OCI. Only required when users that will deploy the CIS Landing Zone do NOT have the required permissions to create IAM resources at the Root compartment. For details, see https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator"
 schemaVersion: 1.1.0
-version: "0.0.1"
+version: "2.7.0"
 locale: "en"
 
 variableGroups:
@@ -35,14 +34,12 @@ variableGroups:
       - "existing_announcement_reader_group_name"
       - "existing_exainfra_admin_group_name"
       - "existing_cost_admin_group_name"
+      - "existing_storage_admin_group_name"
     visible: advanced_options  
   
   - title: "Dynamic Groups"
     variables:
-      - "existing_security_fun_dyn_group_name"
-      - "existing_appdev_fun_dyn_group_name"
-      - "existing_compute_agent_dyn_group_name"
-      - "existing_database_kms_dyn_group_name"
+      - "deploy_dynamic_groups"
     visible: advanced_options
 
   - title: "Policies"
@@ -77,7 +74,7 @@ variables:
   advanced_options:
     type: boolean
     title: "Show Advanced Options"
-    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s). For details, check the <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">Landing Zone Pre-config documentation</a>."
+    description: "If you don't change any of the advanced options, the following is created: 1) one compartment named with 'top-cmp' suffix in the root compartment; 2) one set of policies for Landing Zone(s) required services in the root compartment; 3) one group to provision the Landing Zone(s); 4) one set of groups to manage the Landing Zone(s); 5) one set of dynamic groups. For details, see <a href=\"https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator\">CIS Landing Zone Pre-config documentation</a>."
     default: false
 
   enclosing_compartment_names:
@@ -105,19 +102,21 @@ variables:
   use_existing_provisioning_group:
     type: boolean
     title: "Use Existing Group for Provisioning the Landing Zone?"
-    description: "Whether an existing group should be used for Landing Zone provisioning. If unchecked, one group is created for each compartment defined by \"Enclosing compartment names\"."
+    description: "Whether an existing group should be used for Landing Zone provisioning. If unchecked, one group is created for each compartment specified in \"Enclosing Compartment Names\"."
     default: false
 
   existing_provisioning_group_name:
-    type: string
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
     title: "Existing Group Name for Provisioning the Landing Zone"
-    description: "The name of an existing group to be used for provisioning all resources in the compartments defined by \"Enclosing compartment names\"."
+    description: "The name of an existing group to be used for provisioning all resources in the compartments specified in \"Enclosing Compartment Names\"."
     visible :  use_existing_provisioning_group
       
   use_existing_groups:
     type: boolean
     title: "Use Existing Groups for Managing the Landing Zone?"
-    description: "Whether existing groups should be reused for managing the Landing Zone. If unchecked, one set of groups is created for each compartment defined by \"Enclosing compartment names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
+    description: "Whether existing groups should be reused for managing the Landing Zone. When unchecked, one set of groups is created for each compartment specified in \"Enclosing Compartment Names\". If checked, existing group names must be provided and this single set will be able to manage resources in all those compartments."
     default: false
     required: true
   
@@ -201,26 +200,20 @@ variables:
     description: "Existing group to which Cost management policies will be granted to."
     visible: use_existing_groups
 
-  existing_security_fun_dyn_group_name:
-    type: string
-    title: "Existing security dynamic group name"
-    description: "Existing dynamic group to be used by security functions."
+  existing_storage_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Storage Admin group name"
+    description: "Existing group to which Storage management policies will be granted to."
+    visible: use_existing_groups  
 
-  existing_appdev_fun_dyn_group_name:
-    type: string
-    title: "Existing appdev dynamic group name"
-    description: "Existing dynamic group to be used by application related functions."
-
-  existing_compute_agent_dyn_group_name:
-    type: string
-    title: "Existing compute agent dynamic group name"
-    description: "Existing dynamic group to be used by Compute's management agent."
-
-  existing_database_kms_dyn_group_name:
-    type: string
-    title: "Existing database dynamic group name"
-    description: "Existing dynamic group to be used by databases to manage vaults and keys."
-
+  deploy_dynamic_groups:
+    type: boolean
+    title: "Deploy Dynamic Groups?"
+    description: "Whether dynamic groups should be deployed. When checked, one set with four dynamic groups is created for each compartment specified in \"Enclosing Compartment Names\". For the dynamic group names, see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/blob/main/VARIABLES.md#dynamic_group_names\">Dynamic Group Names</a>. When unchecked, no dynamic groups are created."
+    default: true
+  
   tenancy_ocid:
     type: string
 

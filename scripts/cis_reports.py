@@ -116,6 +116,8 @@ class CIS_Report:
     __oci_onssub_uri = __oci_cloud_url + "/notification/subscriptions/"
     __oci_serviceconnector_uri = __oci_cloud_url + "/connector-hub/service-connectors/"
     __oci_fastconnect_uri = __oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
+    __oci_instances_uri = __oci_cloud_url + "/compute/instances/"
+
 
     __oci_ocid_pattern = r'ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}'
 

@@ -797,6 +797,8 @@ class CIS_Report:
         # All Resources
         self.__all_resources_json = {}
 
+        # Compute Resources - Thinking about
+        self.__Instance = []
 
         # Setting list of regions to run in
 
@@ -1031,6 +1033,11 @@ class CIS_Report:
                     topology.base_client.session.proxies = {'https': proxy}
                 topology.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
                 region_values['topology_client'] = topology
+
+                instance = oci.core.ComputeClient(region_config, signer=region_signer)
+                if proxy:
+                    instance.base_client.session.proxies = {'https': proxy}
+                region_values['instance'] = instance
 
             except Exception as e:
                 debug("__create_regional_signers: error reading" + str(self.__config))
@@ -3392,25 +3399,28 @@ class CIS_Report:
         print("\tProcessed " + str(len(self.__resources_in_root_compartment)) + " resources in the root compartment")
         return self.__resources_in_root_compartment
 
+    
+    ##########################################################################
+    #  Gets a resource and it's additional fields via Search Servuce
+    ##########################################################################
+    def __search_query_resource_type(self, resource_type, search_client):
+        try:
+            query = f"query {resource_type} resources return allAdditionalFields"
+            results = oci.pagination.list_call_get_all_results(
+                search_client.search_resources,
+                search_details=oci.resource_search.models.StructuredSearchDetails(
+                query=query)
+            ).data
+            
+            return oci.util.to_dict(results)
+        except Exception as e:
+            return []
+    
     ##########################################################################
     # All Resources in Tenancy
     ##########################################################################
     def __search_resources_all_resources_in_tenancy(self):
         
-        # This function runs gets a resource and it's additional fields
-        def search_query_resource_type(resource_type, search_client):
-            try:
-                query = f"query {resource_type} resources return allAdditionalFields"
-                results = oci.pagination.list_call_get_all_results(
-                    search_client.search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                    query=query)
-                ).data
-                
-                return oci.util.to_dict(results)
-            except Exception as e:
-                return []
-
         for region_key, region_values in self.__regions.items():
             self.__all_resources_json[region_key] = {}
             try:
@@ -3422,7 +3432,7 @@ class CIS_Report:
                         self.__all_resources_json[region_key][item.name] = []
 
                 for type in self.__all_resources_json[region_key]:
-                    self.__all_resources_json[region_key][type] += search_query_resource_type(type, region_values['search_client'])
+                    self.__all_resources_json[region_key][type] += self.__search_query_resource_type(type, region_values['search_client'])
                     
             except Exception as e:
                 raise RuntimeError(
@@ -3432,7 +3442,39 @@ class CIS_Report:
         # print(self.__all_resources_json)                        
         return self.__all_resources_json
     
-    
+    ##########################################################################
+    # Get Compute Instances
+    ##########################################################################  
+    def __core_instance_read_compute(self):
+        try:
+                # looping through regions
+                for region_key, region_values in self.__regions.items():
+                    # Collecting Service Connectors from each compartment
+                    service_connectors_data = oci.pagination.list_call_get_all_results(
+                        region_values['search_client'].search_resources,
+                        search_details=oci.resource_search.models.StructuredSearchDetails(
+                            query="query Instances resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
+                    ).data
+
+                    # Getting Bucket Info
+                    for connector in service_connectors_data:
+                        deep_link = self.__oci_serviceconnector_uri + connector.identifier + "/logging" + '?region=' + region_key
+                        try:
+                            service_connector = region_values['sch_client'].get_service_connector(
+                                service_connector_id=connector.identifier
+                            ).data
+
+                            self.__service_connectors[service_connector.id] = record
+                        except Exception as e:
+
+                            self.__service_connectors[connector.identifier] = record
+                # Returning Service Connectors
+                print("\tProcessed " + str(len(self.__service_connectors)) + " Service Connectors")
+                return self.__service_connectors
+        except Exception as e:
+            raise RuntimeError("Error in __core_instance_read_compute " + str(e.args))
+
+
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################

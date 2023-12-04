@@ -70,16 +70,16 @@ locals {
     supplied_policies : local.services_policy
   }
 
-  oke_service_statements = ["Allow any-user to manage instances in compartment ${local.appdev_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
-                            "Allow any-user to use private-ips in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
-                            "Allow any-user to use network-security-groups in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
-                            "Allow any-user to use subnets in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }"]
+  oke_service_statements = ["allow any-user to manage instances in compartment ${local.appdev_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
+                            "allow any-user to use private-ips in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
+                            "allow any-user to use network-security-groups in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }",
+                            "allow any-user to use subnets in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.appdev_compartment_id}' }"]
 
   oke_service_policy = { 
     ("${var.service_label}-oke-service-policy") : {
       compartment_ocid = local.enclosing_compartment_id
       name             = "${var.service_label}-oke-service-policy"
-      description      = "CIS Landing Zone policy for OKE service. It allows OKE clusters auto scale and use network resources in the network compartment."
+      description      = "Landing Zone policy for OKE service. It allows OKE clusters to auto scale and to use network resources in the network compartment."
       statements       = local.oke_service_statements
       defined_tags     = local.service_policy_defined_tags
       freeform_tags    = local.service_policy_freeform_tags

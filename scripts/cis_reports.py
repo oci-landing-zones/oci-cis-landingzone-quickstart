@@ -141,8 +141,8 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
 
-        # CIS Foundation benchmark 1.2
-        self.cis_foundations_benchmark_1_2 = {
+        # CIS Foundation benchmark 2.0.0
+        self.cis_foundations_benchmark_2_0 = {
             '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.7'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
             '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
             '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3', '5.4'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
@@ -167,35 +167,40 @@ class CIS_Report:
             '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
 
-            '3.1': {'section': 'Logging and Monitoring', 'recommendation_#': '3.1', 'Title': 'Ensure audit log retention period is set to 365 days.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.10'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.2': {'section': 'Logging and Monitoring', 'recommendation_#': '3.2', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.3': {'section': 'Logging and Monitoring', 'recommendation_#': '3.3', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.4': {'section': 'Logging and Monitoring', 'recommendation_#': '3.4', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.5': {'section': 'Logging and Monitoring', 'recommendation_#': '3.5', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.6': {'section': 'Logging and Monitoring', 'recommendation_#': '3.6', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.7': {'section': 'Logging and Monitoring', 'recommendation_#': '3.7', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.8': {'section': 'Logging and Monitoring', 'recommendation_#': '3.8', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.9': {'section': 'Logging and Monitoring', 'recommendation_#': '3.9', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.10': {'section': 'Logging and Monitoring', 'recommendation_#': '3.10', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.11': {'section': 'Logging and Monitoring', 'recommendation_#': '3.11', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.12': {'section': 'Logging and Monitoring', 'recommendation_#': '3.12', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.13': {'section': 'Logging and Monitoring', 'recommendation_#': '3.13', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '3.14': {'section': 'Logging and Monitoring', 'recommendation_#': '3.14', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '13.6'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.15': {'section': 'Logging and Monitoring', 'recommendation_#': '3.15', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '8.11'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
-            '3.16': {'section': 'Logging and Monitoring', 'recommendation_#': '3.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '3.17': {'section': 'Logging and Monitoring', 'recommendation_#': '3.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '3.1': {'section': 'Compute', 'recommendation_#': '3.1', 'Title': 'Ensure Compute Instance Legacy Metadata service endpoint is disabled.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.6'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '3.2': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Secure Boot is enabled on Compute Instance.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['4.1'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '3.3': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Compute Instance Legacy MetaData service endpoint is disabled.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
 
-            '4.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer-Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '4.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
-            '4.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '4.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer-Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
-            '4.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '4.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '4.1': {'section': 'Logging and Monitoring', 'recommendation_#': '4.1', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '4.2': {'section': 'Logging and Monitoring', 'recommendation_#': '4.2', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.3': {'section': 'Logging and Monitoring', 'recommendation_#': '4.3', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.4': {'section': 'Logging and Monitoring', 'recommendation_#': '4.4', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.5': {'section': 'Logging and Monitoring', 'recommendation_#': '4.5', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.6': {'section': 'Logging and Monitoring', 'recommendation_#': '4.6', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.7': {'section': 'Logging and Monitoring', 'recommendation_#': '4.7', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.8': {'section': 'Logging and Monitoring', 'recommendation_#': '4.8', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.9': {'section': 'Logging and Monitoring', 'recommendation_#': '4.9', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.10': {'section': 'Logging and Monitoring', 'recommendation_#': '4.10', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.11': {'section': 'Logging and Monitoring', 'recommendation_#': '4.11', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.12': {'section': 'Logging and Monitoring', 'recommendation_#': '4.12', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.13': {'section': 'Logging and Monitoring', 'recommendation_#': '4.13', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '13.6'], 'CCCS Guard Rail': '', 'Remediation': []},             
+            '4.14': {'section': 'Logging and Monitoring', 'recommendation_#': '4.14', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '8.11'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
+            '4.15': {'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '4.16': {'section': 'Logging and Monitoring', 'recommendation_#': '4.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail': '6,7', 'Remediation': []},
+            '4.17': {'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '', 'Remediation': []},
+
+            '5.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '5.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer-Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '5.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '5.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
+            '5.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer-Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
+            '5.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '5.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer-Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
 
 
-            '5.1': {'section': 'Asset Management', 'recommendation_#': '5.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail': '2,3,8,12', 'Remediation': []},
-            '5.2': {'section': 'Asset Management', 'recommendation_#': '5.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []}
+            '6.1': {'section': 'Asset Management', 'recommendation_#': '6.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail': '2,3,8,12', 'Remediation': []},
+            '6.2': {'section': 'Asset Management', 'recommendation_#': '6.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []}
         }
+
         # Remediation Report
         self.cis_report_data = {
             "1.1": {
@@ -374,14 +379,30 @@ class CIS_Report:
                 "Observation": "ADB-S Instances that allow unfiltered public ingress traffic (Authentication and authorization is still required)."
             },
             "3.1": {
-                "Description": "Ensuring audit logs are kept for 365 days.",
-                "Rationale": "Log retention controls how long activity logs should be retained. Studies have shown that The Mean Time to Detect (MTTD) a cyber breach is anywhere from 30 days in some sectors to up to 206 days in others. Retaining logs for at least 365 days or more will provide the ability to respond to incidents.",
-                "Impact": "There is no performance impact when enabling the above described features but additional audit data will be retained.",
-                "Remediation": "Go to the Tenancy Details page and edit Audit Retention Policy by setting AUDIT RETENTION PERIOD to 365.",
+                "Description": "",
+                "Rationale": "",
+                "Impact": "",
+                "Remediation": "",
                 "Recommendation": "",
-                "Observation": "Audit log retention is lower than 365 days."
+                "Observation": ""  
             },
             "3.2": {
+                "Description": "",
+                "Rationale": "",
+                "Impact": "",
+                "Remediation": "",
+                "Recommendation": "",
+                "Observation": ""  
+            },
+            "3.3": {
+                "Description": "",
+                "Rationale": "",
+                "Impact": "",
+                "Remediation": "",
+                "Recommendation": "",
+                "Observation": ""  
+            },
+            "4.1": {
                 "Description": "Using default tags is a way to ensure all resources that support tags are tagged during creation. Tags can be based on static values or based on computed values. It is recommended to setup default tags early on to ensure all created resources will get tagged.\nTags are scoped to Compartments and are inherited by Child Compartments. The recommendation is to create default tags like “CreatedBy” at the Root Compartment level to ensure all resources get tagged.\nWhen using Tags it is important to ensure that Tag Namespaces are protected by IAM Policies otherwise this will allow users to change tags or tag values.\nDepending on the age of the OCI Tenancy there may already be Tag defaults setup at the Root Level and no need for further action to implement this action.",
                 "Rationale": "In the case of an incident having default tags like “CreatedBy” applied will provide info on who created the resource without having to search the Audit logs.",
                 "Impact": "There is no performance impact when enabling the above described features",
@@ -389,7 +410,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "default tags are used on resources."
             },
-            "3.3": {
+            "4.2": {
                 "Description": "Notifications provide a multi-channel messaging service that allow users and applications to be notified of events of interest occurring within OCI. Messages can be sent via eMail, HTTPs, PagerDuty, Slack or the OCI Function service. Some channels, such as eMail require confirmation of the subscription before it becomes active.",
                 "Rationale": "Creating one or more notification topics allow administrators to be notified of relevant changes made to OCI infrastructure.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -397,7 +418,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification topic and subscription for receiving monitoring alerts are configured."
             },
-            "3.4": {
+            "4.3": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Identity Providers are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "OCI Identity Providers allow management of User ID / passwords in external systems and use of those credentials to access OCI resources. Identity Providers allow users to single sign-on to OCI console and have other OCI credentials like API Keys.\nMonitoring and alerting on changes to Identity Providers will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -405,7 +426,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for Identity Provider changes."
             },
-            "3.5": {
+            "4.4": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Identity Provider Group Mappings are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level",
                 "Rationale": "IAM Policies govern access to all resources within an OCI Tenancy. IAM Policies use OCI Groups for assigning the privileges. Identity Provider Groups could be mapped to OCI Groups to assign privileges to federated users in OCI. Monitoring and alerting on changes to Identity Provider Group mappings will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -413,7 +434,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for Identity Provider Group Mapping changes."
             },
-            "3.6": {
+            "4.5": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "IAM Groups control access to all resources within an OCI Tenancy.\n Monitoring and alerting on changes to IAM Groups will help in identifying changes to satisfy least privilege principle.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -421,7 +442,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for Identity Provider changes."
             },
-            "3.7": {
+            "4.6": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Policies are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "IAM Policies govern access to all resources within an OCI Tenancy.\n Monitoring and alerting on changes to IAM policies will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -429,7 +450,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for IAM Policy changes."
             },
-            "3.8": {
+            "4.7": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Users are created, updated, deleted, capabilities updated, or state updated. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Users use or manage Oracle Cloud Infrastructure resources.\n Monitoring and alerting on changes to Users will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -437,7 +458,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for user changes."
             },
-            "3.9": {
+            "4.8": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Virtual Cloud Networks are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Virtual Cloud Networks (VCNs) closely resembles a traditional network.\n Monitoring and alerting on changes to VCNs will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -445,7 +466,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for VCN changes."
             },
-            "3.10": {
+            "4.9": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when route tables are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Route tables control traffic flowing to or from Virtual Cloud Networks and Subnets.\n Monitoring and alerting on changes to route tables will help in identifying changes these traffic flows.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -453,7 +474,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for changes to route tables."
             },
-            "3.11": {
+            "4.10": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when security lists are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Security Lists control traffic flowing into and out of Subnets within a Virtual Cloud Network.\n Monitoring and alerting on changes to Security Lists will help in identifying changes to these security controls.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -461,7 +482,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for security list changes."
             },
-            "3.12": {
+            "4.11": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when network security groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Network Security Groups control traffic flowing between Virtual Network Cards attached to Compute instances.\n Monitoring and alerting on changes to Network Security Groups will help in identifying changes these security controls.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -469,7 +490,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for changes on Network Service Groups."
             },
-            "3.13": {
+            "4.12": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Network Gateways act as routers between VCNs and the Internet, Oracle Services Networks, other VCNS, and on-premise networks.\n Monitoring and alerting on changes to Network Gateways will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
@@ -477,7 +498,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "notification has been configured for changes on network gateways."
             },
-            "3.14": {
+            "4.13": {
                 "Description": "VCN flow logs record details about traffic that has been accepted or rejected based on the security list rule.",
                 "Rationale": "Enabling VCN flow logs enables you to monitor traffic flowing within your virtual network and can be used to detect anomalous traffic.",
                 "Impact": "Enabling VCN flow logs will not affect the performance of your virtual network but it will generate additional use of object storage that should be controlled via object lifecycle management.<br><br>By default, VCN flow logs are stored for 30 days in object storage. Users can specify a longer retention period.",
@@ -485,7 +506,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "VCNs have no flow logging configured."
             },
-            "3.15": {
+            "4.14": {
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard can suggest, assist, or take corrective actions to mitigate these issues. Cloud Guard should be enabled in the root compartment of your tenancy with the default configuration, activity detectors and responders.",
                 "Rationale": "Cloud Guard provides an automated means to monitor a tenancy for resources that are configured in an insecure manner as well as risky network activity from these resources.",
                 "Impact": "There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
@@ -493,7 +514,15 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "Cloud Guard has not been configured in the root compartment of the tenancy."
             },
-            "3.16": {
+            "4.15" : {
+                "Description": "",
+                "Rationale": "",
+                "Impact": "",
+                "Remediation": "",
+                "Recommendation": "",
+                "Observation": ""            
+            },
+            "4.16": {
                 "Description": "Oracle Cloud Infrastructure Vault securely stores master encryption keys that protect your encrypted data. You can use the Vault service to rotate keys to generate new cryptographic material. Periodically rotating keys limits the amount of data encrypted by one key version.",
                 "Rationale": "Rotating keys annually limits the data encrypted under one key version. Key rotation thereby reduces the risk in case a key is ever compromised.",
                 "Impact": "",
@@ -501,7 +530,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "customer-managed keys are older than one year."
             },
-            "3.17": {
+            "4.17": {
                 "Description": "Object Storage write logs will log all write requests made to objects in a bucket.",
                 "Rationale": "Enabling an Object Storage write log, the 'requestAction' property would contain values of 'PUT', 'POST', or 'DELETE'. This will provide you more visibility into changes to objects in your buckets.",
                 "Impact": "There is no performance impact when enabling the above described features, but will generate additional use of object storage that should be controlled via object lifecycle management.<br><br>By default, Object Storage logs are stored for 30 days in object storage. Users can specify a longer retention period.",
@@ -509,7 +538,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "object stores have no write level logging enabled."
             },
-            "4.1.1": {
+            "5.1.1": {
                 "Description": "A bucket is a logical container for storing objects. It is associated with a single compartment that has policies that determine what action a user can perform on a bucket and on all the objects in the bucket. It is recommended that no bucket be publicly accessible.",
                 "Rationale": "Removing unfettered reading of objects in a bucket reduces an organization's exposure to data loss.",
                 "Impact": "For updating an existing bucket, care should be taken to ensure objects in the bucket can be accessed through either IAM policies or pre-authenticated requests.",
@@ -517,7 +546,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "object storage buckets are publicly visible."
             },
-            "4.1.2": {
+            "5.1.2": {
                 "Description": "Oracle Object Storage buckets support encryption with a Customer Managed Key (CMK). By default, Object Storage buckets are encrypted with an Oracle managed key.",
                 "Rationale": "Encryption of Object Storage buckets with a Customer Managed Key (CMK) provides an additional level of security on your data by allowing you to manage your own encryption key lifecycle management for the bucket.",
                 "Impact": "Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize Object Storage service to use keys on your behalf.<br><br>Required Policy:\n<pre>\nAllow service objectstorage-&lt;region_name>, to use keys in compartment &ltcompartment-id> where target.key.id = '&lt;key_OCID>'<br><br></pre>",
@@ -525,7 +554,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "object store buckets do not use Customer-Managed Keys (CMK)."
             },
-            "4.1.3": {
+            "5.1.3": {
                 "Description": "A bucket is a logical container for storing objects. Object versioning is enabled at the bucket level and is disabled by default upon creation. Versioning directs Object Storage to automatically create an object version each time a new object is uploaded, an existing object is overwritten, or when an object is deleted. You can enable object versioning at bucket creation time or later.",
                 "Rationale": "Versioning object storage buckets provides for additional integrity of your data. Management of data integrity is critical to protecting and accessing protected data. Some customers want to identify object storage buckets without versioning in order to apply their own data lifecycle protection and management policy.",
                 "Impact": "",
@@ -533,7 +562,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "object store buckets have no versioning enabled."
             },
-            "4.2.1": {
+            "5.2.1": {
                 "Description": "Oracle Cloud Infrastructure Block Volume service lets you dynamically provision and manage block storage volumes. By default, the Oracle service manages the keys that encrypt this block volume. Block Volumes can also be encrypted using a customer managed key.",
                 "Rationale": "Encryption of block volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify block volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain volumes and then apply their own key lifecycle management to the selected block volumes.",
                 "Impact": "Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Block Volume service to use the keys you create.\nRequired IAM Policy:\n<pre>\nAllow service blockstorage to use keys in compartment &ltcompartment-id> where target.key.id = '&lt;key_OCID>'\n</pre>",
@@ -541,7 +570,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "block volumes are not encrypted with a Customer-Managed Key."
             },
-            "4.2.2": {
+            "5.2.2": {
                 "Description": "When you launch a virtual machine (VM) or bare metal instance based on a platform image or custom image, a new boot volume for the instance is created in the same compartment. That boot volume is associated with that instance until you terminate the instance. By default, the Oracle service manages the keys that encrypt this boot volume. Boot Volumes can also be encrypted using a customer managed key.",
                 "Rationale": "Encryption of boot volumes provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify boot volumes encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain boot volumes and then apply their own key lifecycle management to the selected boot volumes.",
                 "Impact": "Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the Boot Volume service to use the keys you create.\nRequired IAM Policy:\n<pre>\nAllow service Bootstorage to use keys in compartment &ltcompartment-id> where target.key.id = '&lt;key_OCID>'\n</pre>",
@@ -549,7 +578,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "boot volumes are not encrypted with a Customer-Managed Key."
             },
-            "4.3.1": {
+            "5.3.1": {
                 "Description": "Oracle Cloud Infrastructure File Storage service (FSS) provides a durable, scalable, secure, enterprise-grade network file system. By default, the Oracle service manages the keys that encrypt FSS file systems. FSS file systems can also be encrypted using a customer managed key.",
                 "Rationale": "Encryption of FSS systems provides an additional level of security for your data. Management of encryption keys is critical to protecting and accessing protected data. Customers should identify FSS file systems that are encrypted with Oracle service managed keys in order to determine if they want to manage the keys for certain FSS file systems and then apply their own key lifecycle management to the selected FSS file systems.",
                 "Impact": "Encrypting with a Customer Managed Keys requires a Vault and a Customer Master Key. In addition, you must authorize the File Storage service to use the keys you create.\nRequired IAM Policy:\n<pre>\nAllow service FssOc1Prod to use keys in compartment &ltcompartment-id> where target.key.id = '&lt;key_OCID>'\n</pre>",
@@ -557,7 +586,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "file storage services (FSS) are not encrypted with a Customer-Managed Key."
             },
-            "5.1": {
+            "6.1": {
                 "Description": "When you sign up for Oracle Cloud Infrastructure, Oracle creates your tenancy, which is the root compartment that holds all your cloud resources. You then create additional compartments within the tenancy (root compartment) and corresponding policies to control access to the resources in each compartment.<br><br>Compartments allow you to organize and control access to your cloud resources. A compartment is a collection of related resources (such as instances, databases, virtual cloud networks, block volumes) that can be accessed only by certain groups that have been given permission by an administrator.",
                 "Rationale": "Compartments are a logical group that adds an extra layer of isolation, organization and authorization making it harder for unauthorized users to gain access to OCI resources.",
                 "Impact": "Once the compartment is created an OCI IAM policy must be created to allow a group to resources in the compartment otherwise only group with tenancy access will have access.",
@@ -565,7 +594,7 @@ class CIS_Report:
                 "Recommendation": "",
                 "Observation": "Only the root compartment is used in the tenancy."
             },
-            "5.2": {
+            "6.2": {
                 "Description": "When you create a cloud resource such as an instance, block volume, or cloud network, you must specify to which compartment you want the resource to belong. Placing resources in the root compartment makes it difficult to organize and isolate those resources.",
                 "Rationale": "Placing resources into a compartment will allow you to organize and have more granular access controls to your cloud resources.",
                 "Impact": "Placing a resource in a compartment will impact how you write policies to manage access and organize that resource.",
@@ -667,6 +696,11 @@ class CIS_Report:
                 'com.oraclecloud.servicegateway.detachserviceid',
                 'com.oraclecloud.servicegateway.updateservicegateway'
 
+            ],
+            "4.15" : [
+                'com.oraclecloud.cloudguard.problemdetected',
+                'com.oraclecloud.cloudguard.problemdismissed',
+                'com.oraclecloud.cloudguard.problemremediated'
             ]
         }
 
@@ -1092,7 +1126,7 @@ class CIS_Report:
                     "region": ""
                 }
                 self.__raw_compartment.append(record)
-                self.cis_foundations_benchmark_1_2['5.1']['Total'].append(compartment)
+                self.cis_foundations_benchmark_2_0['6.1']['Total'].append(compartment)
 
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
@@ -3390,7 +3424,7 @@ class CIS_Report:
                             "id": item.identifier,
                             "region": region_key
                         }
-                        self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                        self.cis_foundations_benchmark_2_0['6.2']['Total'].append(item)
 
             except Exception as e:
                 raise RuntimeError(
@@ -3494,8 +3528,8 @@ class CIS_Report:
                     and ("to manage all-resources".upper() in statement.upper()) \
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
                     # If there are more than manage all-resources in you don't meet this rule
-                    self.cis_foundations_benchmark_1_2['1.1']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['1.1']['Findings'].append(policy)
+                    self.cis_foundations_benchmark_2_0['1.1']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['1.1']['Findings'].append(policy)
                     break
 
         # 1.2 Check
@@ -3505,8 +3539,8 @@ class CIS_Report:
                         and "to manage all-resources in tenancy".upper() in statement.upper() \
                         and policy['name'].upper() != "Tenant Admin Policy".upper():
 
-                    self.cis_foundations_benchmark_1_2['1.2']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['1.2']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['1.2']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['1.2']['Findings'].append(
                         policy)
 
         # 1.3 Check - May want to add a service check
@@ -3522,24 +3556,24 @@ class CIS_Report:
                             if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.3']["targets"]):
                                 pass
                             else:
-                                self.cis_foundations_benchmark_1_2['1.3']['Findings'].append(policy)
-                                self.cis_foundations_benchmark_1_2['1.3']['Status'] = False
+                                self.cis_foundations_benchmark_2_0['1.3']['Findings'].append(policy)
+                                self.cis_foundations_benchmark_2_0['1.3']['Status'] = False
 
                         else:
-                            self.cis_foundations_benchmark_1_2['1.3']['Findings'].append(policy)
-                            self.cis_foundations_benchmark_1_2['1.3']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['1.3']['Findings'].append(policy)
+                            self.cis_foundations_benchmark_2_0['1.3']['Status'] = False
 
         # CIS Total 1.1,1,2,1.3 Adding - All IAM Policies for to CIS Total
-        self.cis_foundations_benchmark_1_2['1.1']['Total'] = self.__policies
-        self.cis_foundations_benchmark_1_2['1.2']['Total'] = self.__policies
-        self.cis_foundations_benchmark_1_2['1.3']['Total'] = self.__policies
+        self.cis_foundations_benchmark_2_0['1.1']['Total'] = self.__policies
+        self.cis_foundations_benchmark_2_0['1.2']['Total'] = self.__policies
+        self.cis_foundations_benchmark_2_0['1.3']['Total'] = self.__policies
 
         # 1.4 Check - Password Policy - Only in home region
         if self.__tenancy_password_policy:
             if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
-                self.cis_foundations_benchmark_1_2['1.4']['Status'] = True
+                self.cis_foundations_benchmark_2_0['1.4']['Status'] = True
         else:
-            self.cis_foundations_benchmark_1_2['1.4']['Status'] = None
+            self.cis_foundations_benchmark_2_0['1.4']['Status'] = None
 
         # 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
         debug("__report_cis_analyze_tenancy_data: Identity Domains Enabled is: " + str(self.__identity_domains_enabled))
@@ -3551,45 +3585,45 @@ class CIS_Report:
 
                     if domain['password_policy']['password_expires_after']:
                         if domain['password_policy']['password_expires_after'] > 365:
-                            self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
+                            self.cis_foundations_benchmark_2_0['1.5']['Findings'].append(domain)
                     
 
                     if domain['password_policy']['num_passwords_in_history']:
                         if domain['password_policy']['num_passwords_in_history'] < 24:
-                            self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+                            self.cis_foundations_benchmark_2_0['1.6']['Findings'].append(domain)
 
                 else:
                     debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")
-                    self.cis_foundations_benchmark_1_2['1.5']['Findings'].append(domain)
-                    self.cis_foundations_benchmark_1_2['1.6']['Findings'].append(domain)
+                    self.cis_foundations_benchmark_2_0['1.5']['Findings'].append(domain)
+                    self.cis_foundations_benchmark_2_0['1.6']['Findings'].append(domain)
 
 
-            if self.cis_foundations_benchmark_1_2['1.5']['Findings']:
-                self.cis_foundations_benchmark_1_2['1.5']['Status'] = False
+            if self.cis_foundations_benchmark_2_0['1.5']['Findings']:
+                self.cis_foundations_benchmark_2_0['1.5']['Status'] = False
             else:
-                self.cis_foundations_benchmark_1_2['1.5']['Status'] = True
+                self.cis_foundations_benchmark_2_0['1.5']['Status'] = True
 
-            if self.cis_foundations_benchmark_1_2['1.6']['Findings']:
-                self.cis_foundations_benchmark_1_2['1.6']['Status'] = False
+            if self.cis_foundations_benchmark_2_0['1.6']['Findings']:
+                self.cis_foundations_benchmark_2_0['1.6']['Status'] = False
             else:
-                self.cis_foundations_benchmark_1_2['1.6']['Status'] = True
+                self.cis_foundations_benchmark_2_0['1.6']['Status'] = True
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
             if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
-                self.cis_foundations_benchmark_1_2['1.7']['Status'] = False
-                self.cis_foundations_benchmark_1_2['1.7']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['1.7']['Status'] = False
+                self.cis_foundations_benchmark_2_0['1.7']['Findings'].append(
                     user)
 
         # CIS Total 1.7 Adding - All Users to CIS Total
-        self.cis_foundations_benchmark_1_2['1.7']['Total'] = self.__users
+        self.cis_foundations_benchmark_2_0['1.7']['Total'] = self.__users
 
         # 1.8 Check - API Keys over 90
         for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
                     if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_2['1.8']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['1.8']['Status'] = False
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
@@ -3600,18 +3634,18 @@ class CIS_Report:
                             'time_created': key['time_created']
                         }
 
-                        self.cis_foundations_benchmark_1_2['1.8']['Findings'].append(
+                        self.cis_foundations_benchmark_2_0['1.8']['Findings'].append(
                             finding)
 
                     # CIS Total 1.8 Adding - Customer Secrets to CIS Total
-                    self.cis_foundations_benchmark_1_2['1.8']['Total'].append(key)
+                    self.cis_foundations_benchmark_2_0['1.8']['Total'].append(key)
 
         # CIS 1.9 Check - Old Customer Secrets
         for user in self.__users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
                     if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_2['1.9']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['1.9']['Status'] = False
 
                         finding = {
                             "user_name": user['name'],
@@ -3624,18 +3658,18 @@ class CIS_Report:
                             'time_expires': key['time_expires'],
                         }
 
-                        self.cis_foundations_benchmark_1_2['1.9']['Findings'].append(
+                        self.cis_foundations_benchmark_2_0['1.9']['Findings'].append(
                             finding)
 
                     # CIS Total 1.9 Adding - Customer Secrets to CIS Total
-                    self.cis_foundations_benchmark_1_2['1.9']['Total'].append(key)
+                    self.cis_foundations_benchmark_2_0['1.9']['Total'].append(key)
 
         # CIS 1.10 Check - Old Auth Tokens
         for user in self.__users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
                     if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
-                        self.cis_foundations_benchmark_1_2['1.10']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['1.10']['Status'] = False
 
                         finding = {
                             "user_name": user['name'],
@@ -3649,50 +3683,50 @@ class CIS_Report:
                             "token": key['token']
                         }
 
-                        self.cis_foundations_benchmark_1_2['1.10']['Findings'].append(
+                        self.cis_foundations_benchmark_2_0['1.10']['Findings'].append(
                             finding)
 
                     # CIS Total 1.10 Adding - Keys to CIS Total
-                    self.cis_foundations_benchmark_1_2['1.10']['Total'].append(
+                    self.cis_foundations_benchmark_2_0['1.10']['Total'].append(
                         key)
 
         # CIS 1.11 Active Admins with API keys
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
-                self.cis_foundations_benchmark_1_2['1.11']['Status'] = False
-                self.cis_foundations_benchmark_1_2['1.11']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['1.11']['Status'] = False
+                self.cis_foundations_benchmark_2_0['1.11']['Findings'].append(
                     user)
 
             # CIS Total 1.12 Adding - All IAM Users in Administrator group to CIS Total
             if 'Administrators' in user['groups'] and user['lifecycle_state'] == 'ACTIVE':
-                self.cis_foundations_benchmark_1_2['1.11']['Total'].append(user)
+                self.cis_foundations_benchmark_2_0['1.11']['Total'].append(user)
 
         # CIS 1.12 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
             if user['external_identifier'] is None and user['lifecycle_state'] == 'ACTIVE' and not (user['email_verified']):
-                self.cis_foundations_benchmark_1_2['1.12']['Status'] = False
-                self.cis_foundations_benchmark_1_2['1.12']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['1.12']['Status'] = False
+                self.cis_foundations_benchmark_2_0['1.12']['Findings'].append(
                     user)
 
         # CIS Total 1.12 Adding - All IAM Users for to CIS Total
-        self.cis_foundations_benchmark_1_2['1.12']['Total'] = self.__users
+        self.cis_foundations_benchmark_2_0['1.12']['Total'] = self.__users
 
         # CIS 1.13 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
         # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
         for dynamic_group in self.__dynamic_groups:
             if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.13']['resources']):
-                self.cis_foundations_benchmark_1_2['1.13']['Status'] = True
+                self.cis_foundations_benchmark_2_0['1.13']['Status'] = True
             else:
-                self.cis_foundations_benchmark_1_2['1.13']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['1.13']['Findings'].append(
                     dynamic_group)
         # Clearing finding
-        if self.cis_foundations_benchmark_1_2['1.13']['Status']:
-            self.cis_foundations_benchmark_1_2['1.13']['Findings'] = []
+        if self.cis_foundations_benchmark_2_0['1.13']['Status']:
+            self.cis_foundations_benchmark_2_0['1.13']['Findings'] = []
 
         # CIS Total 1.13 Adding - All Dynamic Groups  for to CIS Total
-        self.cis_foundations_benchmark_1_2['1.13']['Total'] = self.__dynamic_groups
+        self.cis_foundations_benchmark_2_0['1.13']['Total'] = self.__dynamic_groups
 
         # CIS 1.14 Check - Ensure storage service-level admins cannot delete resources they manage.
         # Iterating through all policies
@@ -3715,19 +3749,19 @@ class CIS_Report:
                                     debug("__report_cis_analyze_tenancy_data storage admin policy is : " + str(policy['name']))
                                     pass
                                 else:
-                                    self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+                                    self.cis_foundations_benchmark_2_0['1.14']['Findings'].append(policy)
                                     debug("__report_cis_analyze_tenancy_data else policy is /n: " + str(policy['name']))
 
                             else:
-                                self.cis_foundations_benchmark_1_2['1.14']['Findings'].append(policy)
+                                self.cis_foundations_benchmark_2_0['1.14']['Findings'].append(policy)
 
-        if self.cis_foundations_benchmark_1_2['1.14']['Findings']:
-            self.cis_foundations_benchmark_1_2['1.14']['Status'] = False
+        if self.cis_foundations_benchmark_2_0['1.14']['Findings']:
+            self.cis_foundations_benchmark_2_0['1.14']['Status'] = False
         else:
-            self.cis_foundations_benchmark_1_2['1.14']['Status'] = True
+            self.cis_foundations_benchmark_2_0['1.14']['Status'] = True
 
         # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
-        self.cis_foundations_benchmark_1_2['1.14']['Total'] = self.__policies
+        self.cis_foundations_benchmark_2_0['1.14']['Total'] = self.__policies
 
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
@@ -3738,40 +3772,40 @@ class CIS_Report:
                         port_max = irule['tcp_options']['destinationPortRange']['max']
                         ports_range = range(port_min, port_max + 1)
                         if 22 in ports_range:
-                            self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
+                            self.cis_foundations_benchmark_2_0['2.1']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['2.1']['Findings'].append(sl)
                         if 3389 in ports_range:
-                            self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                            self.cis_foundations_benchmark_2_0['2.2']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['2.2']['Findings'].append(sl)
                         break
                     else:
                         # If TCP Options is null it includes all ports
-                        self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
-                        self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                        self.cis_foundations_benchmark_2_0['2.1']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.1']['Findings'].append(sl)
+                        self.cis_foundations_benchmark_2_0['2.2']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.2']['Findings'].append(sl)
                         break
                 elif irule['source'] == "0.0.0.0/0" and irule['protocol'] == 'all':
                     # All Protocols allowed included TCP and all ports
-                    self.cis_foundations_benchmark_1_2['2.1']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.1']['Findings'].append(sl)
-                    self.cis_foundations_benchmark_1_2['2.2']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.2']['Findings'].append(sl)
+                    self.cis_foundations_benchmark_2_0['2.1']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.1']['Findings'].append(sl)
+                    self.cis_foundations_benchmark_2_0['2.2']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.2']['Findings'].append(sl)
                     break
 
         # CIS Total 2.1, 2.2 Adding - All SLs for to CIS Total
-        self.cis_foundations_benchmark_1_2['2.1']['Total'] = self.__network_security_lists
-        self.cis_foundations_benchmark_1_2['2.2']['Total'] = self.__network_security_lists
+        self.cis_foundations_benchmark_2_0['2.1']['Total'] = self.__network_security_lists
+        self.cis_foundations_benchmark_2_0['2.2']['Total'] = self.__network_security_lists
 
         # CIS 2.5 Check - any rule with 0.0.0.0 where protocol not 1 (ICMP)
         # CIS Total 2.5 Adding - All Default Security List for to CIS Total
         for sl in self.__network_security_lists:
             if sl['display_name'].startswith("Default Security List for "):
-                self.cis_foundations_benchmark_1_2['2.5']['Total'].append(sl)
+                self.cis_foundations_benchmark_2_0['2.5']['Total'].append(sl)
                 for irule in sl['ingress_security_rules']:
                     if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
-                        self.cis_foundations_benchmark_1_2['2.5']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.5']['Findings'].append(
+                        self.cis_foundations_benchmark_2_0['2.5']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.5']['Findings'].append(
                             sl)
                         break
 
@@ -3784,62 +3818,62 @@ class CIS_Report:
                         port_max = rule['tcp_options'].destination_port_range.max
                         ports_range = range(port_min, port_max + 1)
                         if 22 in ports_range:
-                            self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(
+                            self.cis_foundations_benchmark_2_0['2.3']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['2.3']['Findings'].append(
                                 nsg)
                         if 3389 in ports_range:
-                            self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                            self.cis_foundations_benchmark_2_0['2.4']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['2.4']['Findings'].append(nsg)
                         break
                     else:
                         # If TCP Options is null it includes all ports
-                        self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(nsg)
-                        self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
-                        self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                        self.cis_foundations_benchmark_2_0['2.3']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.3']['Findings'].append(nsg)
+                        self.cis_foundations_benchmark_2_0['2.4']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.4']['Findings'].append(nsg)
                         break
                 elif rule['source'] == "0.0.0.0/0" and rule['protocol'] == 'all':
                     # All Protocols allowed included TCP and all ports
-                    self.cis_foundations_benchmark_1_2['2.3']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.3']['Findings'].append(nsg)
-                    self.cis_foundations_benchmark_1_2['2.4']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.4']['Findings'].append(nsg)
+                    self.cis_foundations_benchmark_2_0['2.3']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.3']['Findings'].append(nsg)
+                    self.cis_foundations_benchmark_2_0['2.4']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.4']['Findings'].append(nsg)
                     break
 
         # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
-        self.cis_foundations_benchmark_1_2['2.3']['Total'] = self.__network_security_groups
-        self.cis_foundations_benchmark_1_2['2.4']['Total'] = self.__network_security_groups
+        self.cis_foundations_benchmark_2_0['2.3']['Total'] = self.__network_security_groups
+        self.cis_foundations_benchmark_2_0['2.4']['Total'] = self.__network_security_groups
 
         # CIS 2.6 - Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
         # Iterating through OIC instance have network access rules and ensure 0.0.0.0/0 is not in the list
         for integration_instance in self.__integration_instances:
             if not (integration_instance['network_endpoint_details']):
-                self.cis_foundations_benchmark_1_2['2.6']['Status'] = False
-                self.cis_foundations_benchmark_1_2['2.6']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['2.6']['Status'] = False
+                self.cis_foundations_benchmark_2_0['2.6']['Findings'].append(
                     integration_instance)
             elif integration_instance['network_endpoint_details']:
                 if "0.0.0.0/0" in str(integration_instance['network_endpoint_details']):
-                    self.cis_foundations_benchmark_1_2['2.6']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.6']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['2.6']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.6']['Findings'].append(
                         integration_instance)
 
         # CIS Total 2.6 Adding - All OIC Instances to CIS Total
-        self.cis_foundations_benchmark_1_2['2.6']['Total'] = self.__integration_instances
+        self.cis_foundations_benchmark_2_0['2.6']['Total'] = self.__integration_instances
 
         # CIS 2.7 - Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a VCN
         for analytics_instance in self.__analytics_instances:
             if analytics_instance['network_endpoint_type'].upper() == 'PUBLIC':
                 if not (analytics_instance['network_endpoint_details'].whitelisted_ips):
-                    self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(analytics_instance)
+                    self.cis_foundations_benchmark_2_0['2.7']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.7']['Findings'].append(analytics_instance)
 
                 elif "0.0.0.0/0" in analytics_instance['network_endpoint_details'].whitelisted_ips:
-                    self.cis_foundations_benchmark_1_2['2.7']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.7']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['2.7']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.7']['Findings'].append(
                         analytics_instance)
 
         # CIS Total 2.7 Adding - All OAC Instances to CIS Total
-        self.cis_foundations_benchmark_1_2['2.7']['Total'] = self.__analytics_instances
+        self.cis_foundations_benchmark_2_0['2.7']['Total'] = self.__analytics_instances
 
         # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
         # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
@@ -3847,40 +3881,40 @@ class CIS_Report:
         for autonomous_database in self.__autonomous_databases:
             if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
-                    self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['2.8']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['2.8']['Findings'].append(
                         autonomous_database)
                 elif autonomous_database['whitelisted_ips']:
                     for value in autonomous_database['whitelisted_ips']:
                         if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
-                            self.cis_foundations_benchmark_1_2['2.8']['Status'] = False
-                            self.cis_foundations_benchmark_1_2['2.8']['Findings'].append(
+                            self.cis_foundations_benchmark_2_0['2.8']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['2.8']['Findings'].append(
                                 autonomous_database)
 
         # CIS Total 2.8 Adding - All ADBs to CIS Total
-        self.cis_foundations_benchmark_1_2['2.8']['Total'] = self.__autonomous_databases
+        self.cis_foundations_benchmark_2_0['2.8']['Total'] = self.__autonomous_databases
 
-        # CIS 3.1 Check - Ensure Audit log retention == 365 - Only checking in home region
-        if self.__audit_retention_period >= 365:
-            self.cis_foundations_benchmark_1_2['3.1']['Status'] = True
+        # From CIS 1.2 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
+        # if self.__audit_retention_period >= 365:
+        #     self.cis_foundations_benchmark_2_0['4.1']['Status'] = True
 
-        # CIS Check 3.2 - Check for Default Tags in Root Compartment
+        # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
             if tag['value'] == "${iam.principal.name}":
-                self.cis_foundations_benchmark_1_2['3.2']['Status'] = True
+                self.cis_foundations_benchmark_2_0['4.1']['Status'] = True
 
-        # CIS Total 3.2 Adding - All Tag Defaults to CIS Total
-        self.cis_foundations_benchmark_1_2['3.2']['Total'] = self.__tag_defaults
+        # CIS Total 4.1 Adding - All Tag Defaults to CIS Total
+        self.cis_foundations_benchmark_2_0['4.1']['Total'] = self.__tag_defaults
 
-        # CIS Check 3.3 - Check for Active Notification and Subscription
+        # CIS Check 4.2 - Check for Active Notification and Subscription
         if len(self.__subscriptions) > 0:
-            self.cis_foundations_benchmark_1_2['3.3']['Status'] = True
+            self.cis_foundations_benchmark_2_0['4.2']['Status'] = True
 
-        # CIS Check 3.2 Total - All Subscriptions to CIS Total
-        self.cis_foundations_benchmark_1_2['3.3']['Total'] = self.__subscriptions
+        # CIS Check 4.2 Total - All Subscriptions to CIS Total
+        self.cis_foundations_benchmark_2_0['4.2']['Total'] = self.__subscriptions
 
-        # CIS Checks 3.4 - 3.13
+        # CIS Checks 4.3 - 4.12 and 4.15
         # Iterate through all event rules
         for event in self.__event_rules:
             # Convert Event Condition to dict
@@ -3896,123 +3930,122 @@ class CIS_Report:
                     # Checking if all cis change list is a subset of event condition
                     try:
                         if (all(x in event_dict['eventtype'] for x in changes)):
-                            self.cis_foundations_benchmark_1_2[key]['Status'] = True
+                            self.cis_foundations_benchmark_2_0[key]['Status'] = True
                     except Exception:
                         print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
 
-        # CIS Check 3.14 - VCN FlowLog enable
+        # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             if not (subnet['id'] in self.__subnet_logs):
-                self.cis_foundations_benchmark_1_2['3.14']['Status'] = False
-                self.cis_foundations_benchmark_1_2['3.14']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
+                self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(
                     subnet)
 
-        # CIS Check 3.14 Total - Adding All Subnets to total
-        self.cis_foundations_benchmark_1_2['3.14']['Total'] = self.__network_subnets
+        # CIS Check 4.13 Total - Adding All Subnets to total
+        self.cis_foundations_benchmark_2_0['4.13']['Total'] = self.__network_subnets
 
-        # CIS Check 3.15 - Cloud Guard enabled
+        # CIS Check 4.14 - Cloud Guard enabled
         debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
         if self.__cloud_guard_config_status == 'ENABLED':
-            self.cis_foundations_benchmark_1_2['3.15']['Status'] = True
+            self.cis_foundations_benchmark_2_0['4.14']['Status'] = True
         else:
-            self.cis_foundations_benchmark_1_2['3.15']['Status'] = False
+            self.cis_foundations_benchmark_2_0['4.14']['Status'] = False
 
-        # CIS Check 3.16 - Encryption keys over 365
+        # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
         for vault in self.__vaults:
             for key in vault['keys']:
                 if self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
-                    self.cis_foundations_benchmark_1_2['3.16']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['3.16']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
                         key)
 
                 # CIS Check 3.16 Total - Adding Key to total
-                self.cis_foundations_benchmark_1_2['3.16']['Total'].append(key)
+                self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
-        # CIS Check 3.17 - Object Storage with Logs
+        # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names
-
         for bucket in self.__buckets:
             if not (bucket['name'] in self.__write_bucket_logs):
-                self.cis_foundations_benchmark_1_2['3.17']['Status'] = False
-                self.cis_foundations_benchmark_1_2['3.17']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
+                self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
                     bucket)
 
-        # CIS Check 3.17 Total - Adding All Buckets to total
-        self.cis_foundations_benchmark_1_2['3.17']['Total'] = self.__buckets
+        # CIS Check 4.17 Total - Adding All Buckets to total
+        self.cis_foundations_benchmark_2_0['4.17']['Total'] = self.__buckets
 
-        # CIS Section 4.1 Bucket Checks
+        # CIS Section 5.1 Bucket Checks
         # Generating list of buckets names
         for bucket in self.__buckets:
             if 'public_access_type' in bucket:
                 if bucket['public_access_type'] != 'NoPublicAccess':
-                    self.cis_foundations_benchmark_1_2['4.1.1']['Status'] = False
-                    self.cis_foundations_benchmark_1_2['4.1.1']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.1.1']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.1.1']['Findings'].append(
                         bucket)
 
             if 'kms_key_id' in bucket:
                 if not (bucket['kms_key_id']):
-                    self.cis_foundations_benchmark_1_2['4.1.2']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.1.2']['Findings'].append(
                         bucket)
-                    self.cis_foundations_benchmark_1_2['4.1.2']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.1.2']['Status'] = False
 
             if 'versioning' in bucket:
                 if bucket['versioning'] != "Enabled":
-                    self.cis_foundations_benchmark_1_2['4.1.3']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.1.3']['Findings'].append(
                         bucket)
-                    self.cis_foundations_benchmark_1_2['4.1.3']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.1.3']['Status'] = False
 
         # CIS Check 4.1.1,4.1.2,4.1.3 Total - Adding All Buckets to total
-        self.cis_foundations_benchmark_1_2['4.1.1']['Total'] = self.__buckets
-        self.cis_foundations_benchmark_1_2['4.1.2']['Total'] = self.__buckets
-        self.cis_foundations_benchmark_1_2['4.1.3']['Total'] = self.__buckets
+        self.cis_foundations_benchmark_2_0['5.1.1']['Total'] = self.__buckets
+        self.cis_foundations_benchmark_2_0['5.1.2']['Total'] = self.__buckets
+        self.cis_foundations_benchmark_2_0['5.1.3']['Total'] = self.__buckets
 
-        # CIS Section 4.2.1 Block Volume Checks
+        # CIS Section 5.2.1 Block Volume Checks
         # Generating list of block volumes names
         for volume in self.__block_volumes:
             if 'kms_key_id' in volume:
                 if not (volume['kms_key_id']):
-                    self.cis_foundations_benchmark_1_2['4.2.1']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.2.1']['Findings'].append(
                         volume)
-                    self.cis_foundations_benchmark_1_2['4.2.1']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.2.1']['Status'] = False
 
-        # CIS Check 4.2.1 Total - Adding All Block Volumes to total
-        self.cis_foundations_benchmark_1_2['4.2.1']['Total'] = self.__block_volumes
+        # CIS Check 5.2.1 Total - Adding All Block Volumes to total
+        self.cis_foundations_benchmark_2_0['5.2.1']['Total'] = self.__block_volumes
 
-        # CIS Section 4.2.2 Boot Volume Checks
+        # CIS Section 5.2.2 Boot Volume Checks
         # Generating list of boot names
         for boot_volume in self.__boot_volumes:
             if 'kms_key_id' in boot_volume:
                 if not (boot_volume['kms_key_id']):
-                    self.cis_foundations_benchmark_1_2['4.2.2']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.2.2']['Findings'].append(
                         boot_volume)
-                    self.cis_foundations_benchmark_1_2['4.2.2']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.2.2']['Status'] = False
 
         # CIS Check 4.2.2 Total - Adding All Block Volumes to total
-        self.cis_foundations_benchmark_1_2['4.2.2']['Total'] = self.__boot_volumes
+        self.cis_foundations_benchmark_2_0['5.2.2']['Total'] = self.__boot_volumes
 
-        # CIS Section 4.3.1 FSS Checks
+        # CIS Section 5.3.1 FSS Checks
         # Generating list of FSS names
         for file_system in self.__file_storage_system:
             if 'kms_key_id' in file_system:
                 if not (file_system['kms_key_id']):
-                    self.cis_foundations_benchmark_1_2['4.3.1']['Findings'].append(
+                    self.cis_foundations_benchmark_2_0['5.3.1']['Findings'].append(
                         file_system)
-                    self.cis_foundations_benchmark_1_2['4.3.1']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['5.3.1']['Status'] = False
 
         # CIS Check 4.3.1 Total - Adding All Block Volumes to total
-        self.cis_foundations_benchmark_1_2['4.3.1']['Total'] = self.__file_storage_system
+        self.cis_foundations_benchmark_2_0['5.3.1']['Total'] = self.__file_storage_system
 
-        # CIS Section 5 Checks
+        # CIS Section 6 Checks
         # Checking if more than one compartment because of the ManagedPaaS Compartment
         if len(self.__compartments) < 2:
-            self.cis_foundations_benchmark_1_2['5.1']['Status'] = False
+            self.cis_foundations_benchmark_2_0['6.1']['Status'] = False
 
         if len(self.__resources_in_root_compartment) > 0:
             for item in self.__resources_in_root_compartment:
-                self.cis_foundations_benchmark_1_2['5.2']['Status'] = False
-                self.cis_foundations_benchmark_1_2['5.2']['Findings'].append(
+                self.cis_foundations_benchmark_2_0['6.2']['Status'] = False
+                self.cis_foundations_benchmark_2_0['6.2']['Findings'].append(
                     item)
 
     ##########################################################################
@@ -4531,7 +4564,7 @@ class CIS_Report:
 
         # Creating summary report
         summary_report = []
-        for key, recommendation in self.cis_foundations_benchmark_1_2.items():
+        for key, recommendation in self.cis_foundations_benchmark_2_0.items():
             if recommendation['Level'] <= level:
                 report_filename = "cis" + " " + recommendation['section'] + "_" + recommendation['recommendation_#']
                 report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_", "_") + ".csv"
@@ -4594,7 +4627,7 @@ class CIS_Report:
                 self.__os_copy_report_to_object_storage(
                     self.__output_bucket, summary_file)
 
-        for key, recommendation in self.cis_foundations_benchmark_1_2.items():
+        for key, recommendation in self.cis_foundations_benchmark_2_0.items():
             if recommendation['Level'] <= level:
                 report_file_name = self.__print_to_csv_file(
                     self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
@@ -4840,7 +4873,7 @@ class CIS_Report:
                 html_file.write('<div class="cb132w1 cwidth">')
                 # Creating appendix for the report
                 for finding in html_appendix:
-                    fing = self.cis_foundations_benchmark_1_2[finding]
+                    fing = self.cis_foundations_benchmark_2_0[finding]
                     html_file.write(f'<hr id="{finding}" /><h4>{finding} &ndash; {fing["Title"]}</h4>\n')
                     for item_key, item_value in self.cis_report_data[finding].items():
                         if item_value != "":

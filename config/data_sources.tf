@@ -178,11 +178,3 @@ data "oci_identity_compartments" "exainfra" {
 data "oci_identity_tag_namespaces" "this" {
   compartment_id = var.tenancy_ocid
 }
-
-data "oci_identity_compartments" "all" {
-  depends_on = [module.lz_compartments]
-  compartment_id = var.tenancy_ocid
-  compartment_id_in_subtree = true
-  access_level = "ACCESSIBLE"
-  state = "ACTIVE"
-}

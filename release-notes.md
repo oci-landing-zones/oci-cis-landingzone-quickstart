@@ -1,14 +1,18 @@
-#   December 8, 2023 Release Notes - 2.7.1
-1. [Links to Deploy on non-commercial regions](#2-7-1-deploy-links)
+#   December 10, 2023 Release Notes - 2.7.1
+1. [Links to Deploy in Non-commercial Regions](#2-7-1-deploy-links)
 1. [Terraform Updates](#2-7-1-tf-updates)
 
-## <a name="#2-7-1-deploy-links">Links to Deploy on non-commercial regions</a>
+## <a name="#2-7-1-deploy-links">Links to Deploy in Non-commercial Regions</a>
 Links have been added to [README.md](./README.md) allowing the initiation of Terraform deployments in **non-commercial** regions through OCI Resource Manager service. The existing "Deploy to Oracle Cloud" button is unchanged, initiating deployments to commercial regions only. Use the links when deploying to Gov cloud.
 
 ## <a name="2-7-1-tf-updates">Terraform Updates</a>
+**config module**
 * *tenancy_ocid*, *user_ocid* and *region* variables are now hidden in [generic_workload_compartments](./workloads/generic_workload_compartments/) RMS UI.
 * IAM policies have been added to allow OKE clusters deployment with NPN (Native Pod Networking) and split compartment topology (i.e., networking in Network compartment and cluster in AppDev compartment).
 * Tenancy wide audit logs for Service Connector Hub are now collected using "_Audit_Include_Subcompartment" construct instead of explicitly looping through all tenancy compartments. 
+
+**pre-config module**
+* Auditor grants in pre-config module aligned with auditor grants in config module.
 
 #   November 17, 2023 Release Notes - 2.7.0
 1. [CIS Compliance Script Gets Network Topology](#2-7-0-script-network-topology)

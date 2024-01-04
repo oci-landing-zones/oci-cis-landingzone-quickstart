@@ -3374,13 +3374,17 @@ class CIS_Report:
 
                 for item in structured_search_all_resources:
                     # ignoring global resources like IAM
-                    if item.identifier.split('.')[3]:
-                        record = {
-                            "display_name": item.display_name,
-                            "id": item.identifier,
-                            "region": region_key
-                        }
-                        self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                    try:
+                        if item.identifier.split('.')[3]:
+                            record = {
+                                "display_name": item.display_name,
+                                "id": item.identifier,
+                                "region": region_key
+                            }
+                            self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                    except:
+                        self.__errors.append({"id" : "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
+                        debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
 
             except Exception as e:
                 raise RuntimeError(

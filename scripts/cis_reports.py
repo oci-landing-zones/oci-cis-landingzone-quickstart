@@ -27,7 +27,6 @@ import hashlib
 import re
 import requests
 import pickle
-#test
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -36,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.7.0"
-PYTHON_SDK_VERSION = "2.115.1"
-UPDATED_DATE = "November 20, 2023"
+RELEASE_VERSION = "2.7.1"
+PYTHON_SDK_VERSION = "2.118.0"
+UPDATED_DATE = "January 05, 2024"
 
 
 ##########################################################################

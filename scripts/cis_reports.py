@@ -784,6 +784,8 @@ class CIS_Report:
         self.__network_cpes = []
         self.__network_ipsec_connections = {}  # Indexed by DRG ID
         self.__network_drg_attachments = {}  # Indexed by DRG ID
+        self.__network_topology_json = {}
+
 
         # For Autonomous Database Checks
         self.__autonomous_databases = []
@@ -2414,7 +2416,6 @@ class CIS_Report:
     ############################################
     def __network_topology_dump(self):
         debug("__network_topology_dump: Starting")
-        self.__network_topology_json = {}
         
         def api_function(region_key, region_values, tenancy_id):
             try:
@@ -3907,6 +3908,32 @@ class CIS_Report:
         # if self.__audit_retention_period >= 365:
         #     self.cis_foundations_benchmark_2_0['4.1']['Status'] = True
 
+        for instance in self.__Instance:
+            # CIS Check 3.1 Metadata Service v2 Enabled
+            if instance['instance_options'] is None or not(instance['instance_options']['are_legacy_imds_endpoints_disabled']):
+                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't disable IMDSv1")
+                self.cis_foundations_benchmark_2_0['3.1']['Status'] = False
+                self.cis_foundations_benchmark_2_0['3.1']['Findings'].append(instance)
+            
+            # CIS Check 3.2 Secure Boot enabled
+            if instance['platform_config'] is None or not(instance['platform_config']['is_secure_boot_enabled']):
+                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable secure boot")
+                self.cis_foundations_benchmark_2_0['3.2']['Status'] = False
+                self.cis_foundations_benchmark_2_0['3.2']['Findings'].append(instance)
+            
+            # CIS Check 3.3 Encryption in Transit enabled
+            if instance['launch_options'] is None or not(instance['launch_options']['is_pv_encryption_in_transit_enabled']):
+                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable encryption in transit")
+                self.cis_foundations_benchmark_2_0['3.3']['Status'] = False
+                self.cis_foundations_benchmark_2_0['3.3']['Findings'].append(instance)
+
+        # CIS Total 3.1 Adding - All Instances to CIS Total
+        self.cis_foundations_benchmark_2_0['3.1']['Total'] = self.__Instance
+        # CIS Total 3.2 Adding - All Instances to CIS Total
+        self.cis_foundations_benchmark_2_0['3.2']['Total'] = self.__Instance
+        # CIS Total 3.3 Adding - All Instances to CIS Total
+        self.cis_foundations_benchmark_2_0['3.3']['Total'] = self.__Instance
+
         # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
@@ -5214,6 +5241,10 @@ class CIS_Report:
             self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
         list_report_file_names.append(report_file_name)
 
+        report_file_name = self.__print_to_csv_file(
+            self.__report_directory, "raw_data", "instances", self.__Instance)
+        list_report_file_names.append(report_file_name)
+
         report_file_name = self.__print_to_json_file(
                 self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
         list_report_file_names.append(report_file_name)
@@ -5224,10 +5255,6 @@ class CIS_Report:
 
         report_file_name = self.__print_to_pkl_file(
                 self.__report_directory, "raw_data", "oci_network_topologies", self.__network_topology_json)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "instances", self.__Instance)
         list_report_file_names.append(report_file_name)
 
         if self.__output_bucket:

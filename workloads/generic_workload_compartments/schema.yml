@@ -10,6 +10,7 @@ locale: "en"
 variableGroups:
   - title: "Environment"
     variables:
+      - "region"
       - "service_label"
       - "existing_lz_enclosing_compartment_ocid"
       - "existing_lz_security_compartment_ocid"
@@ -26,8 +27,8 @@ variableGroups:
   - title: "Hidden Variables"
     visible: false
     variables:
-      - "tenancy_id"
-      - "user_id"
+      - "tenancy_ocid"
+      - "user_ocid"
       - "fingerprint"
       - "private_key_path"
       - "private_key_password"
@@ -85,10 +86,13 @@ variables:
     title: "Create Workload Dynamic Groups"
 
   # Variables not required to display to user
-  tenancy_id:
+  tenancy_ocid:
     type: string
 
-  user_id:
+  region:
+    type: string
+    
+  user_ocid:
     type: string
 
   fingerprint:

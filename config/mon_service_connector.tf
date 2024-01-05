@@ -21,9 +21,9 @@ locals {
   custom_policy_defined_tags = null
   custom_policy_freeform_tags = null
 
-  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [for cmp in data.oci_identity_compartments.all.compartments : {
-    compartment_id = cmp.id
-    log_group_id = "_Audit"
+  audit_logs_sources = !var.extend_landing_zone_to_new_region ? [{
+    compartment_id = var.tenancy_ocid
+    log_group_id = "_Audit_Include_Subcompartment"
     log_id = ""
   }] : []
   oss_logs_sources = [for k, v in module.lz_oss_logs.logs : {

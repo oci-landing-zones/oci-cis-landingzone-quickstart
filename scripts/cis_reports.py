@@ -27,7 +27,6 @@ import hashlib
 import re
 import requests
 import pickle
-#test
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -36,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.7.0"
-PYTHON_SDK_VERSION = "2.115.1"
-UPDATED_DATE = "November 20, 2023"
+RELEASE_VERSION = "2.7.1"
+PYTHON_SDK_VERSION = "2.118.0"
+UPDATED_DATE = "January 05, 2024"
 
 
 ##########################################################################
@@ -3428,13 +3427,17 @@ class CIS_Report:
 
                 for item in structured_search_all_resources:
                     # ignoring global resources like IAM
-                    if item.identifier.split('.')[3]:
-                        record = {
-                            "display_name": item.display_name,
-                            "id": item.identifier,
-                            "region": region_key
-                        }
-                        self.cis_foundations_benchmark_2_0['6.2']['Total'].append(item)
+                    try:
+                        if item.identifier.split('.')[3]:
+                            record = {
+                                "display_name": item.display_name,
+                                "id": item.identifier,
+                                "region": region_key
+                            }
+                            self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                    except:
+                        self.__errors.append({"id" : "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
+                        debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
 
             except Exception as e:
                 raise RuntimeError(

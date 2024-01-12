@@ -1294,6 +1294,7 @@ class CIS_Report:
 
             # Adding record to the users
             for user in users_data:
+                print(user)
                 deep_link = self.__oci_users_uri + user.id
                 record = {
                     'id': user.id,
@@ -5025,10 +5026,10 @@ class CIS_Report:
         print("\nProcessing Home Region resources...")
 
         cis_home_region_functions = [
+            self.__identity_read_domains,
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
-            self.__identity_read_domains,
             self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,

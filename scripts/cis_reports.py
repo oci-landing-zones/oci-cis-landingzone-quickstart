@@ -1290,6 +1290,32 @@ class CIS_Report:
                 "Error in __identity_read_groups_and_membership" + str(e.args))
 
     ##########################################################################
+    # Identity Domains Helper function for pagination
+    ##########################################################################
+    def __identity_domains_get_all_results(self, func, args):
+                
+        if not 'start_index' in args:
+            args['start_index'] = 1
+        if not "count" in args:
+            args["count"] = 1000     
+        if not "filter" in args:
+            args["filter"] = ''
+
+        result = func(start_index=args['start_index'],
+                    count=args['count'],
+                    filter=args['filter']).data
+        resources = result.resources
+        while len(resources) < result.total_results:
+            args["start_index"] = len(resources) + 1
+            result = func(start_index=args['start_index'],
+                    count=args['count'],
+                    filter=args['filter']).data
+            for item in result.resources:
+                resources.append(item)
+
+        return resources
+        
+    ##########################################################################
     # Load users
     ##########################################################################
     def __identity_read_users(self):
@@ -1297,12 +1323,9 @@ class CIS_Report:
         if self.__identity_domains_enabled:
             for identify_domain in self.__identity_domains:
                 try:
-                    # Getting 1000 users for each Identity Domains - Identity Domains doesn't support pagination
-                    user_data_response = identify_domain['IdentityDomainClient'].list_users().data
-                    if 1000 <= user_data_response.total_results:
-                        self.__errors.append({"id": identify_domain.id, "error" : "Domain with over 1000 users are not supported at this time"})
-                    
-                    users_data = user_data_response.resources
+
+                    users_data = self.__identity_domains_get_all_results(func=identify_domain['IdentityDomainClient'].list_users, 
+                                                                         args={})
 
                     print("Got users from identity domain " + str(len(users_data)))
 

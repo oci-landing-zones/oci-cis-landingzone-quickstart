@@ -945,6 +945,19 @@ class CIS_Report:
         else:
             self.__report_directory = self.__tenancy.name + "-" + self.report_datetime
 
+        # Checking if a Tenancy has Identity Domains enabled
+        try:
+            domains_checking_url = "https://login.oci.oraclecloud.com/v1/tenantMetadata/" + self.__tenancy.name
+            domains_check_raw = requests.get(url=domains_checking_url)
+            domains_check_dict = json.loads(domains_check_raw.content)
+            self.__identity_domains_enabled = domains_check_dict['flights']['isHenosisEnabled']
+        except Exception as e:
+            # To be safe if it fails I'll check
+            self.__identity_domains_enabled = True
+            debug("__init__: Exception checking identity domains status \n" + str(e))
+            self.__errors.append({"id" : "__init__", "error" : str(e)})
+        
+        
         # Creating signers and config for all regions
         self.__create_regional_signers(proxy)
 
@@ -1173,6 +1186,8 @@ class CIS_Report:
     # Load Identity Domains
     ##########################################################################
     def __identity_read_domains(self):
+        if not(self.__identity_domains_enabled):
+            return 
         print("Processing Identity Domains...")
         raw_identity_domains = []
         # Finding all Identity Domains in the tenancy
@@ -1185,18 +1200,11 @@ class CIS_Report:
                         compartment_id = compartment.id,
                         lifecycle_state = "ACTIVE"
                     ).data
-                # If this succeeds it is likely there are identity Domains
-                self.__identity_domains_enabled = True
 
             except Exception as e:
                 debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
                 break
-
-        # Check if tenancy has Identity Domains otherwise breaking out
-        if not(raw_identity_domains):
-            self.__identity_domains_enabled = False
-            return self.__identity_domains_enabled
         
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting password policy for domain: " + domain.display_name)
@@ -1207,8 +1215,10 @@ class CIS_Report:
                 raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
                 raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
 
-                pwd_policy_dict =  oci.util.to_dict(oci.identity_domains.IdentityDomainsClient(\
-                     config=self.__config, service_endpoint=domain.url).get_password_policy(\
+                # Creating Identity Domains Client and storing it
+                domain_dict['IdentityDomainClient'] = oci.identity_domains.IdentityDomainsClient(\
+                     config=self.__config, service_endpoint=domain.url)
+                pwd_policy_dict =  oci.util.to_dict(domain_dict['IdentityDomainClient'].get_password_policy(\
                         password_policy_id=raw_pwd_policy_dict['ocid']).data)
                 
                 domain_dict['password_policy'] = pwd_policy_dict
@@ -1220,10 +1230,8 @@ class CIS_Report:
             
             self.__identity_domains.append(domain_dict)
 
-        else:
-            self.__identity_domains_enabled = True
-            ("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
-            return self.__identity_domains_enabled 
+        print("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
+        return 
     
     ##########################################################################
     # Load Groups and Group membership
@@ -1285,59 +1293,119 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        try:
-            # Getting all users in the Tenancy
-            users_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_users,
-                compartment_id=self.__tenancy.id
-            ).data
+        print(f'__identity_read_users: Getting User data for Identity Domains: {self.__identity_domains_enabled}')
+        if self.__identity_domains_enabled:
+            for identify_domain in self.__identity_domains:
+                try:
+                    # Getting 1000 users for each Identity Domains - Identity Domains doesn't support pagination
+                    user_data_response = identify_domain['IdentityDomainClient'].list_users().data
+                    if 1000 <= user_data_response.total_results:
+                        self.__errors.append({"id": identify_domain.id, "error" : "Domain with over 1000 users are not supported at this time"})
+                    
+                    users_data = user_data_response.resources
 
-            # Adding record to the users
-            for user in users_data:
-                print(user)
-                deep_link = self.__oci_users_uri + user.id
-                record = {
-                    'id': user.id,
-                    'name': user.name,
-                    'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
-                    'defined_tags': user.defined_tags,
-                    'description': user.description,
-                    'email': user.email,
-                    'email_verified': user.email_verified,
-                    'external_identifier': user.external_identifier,
-                    'identity_provider_id': user.identity_provider_id,
-                    'is_mfa_activated': user.is_mfa_activated,
-                    'lifecycle_state': user.lifecycle_state,
-                    'time_created': user.time_created.strftime(self.__iso_time_format),
-                    'can_use_api_keys': user.capabilities.can_use_api_keys,
-                    'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
-                    'can_use_console_password': user.capabilities.can_use_console_password,
-                    'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
-                    'can_use_db_credentials': user.capabilities.can_use_db_credentials,
-                    'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
-                    'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
-                    'groups': []
-                }
-                # Adding Groups to the user
-                for group in self.__groups_to_users:
-                    if user.id == group['user_id']:
-                        record['groups'].append(group['name'])
+                    print("Got users from identity domain " + str(len(users_data)))
 
-                record['api_keys'] = self.__identity_read_user_api_key(user.id)
-                record['auth_tokens'] = self.__identity_read_user_auth_token(
-                    user.id)
-                record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
-                    user.id)
+                    # Adding record to the users
+                    for user in users_data:
+                        deep_link = self.__oci_users_uri + user.ocid
+                        record = {
+                            'id': user.ocid,
+                            'name': user.user_name,
+                            'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
+                            'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
+                            'description': user.description,
+                            'email': user.emails[0],
+                            'email_verified': user.emails[0].verified,
+                            'external_identifier': user.external_id,
+                            'identity_provider_id': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.provider,
+                            'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
+                            'lifecycle_state': user.active,
+                            'time_created': user.meta.created,
+                            'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys,
+                            'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens,
+                            'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password,
+                            'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys,
+                            'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials,
+                            'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials,
+                            'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials,
+                            'groups': []
+                        }
+                        # Adding Groups to the user
+                        for group in self.__groups_to_users:
+                            if user.ocid == group['user_id']:
+                                record['groups'].append(group['name'])
 
-                self.__users.append(record)
+                        record['api_keys'] = self.__identity_read_user_api_key(user.ocid)
+                        record['auth_tokens'] = self.__identity_read_user_auth_token(
+                            user.ocid)
+                        record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
+                            user.ocid)
+                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain_client=identify_domain['IdentityDomainClient'])
+                        self.__users.append(record)
+
+                except Exception as e:
+                    debug("__identity_read_users: User ID is: " + str(user))
+                    raise RuntimeError(
+                        "Error in __identity_read_users: " + str(e.args))
+            
             print("\tProcessed " + str(len(self.__users)) + " Users")
             return self.__users
 
-        except Exception as e:
-            debug("__identity_read_users: User ID is: " + str(user))
-            raise RuntimeError(
-                "Error in __identity_read_users: " + str(e.args))
+        else:
+            try:
+                # Getting all users in the Tenancy
+                users_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_users,
+                    compartment_id=self.__tenancy.id
+                ).data
 
+                # Adding record to the users
+                for user in users_data:
+                    deep_link = self.__oci_users_uri + user.id
+                    record = {
+                        'id': user.id,
+                        'name': user.name,
+                        'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
+                        'defined_tags': user.defined_tags,
+                        'description': user.description,
+                        'email': user.email,
+                        'email_verified': user.email_verified,
+                        'external_identifier': user.external_identifier,
+                        'identity_provider_id': user.identity_provider_id,
+                        'is_mfa_activated': user.is_mfa_activated,
+                        'lifecycle_state': user.lifecycle_state,
+                        'time_created': user.time_created.strftime(self.__iso_time_format),
+                        'can_use_api_keys': user.capabilities.can_use_api_keys,
+                        'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
+                        'can_use_console_password': user.capabilities.can_use_console_password,
+                        'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
+                        'can_use_db_credentials': user.capabilities.can_use_db_credentials,
+                        'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
+                        'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
+                        'groups': []
+                    }
+                    # Adding Groups to the user
+                    for group in self.__groups_to_users:
+                        if user.id == group['user_id']:
+                            record['groups'].append(group['name'])
+
+                    record['api_keys'] = self.__identity_read_user_api_key(user.id)
+                    record['auth_tokens'] = self.__identity_read_user_auth_token(
+                        user.id)
+                    record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
+                        user.id)
+                    print("Getting Database Password " + str(user.name))
+                    record['database_passowrds'] = self.__identity_read_user_database_password(user.id)
+                    print("Got database password")
+                    self.__users.append(record)
+                print("\tProcessed " + str(len(self.__users)) + " Users")
+                return self.__users
+
+            except Exception as e:
+                debug("__identity_read_users: User ID is: " + str(user))
+                raise RuntimeError(
+                    "Error in __identity_read_users: " + str(e.args))
     ##########################################################################
     # Load user api keys
     ##########################################################################
@@ -1439,6 +1507,52 @@ class CIS_Report:
             return customer_secret_key
             raise RuntimeError(
                 "Error in identity_read_user_customer_secret_key: " + str(e.args))
+
+    ##########################################################################
+    # Load Database Passwords
+    ##########################################################################
+    def __identity_read_user_database_password(self, user_ocid, identity_domain_client=None):
+        database_password = []
+        debug("__identity_read_user_database_password: Starting")
+        if self.__identity_domains_enabled:
+            try:
+                raw_database_password = identity_domain_client.list_user_db_credentials(
+                    filter=f'user.ocid eq \"{user_ocid}\"'
+                    ).data.resources
+
+                for password in raw_database_password:
+                    debug("__identity_read_user_database_password: Got Password")
+                    deep_link = self.__oci_users_uri + user_ocid + "/db-password"
+                    record = oci.util.to_dict(password)
+                    record['deep_link'] = deep_link
+                    database_password.append(record)
+
+                return database_password
+
+            except Exception as e:
+                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
+                debug("__identity_read_user_customer_secret_key: Failed to get database passwords for User ID: " + user_ocid)
+                return database_password
+        else:
+            try:
+                raw_database_password = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_db_credentials,
+                    user_id=user_ocid
+                ).data
+
+                for password in raw_database_password:
+                    debug("__identity_read_user_database_password: Got Password")
+                    deep_link = self.__oci_users_uri + user_ocid + "/db-password"
+                    record = oci.util.to_dict(password)
+                    record['deep_link'] = deep_link
+                    database_password.append(record)
+
+                return database_password
+
+            except Exception as e:
+                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
+                debug("__identity_read_user_customer_secret_key: Failed to get database passwords for User ID: " + user_ocid)
+                return database_password
 
     ##########################################################################
     # Tenancy IAM Policies
@@ -5019,14 +5133,18 @@ class CIS_Report:
         thread_cloud_guard_config = Thread(target=self.__cloud_guard_read_cloud_guard_configuration)
         thread_cloud_guard_config.start()
 
+
         thread_compartments.join()
         thread_cloud_guard_config.join()
         thread_identity_groups.join()
+        
+        thread_identity_domains = Thread(target=self.__identity_read_domains)
+        thread_identity_domains.start()
+        thread_identity_domains.join()
 
         print("\nProcessing Home Region resources...")
 
         cis_home_region_functions = [
-            self.__identity_read_domains,
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,

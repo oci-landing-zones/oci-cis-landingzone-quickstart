@@ -1116,6 +1116,14 @@ class CIS_Report:
             if compartment.name == "ManagedCompartmentForPaaS":
                 self.__managed_paas_compartment_id = compartment.id
 
+    #########################################################################
+    # Time Format Helper
+    ##########################################################################
+    def get_date_iso_format(self, val):
+        if not val:
+            return ""
+        return str(val)[0:19]
+
     ##########################################################################
     # Load compartments
     ##########################################################################
@@ -1319,15 +1327,13 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        print(f'__identity_read_users: Getting User data for Identity Domains: {self.__identity_domains_enabled}')
+        debug(f'__identity_read_users: Getting User data for Identity Domains: {self.__identity_domains_enabled}')
         if self.__identity_domains_enabled:
-            for identify_domain in self.__identity_domains:
+            for identity_domain in self.__identity_domains:
                 try:
 
-                    users_data = self.__identity_domains_get_all_results(func=identify_domain['IdentityDomainClient'].list_users, 
+                    users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
                                                                          args={})
-
-                    print("Got users from identity domain " + str(len(users_data)))
 
                     # Adding record to the users
                     for user in users_data:
@@ -1338,8 +1344,8 @@ class CIS_Report:
                             'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
                             'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
                             'description': user.description,
-                            'email': user.emails[0],
-                            'email_verified': user.emails[0].verified,
+                            'email': user.emails[0].value if user.emails else None,
+                            'email_verified': user.emails[0].verified if user.emails else None,
                             'external_identifier': user.external_id,
                             'identity_provider_id': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.provider,
                             'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
@@ -1359,12 +1365,13 @@ class CIS_Report:
                             if user.ocid == group['user_id']:
                                 record['groups'].append(group['name'])
 
-                        record['api_keys'] = self.__identity_read_user_api_key(user.ocid)
+                        record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, 
+                                                                               identity_domain=identity_domain)
                         record['auth_tokens'] = self.__identity_read_user_auth_token(
                             user.ocid)
                         record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
                             user.ocid)
-                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain_client=identify_domain['IdentityDomainClient'])
+                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain_client=identity_domain['IdentityDomainClient'])
                         self.__users.append(record)
 
                 except Exception as e:
@@ -1418,9 +1425,7 @@ class CIS_Report:
                         user.id)
                     record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
                         user.id)
-                    print("Getting Database Password " + str(user.name))
                     record['database_passowrds'] = self.__identity_read_user_database_password(user.id)
-                    print("Got database password")
                     self.__users.append(record)
                 print("\tProcessed " + str(len(self.__users)) + " Users")
                 return self.__users
@@ -1432,26 +1437,42 @@ class CIS_Report:
     ##########################################################################
     # Load user api keys
     ##########################################################################
-    def __identity_read_user_api_key(self, user_ocid):
+    def __identity_read_user_api_key(self, user_ocid, identity_domain=None):
         api_keys = []
-        try:
-            user_api_keys_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_api_keys,
-                user_id=user_ocid
-            ).data
+        try: 
+            if self.__identity_domains_enabled:
+                filter = f'user.ocid eq \"{user_ocid}\"'
+                user_api_keys_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
+                                                                             args={filter : filter})
+                for api_key in user_api_keys_data:
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
+                    record = oci.util.to_dict(api_key)
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    api_keys.append(record)
 
-            for api_key in user_api_keys_data:
-                deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
-                record = {
-                    'id': api_key.key_id,
-                    'fingerprint': api_key.fingerprint,
-                    'deep_link': self.__generate_csv_hyperlink(deep_link, api_key.fingerprint),
-                    'inactive_status': api_key.inactive_status,
-                    'lifecycle_state': api_key.lifecycle_state,
-                    'time_created': api_key.time_created.strftime(self.__iso_time_format),
-                }
-                api_keys.append(record)
+            else:
+                user_api_keys_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_api_keys,
+                    user_id=user_ocid
+                ).data
 
+                for api_key in user_api_keys_data:
+                    deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
+                    record = oci.util.to_dict(api_key)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
+                    record['id'] = record['key_id']
+                    record['time_created'] = self.get_date_iso_format(record['time_created'])
+                    # record = {
+                    #     'id': api_key.key_id,
+                    #     'fingerprint': api_key.fingerprint,
+                    #     'deep_link': self.__generate_csv_hyperlink(deep_link, api_key.fingerprint),
+                    #     'inactive_status': api_key.inactive_status,
+                    #     'lifecycle_state': api_key.lifecycle_state,
+                    #     'time_created': api_key.time_created.strftime(self.__iso_time_format),
+                    # }
+                    api_keys.append(record)
+            
             return api_keys
 
         except Exception as e:

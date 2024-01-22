@@ -1367,9 +1367,9 @@ class CIS_Report:
                         record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, 
                                                                                identity_domain=identity_domain)
                         record['auth_tokens'] = self.__identity_read_user_auth_token(
-                            user.ocid)
+                            user.ocid, identity_domain=identity_domain)
                         record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
-                            user.ocid)
+                            user.ocid, identity_domain=identity_domain)
                         record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain_client=identity_domain['IdentityDomainClient'])
                         self.__users.append(record)
 
@@ -1515,29 +1515,36 @@ class CIS_Report:
     ##########################################################################
     # Load user customer secret key
     ##########################################################################
-    def __identity_read_user_customer_secret_key(self, user_ocid):
+    def __identity_read_user_customer_secret_key(self, user_ocid, identity_domain=None):
         customer_secret_key = []
         try:
-            customer_secret_key_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_customer_secret_keys,
-                user_id=user_ocid
-            ).data
+            if self.__identity_domains_enabled:
+                filter = f'user.ocid eq \"{user_ocid}\"'
+                customer_secret_key_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
+                                                                             args={filter : filter})
+                for key in customer_secret_key_data:
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/secret-keys"
+                    record = oci.util.to_dict(key)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    record['time_expires'] = record['expires_on']
+                    customer_secret_key.append(record)
+                
+            else:
+                customer_secret_key_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_customer_secret_keys,
+                    user_id=user_ocid
+                ).data
 
-            for key in customer_secret_key_data:
-                deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
-                record = {
-                    'id': key.id,
-                    'display_name': key.display_name,
-                    'deep_link': self.__generate_csv_hyperlink(deep_link, key.display_name),
-                    'inactive_status': key.inactive_status,
-                    'lifecycle_state': key.lifecycle_state,
-                    'time_created': key.time_created.strftime(self.__iso_time_format),
-                    'time_expires': str(key.time_expires),
+                for key in customer_secret_key_data:
+                    deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
+                    record = oci.util.to_dict(key)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
+                    record['time_created'] = self.get_date_iso_format(record['time_created'])
+                    record['time_expires'] = record['time_expires']
+                    customer_secret_key.append(record)
 
-                }
-                customer_secret_key.append(record)
-
-            return customer_secret_key
+                return customer_secret_key
 
         except Exception as e:
             self.__errors.append({"id" : user_ocid, "error" : "Failed to customer secrets for User ID"})
@@ -1549,18 +1556,18 @@ class CIS_Report:
     ##########################################################################
     # Load Database Passwords
     ##########################################################################
-    def __identity_read_user_database_password(self, user_ocid, identity_domain_client=None):
+    def __identity_read_user_database_password(self, user_ocid, identity_domain=None):
         database_password = []
         debug("__identity_read_user_database_password: Starting")
         if self.__identity_domains_enabled:
             try:
-                raw_database_password = identity_domain_client.list_user_db_credentials(
+                raw_database_password = identity_domain['IdentityDomainClient'].list_user_db_credentials(
                     filter=f'user.ocid eq \"{user_ocid}\"'
                     ).data.resources
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
-                    deep_link = self.__oci_users_uri + user_ocid + "/db-password"
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
                     record['deep_link'] = deep_link
                     database_password.append(record)

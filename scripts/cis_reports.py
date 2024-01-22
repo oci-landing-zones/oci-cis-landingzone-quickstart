@@ -131,7 +131,6 @@ class CIS_Report:
 
     str_api_key_time_max_datetime = api_key_time_max_datetime.strftime(__iso_time_format)
     api_key_time_max_datetime = datetime.datetime.strptime(str_api_key_time_max_datetime, __iso_time_format)
-
     # For KMS check
     kms_key_time_max_datetime = start_datetime - \
         datetime.timedelta(days=__KMS_DAYS_OLD)
@@ -1445,7 +1444,7 @@ class CIS_Report:
                 user_api_keys_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
                                                                              args={filter : filter})
                 for api_key in user_api_keys_data:
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/api-keys"
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record = oci.util.to_dict(api_key)
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
@@ -1463,14 +1462,6 @@ class CIS_Report:
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record['id'] = record['key_id']
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
-                    # record = {
-                    #     'id': api_key.key_id,
-                    #     'fingerprint': api_key.fingerprint,
-                    #     'deep_link': self.__generate_csv_hyperlink(deep_link, api_key.fingerprint),
-                    #     'inactive_status': api_key.inactive_status,
-                    #     'lifecycle_state': api_key.lifecycle_state,
-                    #     'time_created': api_key.time_created.strftime(self.__iso_time_format),
-                    # }
                     api_keys.append(record)
             
             return api_keys
@@ -1485,29 +1476,32 @@ class CIS_Report:
     ##########################################################################
     # Load user auth tokens
     ##########################################################################
-    def __identity_read_user_auth_token(self, user_ocid):
+    def __identity_read_user_auth_token(self, user_ocid, identity_domain=None):
         auth_tokens = []
         try:
-            auth_tokens_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_auth_tokens,
-                user_id=user_ocid
-            ).data
+            if self.__identity_domains_enabled:
+                filter = f'user.ocid eq \"{user_ocid}\"'
+                auth_tokens_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
+                                                                             args={filter : filter})
+                for token in auth_tokens_data:
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
+                    record = oci.util.to_dict(token)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    auth_tokens.append(record)
 
-            for token in auth_tokens_data:
-                deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
-                record = {
-                    'id': token.id,
-                    'description': token.description,
-                    'deep_link': self.__generate_csv_hyperlink(deep_link, token.description),
-                    'inactive_status': token.inactive_status,
-                    'lifecycle_state': token.lifecycle_state,
-                    # .strftime('%Y-%m-%d %H:%M:%S'),
-                    'time_created': token.time_created.strftime(self.__iso_time_format),
-                    'time_expires': str(token.time_expires),
-                    'token': token.token
+            else:
+                auth_tokens_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_auth_tokens,
+                    user_id=user_ocid
+                ).data
 
-                }
-                auth_tokens.append(record)
+                for token in auth_tokens_data:
+                    deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
+                    record = oci.util.to_dict(token)
+                    record['time_created'] = self.get_date_iso_format(record['time_created'])
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
+                    auth_tokens.append(record)
 
             return auth_tokens
 
@@ -3794,7 +3788,9 @@ class CIS_Report:
         for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
+                    print(key['time_created'])
+                    print(type(key['time_created']))
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format): #and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_2_0['1.8']['Status'] = False
                         finding = {
                             "user_name": user['name'],
@@ -3840,7 +3836,8 @@ class CIS_Report:
         for user in self.__users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
+                    print(key)
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format): # and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_2_0['1.10']['Status'] = False
 
                         finding = {
@@ -3848,11 +3845,11 @@ class CIS_Report:
                             "user_id": user['id'],
                             "id": key['id'],
                             "description": key['description'],
-                            "inactive_status": key['inactive_status'],
-                            "lifecycle_state": key['lifecycle_state'],
-                            "time_created": key['time_created'],
-                            "time_expires": key['time_expires'],
-                            "token": key['token']
+                            # "inactive_status": key['inactive_status'],
+                            # "lifecycle_state": key['lifecycle_state'],
+                            # "time_created": key['time_created'],
+                            # "time_expires": key['time_expires'],
+                            # "token": key['token']
                         }
 
                         self.cis_foundations_benchmark_2_0['1.10']['Findings'].append(

@@ -1212,31 +1212,35 @@ class CIS_Report:
             except Exception as e:
                 debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
-                break
-        
+
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting password policy for domain: " + domain.display_name)
             domain_dict =  oci.util.to_dict(domain)
             try: 
-                debug("__identity_read_domains: Getting Identity Domain Password Policy")
+                debug("__identity_read_domains: Getting Identity Domain Password Policy for :" +  domain.display_name)
                 idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
                 raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
                 raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
-
+                debug("__identity_read_domains: Recieved Identity Domain Password Policy for: " +  domain.display_name)
+                
                 # Creating Identity Domains Client and storing it
+                debug("__identity_read_domains: Creating Identity Domain Client for: " +  domain.display_name)
                 domain_dict['IdentityDomainClient'] = oci.identity_domains.IdentityDomainsClient(\
                      config=self.__config, service_endpoint=domain.url)
+                debug("__identity_read_domains: Created Identity Domain Client for: " +  domain.display_name)
+
                 pwd_policy_dict =  oci.util.to_dict(domain_dict['IdentityDomainClient'].get_password_policy(\
                         password_policy_id=raw_pwd_policy_dict['ocid']).data)
                 
                 domain_dict['password_policy'] = pwd_policy_dict
                 domain_dict['errors'] = None 
+                self.__identity_domains.append(domain_dict)
+
             except Exception as e:
-                debug("Identity Domains Error is " + str(e))
+                debug("Identity Domains Error is for domain " + domain.display_name + "\n" + str(e))
                 domain_dict['password_policy'] = None
                 domain_dict['errors'] = str(e)
             
-            self.__identity_domains.append(domain_dict)
 
         print("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
         return 
@@ -1308,16 +1312,20 @@ class CIS_Report:
             args["count"] = 1000     
         if not "filter" in args:
             args["filter"] = ''
+        if not "attribute_sets" in args:
+            args["attribute_sets"] = ['all']
 
         result = func(start_index=args['start_index'],
                     count=args['count'],
-                    filter=args['filter']).data
+                    filter=args['filter'],
+                     attribute_sets=args['attribute_sets']).data
         resources = result.resources
         while len(resources) < result.total_results:
             args["start_index"] = len(resources) + 1
             result = func(start_index=args['start_index'],
                     count=args['count'],
-                    filter=args['filter']).data
+                    filter=args['filter'],
+                    attribute_sets=args['attribute_sets']).data
             for item in result.resources:
                 resources.append(item)
 
@@ -1327,7 +1335,7 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        print(f'__identity_read_users: Getting User data for Identity Domains: {str(self.__identity_domains_enabled)}')
+        debug(f'__identity_read_users: Getting User data for Identity Domains: {str(self.__identity_domains_enabled)}')
         if self.__identity_domains_enabled:
             for identity_domain in self.__identity_domains:
                 try:
@@ -1335,7 +1343,7 @@ class CIS_Report:
                                                                          args={})
                     # Adding record to the users
                     for user in users_data:
-                        deep_link = self.__oci_users_uri + user.ocid
+                        deep_link = self.__oci_identity_domains_uri + identity_domain.id + "/" + user.ocid
                         record = {
                             'id': user.ocid,
                             'name': user.user_name,
@@ -1369,7 +1377,7 @@ class CIS_Report:
                             user.ocid, identity_domain=identity_domain)
                         record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
                             user.ocid, identity_domain=identity_domain)
-                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain_client=identity_domain['IdentityDomainClient'])
+                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain['IdentityDomainClient'])
                         self.__users.append(record)
 
                 except Exception as e:
@@ -1646,7 +1654,7 @@ class CIS_Report:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
                         deep_link = self.__oci_identity_domains_uri + "/domains/" + identity_domain['id'] + "/dynamic-groups/" + dynamic_group.id
                         record = oci.util.to_dict(dynamic_group)
-                        record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
+                        record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
                         self.__dynamic_groups.append(record)
 
             else:

@@ -95,6 +95,7 @@ class CIS_Report:
     __oci_policies_uri = __oci_cloud_url + "/identity/policies/"
     __oci_groups_uri = __oci_cloud_url + "/identity/groups/"
     __oci_dynamic_groups_uri = __oci_cloud_url + "/identity/dynamicgroups/"
+    __oci_identity_domains_uri = __oci_cloud_url + '/identity/domains/'
     __oci_buckets_uri = __oci_cloud_url + "/object-storage/buckets/"
     __oci_boot_volumes_uri = __oci_cloud_url + "/block-storage/boot-volumes/"
     __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
@@ -1643,7 +1644,7 @@ class CIS_Report:
                                                                              args={})
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
-                        deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
+                        deep_link = self.__oci_identity_domains_uri + "/domains/" + identity_domain['id'] + "/dynamic-groups/" + dynamic_group.id
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
                         self.__dynamic_groups.append(record)

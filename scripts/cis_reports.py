@@ -1326,14 +1326,12 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users(self):
-        debug(f'__identity_read_users: Getting User data for Identity Domains: {self.__identity_domains_enabled}')
+        print(f'__identity_read_users: Getting User data for Identity Domains: {str(self.__identity_domains_enabled)}')
         if self.__identity_domains_enabled:
             for identity_domain in self.__identity_domains:
                 try:
-
                     users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
                                                                          args={})
-
                     # Adding record to the users
                     for user in users_data:
                         deep_link = self.__oci_users_uri + user.ocid
@@ -1374,9 +1372,10 @@ class CIS_Report:
                         self.__users.append(record)
 
                 except Exception as e:
-                    debug("__identity_read_users: User ID is: " + str(user))
+                    debug("__identity_read_users: Identity Domains are : " + str(self.__identity_domains_enabled))
+                    self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
                     raise RuntimeError(
-                        "Error in __identity_read_users: " + str(e.args))
+                        "Error in __identity_read_users: " + str(e))
             
             print("\tProcessed " + str(len(self.__users)) + " Users")
             return self.__users
@@ -1561,9 +1560,9 @@ class CIS_Report:
         debug("__identity_read_user_database_password: Starting")
         if self.__identity_domains_enabled:
             try:
-                raw_database_password = identity_domain['IdentityDomainClient'].list_user_db_credentials(
-                    filter=f'user.ocid eq \"{user_ocid}\"'
-                    ).data.resources
+                filter = f'user.ocid eq \"{user_ocid}\"'
+                raw_database_password = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_user_db_credentials,
+                                                                             args={filter : filter})
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
@@ -1637,44 +1636,30 @@ class CIS_Report:
     ############################################
     def __identity_read_dynamic_groups(self):
         try:
-            debug("processing __identity_read_dynamic_groups")
-            dynamic_groups_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
-                compartment_id=self.__tenancy.id).data
-            for dynamic_group in dynamic_groups_data:
-                deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
-                # try:
-                debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
-                record = {
-                    "id": dynamic_group.id,
-                    "name": dynamic_group.name,
-                    "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                    "description": dynamic_group.description,
-                    "matching_rule": dynamic_group.matching_rule,
-                    "time_created": dynamic_group.time_created.strftime(self.__iso_time_format),
-                    "inactive_status": dynamic_group.inactive_status,
-                    "lifecycle_state": dynamic_group.lifecycle_state,
-                    "defined_tags": dynamic_group.defined_tags,
-                    "freeform_tags": dynamic_group.freeform_tags,
-                    "compartment_id": dynamic_group.compartment_id,
-                    "notes": ""
-                }
-                # except Exception as e:
-                #     record = {
-                #         "id": dynamic_group.id,
-                #         "name": dynamic_group.name,
-                #         "deep_link": self.__generate_csv_hyperlink(deep_link, dynamic_group.name),
-                #         "description": "",
-                #         "matching_rule": "",
-                #         "time_created": "",
-                #         "inactive_status": "",
-                #         "lifecycle_state": "",
-                #         "defined_tags": "",
-                #         "freeform_tags": "",
-                #         "compartment_id": "",
-                #         "notes": str(e)
-                #     }
-                self.__dynamic_groups.append(record)
+            debug("processing __identity_read_dynamic_groups: Identity Doamins are enabled: " + str(self.__identity_domains_enabled))
+            if self.__identity_domains_enabled:
+                for identity_domain in self.__identity_domains:
+                    dynamic_groups_data =  self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_dynamic_resource_groups,
+                                                                             args={})
+                    for dynamic_group in dynamic_groups_data:
+                        debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
+                        deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
+                        record = oci.util.to_dict(dynamic_group)
+                        record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
+                        self.__dynamic_groups.append(record)
+
+            else:
+                dynamic_groups_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_dynamic_groups,
+                    compartment_id=self.__tenancy.id).data
+                for dynamic_group in dynamic_groups_data:
+                    deep_link = self.__oci_dynamic_groups_uri + dynamic_group.id
+                    # try:
+                    debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
+                    record = oci.util.to_dict(dynamic_group)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
+
+                    self.__dynamic_groups.append(record)
 
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")
             return self.__dynamic_groups

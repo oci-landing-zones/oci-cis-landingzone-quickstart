@@ -1249,57 +1249,72 @@ class CIS_Report:
     # Load Groups and Group membership
     ##########################################################################
     def __identity_read_groups_and_membership(self):
-        try:
-            # Getting all Groups in the Tenancy
-            debug("processing __identity_read_groups_and_membership ")
-            groups_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['identity_client'].list_groups,
-                compartment_id=self.__tenancy.id
-            ).data
-            # For each group in the tenacy getting the group's membership
-            for grp in groups_data:
-                debug("__identity_read_groups_and_membership: reading group data " + str(grp.name))
-                membership = oci.pagination.list_call_get_all_results(
-                    self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
-                    compartment_id=self.__tenancy.id,
-                    group_id=grp.id).data
-                # For empty groups just print one record with the group info
-                grp_deep_link = self.__oci_groups_uri + grp.id
-                if not membership:
-                    group_record = {
-                        "id": grp.id,
-                        "name": grp.name,
-                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
-                        "description": grp.description,
-                        "lifecycle_state": grp.lifecycle_state,
-                        "time_created": grp.time_created.strftime(self.__iso_time_format),
-                        "user_id": "",
-                        "user_id_link": ""
-                    }
-                    # Adding a record per empty group
-                    self.__groups_to_users.append(group_record)
-                # For groups with members print one record per user per group
-                for member in membership:
-                    debug("__identity_read_groups_and_membership: reading members data in group" + str(grp.name))
-                    user_deep_link = self.__oci_users_uri + member.user_id
-                    group_record = {
-                        "id": grp.id,
-                        "name": grp.name,
-                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
-                        "description": grp.description,
-                        "lifecycle_state": grp.lifecycle_state,
-                        "time_created": grp.time_created.strftime(self.__iso_time_format),
-                        "user_id": member.user_id,
-                        "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.user_id)
-                    }
-                    # Adding a record per user to group
-                    self.__groups_to_users.append(group_record)
-            return self.__groups_to_users
-        except Exception as e:
-            self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
-            debug("__identity_read_groups_and_membership: error reading" + str(e))
-            RuntimeError(
-                "Error in __identity_read_groups_and_membership" + str(e.args))
+        # Getting all Groups in the Tenancy
+        debug("processing __identity_read_groups_and_membership ")
+        if self.__identity_domains_enabled:
+            debug("processing __identity_read_groups_and_membership for Identity Domains Enabled Tenancy")
+            for identity_domain in self.__identity_domains:
+                try:
+                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
+                    for grp in groups_data:
+                       pass
+                except Exception as e:
+                    self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
+                    debug("__identity_read_groups_and_membership: error reading" + str(e))
+                    RuntimeError(
+                        "Error in __identity_read_groups_and_membership" + str(e.args))
+
+        else:        
+            try:
+                debug("processing __identity_read_groups_and_membership for Non Identity Domains Tenancy")
+                groups_data = oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_groups,
+                    compartment_id=self.__tenancy.id
+                ).data
+                # For each group in the tenacy getting the group's membership
+                for grp in groups_data:
+                    debug("__identity_read_groups_and_membership: reading group data " + str(grp.name))
+                    membership = oci.pagination.list_call_get_all_results(
+                        self.__regions[self.__home_region]['identity_client'].list_user_group_memberships,
+                        compartment_id=self.__tenancy.id,
+                        group_id=grp.id).data
+                    # For empty groups just print one record with the group info
+                    grp_deep_link = self.__oci_groups_uri + grp.id
+                    if not membership:
+                        group_record = {
+                            "id": grp.id,
+                            "name": grp.name,
+                            "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                            "description": grp.description,
+                            "lifecycle_state": grp.lifecycle_state,
+                            "time_created": grp.time_created.strftime(self.__iso_time_format),
+                            "user_id": "",
+                            "user_id_link": ""
+                        }
+                        # Adding a record per empty group
+                        self.__groups_to_users.append(group_record)
+                    # For groups with members print one record per user per group
+                    for member in membership:
+                        debug("__identity_read_groups_and_membership: reading members data in group" + str(grp.name))
+                        user_deep_link = self.__oci_users_uri + member.user_id
+                        group_record = {
+                            "id": grp.id,
+                            "name": grp.name,
+                            "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                            "description": grp.description,
+                            "lifecycle_state": grp.lifecycle_state,
+                            "time_created": grp.time_created.strftime(self.__iso_time_format),
+                            "user_id": member.user_id,
+                            "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.user_id)
+                        }
+                        # Adding a record per user to group
+                        self.__groups_to_users.append(group_record)
+                return self.__groups_to_users
+            except Exception as e:
+                self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
+                debug("__identity_read_groups_and_membership: error reading" + str(e))
+                RuntimeError(
+                    "Error in __identity_read_groups_and_membership" + str(e.args))
 
     ##########################################################################
     # Identity Domains Helper function for pagination
@@ -1314,6 +1329,8 @@ class CIS_Report:
             args["filter"] = ''
         if not "attribute_sets" in args:
             args["attribute_sets"] = ['all']
+
+        debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
 
         result = func(start_index=args['start_index'],
                     count=args['count'],
@@ -1343,7 +1360,7 @@ class CIS_Report:
                                                                          args={})
                     # Adding record to the users
                     for user in users_data:
-                        deep_link = self.__oci_identity_domains_uri + identity_domain.id + "/" + user.ocid
+                        deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/" + user.ocid
                         record = {
                             'id': user.ocid,
                             'name': user.user_name,
@@ -1371,13 +1388,10 @@ class CIS_Report:
                             if user.ocid == group['user_id']:
                                 record['groups'].append(group['name'])
 
-                        record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, 
-                                                                               identity_domain=identity_domain)
-                        record['auth_tokens'] = self.__identity_read_user_auth_token(
-                            user.ocid, identity_domain=identity_domain)
-                        record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
-                            user.ocid, identity_domain=identity_domain)
-                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain['IdentityDomainClient'])
+                        record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
+                        record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
+                        record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
+                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
                         self.__users.append(record)
 
                 except Exception as e:
@@ -1446,15 +1460,19 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_user_api_key(self, user_ocid, identity_domain=None):
         api_keys = []
+        debug("__identity_read_user_api_key: Initiating API Keys collection for User ID: " + user_ocid)
         try: 
             if self.__identity_domains_enabled:
+                debug("__identity_read_user_api_key: Initiating API Keys collection for Identity Domain User ID: " + user_ocid)
                 filter = f'user.ocid eq \"{user_ocid}\"'
                 user_api_keys_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
-                                                                             args={filter : filter})
+                                                                             args={'filter' : filter})
+                debug("__identity_read_user_api_key: Collected total keys: " + str(len(user_api_keys_data)))
+
                 for api_key in user_api_keys_data:
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/api-keys"
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record = oci.util.to_dict(api_key)
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     api_keys.append(record)
 
@@ -1477,6 +1495,7 @@ class CIS_Report:
         except Exception as e:
             self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID"})
             debug("__identity_read_user_api_key: Failed to API Keys for User ID: " + user_ocid)
+            debug("__identity_read_user_api_key: Error for API Keys: " + str(e))
             return api_keys
             raise RuntimeError(
                 "Error in identity_read_user_api_key: " + str(e.args))
@@ -1489,11 +1508,13 @@ class CIS_Report:
         try:
             if self.__identity_domains_enabled:
                 filter = f'user.ocid eq \"{user_ocid}\"'
-                auth_tokens_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
-                                                                             args={filter : filter})
+                auth_tokens_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_auth_tokens,
+                                                                             args={'filter' : filter})
+                debug("__identity_read_user_auth_token: Collected total keys: " + str(len(auth_tokens_data)))
+
                 for token in auth_tokens_data:
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
                     record = oci.util.to_dict(token)
+                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     auth_tokens.append(record)
@@ -1528,8 +1549,10 @@ class CIS_Report:
         try:
             if self.__identity_domains_enabled:
                 filter = f'user.ocid eq \"{user_ocid}\"'
-                customer_secret_key_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_api_keys,
-                                                                             args={filter : filter})
+                customer_secret_key_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_customer_secret_keys,
+                                                                             args={'filter' : filter})
+                debug("__identity_read_user_customer_secret_key: Collected total keys: " + str(len(customer_secret_key_data)))
+
                 for key in customer_secret_key_data:
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/secret-keys"
                     record = oci.util.to_dict(key)
@@ -1538,6 +1561,8 @@ class CIS_Report:
                     record['time_expires'] = record['expires_on']
                     customer_secret_key.append(record)
                 
+                return customer_secret_key
+                
             else:
                 customer_secret_key_data = oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_customer_secret_keys,
@@ -1545,8 +1570,8 @@ class CIS_Report:
                 ).data
 
                 for key in customer_secret_key_data:
-                    deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
                     record = oci.util.to_dict(key)
+                    deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     record['time_expires'] = record['time_expires']
@@ -1566,12 +1591,13 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_user_database_password(self, user_ocid, identity_domain=None):
         database_password = []
-        debug("__identity_read_user_database_password: Starting")
+        debug("__identity_read_user_database_password: Starting for User ID: " + user_ocid)
         if self.__identity_domains_enabled:
             try:
                 filter = f'user.ocid eq \"{user_ocid}\"'
                 raw_database_password = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_user_db_credentials,
-                                                                             args={filter : filter})
+                                                                             args={'filter' : filter})
+                debug("__identity_read_user_database_password: Collected total keys: " + str(len(raw_database_password)))
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
@@ -1584,7 +1610,8 @@ class CIS_Report:
 
             except Exception as e:
                 self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
-                debug("__identity_read_user_customer_secret_key: Failed to get database passwords for User ID: " + user_ocid)
+                debug("__identity_read_user_database_password: Failed to get database passwords for User ID: " + user_ocid)
+                debug("__identity_read_user_database_password: Error: " + str(e))
                 return database_password
         else:
             try:
@@ -1604,7 +1631,9 @@ class CIS_Report:
 
             except Exception as e:
                 self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
-                debug("__identity_read_user_customer_secret_key: Failed to get database passwords for User ID: " + user_ocid)
+                debug("__identity_read_user_database_password: Failed to get database passwords for User ID: " + user_ocid)
+                debug("__identity_read_user_database_password: Error: " + str(e))
+
                 return database_password
 
     ##########################################################################
@@ -3789,17 +3818,15 @@ class CIS_Report:
         for user in self.__users:
             if user['api_keys']:
                 for key in user['api_keys']:
-                    print(key['time_created'])
-                    print(type(key['time_created']))
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format): #and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
                         self.cis_foundations_benchmark_2_0['1.8']['Status'] = False
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
                             "key_id": key['id'],
                             'fingerprint': key['fingerprint'],
-                            'inactive_status': key['inactive_status'],
-                            'lifecycle_state': key['lifecycle_state'],
+                            # 'inactive_status': key['inactive_status'],
+                            # 'lifecycle_state': key['lifecycle_state'],
                             'time_created': key['time_created']
                         }
 
@@ -3813,22 +3840,20 @@ class CIS_Report:
         for user in self.__users:
             if user['customer_secret_keys']:
                 for key in user['customer_secret_keys']:
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format) and key['lifecycle_state'] == 'ACTIVE':
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
                         self.cis_foundations_benchmark_2_0['1.9']['Status'] = False
-
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
                             "id": key['id'],
                             'display_name': key['display_name'],
-                            'inactive_status': key['inactive_status'],
-                            'lifecycle_state': key['lifecycle_state'],
+                            # 'inactive_status': key['inactive_status'],
+                            # 'lifecycle_state': key['lifecycle_state'],
                             'time_created': key['time_created'],
-                            'time_expires': key['time_expires'],
+                            'time_expires': key['time_expires']
                         }
 
-                        self.cis_foundations_benchmark_2_0['1.9']['Findings'].append(
-                            finding)
+                        self.cis_foundations_benchmark_2_0['1.9']['Findings'].append(finding)
 
                     # CIS Total 1.9 Adding - Customer Secrets to CIS Total
                     self.cis_foundations_benchmark_2_0['1.9']['Total'].append(key)
@@ -3837,7 +3862,6 @@ class CIS_Report:
         for user in self.__users:
             if user['auth_tokens']:
                 for key in user['auth_tokens']:
-                    print(key)
                     if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format): # and key['lifecycle_state'] == 'ACTIVE':
                         self.cis_foundations_benchmark_2_0['1.10']['Status'] = False
 
@@ -5169,20 +5193,19 @@ class CIS_Report:
         thread_compartments = Thread(target=self.__identity_read_compartments)
         thread_compartments.start()
 
-        thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
-        thread_identity_groups.start()
-
         thread_cloud_guard_config = Thread(target=self.__cloud_guard_read_cloud_guard_configuration)
         thread_cloud_guard_config.start()
 
-
         thread_compartments.join()
         thread_cloud_guard_config.join()
-        thread_identity_groups.join()
         
         thread_identity_domains = Thread(target=self.__identity_read_domains)
         thread_identity_domains.start()
         thread_identity_domains.join()
+
+        thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
+        thread_identity_groups.start()
+        thread_identity_groups.join()
 
         print("\nProcessing Home Region resources...")
 

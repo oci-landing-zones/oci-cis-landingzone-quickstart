@@ -1254,22 +1254,21 @@ class CIS_Report:
         if self.__identity_domains_enabled:
             debug("processing __identity_read_groups_and_membership for Identity Domains Enabled Tenancy")
             for identity_domain in self.__identity_domains:
-                print("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
+                debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
-                    print(len(groups_data))
                     for grp in groups_data:
-                        print("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
+                        debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.ocid
                         for grp in groups_data:
                             if not grp.members:
-                                print("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
+                                debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
 
                                 group_record = {
                                     "id": grp.ocid,
                                     "name": grp.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
-                                    "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description,
+                                    "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
                                     "user_id": "",
                                     "user_id_link": ""
@@ -1279,13 +1278,13 @@ class CIS_Report:
                             else:
                                 # For groups with members print one record per user per group
                                 for member in grp.members:
-                                    print("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
+                                    debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
                                     user_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + member.ocid
                                     group_record = {
                                         "id": grp.id,
                                         "name": grp.display_name,
                                         "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
-                                        "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description,
+                                        "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                         "time_created" : self.get_date_iso_format(grp.meta.created),
                                         "user_id": member.ocid,
                                         "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.name)
@@ -1410,13 +1409,13 @@ class CIS_Report:
                             'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
                             'lifecycle_state': user.active,
                             'time_created': user.meta.created,
-                            'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys,
-                            'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens,
-                            'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password,
-                            'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys,
-                            'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials,
-                            'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials,
-                            'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials,
+                            'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                             'groups': []
                         }
                         # Adding Groups to the user

@@ -4155,7 +4155,7 @@ class CIS_Report:
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_2_0['2.8']['Total'] = self.__autonomous_databases
 
-        # From CIS 1.2 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
+        # From CIS 2.0 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
         # if self.__audit_retention_period >= 365:
         #     self.cis_foundations_benchmark_2_0['4.1']['Status'] = True
 
@@ -4881,7 +4881,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
 
         # Screen output for CIS Summary Report
-        print_header("CIS Foundations Benchmark 1.2 Summary Report")
+        print_header("CIS Foundations Benchmark 2.0.0 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
@@ -4968,7 +4968,7 @@ class CIS_Report:
             # generate fields
             fields = ['Recommendation #', 'Compliant', 'Section', 'Details']
 
-            html_title = 'CIS OCI Foundations Benchmark 1.2 - Compliance Report'
+            html_title = 'CIS OCI Foundations Benchmark 2.0.0 - Compliance Report'
             with open(file_path, mode='w') as html_file:
                 # Creating table header
                 html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')

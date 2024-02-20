@@ -1462,7 +1462,7 @@ class CIS_Report:
                         'external_identifier': user.external_identifier,
                         'identity_provider_id': user.identity_provider_id,
                         'is_mfa_activated': user.is_mfa_activated,
-                        'lifecycle_state': user.lifecycle_state,
+                        'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
                         'time_created': user.time_created.strftime(self.__iso_time_format),
                         'can_use_api_keys': user.capabilities.can_use_api_keys,
                         'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
@@ -3685,7 +3685,7 @@ class CIS_Report:
                                 "id": item.identifier,
                                 "region": region_key
                             }
-                            self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                            self.cis_foundations_benchmark_2_0['6.2']['Total'].append(record)
                     except:
                         self.__errors.append({"id" : "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
                         debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
@@ -3873,7 +3873,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.7']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.7']['Findings'].append(
                     user)

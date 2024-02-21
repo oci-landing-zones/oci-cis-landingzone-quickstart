@@ -3954,19 +3954,19 @@ class CIS_Report:
         # CIS 1.12 Active Admins with API keys
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
+            if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.12']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.12']['Findings'].append(
                     user)
 
             # CIS Total 1.12 Adding - All IAM Users in Administrator group to CIS Total
-            if 'Administrators' in user['groups'] and user['lifecycle_state'] == 'ACTIVE':
+            if 'Administrators' in user['groups'] and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.12']['Total'].append(user)
 
         # CIS 1.13 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if user['external_identifier'] is None and user['lifecycle_state'] == 'ACTIVE' and not (user['email_verified']):
+            if user['external_identifier'] is None and user['lifecycle_state'] and not (user['email_verified']):
                 self.cis_foundations_benchmark_2_0['1.13']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.13']['Findings'].append(
                     user)
@@ -4242,10 +4242,16 @@ class CIS_Report:
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
         for key in self.__kms_keys:
-            if self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+
+            if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
                 self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
                     key)
+            if self.kms_key_time_max_datetime is None:
+                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                    key)
+                
 
             # CIS Check 3.16 Total - Adding Key to total
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)

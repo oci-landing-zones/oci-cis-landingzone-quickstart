@@ -3870,6 +3870,10 @@ class CIS_Report:
                 self.cis_foundations_benchmark_2_0['1.6']['Status'] = False
             else:
                 self.cis_foundations_benchmark_2_0['1.6']['Status'] = True
+            
+            # Adding all identity domains to Total
+            self.cis_foundations_benchmark_2_0['1.5']['Total'] = self.__identity_domains
+            self.cis_foundations_benchmark_2_0['1.6']['Total'] = self.__identity_domains
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:

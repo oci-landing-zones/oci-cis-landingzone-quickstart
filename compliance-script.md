@@ -84,87 +84,85 @@ In the sample output below, we see the tenancy is not compliant with several rec
 
 ```
 ##########################################################################################
-#                      CIS Foundations Benchmark 1.2 Summary Report                      #
+#                     CIS Foundations Benchmark 2.0.0 Summary Report                     #
 ##########################################################################################
-Num     Level   Compliant       Findings        Title
+Num	Level 	Compliant	Findings 	Total  		Title
 ##########################################################################################
-1.1     1       Yes                             Ensure service level admins are created to manage resources of particular service
-1.2     1       Yes                             Ensure permissions on all resources are given only to the tenancy administrator group
-1.3     1       Yes                             Ensure IAM administrators cannot update tenancy Administrators group
-1.4     1       Yes                             Ensure IAM password policy requires minimum length of 14 or greater
-1.5     1       Yes                             Ensure IAM password policy expires passwords within 365 days
-1.6     1       Yes                             Ensure IAM password policy prevents password reuse
-1.7     1       No              29              Ensure MFA is enabled for all users with a console password
-1.8     1       No              40              Ensure user API keys rotate within 90 days or less
-1.9     1       No              4               Ensure user customer secret keys rotate within 90 days or less
-1.10    1       No              9               Ensure user auth tokens rotate within 90 days or less
-1.11    1       No              1               Ensure API keys are not created for tenancy administrator users
-1.12    1       No              29              Ensure all OCI IAM user accounts have a valid and current email address
-1.13    1       Yes                             Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
-1.14    2       No                              Ensure storage service-level admins cannot delete resources they manage
-2.1     1       No              42              Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
-2.2     1       No              6               Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389
-2.3     1       No              3               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22
-2.4     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389
-2.5     1       No              101             Ensure the default security list of every VCN restricts all traffic except ICMP
-2.6     1       No              5               Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
-2.7     1       Yes                             Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network
-2.8     1       No              8               Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN
-3.1     1       Yes                             Ensure audit log retention period is set to 365 days
-3.2     1       Yes                             Ensure default tags are used on resources
-3.3     1       Yes                             Create at least one notification topic and subscription to receive monitoring alerts
-3.4     1       Yes                             Ensure a notification is configured for Identity Provider changes
-3.5     1       Yes                             Ensure a notification is configured for IdP group mapping changes
-3.6     1       Yes                             Ensure a notification is configured for IAM group changes
-3.7     1       Yes                             Ensure a notification is configured for IAM policy changes
-3.8     1       Yes                             Ensure a notification is configured for user changes
-3.9     1       Yes                             Ensure a notification is configured for VCN changes
-3.10    1       Yes                             Ensure a notification is configured for  changes to route tables
-3.11    1       Yes                             Ensure a notification is configured for  security list changes
-3.12    1       Yes                             Ensure a notification is configured for  network security group changes
-3.13    1       Yes                             Ensure a notification is configured for  changes to network gateways
-3.14    2       No              98              Ensure VCN flow logging is enabled for all subnets
-3.15    1       Yes                             Ensure Cloud Guard is enabled in the root compartment of the tenancy
-3.16    1       No              8               Ensure customer created Customer Managed Key (CMK) is rotated at least annually
-3.17    2       No              250             Ensure write level Object Storage logging is enabled for all buckets
-4.1.1   1       No              8               Ensure no Object Storage buckets are publicly visible
-4.1.2   2       No              250             Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)
-4.1.3   2       No              255             Ensure Versioning is Enabled for Object Storage Buckets
-4.2.1   2       No              2               Ensure Block Volumes are encrypted with Customer Managed Keys
-4.2.2   2       No              64              Ensure Boot Volumes are encrypted with Customer Managed Key
-4.3.1   2       No              6               Ensure File Storage Systems are encrypted with Customer Managed Keys
-5.1     1       Yes                             Create at least one compartment in your tenancy to store cloud resources
-5.2     1       No              206             Ensure no resources are created in the root compartment
+1.1	1	No		2		49		Ensure service level admins are created to manage resources of particular service
+1.2	1	Yes		 		49		Ensure permissions on all resources are given only to the tenancy administrator group
+1.3	1	Yes		 		49		Ensure IAM administrators cannot update tenancy Administrators group
+1.4	1	Yes		 		 		Ensure IAM password policy requires minimum length of 14 or greater
+1.5	1	Yes		 		3		Ensure IAM password policy expires passwords within 365 days
+1.6	1	No		1		3		Ensure IAM password policy prevents password reuse
+1.7	1	No		9		18		Ensure MFA is enabled for all users with a console password
+1.8	1	No		1		5		Ensure user API keys rotate within 90 days or less
+1.9	1	Yes		 		2		Ensure user customer secret keys rotate within 90 days or less
+1.10	1	No		1		3		Ensure user auth tokens rotate within 90 days or less
+1.11	1	Yes		 		 		Ensure user IAM Database Passwords rotate within 90 days
+1.12	1	No		2		3		Ensure API keys are not created for tenancy administrator users
+1.13	1	No		5		18		Ensure all OCI IAM user accounts have a valid and current email address
+1.14	1	Yes		 		9		Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.
+1.15	2	No		3		49		Ensure storage service-level admins cannot delete resources they manage
+2.1	1	No		3		15		Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.
+2.2	1	Yes		 		15		Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.
+2.3	1	No		1		11		Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.
+2.4	1	Yes		 		11		Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.
+2.5	1	No		3		7		Ensure the default security list of every VCN restricts all traffic except ICMP.
+2.6	1	Yes		 		1		Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.
+2.7	1	Yes		 		1		Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.
+2.8	1	Yes		 		 		Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.
+3.1	1	Yes		 		 		Ensure Compute Instance Legacy Metadata service endpoint is disabled.
+3.2	2	Yes		 		 		Ensure Secure Boot is enabled on Compute Instance.
+3.3	2	Yes		 		 		Ensure Compute Instance Legacy MetaData service endpoint is disabled.
+4.1	1	Yes		 		2		Ensure default tags are used on resources.
+4.2	1	Yes		 		5		Create at least one notification topic and subscription to receive monitoring alerts.
+4.3	1	No		 		 		Ensure a notification is configured for Identity Provider changes.
+4.4	1	Yes		 		 		Ensure a notification is configured for IdP group mapping changes.
+4.5	1	Yes		 		 		Ensure a notification is configured for IAM group changes.
+4.6	1	Yes		 		 		Ensure a notification is configured for IAM policy changes.
+4.7	1	Yes		 		 		Ensure a notification is configured for user changes.
+4.8	1	Yes		 		 		Ensure a notification is configured for VCN changes.
+4.9	1	Yes		 		 		Ensure a notification is configured for changes to route tables.
+4.10	1	Yes		 		 		Ensure a notification is configured for security list changes.
+4.11	1	Yes		 		 		Ensure a notification is configured for network security group changes.
+4.12	1	Yes		 		 		Ensure a notification is configured for changes to network gateways.
+4.13	2	No		2		11		Ensure VCN flow logging is enabled for all subnets.
+4.14	1	Yes		 		 		Ensure Cloud Guard is enabled in the root compartment of the tenancy.
+4.15	2	Yes		 		 		Ensure a notification is configured for Oracle Cloud Guard problems detected.
+4.16	1	Yes		 		1		Ensure customer created Customer Managed Key (CMK) is rotated at least annually.
+4.17	2	No		3		3		Ensure write level Object Storage logging is enabled for all buckets.
+5.1.1	1	Yes		 		3		Ensure no Object Storage buckets are publicly visible.
+5.1.2	2	No		3		3		Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK).
+5.1.3	2	No		3		3		Ensure Versioning is Enabled for Object Storage Buckets.
+5.2.1	2	Yes		 		 		Ensure Block Volumes are encrypted with Customer Managed Keys.
+5.2.2	2	Yes		 		 		Ensure Boot Volumes are encrypted with Customer Managed Key.
+5.3.1	2	Yes		 		 		Ensure File Storage Systems are encrypted with Customer Managed Keys.
+6.1	1	Yes		 		70		Create at least one compartment in your tenancy to store cloud resources.
+6.2	1	No		3		65		Ensure no resources are created in the root compartment.
 ```
 For each non-compliant report item, a file with findings details is generated, as shown in the last part of the output:
 ```
 ##########################################################################################
-#                                 Writing reports to CSV                                 #
+#                               Writing CIS reports to CSV                               #
 ##########################################################################################
-CSV: summary_report         --> <tenancy-name>-2022-07-06_12-15/cis_summary_report.csv
-CSV: Identity and Access Management_1.7 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-7.csv
-CSV: Identity and Access Management_1.8 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-8.csv
-CSV: Identity and Access Management_1.9 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-9.csv
-CSV: Identity and Access Management_1.10 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-10.csv
-CSV: Identity and Access Management_1.11 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-11.csv
-CSV: Identity and Access Management_1.12 --> <tenancy-name>-2022-07-06_12-15/cis_Identity_and_Access_Management_1-12.csv
-CSV: Networking_2.1         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-1.csv
-CSV: Networking_2.2         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-2.csv
-CSV: Networking_2.3         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-3.csv
-CSV: Networking_2.4         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-4.csv
-CSV: Networking_2.5         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-5.csv
-CSV: Networking_2.6         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-6.csv
-CSV: Networking_2.8         --> <tenancy-name>-2022-07-06_12-15/cis_Networking_2-8.csv
-CSV: Logging and Monitoring_3.14 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-14.csv
-CSV: Logging and Monitoring_3.16 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-16.csv
-CSV: Logging and Monitoring_3.17 --> <tenancy-name>-2022-07-06_12-15/cis_Logging_and_Monitoring_3-17.csv
-CSV: Storage - Object Storage_4.1.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-1.csv
-CSV: Storage - Object Storage_4.1.2 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-2.csv
-CSV: Storage - Object Storage_4.1.3 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Object_Storage_4-1-3.csv
-CSV: Storage - Block Volumes_4.2.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Block_Volumes_4-2-1.csv
-CSV: Storage - Block Volumes_4.2.2 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_Block_Volumes_4-2-2.csv
-CSV: Storage - File Storage Service_4.3.1 --> <tenancy-name>-2022-07-06_12-15/cis_Storage_File_Storage_Service_4-3-1.csv
-CSV: Asset Management_5.2   --> <tenancy-name>-2022-07-06_12-15/cis_Asset_Management_5-2.csv
+CSV: summary_report         --> tenancy2-2024-02-23_15-12-00/cis_summary_report.csv
+HTML: html_summary_report    --> tenancy2-2024-02-23_15-12-00/cis_html_summary_report.html
+CSV: Identity and Access Management_1.1 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-1.csv
+CSV: Identity and Access Management_1.6 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-6.csv
+CSV: Identity and Access Management_1.7 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-7.csv
+CSV: Identity and Access Management_1.8 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-8.csv
+CSV: Identity and Access Management_1.10 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-10.csv
+CSV: Identity and Access Management_1.12 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-12.csv
+CSV: Identity and Access Management_1.13 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-13.csv
+CSV: Identity and Access Management_1.15 --> tenancy2-2024-02-23_15-12-00/cis_Identity_and_Access_Management_1-15.csv
+CSV: Networking_2.1         --> tenancy2-2024-02-23_15-12-00/cis_Networking_2-1.csv
+CSV: Networking_2.3         --> tenancy2-2024-02-23_15-12-00/cis_Networking_2-3.csv
+CSV: Networking_2.5         --> tenancy2-2024-02-23_15-12-00/cis_Networking_2-5.csv
+CSV: Logging and Monitoring_4.13 --> tenancy2-2024-02-23_15-12-00/cis_Logging_and_Monitoring_4-13.csv
+CSV: Logging and Monitoring_4.17 --> tenancy2-2024-02-23_15-12-00/cis_Logging_and_Monitoring_4-17.csv
+CSV: Storage - Object Storage_5.1.2 --> tenancy2-2024-02-23_15-12-00/cis_Storage_Object_Storage_5-1-2.csv
+CSV: Storage - Object Storage_5.1.3 --> tenancy2-2024-02-23_15-12-00/cis_Storage_Object_Storage_5-1-3.csv
+CSV: Asset Management_6.2   --> tenancy2-2024-02-23_15-12-00/cis_Asset_Management_6-2.csv
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
 
@@ -176,34 +174,27 @@ In the sample output below:
 
 ```
 ##########################################################################################
-#                      CIS Foundations Benchmark 1.2 Summary Report                      #
+#                     CIS Foundations Benchmark 2.0.0 Summary Report                     #
 ##########################################################################################
-Num     Level   Compliant       Findings        Title
+Num	Level 	Compliant	Findings 	Total  		Title
 ##########################################################################################
-1.7     1       No              33              Ensure MFA is enabled for all users with a console password
-1.8     1       No              46              Ensure user API keys rotate within 90 days or less
-1.9     1       No              4               Ensure user customer secret keys rotate within 90 days or less
-1.10    1       No              10              Ensure user auth tokens rotate within 90 days or less
-1.11    1       No              2               Ensure API keys are not created for tenancy administrator users
-1.12    1       No              33              Ensure all OCI IAM user accounts have a valid and current email address
-1.14    2       No                              Ensure storage service-level admins cannot delete resources they manage
-2.1     1       No              23              Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
-2.2     1       No              3               Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389
-2.3     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22
-2.4     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389
-2.5     1       No              55              Ensure the default security list of every VCN restricts all traffic except ICMP
-2.6     1       No              3               Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
-2.8     1       No              5               Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN
-3.14    2       No              54              Ensure VCN flow logging is enabled for all subnets
-3.16    1       No              5               Ensure customer created Customer Managed Key (CMK) is rotated at least annually
-3.17    2       No              239             Ensure write level Object Storage logging is enabled for all buckets
-4.1.1   1       No              10              Ensure no Object Storage buckets are publicly visible
-4.1.2   2       No              239             Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)
-4.1.3   2       No              244             Ensure Versioning is Enabled for Object Storage Buckets
-4.2.1   2       No              1               Ensure Block Volumes are encrypted with Customer Managed Keys
-4.2.2   2       No              46              Ensure boot volumes are encrypted with Customer Managed Key
-4.3.1   2       No              6               Ensure File Storage Systems are encrypted with Customer Managed Keys
-5.2     1       No              204             Ensure no resources are created in the root compartment
+1.1	1	No		2		49		Ensure service level admins are created to manage resources of particular service
+1.6	1	No		1		3		Ensure IAM password policy prevents password reuse
+1.7	1	No		9		18		Ensure MFA is enabled for all users with a console password
+1.8	1	No		1		5		Ensure user API keys rotate within 90 days or less
+1.10	1	No		1		3		Ensure user auth tokens rotate within 90 days or less
+1.12	1	No		2		3		Ensure API keys are not created for tenancy administrator users
+1.13	1	No		5		18		Ensure all OCI IAM user accounts have a valid and current email address
+1.15	2	No		3		49		Ensure storage service-level admins cannot delete resources they manage
+2.1	1	No		3		15		Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.
+2.3	1	No		1		11		Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.
+2.5	1	No		3		7		Ensure the default security list of every VCN restricts all traffic except ICMP.
+4.3	1	No		 		 		Ensure a notification is configured for Identity Provider changes.
+4.13	2	No		2		11		Ensure VCN flow logging is enabled for all subnets.
+4.17	2	No		3		3		Ensure write level Object Storage logging is enabled for all buckets.
+5.1.2	2	No		3		3		Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK).
+5.1.3	2	No		3		3		Ensure Versioning is Enabled for Object Storage Buckets.
+6.2	1	No		3		65		Ensure no resources are created in the root compartment.
 ```
 
 #### **Output Level 1 Findings Only**
@@ -213,49 +204,50 @@ Using --level ```1``` will only print Level 1 findings.
 In the sample output below:
 ```
 ##########################################################################################
-#                      CIS Foundations Benchmark 1.2 Summary Report                      #
+#                     CIS Foundations Benchmark 2.0.0 Summary Report                     #
 ##########################################################################################
-Num     Level   Compliant       Findings        Title
+Num	Level 	Compliant	Findings 	Total  		Title
 ##########################################################################################
-1.1     1       Yes                             Ensure service level admins are created to manage resources of particular service
-1.2     1       Yes                             Ensure permissions on all resources are given only to the tenancy administrator group
-1.3     1       Yes                             Ensure IAM administrators cannot update tenancy Administrators group
-1.4     1       Yes                             Ensure IAM password policy requires minimum length of 14 or greater
-1.5     1       Yes                             Ensure IAM password policy expires passwords within 365 days
-1.6     1       Yes                             Ensure IAM password policy prevents password reuse
-1.7     1       No              33              Ensure MFA is enabled for all users with a console password
-1.8     1       No              46              Ensure user API keys rotate within 90 days or less
-1.9     1       No              4               Ensure user customer secret keys rotate within 90 days or less
-1.10    1       No              10              Ensure user auth tokens rotate within 90 days or less
-1.11    1       No              2               Ensure API keys are not created for tenancy administrator users
-1.12    1       No              33              Ensure all OCI IAM user accounts have a valid and current email address
-1.13    1       Yes                             Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
-2.1     1       No              23              Ensure no security lists allow ingress from 0.0.0.0/0 to port 22
-2.2     1       No              3               Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389
-2.3     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22
-2.4     1       No              2               Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389
-2.5     1       No              55              Ensure the default security list of every VCN restricts all traffic except ICMP
-2.6     1       No              3               Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources
-2.7     1       Yes                             Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network
-2.8     1       No              5               Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN
-3.1     1       Yes                             Ensure audit log retention period is set to 365 days
-3.2     1       Yes                             Ensure default tags are used on resources
-3.3     1       Yes                             Create at least one notification topic and subscription to receive monitoring alerts
-3.4     1       Yes                             Ensure a notification is configured for Identity Provider changes
-3.5     1       Yes                             Ensure a notification is configured for IdP group mapping changes
-3.6     1       Yes                             Ensure a notification is configured for IAM group changes
-3.7     1       Yes                             Ensure a notification is configured for IAM policy changes
-3.8     1       Yes                             Ensure a notification is configured for user changes
-3.9     1       Yes                             Ensure a notification is configured for VCN changes
-3.10    1       Yes                             Ensure a notification is configured for  changes to route tables
-3.11    1       Yes                             Ensure a notification is configured for  security list changes
-3.12    1       Yes                             Ensure a notification is configured for  network security group changes
-3.13    1       Yes                             Ensure a notification is configured for  changes to network gateways
-3.15    1       Yes                             Ensure Cloud Guard is enabled in the root compartment of the tenancy
-3.16    1       No              5               Ensure customer created Customer Managed Key (CMK) is rotated at least annually
-4.1.1   1       No              10              Ensure no Object Storage buckets are publicly visible
-5.1     1       Yes                             Create at least one compartment in your tenancy to store cloud resources
-5.2     1       No              204             Ensure no resources are created in the root compartment
+1.1	1	No		2		49		Ensure service level admins are created to manage resources of particular service
+1.2	1	Yes		 		49		Ensure permissions on all resources are given only to the tenancy administrator group
+1.3	1	Yes		 		49		Ensure IAM administrators cannot update tenancy Administrators group
+1.4	1	Yes		 		 		Ensure IAM password policy requires minimum length of 14 or greater
+1.5	1	Yes		 		3		Ensure IAM password policy expires passwords within 365 days
+1.6	1	No		1		3		Ensure IAM password policy prevents password reuse
+1.7	1	No		9		18		Ensure MFA is enabled for all users with a console password
+1.8	1	No		1		5		Ensure user API keys rotate within 90 days or less
+1.9	1	Yes		 		2		Ensure user customer secret keys rotate within 90 days or less
+1.10	1	No		1		3		Ensure user auth tokens rotate within 90 days or less
+1.11	1	Yes		 		 		Ensure user IAM Database Passwords rotate within 90 days
+1.12	1	No		2		3		Ensure API keys are not created for tenancy administrator users
+1.13	1	No		5		18		Ensure all OCI IAM user accounts have a valid and current email address
+1.14	1	Yes		 		9		Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.
+2.1	1	No		3		15		Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.
+2.2	1	Yes		 		15		Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.
+2.3	1	No		1		11		Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.
+2.4	1	Yes		 		11		Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.
+2.5	1	No		3		7		Ensure the default security list of every VCN restricts all traffic except ICMP.
+2.6	1	Yes		 		1		Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.
+2.7	1	Yes		 		1		Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.
+2.8	1	Yes		 		 		Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.
+3.1	1	Yes		 		 		Ensure Compute Instance Legacy Metadata service endpoint is disabled.
+4.1	1	Yes		 		2		Ensure default tags are used on resources.
+4.2	1	Yes		 		5		Create at least one notification topic and subscription to receive monitoring alerts.
+4.3	1	No		 		 		Ensure a notification is configured for Identity Provider changes.
+4.4	1	Yes		 		 		Ensure a notification is configured for IdP group mapping changes.
+4.5	1	Yes		 		 		Ensure a notification is configured for IAM group changes.
+4.6	1	Yes		 		 		Ensure a notification is configured for IAM policy changes.
+4.7	1	Yes		 		 		Ensure a notification is configured for user changes.
+4.8	1	Yes		 		 		Ensure a notification is configured for VCN changes.
+4.9	1	Yes		 		 		Ensure a notification is configured for changes to route tables.
+4.10	1	Yes		 		 		Ensure a notification is configured for security list changes.
+4.11	1	Yes		 		 		Ensure a notification is configured for network security group changes.
+4.12	1	Yes		 		 		Ensure a notification is configured for changes to network gateways.
+4.14	1	Yes		 		 		Ensure Cloud Guard is enabled in the root compartment of the tenancy.
+4.16	1	Yes		 		1		Ensure customer created Customer Managed Key (CMK) is rotated at least annually.
+5.1.1	1	Yes		 		3		Ensure no Object Storage buckets are publicly visible.
+6.1	1	Yes		 		70		Create at least one compartment in your tenancy to store cloud resources.
+6.2	1	No		3		65		Ensure no resources are created in the root compartment.
 ```
 
 #### **Output OCI Best Practice Summary Report**

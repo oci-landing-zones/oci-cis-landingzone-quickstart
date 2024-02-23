@@ -52,10 +52,8 @@ pip3 install requests
 ### Setup the script to run in a Cloud Shell Environment without a Python virtual environment
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
 ```
-pip install --upgrade 'urllib3<=2' --user
 wget https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 ```
-Most required python libraries are already available in the Cloud shell environment.  The installation urllib3 for the user is to resolve a compability difference to the included with the included *OpenSSL 1.0.2k-fps* library.  
  
 ### Setup the script to run in a Cloud Shell Environment with a Python virtual environment
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
@@ -69,7 +67,6 @@ source python-venv/bin/activate
 pip3 install oci
 pip3 install pytz
 pip3 install requests
-pip install --upgrade 'urllib3<=2' --user
 ```
 
 
@@ -431,5 +428,5 @@ To run on a local machine with the default profile and output raw data as well a
     * In this case, make sure to set OCI_CONFIG_HOME to the full path of .oci/config file. Optionally, OCI_CONFIG_PROFILE can be configured with a default profile to use from config.
     * Optionally, you can use the `-c` option to specify an alternate config file
 1. `ImportError: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.0.2k-fips  26 Jan 2017'.`
-    * Follow the steps in  *Setup the script to run in a Cloud Shell Environment without a Python virtual environment* or *Setup the script to run in a Cloud Shell Environment with a Python virtual environment*
+    * Change your urllib3 with the following `pip install --upgrade 'urllib3<=2' --user`
 

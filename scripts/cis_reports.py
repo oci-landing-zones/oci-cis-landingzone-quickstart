@@ -816,7 +816,8 @@ class CIS_Report:
         self.__file_storage_system = []
 
         # For Vaults and Keys checks
-        self.__vaults = []
+        self.__vaults = {}
+        self.__kms_keys = []
 
         # For Region
         self.__regions = {}
@@ -851,6 +852,7 @@ class CIS_Report:
         print("\nStarts at " + self.start_time_str)
         self.__config = config
         self.__signer = signer
+        self.__proxy = proxy
 
         # By Default it is passed True to print all output
         if print_to_screen.upper() == 'TRUE':
@@ -1460,7 +1462,7 @@ class CIS_Report:
                         'external_identifier': user.external_identifier,
                         'identity_provider_id': user.identity_provider_id,
                         'is_mfa_activated': user.is_mfa_activated,
-                        'lifecycle_state': user.lifecycle_state,
+                        'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
                         'time_created': user.time_created.strftime(self.__iso_time_format),
                         'can_use_api_keys': user.capabilities.can_use_api_keys,
                         'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
@@ -3235,9 +3237,10 @@ class CIS_Report:
     ##########################################################################
     # Vault Keys
     ##########################################################################
-    def __vault_read_vaults(self):
-        self.__vaults = []
+    def __kms_read_keys(self):
+        debug("__kms_read_keys: Initiating")
         try:
+            debug("\t__kms_read_keys: Getting all keys in regions")
             for region_key, region_values in self.__regions.items():
                 keys_data = oci.pagination.list_call_get_all_results(
                     region_values['search_client'].search_resources,
@@ -3245,50 +3248,80 @@ class CIS_Report:
                         query="query Key resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                 ).data
 
-                vaults_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Vault resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
-                ).data
+                vaults_set = set()
+                for key in keys_data:
+                    vaults_set.add(key.additional_details['vaultId'])
+                
+                for vault in vaults_set:
+                    try:
+                        debug("\t__kms_read_keys: Getting Vault details for Vault: " + str(vault))
+                        vault_details = region_values['vault_client'].get_vault(vault_id=vault).data
+                        debug("\t__kms_read_keys: Succeeded getting Vault details for: " + str(vault_details))
+                        vault_dict = oci.util.to_dict(vault_details)
+                        vault_dict['keys'] = []
+                        self.__vaults[vault] = vault_dict
+                        debug("\t__kms_read_keys: Building KMS Client: " + str(vault))
+                        region_signer = self.__signer
+                        region_signer.region_name = region_key
+                        region_config = self.__config
+                        region_config['region'] = region_key
+                        self.__vaults[vault]['kms_client'] = oci.key_management.KmsManagementClient(config=region_config, 
+                                                                                                    signer=region_signer,
+                                                                                                    service_endpoint=vault_dict['management_endpoint'])
+                        if self.__proxy:
+                            self.__vaults[vault]['kms_client'].base_client.session.proxies = {'https': self.__proxy}
+                        debug("\t__kms_read_keys: Succeeded building KMS Client: " + str(vault))
 
-                # Get all Vaults in a compartment
-                for vlt in vaults_data:
-                    deep_link = self.__oci_vault_uri + vlt.identifier + '?region=' + region_key
-                    vault_record = {
-                        "compartment_id": vlt.compartment_id,
-                        # "crypto_endpoint": vlt.crypto_endpoint,
-                        "display_name": vlt.display_name,
-                        "deep_link": self.__generate_csv_hyperlink(deep_link, vlt.display_name),
-                        "id": vlt.identifier,
-                        "lifecycle_state": vlt.lifecycle_state,
-                        # "management_endpoint": vlt.management_endpoint,
-                        "time_created": vlt.time_created.strftime(self.__iso_time_format),
-                        "vault_type": vlt.additional_details['vaultType'],
-                        "freeform_tags": vlt.freeform_tags,
-                        "defined_tags": vlt.defined_tags,
-                        "region": region_key,
-                        "keys": []
-                    }
-                    for key in keys_data:
-                        if vlt.identifier == key.additional_details['vaultId']:
-                            deep_link = self.__oci_vault_uri + vlt.identifier + "/vaults/" + key.identifier + '?region=' + region_key
-                            key_record = {
-                                "id": key.identifier,
-                                "display_name": key.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(deep_link, key.display_name),
-                                "compartment_id": key.compartment_id,
-                                "lifecycle_state": key.lifecycle_state,
-                                "time_created": key.time_created.strftime(self.__iso_time_format),
-                            }
-                            vault_record['keys'].append(key_record)
+                    except Exception as e:
+                        print("\t__kms_read_keys: Failed getting Vault details for Vault: " + str(vault))
+                        print(e)
+                        self.__vaults[vault] = {"id" : vault, "keys" : [], "kms_client" : None}
+                        self.__errors.append({"id" : vault, "error" : str(e) })
+                    
+                    ### Getting Wrapping Key
+                    try:
+                        wrapping_key_id = self.__vaults[vault]['kms_client'].get_wrapping_key().data.id
+                        debug("\t__kms_read_keys: Succeeded Adding Wrapping Key Id: " + str(wrapping_key_id))
+                        self.__vaults[vault]['wrapping_key_id'] = wrapping_key_id
+                    except Exception as e:
+                        debug("\t__kms_read_keys: Failed Adding Wrapping Key Id for vault: " + str(vault))
+                        self.__vaults[vault]['wrapping_key_id'] = None
 
-                    self.__vaults.append(vault_record)
+                for key in keys_data:
+                    if key.identifier != self.__vaults[key.additional_details['vaultId']]['wrapping_key_id']:
+                        deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
+                        key_record = oci.util.to_dict(key)
+                        key_record['deep_link'] = deep_link
+                        try:
+                            if self.__vaults[key.additional_details['vaultId']]['kms_client']:
+                                debug("\t__kms_read_keys: Getting Key version : " + str(key.additional_details['vaultId']))
+                                debug("\t__kms_read_keys: Getting Key version : " + str(key.additional_details['currentKeyVersion']))
+                                key_version = self.__vaults[key.additional_details['vaultId']]['kms_client'].get_key_version(
+                                    key_id=key.identifier,
+                                    key_version_id=key.additional_details['currentKeyVersion'],
+                                ).data
+                                key_record['currentKeyVersion_time_created'] = key_version.time_created.strftime(self.__iso_time_format)
+                                debug("\t__kms_read_keys: Successfully got Key version : " + str(key.additional_details['currentKeyVersion']))
+                            else:
+                                debug("\t__kms_read_keys: No Key version because not KMS client : " + str(key.additional_details['currentKeyVersion']))
+                                key_record['currentKeyVersion_time_created'] = None
 
-            print("\tProcessed " + str(len(self.__vaults)) + " Vaults")
+                        except Exception as e:
+                            print("\t__kms_read_keys: Failed getting Key Version details for key: " + str(key.identifier))
+                            print(e)
+                            key_record['currentKeyVersion_time_created'] = None
+                            self.__errors.append({"id" : key.identifier, "error" : str(e) })
+                        
+                        self.__vaults[key.additional_details['vaultId']]["keys"].append(key_record)
+                        self.__kms_keys.append(key_record)
+                    else:
+                        debug("\t__kms_read_keys: Ignoring wrapping key: " + key.display_name)
+
+            print("\tProcessed " + str(len(self.__kms_keys)) + " Keys")
             return self.__vaults
         except Exception as e:
             raise RuntimeError(
-                "Error in __vault_read_vaults " + str(e.args))
+                "Error in __kms_read_keys " + str(e.args))
 
     ##########################################################################
     # OCI Budgets
@@ -3652,7 +3685,7 @@ class CIS_Report:
                                 "id": item.identifier,
                                 "region": region_key
                             }
-                            self.cis_foundations_benchmark_1_2['5.2']['Total'].append(item)
+                            self.cis_foundations_benchmark_2_0['6.2']['Total'].append(record)
                     except:
                         self.__errors.append({"id" : "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
                         debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
@@ -3697,8 +3730,7 @@ class CIS_Report:
                         self.__all_resources_json[region_key][item.name] = []
 
                 for type in self.__all_resources_json[region_key]:
-                    if self.__all_resources_json[region_key][type]:
-                        self.__all_resources_json[region_key][type] += self.__search_query_resource_type(type, region_values['search_client'])
+                    self.__all_resources_json[region_key][type] += self.__search_query_resource_type(type, region_values['search_client'])
                     
             except Exception as e:
                 raise RuntimeError(
@@ -3838,10 +3870,14 @@ class CIS_Report:
                 self.cis_foundations_benchmark_2_0['1.6']['Status'] = False
             else:
                 self.cis_foundations_benchmark_2_0['1.6']['Status'] = True
+            
+            # Adding all identity domains to Total
+            self.cis_foundations_benchmark_2_0['1.5']['Total'] = self.__identity_domains
+            self.cis_foundations_benchmark_2_0['1.6']['Total'] = self.__identity_domains
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
+            if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.7']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.7']['Findings'].append(
                     user)
@@ -3922,19 +3958,19 @@ class CIS_Report:
         # CIS 1.12 Active Admins with API keys
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state'] == 'ACTIVE':
+            if 'Administrators' in user['groups'] and user['api_keys'] and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.12']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.12']['Findings'].append(
                     user)
 
             # CIS Total 1.12 Adding - All IAM Users in Administrator group to CIS Total
-            if 'Administrators' in user['groups'] and user['lifecycle_state'] == 'ACTIVE':
+            if 'Administrators' in user['groups'] and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.12']['Total'].append(user)
 
         # CIS 1.13 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if user['external_identifier'] is None and user['lifecycle_state'] == 'ACTIVE' and not (user['email_verified']):
+            if user['external_identifier'] is None and user['lifecycle_state'] and not (user['email_verified']):
                 self.cis_foundations_benchmark_2_0['1.13']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.13']['Findings'].append(
                     user)
@@ -4123,7 +4159,7 @@ class CIS_Report:
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_2_0['2.8']['Total'] = self.__autonomous_databases
 
-        # From CIS 1.2 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
+        # From CIS 2.0 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
         # if self.__audit_retention_period >= 365:
         #     self.cis_foundations_benchmark_2_0['4.1']['Status'] = True
 
@@ -4209,15 +4245,20 @@ class CIS_Report:
 
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
-        for vault in self.__vaults:
-            for key in vault['keys']:
-                if self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
-                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                        key)
+        for key in self.__kms_keys:
 
-                # CIS Check 3.16 Total - Adding Key to total
-                self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
+            if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                    key)
+            if self.kms_key_time_max_datetime is None:
+                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                    key)
+                
+
+            # CIS Check 3.16 Total - Adding Key to total
+            self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names
@@ -4850,7 +4891,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
 
         # Screen output for CIS Summary Report
-        print_header("CIS Foundations Benchmark 1.2 Summary Report")
+        print_header("CIS Foundations Benchmark 2.0.0 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
@@ -4937,7 +4978,7 @@ class CIS_Report:
             # generate fields
             fields = ['Recommendation #', 'Compliant', 'Section', 'Details']
 
-            html_title = 'CIS OCI Foundations Benchmark 1.2 - Compliance Report'
+            html_title = 'CIS OCI Foundations Benchmark 2.0.0 - Compliance Report'
             with open(file_path, mode='w') as html_file:
                 # Creating table header
                 html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')
@@ -5284,7 +5325,7 @@ class CIS_Report:
         # List of functions for CIS
         cis_regional_functions = [
             self.__search_resources_in_root_compartment,
-            self.__vault_read_vaults,
+            self.__kms_read_keys,
             self.__os_read_buckets,
             self.__logging_read_log_groups_and_logs,
             self.__events_read_event_rules,
@@ -5421,7 +5462,7 @@ class CIS_Report:
         list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "vaults_and_keys", self.__vaults)
+            self.__report_directory, "raw_data", "keys_and_vaults", self.__kms_keys)
         list_report_file_names.append(report_file_name)
 
         report_file_name = self.__print_to_csv_file(

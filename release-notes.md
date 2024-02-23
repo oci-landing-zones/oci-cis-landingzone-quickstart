@@ -1,3 +1,42 @@
+#  February 23, 2024 Release Notes - 2.8.0
+1. [Updates for CIS OCI Benchmark 2.0.0](#2-8-0-cis-2-updates)
+1. [Compliance Checker Script Update for Identity Domains](#2-8-0-cis-2-iddomains)
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-0-script-updates)
+1. [Readme Updates](#2-8-0-readme-updates)
+
+
+## <a name="#2-8-0-cis-2-updates">Updates for CIS OCI Benchmark 2.0.0</a>
+On January 4th, 2024 the [CIS Oracle Cloud Infrastructure Foundations Benchmark 2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud) was published.  To align to this new release the compliance checking script has updated the numbering and added the following new checks:
+- Compute checks for secure boot, IMDSv2, and in-transit encryption enabled
+- Logging and Monitoring Check added to ensure there is a notification for Cloud Guard events
+- IAM check for Database Password rotation
+In addition, the CIS OCI Benchmark to CIS Landing Zone Architecture Mapping table and architecture where updated to align to the updated benchmark.
+
+## <a name="#2-8-0-cis-2-iddomains">Compliance Checker Script Update for Identity Domains</a>
+To align with the migration from OCI tenancies to those without Identity Domains to those with Identity Domains.  All IAM checks have been updated to search all Identity Domains in a tenancy.  Checks that were updated are:
+- 1.4   Ensure IAM password policy requires minimum length of 14 or greater
+- 1.5   Ensure IAM password policy expires passwords within 365 days
+- 1.6	Ensure IAM password policy prevents password reuse
+- 1.7   Ensure MFA is enabled for all users with a console password
+- 1.8   Ensure user API keys rotate within 90 days or less
+- 1.9   Ensure user customer secret keys rotate within 90 days or less
+- 1.10  Ensure user auth tokens rotate within 90 days or less
+- 1.11  Ensure user IAM Database Passwords rotate within 90 days
+- 1.12  Ensure API keys are not created for tenancy administrator users
+- 1.13  Ensure all OCI IAM user accounts have a valid and current email address
+- 1.14  Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.
+
+## <a name="#2-8-0-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+**Fixes:**
+    - Check *Ensure customer created Customer Managed Key (CMK) is rotated at least annually.* was updated to check current key version instead of key creation date.
+    - Updated checks 1.6, 1.5, 6.2 totals to prevent negative numbers.
+    - Resolved case sensitivity issue relating to policy check for `"PSM-root-policy"`.
+**Updates:**
+    - Added a new item to the FAQ.
+
+## <a name="#2-8-0-readme-updates">Readme Updates</a>
+The README.md was updated to add a click to deploy option for the EU Sovereign regions. Closing [issue 136](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/136)
+
 #   January 5, 2024 Release Notes - 2.7.1
 1. [Links to Deploy in Non-commercial Regions](#2-7-1-deploy-links)
 1. [Terraform Updates](#2-7-1-tf-updates)

@@ -2635,7 +2635,9 @@ class CIS_Report:
     ############################################
     def __network_topology_dump(self):
         debug("__network_topology_dump: Starting")
-        
+        if type(self.__signer) == oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
+            self.__errors.append({"id" : "__network_topology_dump", "error" : "Delegated Tokens via Cloud Shell not supported" })
+            return
         def api_function(region_key, region_values, tenancy_id):
             try:
                 get_vcn_topology_response = region_values['topology_client'].get_networking_topology(
@@ -5808,7 +5810,6 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
                 # get signer from delegation token
                 signer = oci.auth.signers.InstancePrincipalsDelegationTokenSigner(
                     delegation_token=delegation_token)
-
                 return config, signer
 
         except KeyError:

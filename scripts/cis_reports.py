@@ -1407,7 +1407,7 @@ class CIS_Report:
                             'email': user.emails[0].value if user.emails else None,
                             'email_verified': user.emails[0].verified if user.emails else None,
                             'external_identifier': user.external_id,
-                            'identity_provider_id': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.provider,
+                            'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user,
                             'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
                             'lifecycle_state': user.active,
                             'time_created': user.meta.created,
@@ -1460,7 +1460,7 @@ class CIS_Report:
                         'email': user.email,
                         'email_verified': user.email_verified,
                         'external_identifier': user.external_identifier,
-                        'identity_provider_id': user.identity_provider_id,
+                        'is_federated': True if user.identity_provider_id is not None else False, 
                         'is_mfa_activated': user.is_mfa_activated,
                         'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
                         'time_created': user.time_created.strftime(self.__iso_time_format),
@@ -3879,7 +3879,7 @@ class CIS_Report:
 
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
-            if user['identity_provider_id'] is None and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state']:
+            if not(user['is_federated']) and user['can_use_console_password'] and not (user['is_mfa_activated']) and user['lifecycle_state']:
                 self.cis_foundations_benchmark_2_0['1.7']['Status'] = False
                 self.cis_foundations_benchmark_2_0['1.7']['Findings'].append(
                     user)

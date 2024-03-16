@@ -4249,17 +4249,21 @@ class CIS_Report:
         # Generating list of keys
         for key in self.__kms_keys:
 
-            if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-            if self.kms_key_time_max_datetime is None:
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-                
-
-            # CIS Check 3.16 Total - Adding Key to total
+            try:
+                if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+                if self.kms_key_time_max_datetime is None:
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+            except:    
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+         
+            # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs

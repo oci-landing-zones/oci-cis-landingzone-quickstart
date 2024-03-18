@@ -3382,25 +3382,6 @@ class CIS_Report:
                 "Error in __budget_read_budgets " + str(e.args))
 
     ##########################################################################
-    # Audit Configuration
-    ##########################################################################
-    def __audit_read_tenancy_audit_configuration(self):
-        # Pulling the Audit Configuration
-        try:
-            self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
-                self.__tenancy.id).data.retention_period_days
-        except Exception as e:
-            if "NotAuthorizedOrNotFound" in str(e):
-                self.__audit_retention_period = -1
-                print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
-                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to audit retention requires the user to be part of the Administrator group ***"})
-            else:
-                raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
-
-        print("\tProcessed Audit Configuration.")
-        return self.__audit_retention_period
-
-    ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
@@ -5295,7 +5276,6 @@ class CIS_Report:
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
-            self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,

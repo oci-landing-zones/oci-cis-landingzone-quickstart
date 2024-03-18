@@ -1,5 +1,5 @@
 ##########################################################################
-# Copyright (c) 2016, 2023, Oracle and/or its affiliates.  All rights reserved.
+# Copyright (c) 2016, 2024, Oracle and/or its affiliates.  All rights reserved.
 # This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 #
 # cis_reports.py
@@ -169,7 +169,7 @@ class CIS_Report:
 
             '3.1': {'section': 'Compute', 'recommendation_#': '3.1', 'Title': 'Ensure Compute Instance Legacy Metadata service endpoint is disabled.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.6'], 'CCCS Guard Rail': '', 'Remediation': []},
             '3.2': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Secure Boot is enabled on Compute Instance.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['4.1'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.3': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Compute Instance Legacy MetaData service endpoint is disabled.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
+            '3.3': {'section': 'Compute', 'recommendation_#': '3.3', 'Title': 'Ensure In-transit Encryption is enabled on Compute Instance.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
 
             '4.1': {'section': 'Logging and Monitoring', 'recommendation_#': '4.1', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
             '4.2': {'section': 'Logging and Monitoring', 'recommendation_#': '4.2', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '11', 'Remediation': []},
@@ -195,7 +195,6 @@ class CIS_Report:
             '5.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
             '5.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
             '5.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '5.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-
 
             '6.1': {'section': 'Asset Management', 'recommendation_#': '6.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail': '2,3,8,12', 'Remediation': []},
             '6.2': {'section': 'Asset Management', 'recommendation_#': '6.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []}
@@ -956,7 +955,7 @@ class CIS_Report:
         except Exception as e:
             # To be safe if it fails I'll check
             self.__identity_domains_enabled = True
-            debug("__init__: Exception checking identity domains status \n" + str(e))
+            debug("__init__: Exception checking identity domains status\n" + str(e))
             self.__errors.append({"id" : "__init__", "error" : str(e)})
         
         
@@ -998,7 +997,7 @@ class CIS_Report:
     def __create_regional_signers(self, proxy):
         print("Creating regional signers and configs...")
         for region_key, region_values in self.__regions.items():
-            debug("processing __create_regional_signers ")
+            debug("processing __create_regional_signers")
             # Creating regional configs and signers
             region_signer = self.__signer
             region_signer.region_name = region_key
@@ -1142,7 +1141,7 @@ class CIS_Report:
 
             # Need to convert for raw output
             for compartment in self.__compartments:
-                debug("__identity_read_compartments: Getting Compartments:" + compartment.name)
+                debug("__identity_read_compartments: Getting Compartments: " + compartment.name)
                 deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
                     'id': compartment.id,
@@ -1187,7 +1186,7 @@ class CIS_Report:
             return self.__compartments
 
         except Exception as e:
-            debug("__identity_read_compartments: Error Getting Compartments:" + compartment.name)
+            debug("__identity_read_compartments: Error Getting Compartments: " + compartment.name)
             self.__errors.append({"id" : "__identity_read_compartments", "error" : str(e)})
             raise RuntimeError(
                 "Error in identity_read_compartments: " + str(e.args))
@@ -1203,7 +1202,7 @@ class CIS_Report:
         # Finding all Identity Domains in the tenancy
         for compartment in self.__compartments:
             try:
-                debug("__identity_read_domains: Getting Identity Domains for Compartment :" + str(compartment.name))
+                debug("__identity_read_domains: Getting Identity Domains for Compartment: " + str(compartment.name))
 
                 raw_identity_domains += oci.pagination.list_call_get_all_results(
                         self.__regions[self.__home_region]['identity_client'].list_domains,
@@ -1212,14 +1211,14 @@ class CIS_Report:
                     ).data
 
             except Exception as e:
-                debug("__identity_read_domains: Exception collecting Identity Domains \n" + str(e))
+                debug("__identity_read_domains: Exception collecting Identity Domains\n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
 
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting password policy for domain: " + domain.display_name)
-            domain_dict =  oci.util.to_dict(domain)
+            domain_dict = oci.util.to_dict(domain)
             try: 
-                debug("__identity_read_domains: Getting Identity Domain Password Policy for :" +  domain.display_name)
+                debug("__identity_read_domains: Getting Identity Domain Password Policy for: " +  domain.display_name)
                 idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
                 raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
                 raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
@@ -1678,7 +1677,7 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_tenancy_policies(self):
         try:
-            debug("__identity_read_tenancy_policies: Getting Tenancy policies :")
+            debug("__identity_read_tenancy_policies: Getting Tenancy policies: ")
             policies_data = oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['search_client'].search_resources,
                 search_details=oci.resource_search.models.StructuredSearchDetails(
@@ -1686,7 +1685,7 @@ class CIS_Report:
             ).data
 
             for policy in policies_data:
-                debug("__identity_read_tenancy_policies: Reading Tenancy policies : " + policy.display_name)
+                debug("__identity_read_tenancy_policies: Reading Tenancy policies: " + policy.display_name)
                 deep_link = self.__oci_policies_uri + policy.identifier
                 record = {
                     "id": policy.identifier,
@@ -1702,7 +1701,7 @@ class CIS_Report:
             return self.__policies
 
         except Exception as e:
-            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies : " + policy.display_name)
+            debug("__identity_read_tenancy_policies: Exception reading Tenancy policies: " + policy.display_name)
             self.__errors.append({"id" : "__identity_read_tenancy_policies", "error" : str(e)})
             raise RuntimeError("Error in __identity_read_tenancy_policies: " + str(e.args))
 
@@ -1749,9 +1748,9 @@ class CIS_Report:
     ############################################
     def __identity_read_availability_domains(self):
         try:
-            debug("__identity_read_availability_domains: Getting Availability Domains for regions :")
+            debug("__identity_read_availability_domains: Getting Availability Domains for regions:")
             for region_key, region_values in self.__regions.items():
-                debug("__identity_read_availability_domains: reading Availability Domains for regions :" +region_key)
+                debug("__identity_read_availability_domains: reading Availability Domains for regions: " +region_key)
                 region_values['availability_domains'] = oci.pagination.list_call_get_all_results(
                     region_values['identity_client'].list_availability_domains,
                     compartment_id=self.__tenancy.id
@@ -1759,8 +1758,8 @@ class CIS_Report:
                 print("\tProcessed " + str(len(region_values['availability_domains'])) + " Availability Domains in " + region_key)
 
         except Exception as e:
-            debug("__identity_read_availability_domains: reading availability domain" + str(region_key))
-            self.__errors.append({"id" : "__identity_read_availability_domains" + "_" + str(region_key), "error" : str(e)})
+            debug("__identity_read_availability_domains: reading availability domain " + str(region_key))
+            self.__errors.append({"id": "__identity_read_availability_domains" + "_" + str(region_key), "error": str(e)})
             raise RuntimeError(
                 "Error in __identity_read_availability_domains: " + str(e.args))
 
@@ -2636,7 +2635,7 @@ class CIS_Report:
     def __network_topology_dump(self):
         debug("__network_topology_dump: Starting")
         if type(self.__signer) == oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
-            self.__errors.append({"id" : "__network_topology_dump", "error" : "Delegated Tokens via Cloud Shell not supported" })
+            self.__errors.append({"id": "__network_topology_dump", "error": "Delegated Tokens via Cloud Shell not supported." })
             return
         def api_function(region_key, region_values, tenancy_id):
             try:
@@ -3689,7 +3688,7 @@ class CIS_Report:
                             }
                             self.cis_foundations_benchmark_2_0['6.2']['Total'].append(record)
                     except:
-                        self.__errors.append({"id" : "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
+                        self.__errors.append({"id": "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
                         debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
 
             except Exception as e:
@@ -4007,17 +4006,16 @@ class CIS_Report:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
                                 if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
                                     not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data no permissions to delete storage : " + str(policy['name']))
-
+                                    debug("__report_cis_analyze_tenancy_data no permissions to delete storage: " + str(policy['name']))
                                     pass
                                 # Checking if this is the Storage admin with allowed 
                                 elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
                                     not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data storage admin policy is : " + str(policy['name']))
+                                    debug("__report_cis_analyze_tenancy_data storage admin policy is: " + str(policy['name']))
                                     pass
                                 else:
                                     self.cis_foundations_benchmark_2_0['1.15']['Findings'].append(policy)
-                                    debug("__report_cis_analyze_tenancy_data else policy is /n: " + str(policy['name']))
+                                    debug("__report_cis_analyze_tenancy_data else policy is\n: " + str(policy['name']))
 
                             else:
                                 self.cis_foundations_benchmark_2_0['1.15']['Findings'].append(policy)
@@ -4027,7 +4025,7 @@ class CIS_Report:
         else:
             self.cis_foundations_benchmark_2_0['1.15']['Status'] = True
 
-        # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
+        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_2_0['1.15']['Total'] = self.__policies
 
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
@@ -4257,9 +4255,8 @@ class CIS_Report:
                 self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
                     key)
-                
 
-            # CIS Check 3.16 Total - Adding Key to total
+            # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs
@@ -4950,8 +4947,7 @@ class CIS_Report:
             if len(data) == 0:
                 return None
 
-            # get the file name of the CSV
-
+            # get the file name of the HTML
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")).replace(".", "-").replace("_-_", "_") + ".html"
             file_path = os.path.join(report_directory, file_name)
@@ -5909,39 +5905,39 @@ def execute_report():
     # Get Command Line Parser
     parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=100, width=180))
     parser.add_argument('-c', default="", dest='file_location',
-                        help='OCI config file location')
+                        help='OCI config file location.')
     parser.add_argument('-t', default="", dest='config_profile',
-                        help='Config file section to use (tenancy profile) ')
+                        help='Config file section to use (tenancy profile).')
     parser.add_argument('-p', default="", dest='proxy',
-                        help='Set Proxy (i.e. www-proxy-server.com:80) ')
+                        help='Set Proxy (i.e. www-proxy-server.com:80).')
     parser.add_argument('--output-to-bucket', default="", dest='output_bucket',
-                        help='Set Output bucket name (i.e. my-reporting-bucket) ')
+                        help='Set Output bucket name (i.e. my-reporting-bucket).')
     parser.add_argument('--report-directory', default=None, dest='report_directory',
-                        help='Set Output report directory by default it is the current date (i.e. reports-date) ')
+                        help='Set Output report directory by default it is the current date (i.e. reports-date).')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
-                        help='Set to False if you want to see only non-compliant findings (i.e. False) ')
+                        help='Set to False if you want to see only non-compliant findings (i.e. False).')
     parser.add_argument('--level', default=2, dest='level',
-                        help='CIS Recommendation Level options are: 1 or 2. Set to 2 by default ')
+                        help='CIS Recommendation Level options are: 1 or 2. Set to 2 by default.')
     parser.add_argument('--regions', default="", dest='regions',
-                        help='Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1')
+                        help='Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.')
     parser.add_argument('--raw', action='store_true', default=False,
-                        help='Outputs all resource data into CSV files')
+                        help='Outputs all resource data into CSV files.')
     parser.add_argument('--obp', action='store_true', default=False,
-                        help='Checks for OCI best practices')
+                        help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
-                        help='Redacts OCIDs in output CSV and JSON files')
+                        help='Redacts OCIDs in output CSV and JSON files.')
     parser.add_argument('-ip', action='store_true', default=False,
-                        dest='is_instance_principals', help='Use Instance Principals for Authentication ')
+                        dest='is_instance_principals', help='Use Instance Principals for Authentication.')
     parser.add_argument('-dt', action='store_true', default=False,
-                        dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell')
+                        dest='is_delegation_token', help='Use Delegation Token for Authentication in Cloud Shell.')
     parser.add_argument('-st', action='store_true', default=False, 
-                        dest='is_security_token', help='Authenticate using Security Token')
+                        dest='is_security_token', help='Authenticate using Security Token.')
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.')
     parser.add_argument('--debug', action='store_true', default=False,
-                        dest='debug', help='Enables debugging messages. This feature is in beta')    
+                        dest='debug', help='Enables debugging messages. This feature is in beta.')    
     cmd = parser.parse_args()
 
     if cmd.version:

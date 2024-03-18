@@ -3809,7 +3809,7 @@ class CIS_Report:
 
         # 1.3 Check - May want to add a service check
         for policy in self.__policies:
-            if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy".upper():
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
                 for statement in policy['statements']:
                     if ("allow group".upper() in statement.upper() and "tenancy".upper() in statement.upper() and ("to manage ".upper() in statement.upper() or "to use".upper() in statement.upper()) and ("all-resources".upper() in statement.upper() or (" groups ".upper() in statement.upper() and " users ".upper() in statement.upper()))):
                         split_statement = statement.split("where")
@@ -3997,10 +3997,10 @@ class CIS_Report:
         # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
         # Iterating through all policies
         for policy in self.__policies:
-            if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
                 for statement in policy['statements']:
                     for resource in self.cis_iam_checks['1.15']:
-                        if "allow group".upper() in statement.upper() and "manage".upper() in statement.upper() and resource.upper() in statement.upper():
+                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
                             split_statement = statement.split("where")
                             if len(split_statement) == 2:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")

@@ -169,7 +169,7 @@ class CIS_Report:
 
             '3.1': {'section': 'Compute', 'recommendation_#': '3.1', 'Title': 'Ensure Compute Instance Legacy Metadata service endpoint is disabled.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.6'], 'CCCS Guard Rail': '', 'Remediation': []},
             '3.2': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Secure Boot is enabled on Compute Instance.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['4.1'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.3': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Compute Instance Legacy MetaData service endpoint is disabled.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
+            '3.3': {'section': 'Compute', 'recommendation_#': '3.3', 'Title': 'Ensure In-transit Encryption is enabled on Compute Instance.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
 
             '4.1': {'section': 'Logging and Monitoring', 'recommendation_#': '4.1', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
             '4.2': {'section': 'Logging and Monitoring', 'recommendation_#': '4.2', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '11', 'Remediation': []},
@@ -195,7 +195,6 @@ class CIS_Report:
             '5.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
             '5.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
             '5.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '5.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-
 
             '6.1': {'section': 'Asset Management', 'recommendation_#': '6.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail': '2,3,8,12', 'Remediation': []},
             '6.2': {'section': 'Asset Management', 'recommendation_#': '6.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []}
@@ -3382,25 +3381,6 @@ class CIS_Report:
                 "Error in __budget_read_budgets " + str(e.args))
 
     ##########################################################################
-    # Audit Configuration
-    ##########################################################################
-    def __audit_read_tenancy_audit_configuration(self):
-        # Pulling the Audit Configuration
-        try:
-            self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
-                self.__tenancy.id).data.retention_period_days
-        except Exception as e:
-            if "NotAuthorizedOrNotFound" in str(e):
-                self.__audit_retention_period = -1
-                print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
-                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to audit retention requires the user to be part of the Administrator group ***"})
-            else:
-                raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
-
-        print("\tProcessed Audit Configuration.")
-        return self.__audit_retention_period
-
-    ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
@@ -3650,7 +3630,7 @@ class CIS_Report:
         # query = []
         # resources_in_root_data = []
         # record = []
-        query_non_compliant = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_non_compliant = "query VCN, instance, volume, bootvolume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
         query_all_resources = "query all resources where compartmentId = '" + self.__tenancy.id + "'"
         # resources_in_root_data = self.__search_run_structured_query(query)
 
@@ -3810,7 +3790,7 @@ class CIS_Report:
 
         # 1.3 Check - May want to add a service check
         for policy in self.__policies:
-            if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy".upper():
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
                 for statement in policy['statements']:
                     if ("allow group".upper() in statement.upper() and "tenancy".upper() in statement.upper() and ("to manage ".upper() in statement.upper() or "to use".upper() in statement.upper()) and ("all-resources".upper() in statement.upper() or (" groups ".upper() in statement.upper() and " users ".upper() in statement.upper()))):
                         split_statement = statement.split("where")
@@ -3998,10 +3978,10 @@ class CIS_Report:
         # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
         # Iterating through all policies
         for policy in self.__policies:
-            if policy['name'].upper() != "Tenant Admin Policy".upper() and policy['name'].upper() != "PSM-root-policy":
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
                 for statement in policy['statements']:
                     for resource in self.cis_iam_checks['1.15']:
-                        if "allow group".upper() in statement.upper() and "manage".upper() in statement.upper() and resource.upper() in statement.upper():
+                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
                             split_statement = statement.split("where")
                             if len(split_statement) == 2:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
@@ -4026,7 +4006,7 @@ class CIS_Report:
         else:
             self.cis_foundations_benchmark_2_0['1.15']['Status'] = True
 
-        # CIS Total 1.14 Adding - All IAM Policies for to CIS Total
+        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_2_0['1.15']['Total'] = self.__policies
 
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
@@ -4248,17 +4228,21 @@ class CIS_Report:
         # Generating list of keys
         for key in self.__kms_keys:
 
-            if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-            if self.kms_key_time_max_datetime is None:
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-                
-
-            # CIS Check 3.16 Total - Adding Key to total
+            try:
+                if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+                if self.kms_key_time_max_datetime is None:
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+            except:    
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+         
+            # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs
@@ -5287,7 +5271,6 @@ class CIS_Report:
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
-            self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,

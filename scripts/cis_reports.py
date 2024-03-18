@@ -3381,25 +3381,6 @@ class CIS_Report:
                 "Error in __budget_read_budgets " + str(e.args))
 
     ##########################################################################
-    # Audit Configuration
-    ##########################################################################
-    def __audit_read_tenancy_audit_configuration(self):
-        # Pulling the Audit Configuration
-        try:
-            self.__audit_retention_period = self.__regions[self.__home_region]['audit_client'].get_configuration(
-                self.__tenancy.id).data.retention_period_days
-        except Exception as e:
-            if "NotAuthorizedOrNotFound" in str(e):
-                self.__audit_retention_period = -1
-                print("\t*** Access to audit retention requires the user to be part of the Administrator group ***")
-                self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to audit retention requires the user to be part of the Administrator group ***"})
-            else:
-                raise RuntimeError("Error in __audit_read_tenancy_audit_configuration " + str(e.args))
-
-        print("\tProcessed Audit Configuration.")
-        return self.__audit_retention_period
-
-    ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
@@ -3649,7 +3630,7 @@ class CIS_Report:
         # query = []
         # resources_in_root_data = []
         # record = []
-        query_non_compliant = "query VCN, instance, volume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
+        query_non_compliant = "query VCN, instance, volume, bootvolume, filesystem, bucket, autonomousdatabase, database, dbsystem resources where compartmentId = '" + self.__tenancy.id + "'"
         query_all_resources = "query all resources where compartmentId = '" + self.__tenancy.id + "'"
         # resources_in_root_data = self.__search_run_structured_query(query)
 
@@ -4247,15 +4228,20 @@ class CIS_Report:
         # Generating list of keys
         for key in self.__kms_keys:
 
-            if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-            if self.kms_key_time_max_datetime is None:
-                self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
-                    key)
-
+            try:
+                if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+                if self.kms_key_time_max_datetime is None:
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+            except:    
+                    self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
+                        key)
+         
             # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
@@ -5287,7 +5273,6 @@ class CIS_Report:
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,
             self.__identity_read_dynamic_groups,
-            self.__audit_read_tenancy_audit_configuration,
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,

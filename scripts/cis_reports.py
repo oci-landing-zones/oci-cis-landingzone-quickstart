@@ -138,7 +138,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 2.0.0
         self.cis_foundations_benchmark_2_0 = {
@@ -941,10 +941,10 @@ class CIS_Report:
             self.__raw_regions.append(record)
 
         # By Default it is today's date
-        if report_directory:
-            self.__report_directory = report_directory + "/"
-        else:
-            self.__report_directory = self.__tenancy.name + "-" + self.report_datetime
+        self.__report_directory = f'{report_directory}/' if report_directory else f'{self.__tenancy.name}-{self.report_datetime}'
+
+        self.__report_prefix = f'{report_prefix}_' if report_prefix else ''
+        self.__report_summary_json = report_summary_json
 
         # Checking if a Tenancy has Identity Domains enabled
         try:
@@ -4894,12 +4894,14 @@ class CIS_Report:
         # Generating Summary report CSV
         print_header("Writing CIS reports to CSV")
         summary_files = []
-        summary_file_name = self.__print_to_csv_file(
-            self.__report_directory, "cis", "summary_report", summary_report)
+        summary_file_name = self.__print_to_csv_file("cis", "summary_report", summary_report)
         summary_files.append(summary_file_name)
 
-        summary_file_name = self.__report_generate_html_summary_report(
-            self.__report_directory, "cis", "html_summary_report", summary_report)
+        if self.__report_summary_json:
+            summary_file_name = self.__print_to_json_file("cis", "summary_report", summary_report)
+            summary_files.append(summary_file_name)
+
+        summary_file_name = self.__report_generate_html_summary_report("cis", "html_summary_report", summary_report)
         summary_files.append(summary_file_name)
 
         # Outputing to a bucket if I have one
@@ -4910,8 +4912,7 @@ class CIS_Report:
 
         for key, recommendation in self.cis_foundations_benchmark_2_0.items():
             if recommendation['Level'] <= level:
-                report_file_name = self.__print_to_csv_file(
-                    self.__report_directory, "cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
+                report_file_name = self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
                 if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
@@ -4919,11 +4920,11 @@ class CIS_Report:
     ##########################################################################
     # Generates an HTML report
     ##########################################################################
-    def __report_generate_html_summary_report(self, report_directory, header, file_subject, data):
+    def __report_generate_html_summary_report(self, header, file_subject, data):
         try:
             # Creating report directory
-            if not os.path.isdir(report_directory):
-                os.mkdir(report_directory)
+            if not os.path.isdir(self.__report_directory):
+                os.mkdir(self.__report_directory)
 
         except Exception as e:
             raise Exception("Error in creating report directory: " + str(e.args))
@@ -4936,7 +4937,7 @@ class CIS_Report:
             # get the file name of the HTML
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")).replace(".", "-").replace("_-_", "_") + ".html"
-            file_path = os.path.join(report_directory, file_name)
+            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
 
             # add report_datetimeto each dictionary
             result = [dict(item, extract_date=self.start_time_str)
@@ -5222,8 +5223,7 @@ class CIS_Report:
 
         print_header("Writing Oracle Best Practices reports to CSV")
 
-        summary_report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "obp", "OBP_Summary", obp_summary_report)
+        summary_report_file_name = self.__print_to_csv_file("obp", "OBP_Summary", obp_summary_report)
 
         if summary_report_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
@@ -5231,13 +5231,11 @@ class CIS_Report:
 
         # Printing Findings to CSV
         for key, value in self.obp_foundations_checks.items():
-            report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "obp", key + "_Findings", value['Findings'])
+            report_file_name = self.__print_to_csv_file("obp", key + "_Findings", value['Findings'])
 
         # Printing OBPs to CSV
         for key, value in self.obp_foundations_checks.items():
-            report_file_name = self.__print_to_csv_file(
-                self.__report_directory, "obp", key + "_Best_Practices", value['OBP'])
+            report_file_name = self.__print_to_csv_file("obp", key + "_Best_Practices", value['OBP'])
 
             if report_file_name and self.__output_bucket:
                 self.__os_copy_report_to_object_storage(
@@ -5368,146 +5366,61 @@ class CIS_Report:
         # List to store output reports if copying to object storage is required
         list_report_file_names = []
 
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_groups_and_membership", self.__groups_to_users)
-        list_report_file_names.append(report_file_name)
+        raw_csv_files = {
+            "identity_groups_and_membership": self.__groups_to_users,
+            "identity_domains": self.__identity_domains,
+            "identity_users": self.__users,
+            "identity_policies": self.__policies,
+            "identity_dynamic_groups": self.__dynamic_groups,
+            "identity_tags": self.__tag_defaults,
+            "identity_compartments": self.__raw_compartment,
+            "network_security_groups": self.__network_security_groups,
+            "network_security_lists": self.__network_security_lists,
+            "network_subnets": self.__network_subnets,
+            "autonomous_databases": self.__autonomous_databases,
+            "analytics_instances": self.__analytics_instances,
+            "integration_instances": self.__integration_instances,
+            "event_rules": self.__event_rules,
+            "log_groups_and_logs": self.__logging_list,
+            "object_storage_buckets": self.__buckets,
+            "boot_volumes": self.__boot_volumes,
+            "block_volumes": self.__block_volumes,
+            "file_storage_system": self.__file_storage_system,
+            "keys_and_vaults": self.__kms_keys,
+            "ons_subscriptions": self.__subscriptions,
+            "budgets": self.__budgets,
+            "service_connectors": list(self.__service_connectors.values()),
+            "network_fastconnects": list(itertools.chain.from_iterable(self.__network_fastconnects.values())),
+            "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
+            "network_drgs": self.__raw_network_drgs,
+            "cloud_guard_target": list(self.__cloud_guard_targets.values()),
+            "regions": self.__raw_regions,
+            "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
+            "instances": self.__Instance
+        }
+        for key in raw_csv_files:
+            rfn = self.__print_to_csv_file('raw_data', key, raw_csv_files[key])
+            list_report_file_names.append(rfn)
 
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_domains", self.__identity_domains)
-        list_report_file_names.append(report_file_name)
+        raw_json_files = {
+            "all_resources": self.__all_resources_json,
+            "oci_network_topologies": oci.util.to_dict(self.__network_topology_json)
+        }
+        for key in raw_json_files:
+            rfn = self.__print_to_json_file('raw_data', key, raw_json_files[key])
+            list_report_file_names.append(rfn)
 
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_users", self.__users)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_policies", self.__policies)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_dynamic_groups", self.__dynamic_groups)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_tags", self.__tag_defaults)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "identity_compartments", self.__raw_compartment)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_security_groups", self.__network_security_groups)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_security_lists", self.__network_security_lists)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_subnets", self.__network_subnets)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "autonomous_databases", self.__autonomous_databases)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "analytics_instances", self.__analytics_instances)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "integration_instances", self.__integration_instances)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "event_rules", self.__event_rules)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "log_groups_and_logs", self.__logging_list)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "object_storage_buckets", self.__buckets)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "boot_volumes", self.__boot_volumes)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "block_volumes", self.__block_volumes)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "file_storage_system", self.__file_storage_system)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "keys_and_vaults", self.__kms_keys)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "ons_subscriptions", self.__subscriptions)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "budgets", self.__budgets)
-        list_report_file_names.append(report_file_name)
-
-        # Converting a one to one dict to a list
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "service_connectors", list(self.__service_connectors.values()))
-        list_report_file_names.append(report_file_name)
-
-        # Converting a dict that is one to a list to a flat list
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_fastconnects", (list(itertools.chain.from_iterable(self.__network_fastconnects.values()))))
-        list_report_file_names.append(report_file_name)
-
-        # Converting a dict that is one to a list to a flat list
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_ipsec_connections", list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())))
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_drgs", self.__raw_network_drgs)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "cloud_guard_target", list(self.__cloud_guard_targets.values()))
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "regions", self.__raw_regions)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "network_drg_attachments", list(itertools.chain.from_iterable(self.__network_drg_attachments.values())))
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_csv_file(
-            self.__report_directory, "raw_data", "instances", self.__Instance)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_json_file(
-                self.__report_directory, "raw_data", "all_resources", self.__all_resources_json)
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_json_file(
-                self.__report_directory, "raw_data", "oci_network_topologies", oci.util.to_dict(self.__network_topology_json))
-        list_report_file_names.append(report_file_name)
-
-        report_file_name = self.__print_to_pkl_file(
-                self.__report_directory, "raw_data", "oci_network_topologies", self.__network_topology_json)
-        list_report_file_names.append(report_file_name)
+        raw_pkl_files = {
+            "oci_network_topologies": self.__network_topology_json
+        }
+        for key in raw_pkl_files:
+            rfn = self.__print_to_pkl_file('raw_data', key, raw_json_files[key])
+            list_report_file_names.append(rfn)
 
         if self.__output_bucket:
             for raw_report in list_report_file_names:
                 if raw_report:
-                    self.__os_copy_report_to_object_storage(
-                        self.__output_bucket, raw_report)
+                    self.__os_copy_report_to_object_storage(self.__output_bucket, raw_report)
 
     ##########################################################################
     # Copy Report to Object Storage
@@ -5530,12 +5443,12 @@ class CIS_Report:
     ##########################################################################
     # Print to CSV
     ##########################################################################
-    def __print_to_csv_file(self, report_directory, header, file_subject, data):
+    def __print_to_csv_file(self, header, file_subject, data):
         debug("__print_to_csv_file: " + header + "_" + file_subject)
         try:
             # Creating report directory
-            if not os.path.isdir(report_directory):
-                os.mkdir(report_directory)
+            if not os.path.isdir(self.__report_directory):
+                os.mkdir(self.__report_directory)
 
         except Exception as e:
             raise Exception(
@@ -5550,7 +5463,7 @@ class CIS_Report:
 
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")).replace(".", "-").replace("_-_", "_") + ".csv"
-            file_path = os.path.join(report_directory, file_name)
+            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
 
             # add report_datetimeto each dictionary
             result = [dict(item, extract_date=self.start_time_str)
@@ -5597,11 +5510,11 @@ class CIS_Report:
     ##########################################################################
     # Print to JSON
     ##########################################################################
-    def __print_to_json_file(self, report_directory, header, file_subject, data):
+    def __print_to_json_file(self, header, file_subject, data):
         try:
             # Creating report directory
-            if not os.path.isdir(report_directory):
-                os.mkdir(report_directory)
+            if not os.path.isdir(self.__report_directory):
+                os.mkdir(self.__report_directory)
 
         except Exception as e:
             raise Exception(
@@ -5617,7 +5530,7 @@ class CIS_Report:
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")
                          ).replace(".", "-").replace("_-_","_") + ".json"
-            file_path = os.path.join(report_directory, file_name)
+            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
 
             # Serializing JSON to string
             json_object = json.dumps(data, indent=4)
@@ -5644,11 +5557,11 @@ class CIS_Report:
     ##########################################################################
     # Print to PKL
     ##########################################################################
-    def __print_to_pkl_file(self, report_directory, header, file_subject, data):
+    def __print_to_pkl_file(self, header, file_subject, data):
         try:
             # Creating report directory
-            if not os.path.isdir(report_directory):
-                os.mkdir(report_directory)
+            if not os.path.isdir(self.__report_directory):
+                os.mkdir(self.__report_directory)
 
         except Exception as e:
             raise Exception(
@@ -5664,7 +5577,7 @@ class CIS_Report:
             file_name = header + "_" + file_subject
             file_name = (file_name.replace(" ", "_")
                          ).replace(".", "-").replace("_-_","_") + ".pkl"
-            file_path = os.path.join(report_directory, file_name)
+            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
 
             # Writing to json file
             with open(file_path, 'wb') as pkl_file:
@@ -5705,8 +5618,7 @@ class CIS_Report:
             self.__report_generate_raw_data_output()
 
         if self.__errors:
-            error_report = self.__print_to_csv_file(
-                self.__report_directory, "error", "report", self.__errors)
+            error_report = self.__print_to_csv_file("error", "report", self.__errors)
 
         if self.__output_bucket:
             if error_report:
@@ -5778,8 +5690,7 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
 
             # check if file exist
             if env_config_file is None or env_config_section is None:
-                print(
-                    "*** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort. ***")
+                print("*** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort. ***")
                 print("")
                 raise SystemExit
 
@@ -5791,6 +5702,7 @@ def create_signer(file_location, config_profile, is_instance_principals, is_dele
                 # get signer from delegation token
                 signer = oci.auth.signers.InstancePrincipalsDelegationTokenSigner(
                     delegation_token=delegation_token)
+
                 return config, signer
 
         except KeyError:
@@ -5899,6 +5811,10 @@ def execute_report():
                         help='Set Output bucket name (i.e. my-reporting-bucket).')
     parser.add_argument('--report-directory', default=None, dest='report_directory',
                         help='Set Output report directory by default it is the current date (i.e. reports-date).')
+    parser.add_argument('--report-prefix', default=None, dest='report_prefix',
+                        help='Set Output report prefix to allow unique files for better baseline comparison.')
+    parser.add_argument('--report-summary-json', action='store_true', default=None, dest='report_summary_json',
+                        help='Write summary report as JSON file, too.')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False).')
     parser.add_argument('--level', default=2, dest='level',
@@ -5931,16 +5847,17 @@ def execute_report():
 
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
-    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.print_to_screen, \
+    report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
                     cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:
         if OUTPUT_TO_XLSX:
-            workbook = Workbook(csv_report_directory + '/Consolidated_Report.xlsx', {'in_memory': True})
-            for csvfile in glob.glob(csv_report_directory + '/*.csv'):
+            report_prefix = f'{cmd.report_prefix}_' if cmd.report_prefix else ''
+            workbook = Workbook(f'{csv_report_directory}/{report_prefix}Consolidated_Report.xlsx', {'in_memory': True})
+            for csvfile in glob.glob(f'{csv_report_directory}/{report_prefix}*.csv'):
 
-                worksheet_name = csvfile.split(os.path.sep)[-1].replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
+                worksheet_name = csvfile.split(os.path.sep)[-1].replace(report_prefix, "").replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
 
                 if "Identity_and_Access_Management" in worksheet_name:
                     worksheet_name = worksheet_name.replace("Identity_and_Access_Management", "IAM")
@@ -5968,7 +5885,7 @@ def execute_report():
                                 worksheet.write(r, c, col)
             workbook.close()
     except Exception as e:
-        print("**Failed to output to excel. Please use CSV files.**")
+        print("** Failed to output to excel. Please use CSV files. **")
         print(e)
 
 

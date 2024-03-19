@@ -3774,7 +3774,7 @@ class CIS_Report:
 
 
                 # Returning Instances
-                print("\tProcessed " + str(len(self.__Instance)) + " Service Connectors")
+                print("\tProcessed " + str(len(self.__Instance)) + " Compute Instances")
                 return self.__service_connectors
         except Exception as e:
             raise RuntimeError("Error in __core_instance_read_compute " + str(e.args))

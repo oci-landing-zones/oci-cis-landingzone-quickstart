@@ -1389,109 +1389,113 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_users(self):
         debug(f'__identity_read_users: Getting User data for Identity Domains: {str(self.__identity_domains_enabled)}')
-        if self.__identity_domains_enabled:
-            for identity_domain in self.__identity_domains:
+        try:
+            if self.__identity_domains_enabled:
+                for identity_domain in self.__identity_domains:
+                    try:
+                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
+                                                                            args={})
+                        # Adding record to the users
+                        for user in users_data:
+                            deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
+                            record = {
+                                'id': user.ocid,
+                                'name': user.user_name,
+                                'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
+                                'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
+                                'description': user.description,
+                                'email': user.emails[0].value if user.emails else None,
+                                'email_verified': user.emails[0].verified if user.emails else None,
+                                'external_identifier': user.external_id,
+                                'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user,
+                                'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
+                                'lifecycle_state': user.active,
+                                'time_created': user.meta.created,
+                                'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                                'groups': []
+                            }
+                            # Adding Groups to the user
+                            for group in self.__groups_to_users:
+                                if user.ocid == group['user_id']:
+                                    record['groups'].append(group['name'])
+
+                            record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
+                            record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
+                            record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
+                            record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                            self.__users.append(record)
+
+                    except Exception as e:
+                        debug("__identity_read_users: Identity Domains are : " + str(self.__identity_domains_enabled))
+                        self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
+                        raise RuntimeError(
+                            "Error in __identity_read_users: " + str(e))
+                
+                print("\tProcessed " + str(len(self.__users)) + " Users")
+                return self.__users
+
+            else:
                 try:
-                    users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                         args={})
+                    # Getting all users in the Tenancy
+                    users_data = oci.pagination.list_call_get_all_results(
+                        self.__regions[self.__home_region]['identity_client'].list_users,
+                        compartment_id=self.__tenancy.id
+                    ).data
+
                     # Adding record to the users
                     for user in users_data:
-                        deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
+                        deep_link = self.__oci_users_uri + user.id
                         record = {
-                            'id': user.ocid,
-                            'name': user.user_name,
-                            'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
-                            'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
+                            'id': user.id,
+                            'name': user.name,
+                            'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
+                            'defined_tags': user.defined_tags,
                             'description': user.description,
-                            'email': user.emails[0].value if user.emails else None,
-                            'email_verified': user.emails[0].verified if user.emails else None,
-                            'external_identifier': user.external_id,
-                            'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user,
-                            'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
-                            'lifecycle_state': user.active,
-                            'time_created': user.meta.created,
-                            'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                            'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                            'email': user.email,
+                            'email_verified': user.email_verified,
+                            'external_identifier': user.external_identifier,
+                            'is_federated': True if user.identity_provider_id is not None else False, 
+                            'is_mfa_activated': user.is_mfa_activated,
+                            'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
+                            'time_created': user.time_created.strftime(self.__iso_time_format),
+                            'can_use_api_keys': user.capabilities.can_use_api_keys,
+                            'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
+                            'can_use_console_password': user.capabilities.can_use_console_password,
+                            'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
+                            'can_use_db_credentials': user.capabilities.can_use_db_credentials,
+                            'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
+                            'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
                             'groups': []
                         }
                         # Adding Groups to the user
                         for group in self.__groups_to_users:
-                            if user.ocid == group['user_id']:
+                            if user.id == group['user_id']:
                                 record['groups'].append(group['name'])
 
-                        record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
-                        record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
-                        record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
-                        record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                        record['api_keys'] = self.__identity_read_user_api_key(user.id)
+                        record['auth_tokens'] = self.__identity_read_user_auth_token(
+                            user.id)
+                        record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
+                            user.id)
+                        record['database_passowrds'] = self.__identity_read_user_database_password(user.id)
                         self.__users.append(record)
+                    print("\tProcessed " + str(len(self.__users)) + " Users")
+                    return self.__users
 
                 except Exception as e:
-                    debug("__identity_read_users: Identity Domains are : " + str(self.__identity_domains_enabled))
-                    self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
+                    debug("__identity_read_users: Error is: " + str(e))
+                    self.__errors.append({"id" : "__identity_read_users", "error" : str(e)})
                     raise RuntimeError(
                         "Error in __identity_read_users: " + str(e))
-            
-            print("\tProcessed " + str(len(self.__users)) + " Users")
-            return self.__users
-
-        else:
-            try:
-                # Getting all users in the Tenancy
-                users_data = oci.pagination.list_call_get_all_results(
-                    self.__regions[self.__home_region]['identity_client'].list_users,
-                    compartment_id=self.__tenancy.id
-                ).data
-
-                # Adding record to the users
-                for user in users_data:
-                    deep_link = self.__oci_users_uri + user.id
-                    record = {
-                        'id': user.id,
-                        'name': user.name,
-                        'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
-                        'defined_tags': user.defined_tags,
-                        'description': user.description,
-                        'email': user.email,
-                        'email_verified': user.email_verified,
-                        'external_identifier': user.external_identifier,
-                        'is_federated': True if user.identity_provider_id is not None else False, 
-                        'is_mfa_activated': user.is_mfa_activated,
-                        'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
-                        'time_created': user.time_created.strftime(self.__iso_time_format),
-                        'can_use_api_keys': user.capabilities.can_use_api_keys,
-                        'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
-                        'can_use_console_password': user.capabilities.can_use_console_password,
-                        'can_use_customer_secret_keys': user.capabilities.can_use_customer_secret_keys,
-                        'can_use_db_credentials': user.capabilities.can_use_db_credentials,
-                        'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
-                        'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
-                        'groups': []
-                    }
-                    # Adding Groups to the user
-                    for group in self.__groups_to_users:
-                        if user.id == group['user_id']:
-                            record['groups'].append(group['name'])
-
-                    record['api_keys'] = self.__identity_read_user_api_key(user.id)
-                    record['auth_tokens'] = self.__identity_read_user_auth_token(
-                        user.id)
-                    record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
-                        user.id)
-                    record['database_passowrds'] = self.__identity_read_user_database_password(user.id)
-                    self.__users.append(record)
-                print("\tProcessed " + str(len(self.__users)) + " Users")
-                return self.__users
-
-            except Exception as e:
-                debug("__identity_read_users: Error is: " + str(e))
-                self.__errors.append({"id" : "__identity_read_users", "error" : str(e)})
-                raise RuntimeError(
-                    "Error in __identity_read_users: " + str(e))
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __identity_read_users: " + str(e.args))
     ##########################################################################
     # Load user api keys
     ##########################################################################

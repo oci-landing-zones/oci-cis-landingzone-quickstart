@@ -1258,40 +1258,46 @@ class CIS_Report:
                 debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
+                    print("*" * 100)
+                    print(groups_data)
+                    print("*" * 100)
+                    print(len(groups_data))
+                    print("-" * 100)
+
+
                     for grp in groups_data:
                         debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.ocid
-                        for grp in groups_data:
-                            if not grp.members:
-                                debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
+                        if not grp.members:
+                            debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
 
+                            group_record = {
+                                "id": grp.ocid,
+                                "name": grp.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
+                                "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
+                                "time_created" : self.get_date_iso_format(grp.meta.created),
+                                "user_id": "",
+                                "user_id_link": ""
+                            }
+                            # Adding a record per empty group
+                            self.__groups_to_users.append(group_record)
+                        else:
+                            # For groups with members print one record per user per group
+                            for member in grp.members:
+                                debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
+                                user_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + member.ocid
                                 group_record = {
-                                    "id": grp.ocid,
+                                    "id": grp.id,
                                     "name": grp.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
-                                    "user_id": "",
-                                    "user_id_link": ""
+                                    "user_id": member.ocid,
+                                    "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.name)
                                 }
-                                # Adding a record per empty group
+                                # Adding a record per user to group
                                 self.__groups_to_users.append(group_record)
-                            else:
-                                # For groups with members print one record per user per group
-                                for member in grp.members:
-                                    debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
-                                    user_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + member.ocid
-                                    group_record = {
-                                        "id": grp.id,
-                                        "name": grp.display_name,
-                                        "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
-                                        "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
-                                        "time_created" : self.get_date_iso_format(grp.meta.created),
-                                        "user_id": member.ocid,
-                                        "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.name)
-                                    }
-                                    # Adding a record per user to group
-                                    self.__groups_to_users.append(group_record)
 
                 except Exception as e:
                     self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})

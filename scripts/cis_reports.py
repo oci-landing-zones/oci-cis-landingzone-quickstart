@@ -1488,9 +1488,10 @@ class CIS_Report:
                 return self.__users
 
             except Exception as e:
-                debug("__identity_read_users: User ID is: " + str(user))
+                debug("__identity_read_users: Error is: " + str(e))
+                self.__errors.append({"id" : "__identity_read_users", "error" : str(e)})
                 raise RuntimeError(
-                    "Error in __identity_read_users: " + str(e.args))
+                    "Error in __identity_read_users: " + str(e))
     ##########################################################################
     # Load user api keys
     ##########################################################################

@@ -1258,13 +1258,6 @@ class CIS_Report:
                 debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
-                    print("*" * 100)
-                    print(groups_data)
-                    print("*" * 100)
-                    print(len(groups_data))
-                    print("-" * 100)
-
-
                     for grp in groups_data:
                         debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.ocid
@@ -1404,8 +1397,10 @@ class CIS_Report:
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
+                            id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                             record = {
                                 'id': user.ocid,
+                                'domain_deeplink' : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                 'name': user.user_name,
                                 'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
                                 'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
@@ -1459,6 +1454,7 @@ class CIS_Report:
                         deep_link = self.__oci_users_uri + user.id
                         record = {
                             'id': user.id,
+                            'domain_deeplink' : "",
                             'name': user.name,
                             'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
                             'defined_tags': user.defined_tags,

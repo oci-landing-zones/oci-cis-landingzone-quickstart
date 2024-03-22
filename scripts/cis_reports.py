@@ -1256,15 +1256,9 @@ class CIS_Report:
             debug("processing __identity_read_groups_and_membership for Identity Domains Enabled Tenancy")
             for identity_domain in self.__identity_domains:
                 debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
+                id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
-                    print("*" * 100)
-                    print(groups_data)
-                    print("*" * 100)
-                    print(len(groups_data))
-                    print("-" * 100)
-
-
                     for grp in groups_data:
                         debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.ocid
@@ -1275,6 +1269,7 @@ class CIS_Report:
                                 "id": grp.ocid,
                                 "name": grp.display_name,
                                 "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
+                                "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                 "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                 "time_created" : self.get_date_iso_format(grp.meta.created),
                                 "user_id": "",
@@ -1291,6 +1286,7 @@ class CIS_Report:
                                     "id": grp.id,
                                     "name": grp.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
+                                    "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
                                     "user_id": member.ocid,
@@ -1327,7 +1323,9 @@ class CIS_Report:
                             "id": grp.id,
                             "name": grp.name,
                             "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                            "domain_deeplink" : "",
                             "description": grp.description,
+                            "domain_deeplink" : "",
                             "lifecycle_state": grp.lifecycle_state,
                             "time_created": grp.time_created.strftime(self.__iso_time_format),
                             "user_id": "",
@@ -1343,6 +1341,7 @@ class CIS_Report:
                             "id": grp.id,
                             "name": grp.name,
                             "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.name),
+                            "domain_deeplink" : "",
                             "description": grp.description,
                             "lifecycle_state": grp.lifecycle_state,
                             "time_created": grp.time_created.strftime(self.__iso_time_format),
@@ -1404,8 +1403,10 @@ class CIS_Report:
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
+                            id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                             record = {
                                 'id': user.ocid,
+                                'domain_deeplink' : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                 'name': user.user_name,
                                 'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
                                 'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
@@ -1430,11 +1431,18 @@ class CIS_Report:
                             for group in self.__groups_to_users:
                                 if user.ocid == group['user_id']:
                                     record['groups'].append(group['name'])
-
-                            record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
-                            record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
-                            record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
-                            record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                            if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
+                                debug("__identity_read_users: Collecting user API Key for user: " + str(user.user_name))
+                                record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
+                                record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
+                                record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
+                                record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                            else:
+                                debug("__identity_read_users: skipping user API Key collection for user: " + str(user.user_name))
+                                record['api_keys'] = None
+                                record['auth_tokens'] = None
+                                record['customer_secret_keys'] = None
+                                record['database_passowrds'] = None
                             self.__users.append(record)
 
                     except Exception as e:
@@ -1459,6 +1467,7 @@ class CIS_Report:
                         deep_link = self.__oci_users_uri + user.id
                         record = {
                             'id': user.id,
+                            'domain_deeplink' : "",
                             'name': user.name,
                             'deep_link': self.__generate_csv_hyperlink(deep_link, user.name),
                             'defined_tags': user.defined_tags,
@@ -1726,11 +1735,13 @@ class CIS_Report:
                 for identity_domain in self.__identity_domains:
                     dynamic_groups_data =  self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_dynamic_resource_groups,
                                                                              args={})
+                    id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
                         deep_link = self.__oci_identity_domains_uri + "/domains/" + identity_domain['id'] + "/dynamic-groups/" + dynamic_group.id
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
+                        record['domain_deeplink'] = self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name'])
                         self.__dynamic_groups.append(record)
 
             else:
@@ -1743,7 +1754,7 @@ class CIS_Report:
                     debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.name))
                     record = oci.util.to_dict(dynamic_group)
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
-
+                    record['domain_deeplink'] = None 
                     self.__dynamic_groups.append(record)
 
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")

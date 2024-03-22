@@ -1425,11 +1425,18 @@ class CIS_Report:
                             for group in self.__groups_to_users:
                                 if user.ocid == group['user_id']:
                                     record['groups'].append(group['name'])
-
-                            record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
-                            record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
-                            record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
-                            record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                            if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
+                                debug("__identity_read_users: Collecting user API Key for user: " + str(user.user_name))
+                                record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
+                                record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
+                                record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
+                                record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                            else:
+                                debug("__identity_read_users: skipping user API Key collection for user: " + str(user.user_name))
+                                record['api_keys'] = None
+                                record['auth_tokens'] = None
+                                record['customer_secret_keys'] = None
+                                record['database_passowrds'] = None
                             self.__users.append(record)
 
                     except Exception as e:

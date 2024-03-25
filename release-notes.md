@@ -1,3 +1,21 @@
+#  March 25, 2024 Release Notes - 2.8.1
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-1-script-updates)
+
+## <a name="#2-8-1-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+**Updates:**
+- Added flag `--report-prefix` to allow unique files for better baseline comparison.
+- Improved performance in querying Identity Domains users’ API keys.
+- Improved Identity Domains checking for federated users by using is_federated flag.
+- Added Deep Link with Identity Domain name to user, group, and dynamic group records.
+- The audit configuration check has been removed because it is no longer in the benchmark.
+- Boot Volume resources were added to the check 6.2 resources in the root compartment.
+
+**Fixes:**
+-	Handling KMS keys with date issues.
+-	Removed duplication of Identity Groups for Identity Domains.
+-	Consistency and commenting updates.
+
+
 #  February 23, 2024 Release Notes - 2.8.0
 1. [Updates for CIS OCI Benchmark 2.0.0](#2-8-0-cis-2-updates)
 1. [Compliance Checker Script Update for Identity Domains](#2-8-0-cis-2-iddomains)

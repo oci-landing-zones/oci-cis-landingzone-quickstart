@@ -1,0 +1,94 @@
+{
+  "instances_configuration" : {
+    "default_compartment_id" : "SHARED-NETWORK",
+    "default_ssh_public_key_path" : "~/.ssh/id_rsa.pub",
+    "instances" : {
+      "INSTANCE-1" : {
+        "name"  : "palo-alto-fw-1",
+        "shape" : "VM.Optimized3.Flex",
+        "flex_shape_settings" : {
+          "memory" : 56,
+          "ocpus" : 4
+        },
+        "image" : {
+          "name" : "Palo Alto Networks VM-Series Next Generation Firewall",
+          "publisher_name" : "Palo Alto Networks"
+        },
+        "placement" : {
+          "availability_domain" : 1,
+          "fault_domain" : 1
+        },
+        "boot_volume" : {
+          "size" : 60,
+          "preserve_on_instance_deletion" : true,
+          "measured_boot" : true
+        },
+        "networking" : {
+          "hostname " : "palo-alto-fw-1",
+          "subnet_id" : "MGMT-SUB",
+          "network_security_groups" : ["MGMT-NSG"],
+          "secondary_vnics" : {
+            "INDOOR" : {
+              "display_name" : "palo-alto-fw-1-indoor",
+              "hostname" : "palo-alto-fw-1-indoor",
+              "subnet_id" : "INDOOR-SUB",
+              "network_security_groups" : ["INDOOR-FW-NSG"],
+              "skip_source_dest_check" : true
+            },
+            "OUTDOOR" : {
+              "display_name" : "palo-alto-fw-1-outdoor",
+              "hostname" : "palo-alto-fw-1-outdoor",
+              "subnet_id" : "OUTDOOR-SUB",
+              "network_security_groups" : ["OUTDOOR-FW-NSG"],
+              "skip_source_dest_check" : true
+            }
+          }
+        }
+      },
+      "INSTANCE-2" : {
+        "name" : "palo-alto-fw-2",
+        "shape" : "VM.Optimized3.Flex",
+        "flex_shape_settings" : {
+          "memory" : 56,
+          "ocpus" : 4
+        },
+        "image" : {
+          "name" : "Palo Alto Networks VM-Series Next Generation Firewall",
+          "publisher_name" : "Palo Alto Networks"
+        },
+        "placement" : {
+          "availability_domain" : 2,
+          "fault_domain" : 1
+        },
+        "boot_volume" : {
+          "size" : 60,
+          "preserve_on_instance_deletion" : true,
+          "measured_boot" : true
+        },
+        "networking" : {
+          "hostname " : "palo-alto-fw-2",
+          "subnet_id" : "MGMT-SUB",
+          "network_security_groups" : ["MGMT-NSG"],
+          "secondary_vnics" : {
+            "INDOOR" : {
+              "display_name" : "palo-alto-fw-2-indoor",
+              "hostname" : "palo-alto-fw-2-indoor",
+              "subnet_id" : "INDOOR-SUB",
+              "network_security_groups" : ["INDOOR-FW-NSG"],
+              "skip_source_dest_check" : true
+            },
+            "OUTDOOR" : {
+              "display_name" : "palo-alto-fw-2-outdoor",
+              "hostname" : "palo-alto-fw-2-outdoor",
+              "subnet_id" : "OUTDOOR-SUB",
+              "network_security_groups" : ["OUTDOOR-FW-NSG"],
+              "skip_source_dest_check" : true
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+

@@ -1,0 +1,34 @@
+{
+    "groups_configuration" : {
+        "groups" : {
+            "NETWORK" : {
+                "name" : "isv-ops-network-grp",
+                "description" : "ISV Network operations group."
+            },
+            "SECURITY" : {
+                "name" : "isv-ops-security-grp",
+                "description" : "ISV Security operations group."
+            },
+            "SHARED-SERVICES" : {
+                "name" : "isv-ops-shared-services-grp",
+                "description" : "ISV Shared Services operations group."
+            },
+            "GOVERNANCE" : {
+                "name" : "isv-ops-governance-grp",
+                "description" : "ISV Governance operations group."
+            },
+            "CUSTOMERS" : {
+                "name" : "isv-ops-customers-grp",
+                "description" : "ISV Customers operations group."
+            },
+            "SNOWFLAKE-CUSTOMERS" : {
+                "name" : "isv-ops-snowflake-customers-grp",
+                "description" : "ISV Snowflake Customers operations group."
+            },
+            "AUDITORS" : {
+                "name" : "isv-auditors-grp",
+                "description" : "ISV auditors group."
+            }
+        }
+    }
+}

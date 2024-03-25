@@ -1,0 +1,33 @@
+{
+    "compartments_configuration" : {
+        "default_parent_id" : "TOP-CMP",
+        "compartments" : {
+            "MGMT-PLANE" : {
+                "name" : "isv-mgmt-plane-cmp",
+                "description" : "Management Plane compartment.",
+                "children" : {
+                    "SHARED-NETWORK" : {
+                        "name" : "isv-network-cmp",
+                        "description" : "Shared customer network compartment."
+                    },
+                    "SHARED-LOGGING" : {
+                        "name" : "isv-logging-cmp",
+                        "description" : "Shared logging compartment."
+                    },
+                    "SHARED-SERVICES" : {
+                        "name" : "isv-shared-services-cmp",
+                        "description" : "Shared services compartment."
+                    }
+                }
+            },
+            "CUSTOMERS" : {
+                "name" : "isv-customers-cmp",
+                "description" : "Customers enclosing compartment."
+            },
+            "SNOWFLAKE-CUSTOMERS" : {
+                "name" : "isv-snowflake-customers-cmp",
+                "description" : "Snowflake customers enclosing compartment."
+            }        
+        }
+    }
+}

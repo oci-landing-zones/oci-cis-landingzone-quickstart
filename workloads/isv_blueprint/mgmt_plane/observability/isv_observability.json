@@ -1,0 +1,226 @@
+{
+  "streams_configuration" : {
+    "default_compartment_id" : "SHARED-LOGGING",
+    "streams" : {
+      "LOGGING-STREAM" : {
+        "name" : "isv-logging-stream"
+      }
+    }
+  },
+
+  "logging_configuration" : {
+    "default_compartment_id" : "SHARED-LOGGING",
+    "log_groups" : {
+      "VCN-FLOW-LOG-GROUP" : {
+        "name" : "isv-vcn-flow-log-group"
+      },
+      "BUCKET-LOG-GROUP" : {
+        "name" : "isv-bucket-log-group"
+      }
+    },
+    "flow_logs" : {
+      "SUBNET-FLOW-LOGS" : {
+        "log_group_id" : "VCN-FLOW-LOG-GROUP",
+        "target_compartment_ids" : ["SHARED-NETWORK"],
+        "target_resource_type" : "subnet"
+      }
+    },
+    "bucket_logs" : {
+      "BUCKET-LOGS" : {
+        "log_group_id" : "BUCKET-LOG-GROUP",
+        "target_compartment_ids" : ["SHARED-NETWORK","SHARED-LOGGING","SHARED-SERVICES"],
+        "category" : "write"
+      }
+    }
+  },
+
+  "service_connectors_configuration" : {
+    "default_compartment_id" : "SHARED-LOGGING",
+    "service_connectors" : {
+      "LOGGING-SERVICE-CONNECTOR" : {
+        "display_name" : "isv-logging-service-connector",
+        "source" : {
+          "kind" : "logging",
+          "audit_logs" : [
+            {"cmp_id" : "ALL"}
+          ], 
+          "non_audit_logs" : [
+            {"cmp_id" : "SHARED-NETWORK"},
+            {"cmp_id" : "SHARED-LOGGING"},
+            {"cmp_id" : "SHARED-SERVICES"}
+          ] 
+        },
+        "target" : {
+          "kind" : "streaming",
+          "stream_id" : "LOGGING-STREAM"
+        }
+      }
+    }
+  },
+
+  "alarms_configuration" : {
+    "default_compartment_id" : "ocid1.tenancy.oc1..aaaaaaaahbsqqoq6hngruus5z4e3zclij32obawvlsxsrz4culbvq5k5p2ia",
+    
+    "alarms" : {
+      "COMPUTE-ALARM-HIGH-CPU-KEY" : {
+        "display_name" : "isv-high-cpu-alarm",
+        "preconfigured_alarm_type" : "high-cpu-alarm",
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      },
+      "COMPUTE-ALARM-INSTANCE-STATUS-KEY" : {
+        "display_name" : "isv-instance-status-alarm",
+        "preconfigured_alarm_type" : "instance-status-alarm",
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      },
+      "COMPUTE-ALARM-VM-MAINTENANCE-STATUS-KEY" : {
+        "display_name" : "isv-vm-maintenance-alarm",
+        "preconfigured_alarm_type" : "vm-maintenance-alarm",
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      },
+      "COMPUTE-ALARM-BARE-METAL-HEALTH-STATUS-KEY" : {
+        "display_name" : "isv-bare-metal-unhealthy-alarm",
+        "preconfigured_alarm_type" : "bare-metal-unhealthy-alarm",
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      },
+      "COMPUTE-ALARM-HIGH-MEMORY-KEY" : {
+        "display_name" : "isv-high-memory-alarm",
+        "preconfigured_alarm_type" : "high-memory-alarm",
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      },
+      "DATABASE-ALARM-ADB-HIGH-CPU-KEY" : {
+        "display_name" : "isv-adb-cpu-alarm",
+        "preconfigured_alarm_type" : "adb-cpu-alarm",
+        "destination_topic_ids" : ["DATABASE-TOPIC"]
+      },
+      "DATABASE-ALARM-ADB-STORAGE-UTILIZATION-KEY" : {
+        "display_name" : "isv-adb-storage-alarm",
+        "preconfigured_alarm_type" : "adb-storage-alarm",
+        "destination_topic_ids" : ["DATABASE-TOPIC"]
+      },
+      "NETWORK-ALARM-VPN-STATUS-KEY" : {
+        "display_name" : "isv-vpn-status-alarm",
+        "preconfigured_alarm_type" : "vpn-status-alarm",
+        "destination_topic_ids" : ["NETWORK-TOPIC"]
+      },
+      "NETWORK-ALARM-FAST-CONNECT-STATUS-KEY" : {
+        "display_name" : "isv-fast-connect-status-alarm",
+        "preconfigured_alarm_type" : "fast-connect-status-alarm",
+        "destination_topic_ids" : ["NETWORK-TOPIC"]
+      }
+    }
+  },
+
+  "events_configuration" : { 
+    "default_compartment_id" : "ocid1.tenancy.oc1..aaaaaaaahbsqqoq6hngruus5z4e3zclij32obawvlsxsrz4culbvq5k5p2ia",
+    "event_rules" : {
+      "NETWORK-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-network-changes-rule",
+        "preconfigured_events_categories" : ["network"],
+        "destination_topic_ids" : ["NETWORK-TOPIC"]
+      },
+      "STORAGE-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-storage-changes-rule",
+        "preconfigured_events_categories" : ["storage"],
+        "destination_topic_ids" : ["STORAGE-TOPIC"]
+      },
+      "DATABASE-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-database-changes-rule",
+        "preconfigured_events_categories" : ["database"],
+        "destination_topic_ids" : ["DATABASE-TOPIC"]
+      },
+      "EXAINFRA-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-exainfra-changes-rule",
+        "preconfigured_events_categories" : ["exainfra"],
+        "destination_topic_ids" : ["EXAINFRA-TOPIC"]
+      },
+      "BUDGET-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-budget-changes-rule",
+        "preconfigured_events_categories" : ["budget"],
+        "destination_topic_ids" : ["BUDGET-TOPIC"]
+      },
+      "COMPUTE-EVENTS" : { 
+        "event_display_name" : "isv-notify-on-compute-changes-rule",
+        "preconfigured_events_categories" : ["compute"],
+        "destination_topic_ids" : ["COMPUTE-TOPIC"]
+      }
+    }  
+  },
+
+  "home_region_events_configuration" : { 
+    "default_compartment_id" : "ocid1.tenancy.oc1..aaaaaaaahbsqqoq6hngruus5z4e3zclij32obawvlsxsrz4culbvq5k5p2ia",
+    "event_rules" : {
+      "IAM-EVENTS-KEY" : { 
+        "event_display_name" : "isv-notify-on-iam-changes-rule",
+        "preconfigured_events_categories" : ["iam"],
+        "destination_topic_ids" : ["SECURITY-TOPIC"]
+      },
+      "CLOUDGUARD-EVENTS-KEY" : { 
+        "event_display_name" : "isv-notify-on-cloudguard-events-rule",
+        "preconfigured_events_categories" : ["cloudguard"],
+        "destination_topic_ids" : ["SECURITY-TOPIC"]
+      }
+    }
+  },
+  
+  "notifications_configuration" : {
+    "default_compartment_id" : "SHARED-LOGGING",
+    "topics" : {
+      "NETWORK-TOPIC" : {
+        "name" : "isv-network-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "SECURITY-TOPIC" : {
+        "name" : "isv-security-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "STORAGE-TOPIC" : { 
+        "name" : "isv-storage-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "DATABASE-TOPIC" : { 
+        "name" : "isv-database-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "EXAINFRA-TOPIC" : { 
+        "name" : "isv-exainfra-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "BUDGET-TOPIC" : { 
+        "name" : "isv-budget-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      },
+      "COMPUTE-TOPIC" : { 
+        "name" : "isv-compute-topic",
+        "subscriptions" : [
+          { "protocol" : "EMAIL",
+            "values" : ["email.address_1@example.com"]
+          }
+        ]
+      }
+    }
+  }
+}

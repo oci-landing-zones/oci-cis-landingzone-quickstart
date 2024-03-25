@@ -1,0 +1,65 @@
+{
+  "nlb_configuration" : {
+    "default_compartment_id" : "SHARED-NETWORK",
+    "nlbs" : {
+      "INDOOR-NLB" : {
+        "display_name" : "isv-indoor-nlb",
+        "is_private" : true,
+        "subnet_id" : "INDOOR-SUB",
+        "listeners" : {
+          "LISTENER-1" : {
+            "port" : 80,
+            "protocol" : "TCP",
+            "backend_set" : {
+              "name" : "default-backend-set",
+              "health_checker" : {
+                "protocol" : "TCP"
+              },
+              "backends" : {
+                "BACKEND-1" : {
+                  "name" : "backend-1",
+                  "port" : 80,
+                  "ip_address" : "INSTANCE-1.INDOOR"
+                },
+                "BACKEND-2" : {
+                  "name" : "backend-2",
+                  "port" : 80,
+                  "ip_address" : "INSTANCE-2.INDOOR"
+                }
+              }
+            }
+          }
+        }
+      },
+      "OUTDOOR-NLB" : {
+        "display_name" : "isv-outdoor-nlb",
+        "is_private" : true,
+        "subnet_id" : "LBR-SUB",
+        "listeners" : {
+          "LISTENER-1" : {
+            "port" : 80,
+            "protocol" : "TCP",
+            "backend_set" : {
+              "name" : "default-backend-set",
+              "health_checker" : {
+                "protocol" : "TCP"
+              },
+              "backends" : {
+                "BACKEND-1" : {
+                  "name" : "backend-1",
+                  "port" : 80,
+                  "ip_address" : "INSTANCE-1.OUTDOOR"
+                },
+                "BACKEND-2" : {
+                  "name" : "backend-2",
+                  "port" : 80,
+                  "ip_address" : "INSTANCE-2.OUTDOOR"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

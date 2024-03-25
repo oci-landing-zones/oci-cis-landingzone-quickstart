@@ -1,0 +1,11 @@
+{
+    "compartments_configuration" : {
+        "default_parent_id" : "CUSTOMERS",
+        "compartments" : {
+            "CUSTOMER-1" : {
+                "name" : "isv-customer-1-cmp",
+                "description" : "Customer 1 compartment."
+            }     
+        }
+    }
+}    

@@ -89,36 +89,6 @@ class CIS_Report:
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
 
-    # OCI Link
-    __oci_cloud_url = "https://cloud.oracle.com"
-    __oci_users_uri = __oci_cloud_url + "/identity/users/"
-    __oci_policies_uri = __oci_cloud_url + "/identity/policies/"
-    __oci_groups_uri = __oci_cloud_url + "/identity/groups/"
-    __oci_dynamic_groups_uri = __oci_cloud_url + "/identity/dynamicgroups/"
-    __oci_identity_domains_uri = __oci_cloud_url + '/identity/domains/'
-    __oci_buckets_uri = __oci_cloud_url + "/object-storage/buckets/"
-    __oci_boot_volumes_uri = __oci_cloud_url + "/block-storage/boot-volumes/"
-    __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
-    __oci_fss_uri = __oci_cloud_url + "/fss/file-systems/"
-    __oci_networking_uri = __oci_cloud_url + "/networking/vcns/"
-    __oci_adb_uri = __oci_cloud_url + "/db/adb/"
-    __oci_oicinstance_uri = __oci_cloud_url + "/oic/integration-instances/"
-    __oci_oacinstance_uri = __oci_cloud_url + "/analytics/instances/"
-    __oci_compartment_uri = __oci_cloud_url + "/identity/compartments/"
-    __oci_drg_uri = __oci_cloud_url + "/networking/drgs/"
-    __oci_cpe_uri = __oci_cloud_url + "/networking/cpes/"
-    __oci_ipsec_uri = __oci_cloud_url + "/networking/vpn-connections/"
-    __oci_events_uri = __oci_cloud_url + "/events/rules/"
-    __oci_loggroup_uri = __oci_cloud_url + "/logging/log-groups/"
-    __oci_vault_uri = __oci_cloud_url + "/security/kms/vaults/"
-    __oci_budget_uri = __oci_cloud_url + "/usage/budgets/"
-    __oci_cgtarget_uri = __oci_cloud_url + "/cloud-guard/targets/"
-    __oci_onssub_uri = __oci_cloud_url + "/notification/subscriptions/"
-    __oci_serviceconnector_uri = __oci_cloud_url + "/connector-hub/service-connectors/"
-    __oci_fastconnect_uri = __oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
-    __oci_instances_uri = __oci_cloud_url + "/compute/instances/"
-
-
     __oci_ocid_pattern = r'ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}'
 
     # Start print time info
@@ -138,7 +108,7 @@ class CIS_Report:
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 2.0.0
         self.cis_foundations_benchmark_2_0 = {
@@ -990,6 +960,40 @@ class CIS_Report:
             self.__all_resources = all_resources
             self.__obp_checks = True
             self.__output_raw_data = True
+
+        # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
+        self.__oci_cloud_url = "https://cloud.oracle.com"
+        if oci_url:
+            print("__init__: OCI URL is " + str(oci_url))
+            self.__oci_cloud_url = oci_url
+
+        # OCI Link
+        self.__oci_users_uri = self.__oci_cloud_url + "/identity/users/"
+        self.__oci_policies_uri = self.__oci_cloud_url + "/identity/policies/"
+        self.__oci_groups_uri = self.__oci_cloud_url + "/identity/groups/"
+        self.__oci_dynamic_groups_uri = self.__oci_cloud_url + "/identity/dynamicgroups/"
+        self.__oci_identity_domains_uri = self.__oci_cloud_url + '/identity/domains/'
+        self.__oci_buckets_uri = self.__oci_cloud_url + "/object-storage/buckets/"
+        self.__oci_boot_volumes_uri = self.__oci_cloud_url + "/block-storage/boot-volumes/"
+        self.__oci_block_volumes_uri = self.__oci_cloud_url + "/block-storage/volumes/"
+        self.__oci_fss_uri = self.__oci_cloud_url + "/fss/file-systems/"
+        self.__oci_networking_uri = self.__oci_cloud_url + "/networking/vcns/"
+        self.__oci_adb_uri = self.__oci_cloud_url + "/db/adb/"
+        self.__oci_oicinstance_uri = self.__oci_cloud_url + "/oic/integration-instances/"
+        self.__oci_oacinstance_uri = self.__oci_cloud_url + "/analytics/instances/"
+        self.__oci_compartment_uri = self.__oci_cloud_url + "/identity/compartments/"
+        self.__oci_drg_uri = self.__oci_cloud_url + "/networking/drgs/"
+        self.__oci_cpe_uri = self.__oci_cloud_url + "/networking/cpes/"
+        self.__oci_ipsec_uri = self.__oci_cloud_url + "/networking/vpn-connections/"
+        self.__oci_events_uri = self.__oci_cloud_url + "/events/rules/"
+        self.__oci_loggroup_uri = self.__oci_cloud_url + "/logging/log-groups/"
+        self.__oci_vault_uri = self.__oci_cloud_url + "/security/kms/vaults/"
+        self.__oci_budget_uri = self.__oci_cloud_url + "/usage/budgets/"
+        self.__oci_cgtarget_uri = self.__oci_cloud_url + "/cloud-guard/targets/"
+        self.__oci_onssub_uri = self.__oci_cloud_url + "/notification/subscriptions/"
+        self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
+        self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
+        self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
 
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
@@ -5851,6 +5855,8 @@ def execute_report():
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files.')
+    parser.add_argument('--deeplink-url-override', default=None, dest='oci_url',
+                    help='Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication.')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -5870,7 +5876,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

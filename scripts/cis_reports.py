@@ -964,7 +964,7 @@ class CIS_Report:
         # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
         self.__oci_cloud_url = "https://cloud.oracle.com"
         if oci_url:
-            print("__init__: OCI URL is " + str(oci_url))
+            debug("__init__: OCI URL is " + str(oci_url))
             self.__oci_cloud_url = oci_url
 
         # OCI Link

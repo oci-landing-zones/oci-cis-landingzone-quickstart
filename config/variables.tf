@@ -209,7 +209,7 @@ variable "rm_existing_access_governance_group_name" {
 variable "existing_access_governance_group_name" {
   type        = list(string)
   default     = []
-  description = "List of groups for Oracle Access Governance administrators."
+  description = "List of groups for Oracle Access Governance's Instances service account user."
 }
 
 # ------------------------------------------------------

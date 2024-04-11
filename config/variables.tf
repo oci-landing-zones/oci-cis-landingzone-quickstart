@@ -75,6 +75,13 @@ variable "policies_in_root_compartment" {
   }
 }
 
+variable "enable_access_governance_policies" {
+  type = bool
+  default = false
+  description = "Whether policies and groups to support the deployment of Oracle Access Governance and for the security admin to be able to manage Oracle Access Governance."
+}
+
+
 variable "enable_template_policies" {
   type = bool
   default = false
@@ -192,7 +199,17 @@ variable "rm_existing_storage_admin_group_name" {
 variable "existing_storage_admin_group_name" {
   type        = list(string)
   default     = []
-  description = "List of groups for storage administrators."
+  description = "List of groups for Oracle Access Governance administrators."
+}
+
+variable "rm_existing_access_governance_group_name" {
+  type    = string
+  default = ""
+}
+variable "existing_access_governance_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for Oracle Access Governance's Instances service account user."
 }
 
 # ------------------------------------------------------

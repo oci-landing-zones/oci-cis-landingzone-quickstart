@@ -19,6 +19,7 @@ variableGroups:
       - "cis_level"
       - "use_enclosing_compartment"
       - "existing_enclosing_compartment_ocid"
+      - "enable_access_governance_policies"
       - "env_advanced_options"
       - "extend_landing_zone_to_new_region"
       - "policies_in_root_compartment"
@@ -34,6 +35,7 @@ variableGroups:
       - "rm_existing_announcement_reader_group_name"
       - "rm_existing_cost_admin_group_name"
       - "rm_existing_storage_admin_group_name"
+      - "rm_existing_access_governance_group_name" 
       - "existing_security_fun_dyn_group_name"
       - "existing_appdev_fun_dyn_group_name"
       - "existing_compute_agent_dyn_group_name"
@@ -168,6 +170,7 @@ variableGroups:
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
       - "existing_storage_admin_group_name"
+      - "existing_access_governance_group_name"
   
 variables:
   env_advanced_options:
@@ -230,6 +233,13 @@ variables:
     required: true
     default: "CREATE"
     visible: env_advanced_options
+
+  enable_access_governance_policies:
+    type: boolean
+    title: "Enable Oracle Access Governance groups and policies?"
+    description: "Whether policies and groups to support the deployment of Oracle Access Governance and for the security admin to be able to manage Oracle Access Governance."
+    default: false
+    # visible: env_advanced_options 
 
   enable_template_policies:
     type: boolean
@@ -326,6 +336,14 @@ variables:
     description: "Existing group to which Storage management policies will be granted to."
     visible: env_advanced_options  
  
+  rm_existing_access_governance_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Oracle Access Governance group name"
+    description: "Existing group to which Oracle Access Governance administrator policies will be granted to."
+    visible: env_advanced_options  
+
   existing_security_fun_dyn_group_name:
     type: oci:identity:dynamicgroups:id
     dependsOn:

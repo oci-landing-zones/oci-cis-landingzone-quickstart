@@ -621,6 +621,7 @@ class CIS_Report:
             'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
             'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
+            'Certificates_Near_Expiry': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
         }
         # MAP Regional Data
         self.__obp_regional_checks = {}
@@ -844,6 +845,8 @@ class CIS_Report:
         # Compute Resources - Thinking about
         self.__Instance = []
 
+        # Certificates raw resources
+        self.__raw_oci_certificates = []
         # Setting list of regions to run in
 
         # Start print time info
@@ -1096,6 +1099,11 @@ class CIS_Report:
                 if proxy:
                     instance.base_client.session.proxies = {'https': proxy}
                 region_values['instance'] = instance
+
+                certificate_client = oci.certificates_management.CertificatesManagementClient(region_config, signer=region_signer)
+                if proxy:
+                    search.base_client.session.proxies = {'https': proxy}
+                region_values['certificate_client'] = certificate_client 
 
             except Exception as e:
                 debug("__create_regional_signers: error reading" + str(self.__config))
@@ -3783,6 +3791,54 @@ class CIS_Report:
 
 
     ##########################################################################
+    # Returns a region name for a region key
+    # Takes: region key
+    ##########################################################################
+    def __get_region_name_from_key(self,region_key):
+        debug("__get_region_name_from_key")
+        for key, region_values in self.__regions.items():
+            if region_values['region_key'].upper() == region_key.upper() or region_values['region_name'].upper() == region_key.upper(): 
+                return region_values['region_name']
+    
+    ##########################################################################
+    # Query All certificates in the tenancy
+    ##########################################################################
+    def __certificates_read_certificates(self):
+        print("__certificates_read_certificates")
+        try:
+            for region_key, region_values in self.__regions.items():
+                certificates_data = oci.pagination.list_call_get_all_results(
+                        region_values['search_client'].search_resources,
+                        search_details=oci.resource_search.models.StructuredSearchDetails(
+                            query="query certificate resources return allAdditionalFields")
+                    ).data
+                cert_compartments = {}
+
+                for certificate in certificates_data:
+                    cert_compartments[certificate.compartment_id] = certificate.compartment_id
+
+                for compartment in cert_compartments:
+                    certs = oci.pagination.list_call_get_all_results(
+                        region_values['certificate_client'].list_certificates,
+                        compartment_id=compartment).data
+                    for cert in certs:
+                        # print(cert)
+                        record = oci.util.to_dict(cert)
+                        print(record)
+                        region_id = record['id'].split(".")[3]
+                        region_name = self.__get_region_name_from_key(region_id)
+                        deep_link = self.__cert_url + record['id'] + "?region=" + region_name
+                        record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name']),
+                        record['region'] = region_name
+                        print(record)
+                        self.__raw_oci_certificates.append(record)
+        except Exception as e:
+            print("Error is " + str(e))
+        print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
+    
+    
+    
+    ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
@@ -4859,6 +4915,32 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
+        #######################################
+        # Certificate Expiry Check
+        #######################################
+        
+        for cert in self.__raw_oci_certificates:
+            print("\t__obp_analyze_tenancy_data: Iterating through certificates")
+            
+            try:
+                if cert['current_version_summary']['validity'] and \
+                datetime.datetime.strptime(self.get_date_iso_format(cert['current_version_summary']['validity']['time_of_validity_not_after']), self.__iso_time_format) >= self.cert_key_time_max_datetime:
+                    print("Good: " + cert['name'])
+                    self.obp_foundations_checks['Certificates_Near_Expiry']['OBP'].append(cert)
+                else:
+                    print("Bad: " + cert['name'])
+
+                    self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
+            except Exception as e:
+                print("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after")
+                print("Horrible: " + cert['name'])
+                self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
+
+        if self.obp_foundations_checks['Certificates_Near_Expiry']['Findings']:
+            self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = False
+        else:
+            self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = True
+
     ##########################################################################
     # Orchestrates data collection and CIS report generation
     ##########################################################################
@@ -5342,7 +5424,8 @@ class CIS_Report:
             self.__block_volume_read_block_volumes,
             self.__boot_volume_read_boot_volumes,
             self.__fss_read_fsss,
-            self.__core_instance_read_compute
+            self.__core_instance_read_compute,
+            self.__certificates_read_certificates
         ]
 
         # Oracle Best practice functions
@@ -5418,7 +5501,8 @@ class CIS_Report:
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
             "regions": self.__raw_regions,
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
-            "instances": self.__Instance
+            "instances": self.__Instance,
+            "certificates" : self.__raw_oci_certificates
         }
         for key in raw_csv_files:
             rfn = self.__print_to_csv_file('raw_data', key, raw_csv_files[key])

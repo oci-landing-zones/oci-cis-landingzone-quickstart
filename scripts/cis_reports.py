@@ -85,6 +85,7 @@ class CIS_Report:
     _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
     __home_region = []
+    __days_to_expiry = 30
 
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
@@ -107,6 +108,12 @@ class CIS_Report:
         datetime.timedelta(days=__KMS_DAYS_OLD)
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
+    # For Certificates Check 
+    cert_key_time_max_datetime = start_datetime + \
+        datetime.timedelta(days=__days_to_expiry)
+    str_cert_key_time_max_datetime = cert_key_time_max_datetime.strftime(__iso_time_format)
+    cert_key_time_max_datetime = datetime.datetime.strptime(str_cert_key_time_max_datetime, __iso_time_format)
+
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
 
@@ -997,6 +1004,7 @@ class CIS_Report:
         self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
+        self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
 
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
@@ -3808,7 +3816,7 @@ class CIS_Report:
     # Query All certificates in the tenancy
     ##########################################################################
     def __certificates_read_certificates(self):
-        print("__certificates_read_certificates")
+        debug("__certificates_read_certificates")
         try:
             for region_key, region_values in self.__regions.items():
                 certificates_data = oci.pagination.list_call_get_all_results(
@@ -3817,6 +3825,7 @@ class CIS_Report:
                             query="query certificate resources return allAdditionalFields")
                     ).data
                 cert_compartments = {}
+                debug("\t__certificates_read_certificates: Got Ceritificates from ")
 
                 for certificate in certificates_data:
                     cert_compartments[certificate.compartment_id] = certificate.compartment_id
@@ -3826,18 +3835,20 @@ class CIS_Report:
                         region_values['certificate_client'].list_certificates,
                         compartment_id=compartment).data
                     for cert in certs:
-                        # print(cert)
                         record = oci.util.to_dict(cert)
-                        print(record)
+                        debug("\t__certificates_read_certificates: Coverted Certificate Object to Dict")
+
                         region_id = record['id'].split(".")[3]
+                        debug("\t__certificates_read_certificates: Got region id")
+
                         region_name = self.__get_region_name_from_key(region_id)
-                        deep_link = self.__cert_url + record['id'] + "?region=" + region_name
+                        deep_link = self.__oci_cert_uri + record['id'] + "?region=" + region_name
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name']),
                         record['region'] = region_name
-                        print(record)
+                        debug("\t__certificates_read_certificates: Added region name and deeplink to certificate record.")
                         self.__raw_oci_certificates.append(record)
         except Exception as e:
-            print("Error is " + str(e))
+            debug("__certificates_read_certificates failed to process: " + str(e))
         print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
     
     

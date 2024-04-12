@@ -21,6 +21,8 @@ locals {
   custom_storage_admin_group_name = null
   custom_auditor_group_name = null
   custom_announcement_reader_group_name = null
+  custom_access_governance_group_name = null
+
 }
 
 module "lz_groups" {
@@ -233,13 +235,31 @@ locals {
   } : {}
 
   #------------------------------------------------------------------------
+  #-- Access Governance Group 
+  #------------------------------------------------------------------------
+  access_governance_group_key = "${var.service_label}-access-gorvernance-group"
+  default_access_governance_group_name = "access-gorvernance-group"
+  provided_access_governance_group_name = local.custom_access_governance_group_name != null ? local.custom_access_governance_group_name : "${var.service_label}-${local.default_access_governance_group_name}"
+  
+  access_governance_group = length(var.existing_access_governance_group_name) == 0 && length(trimspace(var.rm_existing_access_governance_group_name)) == 0 && var.enable_access_governance_policies ? {
+    (local.access_governance_group_key) = {
+      name          = local.provided_access_governance_group_name  
+      description   = "CIS Landing Zone group for Access Governance."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  #------------------------------------------------------------------------
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
   groups_configuration = {
     groups : merge(local.iam_admin_group, local.cred_admin_group, local.cost_admin_group,
                    local.network_admin_group, local.security_admin_group,
                    local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
-                   local.storage_admin_group, local.auditor_group, local.announcement_reader_group)
+                   local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
+                   local.access_governance_group)
   }
 
   empty_groups_configuration = {
@@ -260,4 +280,7 @@ locals {
   cost_admin_group_name          = !var.extend_landing_zone_to_new_region ? (length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0                     ? [module.lz_groups.groups[local.cost_admin_group_key].name]           : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cost_admin_group_name)) > 0           ? ["'${data.oci_identity_group.existing_cost_admin_group[var.rm_existing_cost_admin_group_name].name}'"]               : [ for i,v in var.existing_cost_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name[i])) > 0                    ? "'${data.oci_identity_group.existing_cost_admin_group[v].name}'"           :  "'${v}'")])) : []
   storage_admin_group_name       = !var.extend_landing_zone_to_new_region ? (length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0               ? [module.lz_groups.groups[local.storage_admin_group_key].name]        : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_storage_admin_group_name)) > 0        ? ["'${data.oci_identity_group.existing_storage_admin_group[var.rm_existing_storage_admin_group_name].name}'"]        : [ for i,v in var.existing_storage_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name[i])) > 0              ? "'${data.oci_identity_group.existing_storage_admin_group[v].name}'"        :  "'${v}'")])) : []
   exainfra_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.deploy_exainfra_cmp ? (length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? [module.lz_groups.groups[local.exainfra_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_exainfra_admin_group_name)) > 0  ? ["'${data.oci_identity_group.existing_exainfra_admin_group[var.rm_existing_exainfra_admin_group_name].name}'"]  : [ for i,v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name[i])) > 0  ? "'${data.oci_identity_group.existing_exainfra_admin_group[v].name}'" :  "'${v}'")])) : [for grp in var.existing_exainfra_admin_group_name : "'${grp}'"]) : []
+  #access_governance_group_name   = !var.extend_landing_zone_to_new_region ? (var.enable_access_governance_policies ? (length(var.existing_access_governance_group_name) == 0 && length(trimspace(var.rm_existing_access_governance_group_name)) == 0 ? [module.lz_groups.groups[local.access_governance_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_access_governance_group_name)) > 0  ? ["'${data.oci_identity_group.existing_access_governance_group[var.rm_existing_access_governance_group_name].name}'"]  : [ for i,v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_access_governance_group_name[i])) > 0  ? "'${data.oci_identity_group.existing_access_governance_group[v].name}'" :  "'${v}'")])) : [for grp in var.existing_access_governance_group_name : "'${grp}'"]) : []
+  access_governance_group_name   = !var.extend_landing_zone_to_new_region && var.enable_access_governance_policies ? (length(var.existing_access_governance_group_name) == 0 && length(trimspace(var.rm_existing_access_governance_group_name)) == 0               ? [module.lz_groups.groups[local.access_governance_group_key].name]        : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_access_governance_group_name)) > 0        ? ["'${data.oci_identity_group.existing_access_governance_group[var.rm_existing_access_governance_group_name].name}'"]        : [ for i,v in var.existing_access_governance_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_access_governance_group_name[i])) > 0              ? "'${data.oci_identity_group.existing_access_governance_group[v].name}'"        :  "'${v}'")])) : []
+
 }

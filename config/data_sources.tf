@@ -70,6 +70,11 @@ data "oci_identity_group" "existing_storage_admin_group" {
     group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 
+data "oci_identity_group" "existing_access_governance_group" {
+  for_each = length(trimspace(var.rm_existing_access_governance_group_name)) > 0 ? toset([var.rm_existing_access_governance_group_name]) : toset(var.existing_access_governance_group_name)
+    group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
+}
+
 data "oci_identity_dynamic_groups" "all" {
   compartment_id = var.tenancy_ocid
 }

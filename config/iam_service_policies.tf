@@ -53,7 +53,7 @@ locals {
   # Realms with a realm key number greater than 10 have a service user of fssocprod.
   # https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm
   realm = split(".",trimprefix(data.oci_identity_tenancy.this.id, "ocid1.tenancy."))[0]
-  fss_principal_name = substr(local.realm,2) <= 10 ? "Fss${local.realm}Prod" : "fssocprod"
+  fss_principal_name = substr(local.realm,2,10) <= 10 ? "Fss${local.realm}Prod" : "fssocprod"
 
   object_storage_service_principals = join(",", [for region in data.oci_identity_region_subscriptions.these.region_subscriptions : "objectstorage-${region.region_name}"])
 

@@ -1,3 +1,19 @@
+#  April 18, 2024 Release Notes - 2.8.2
+1. [New OBP for Certificate Service Certificate Expiration](#2-8-2-certificate-check)
+1. [OCI CIS Landing Zone Oracle Access Governance Support](#2-8-2-oag-support)
+
+
+## <a name="#2-8-2-certificate-check">New OBP for Certificate Service Certificate Expiration</a>
+A new Oracle Best Practice (OBP) check scans certificates stored in the [OCI Certificate Service](https://docs.oracle.com/en-us/iaas/Content/certificates/overview.htm) and finds those that will expire in under 30 days.  This check will help customers prevent unintended outages for OCI Services using certificates stored in the certificate service that expires before causing connectivity errors.
+
+## <a name="#2-8-2-certificate-check">New OBP for Certificate Service Certificate Expiration</a>
+
+
+## <a name="#2-8-2-terraform-updates">Updates/Fixes to the Terraform</a>
+**Fixes**
+- Fixed issue when deploying the CIS Landing Zone to other realms like.  Resolves [issue 140](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/140)
+
+
 #  March 25, 2024 Release Notes - 2.8.1
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-1-script-updates)
 

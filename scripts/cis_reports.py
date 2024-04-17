@@ -35,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.8.1"
-PYTHON_SDK_VERSION = "2.124.1"
-UPDATED_DATE = "March 25, 2024"
+RELEASE_VERSION = "2.8.2"
+PYTHON_SDK_VERSION = "2.125.3"
+UPDATED_DATE = "April 18, 2024"
 
 
 ##########################################################################
@@ -974,7 +974,6 @@ class CIS_Report:
         # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
         self.__oci_cloud_url = "https://cloud.oracle.com"
         if oci_url:
-            debug("__init__: OCI URL is " + str(oci_url))
             self.__oci_cloud_url = oci_url
 
         # OCI Link

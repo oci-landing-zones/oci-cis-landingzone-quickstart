@@ -17,7 +17,8 @@ The OCI CIS Landing Zone enables accelerated [Oracle Access Governance (OAG)](ht
 ## <a name="#2-8-2-script-updates">Updates/Fixes to the CIS Compliance Script</a>
 **Updates**
 - Added support to override `https://cloud.oracle.com` in deep link URLs in CSV reports with a customer provided deep link URL using the `--deeplink-url-override` argument.  This provides support for other [realms](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm).  The following `--deeplink-url-override https://console.us-langley-1.oraclegovcloud.com` will support OC2's Ashburn region.
-
+- Added new actions attribute to OCI Event records.
+- Added new compliance checking script FAQ item. 
 
 #  March 25, 2024 Release Notes - 2.8.1
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-1-script-updates)

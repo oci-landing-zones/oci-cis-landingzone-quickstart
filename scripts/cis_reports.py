@@ -3157,6 +3157,7 @@ class CIS_Report:
                     record = {
                         "compartment_id": event_rule.compartment_id,
                         "condition": event_rule.additional_details['condition'],
+                        "actions": event_rule.additional_details['actionsDetails'],
                         "description": event_rule.additional_details['description'],
                         "display_name": event_rule.display_name,
                         "deep_link": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),

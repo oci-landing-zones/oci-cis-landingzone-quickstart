@@ -409,3 +409,18 @@ To run on a local machine with the default profile and output raw data as well a
     * Optionally, you can use the `-c` option to specify an alternate config file
 1. `ImportError: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.0.2k-fips  26 Jan 2017'.`
     * Change your urllib3 with the following `pip install --upgrade 'urllib3<=2' --user`
+1.  Understanding CIS recommendation *1.15 Ensure storage service-level admins cannot delete resources they manage.* logic from an example:
+  * Why is this example being flagged as non-compliant
+    ```
+    Allow group SYSADMINS_PROD to manage volume-family in compartment PROD where request.permission!='VOLUME_DELETE'
+    Allow group SYSADMINS_PROD to manage object-family in compartment PROD where request.permission!='OBJECT_DELETE'
+    ```
+    In the first example:
+    `Allow group SYSADMINS_PROD to manage volume-family in compartment PROD where request.permission!='VOLUME_DELETE'`
+
+    The SYSADMIN_PROD group has access to [volume-family](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/corepolicyreference.htm#For3) which includes volumes, volumes-backups, and boot-volumes-backups.  Meaning while they would not be able to delete volumes they could delete resources of type: volumes-backups, and boot-volumes-backups which is something we are trying to prevent.
+
+    In the second example:
+    `Allow group SYSADMINS_PROD to manage object-family in compartment PROD where request.permission!='OBJECT_DELETE'`
+
+    The SYSADMIN_PROD group has access to [object-family](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/objectstoragepolicyreference.htm#Details_for_Object_Storage_Archive_Storage_and_Data_Transfer) which includes buckets and objects. This means they would be able to delete a bucket violating the intent of the rule.  Even though you can't delete a bucket with objects in it if you don't have permissions to the underlying objects you could delete an empty you created thus violating the intent.

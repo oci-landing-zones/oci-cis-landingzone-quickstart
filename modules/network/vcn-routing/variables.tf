@@ -21,6 +21,5 @@ variable "subnets_route_tables" {
       network_entity_id = string
       description       = string
     }))
-    defined_tags      = map(string)
   }))  
 }

@@ -1,3 +1,25 @@
+#  April 18, 2024 Release Notes - 2.8.2
+1. [New OBP for Certificate Service Certificate Expiration](#2-8-2-certificate-check)
+1. [OCI CIS Landing Zone Oracle Access Governance Support](#2-8-2-oag-support)
+1. [Updates/Fixes to the Terraform](#2-8-2)
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-2-script-updates)
+
+## <a name="#2-8-2-certificate-check">New OBP for Certificate Service Certificate Expiration</a>
+A new Oracle Best Practice (OBP) check scans certificates stored in the [OCI Certificate Service](https://docs.oracle.com/en-us/iaas/Content/certificates/overview.htm) and finds those that will expire in under 30 days.  This check will help customers prevent unintended outages for OCI Services using certificates stored in the certificate service that expires before causing connectivity errors.
+
+## <a name="#2-8-2-oag-support">OCI CIS Landing Zone Oracle Access Governance Support</a>
+The OCI CIS Landing Zone enables accelerated [Oracle Access Governance (OAG)](https://www.oracle.com/security/cloud-security/access-governance/) deployment.  The policies and groups required for OAG are created and aligned with the OCI CIS Foundations Benchmark.  To deploy OAG using the CIS Landing Zone, review the Oracle Access Governance section under Governance in the [Deployment Guide](./DEPLOYMENT-GUIDE.md).
+
+## <a name="#2-8-2-terraform-updates">Updates/Fixes to the Terraform</a>
+**Fixes**
+- Fixed the issue when deploying the CIS Landing Zone to other [realms](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm). [Issue 140](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/issues/140)
+
+## <a name="#2-8-2-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+**Updates**
+- Added support to override `https://cloud.oracle.com` in deep link URLs in CSV reports with a customer provided deep link URL using the `--deeplink-url-override` argument.  This provides support for other [realms](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm).  The following `--deeplink-url-override https://console.us-langley-1.oraclegovcloud.com` will support OC2's Ashburn region.
+- Added new actions attribute to OCI Event records.
+- Added new compliance checking script FAQ item. 
+
 #  March 25, 2024 Release Notes - 2.8.1
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-1-script-updates)
 

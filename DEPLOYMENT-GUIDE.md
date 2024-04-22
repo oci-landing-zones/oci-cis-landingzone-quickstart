@@ -472,7 +472,6 @@ After the OAG instance is provisioned follow steps from the [Integrate with Orac
 1. As a user in the <label>-cred-admin-group or the Administrator group go to the **Generate API Keys and Oracle Cloud Identifier (OCID) to configure your Cloud Environment in the Oracle Access Governance Console** section and complete all steps in this section.
 
 1. As a user in the <label>-security-admin-group go to the **Establish Connection by Adding a New Connected System - OCI IAM** and complete all steps in this section.
-1. A user in the securi
 
 ## 4.4 Security Services
 

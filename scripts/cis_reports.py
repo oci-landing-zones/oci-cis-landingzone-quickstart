@@ -4935,20 +4935,16 @@ class CIS_Report:
         #######################################
         
         for cert in self.__raw_oci_certificates:
-            print("\t__obp_analyze_tenancy_data: Iterating through certificates")
+            debug("\t__obp_analyze_tenancy_data: Iterating through certificates")
             
             try:
                 if cert['current_version_summary']['validity'] and \
                 datetime.datetime.strptime(self.get_date_iso_format(cert['current_version_summary']['validity']['time_of_validity_not_after']), self.__iso_time_format) >= self.cert_key_time_max_datetime:
-                    print("Good: " + cert['name'])
                     self.obp_foundations_checks['Certificates_Near_Expiry']['OBP'].append(cert)
                 else:
-                    print("Bad: " + cert['name'])
-
                     self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
             except Exception as e:
-                print("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after")
-                print("Horrible: " + cert['name'])
+                debug("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after" + cert['name'])
                 self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
 
         if self.obp_foundations_checks['Certificates_Near_Expiry']['Findings']:

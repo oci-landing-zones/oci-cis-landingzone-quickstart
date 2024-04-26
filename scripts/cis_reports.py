@@ -605,57 +605,57 @@ class CIS_Report:
 
         # CIS monitoring notifications check
         self.cis_monitoring_checks = {
-            "4.4": [
+            "4.3": [
                 'com.oraclecloud.identitycontrolplane.createidentityprovider',
                 'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
                 'com.oraclecloud.identitycontrolplane.updateidentityprovider'
             ],
-            "4.5": [
+            "4.4": [
                 'com.oraclecloud.identitycontrolplane.createidpgroupmapping',
                 'com.oraclecloud.identitycontrolplane.deleteidpgroupmapping',
                 'com.oraclecloud.identitycontrolplane.updateidpgroupmapping'
             ],
-            "4.6": [
+            "4.5": [
                 'com.oraclecloud.identitycontrolplane.creategroup',
                 'com.oraclecloud.identitycontrolplane.deletegroup',
                 'com.oraclecloud.identitycontrolplane.updategroup'
             ],
-            "4.7": [
+            "4.6": [
                 'com.oraclecloud.identitycontrolplane.createpolicy',
                 'com.oraclecloud.identitycontrolplane.deletepolicy',
                 'com.oraclecloud.identitycontrolplane.updatepolicy'
             ],
-            "4.8": [
+            "4.7": [
                 'com.oraclecloud.identitycontrolplane.createuser',
                 'com.oraclecloud.identitycontrolplane.deleteuser',
                 'com.oraclecloud.identitycontrolplane.updateuser',
                 'com.oraclecloud.identitycontrolplane.updateusercapabilities',
                 'com.oraclecloud.identitycontrolplane.updateuserstate'
             ],
-            "4.9": [
+            "4.8": [
                 'com.oraclecloud.virtualnetwork.createvcn',
                 'com.oraclecloud.virtualnetwork.deletevcn',
                 'com.oraclecloud.virtualnetwork.updatevcn'
             ],
-            "4.10": [
+            "4.9": [
                 'com.oraclecloud.virtualnetwork.changeroutetablecompartment',
                 'com.oraclecloud.virtualnetwork.createroutetable',
                 'com.oraclecloud.virtualnetwork.deleteroutetable',
                 'com.oraclecloud.virtualnetwork.updateroutetable'
             ],
-            "4.11": [
+            "4.10": [
                 'com.oraclecloud.virtualnetwork.changesecuritylistcompartment',
                 'com.oraclecloud.virtualnetwork.createsecuritylist',
                 'com.oraclecloud.virtualnetwork.deletesecuritylist',
                 'com.oraclecloud.virtualnetwork.updatesecuritylist'
             ],
-            "4.12": [
+            "4.11": [
                 'com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment',
                 'com.oraclecloud.virtualnetwork.createnetworksecuritygroup',
                 'com.oraclecloud.virtualnetwork.deletenetworksecuritygroup',
                 'com.oraclecloud.virtualnetwork.updatenetworksecuritygroup'
             ],
-            "4.13": [
+            "4.12": [
                 'com.oraclecloud.virtualnetwork.createdrg',
                 'com.oraclecloud.virtualnetwork.deletedrg',
                 'com.oraclecloud.virtualnetwork.updatedrg',

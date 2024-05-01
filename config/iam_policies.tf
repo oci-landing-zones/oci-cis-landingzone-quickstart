@@ -175,7 +175,8 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to read instance-agent-plugins in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage keys in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use key-delegate in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}",
+    "allow group ${join(",", local.network_admin_group_name)} to manage repos in compartment ${local.network_compartment_name}"]
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = [
@@ -214,7 +215,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"]
+    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}",
+  "allow group ${join(",", local.database_admin_group_name)} to manage repos in compartment ${local.database_compartment_name}"]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [

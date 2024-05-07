@@ -2722,10 +2722,8 @@ class CIS_Report:
                 ).data
 
                 compartments = set()
-                #print (adb_query_resources)
                 for adb in adb_query_resources:
                     compartments.add(adb.compartment_id)
-                    #print(adb.compartment_id)
 
                 for compartment in compartments:
                     #autonomous_databases = oci.pagination.list_call_get_all_results(
@@ -2735,7 +2733,6 @@ class CIS_Report:
                     autonomous_databases = region_values['adb_client'].list_autonomous_databases(
                             compartment_id=compartment
                             ).data
-                    #print (autonomous_databases)
                     for adb in autonomous_databases:
                         print (adb)
                         try:
@@ -2743,7 +2740,6 @@ class CIS_Report:
                             # Issue 295 fixed
                             if adb.lifecycle_state not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                                 record = oci.util.to_dict(adb)
-                                print (record)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
@@ -2756,7 +2752,6 @@ class CIS_Report:
                             record = record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
                             record['error'] = str(e)
                             self.__autonomous_databases.append(record)
-                            print(record['error'])
 
             print("\tProcessed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")
             return self.__autonomous_databases

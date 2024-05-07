@@ -2664,7 +2664,7 @@ class CIS_Report:
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']] = []
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']].append(record)
 
-            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Connections")
             return self.__network_ipsec_connections
         except Exception as e:
             raise RuntimeError(

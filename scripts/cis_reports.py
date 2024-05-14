@@ -408,7 +408,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider changes."
+                "Observation": "notifications have been configured for Identity Provider changes."
             },
             "4.4": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Identity Provider Group Mappings are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level",
@@ -416,7 +416,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Find and click the Rule that handles Idp Group Mapping Changes. Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete, and Idp Group Mapping – Update and confirm Action Type contains: Notifications and that a valid Topic is referenced.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider Group Mapping changes."
+                "Observation": "notifications have been configured for Identity Provider Group Mapping changes."
             },
             "4.5": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -424,7 +424,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider changes."
+                "Observation": "notifications have been configured for IAM Group changes."
             },
             "4.6": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Policies are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -432,7 +432,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for IAM Policy changes."
+                "Observation": "notifications have been configured for IAM Policy changes."
             },
             "4.7": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Users are created, updated, deleted, capabilities updated, or state updated. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -440,7 +440,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types: User – Create, User – Delete, User – Update, User Capabilities – Update, User State – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for user changes."
+                "Observation": "notifications have been configured for user changes."
             },
             "4.8": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Virtual Cloud Networks are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -448,7 +448,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete, and VCN – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for VCN changes."
+                "Observation": "notifications have been configured for VCN changes."
             },
             "4.9": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when route tables are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -456,7 +456,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete, and Route Table – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes to route tables."
+                "Observation": "notifications have been configured for changes to route tables."
             },
             "4.10": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when security lists are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -464,7 +464,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete, and Security List – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for security list changes."
+                "Observation": "notifications have been configured for security list changes."
             },
             "4.11": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when network security groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -472,7 +472,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Network Security Group changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete, and Network Security Group – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes on Network Service Groups."
+                "Observation": "notifications have been configured for changes on Network Service Groups."
             },
             "4.12": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -480,7 +480,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete End, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment,Compartment, Service Gateway – Create, Service Gateway – Delete Begin, Service Gateway – Delete End, Service Gateway – Update, Service Gateway – Attach Service, Service Gateway – Detach Service, Service Gateway – Change Compartment.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes on network gateways."
+                "Observation": "notifications have been configured for changes on network gateways."
             },
             "4.13": {
                 "Description": "VCN flow logs record details about traffic that has been accepted or rejected based on the security list rule.",
@@ -504,7 +504,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Cloud Guard in the Service Name Drop-down and selecting Detected – Problem, Remediated – Problem and Dismissed - Problem. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Cloud Guard Problems"            
+                "Observation": "notifications have been configured for Cloud Guard Problems."            
             },
             "4.16": {
                 "Description": "Oracle Cloud Infrastructure Vault securely stores master encryption keys that protect your encrypted data. You can use the Vault service to rotate keys to generate new cryptographic material. Periodically rotating keys limits the amount of data encrypted by one key version.",
@@ -2664,7 +2664,7 @@ class CIS_Report:
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']] = []
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']].append(record)
 
-            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Connections")
             return self.__network_ipsec_connections
         except Exception as e:
             raise RuntimeError(
@@ -4935,20 +4935,16 @@ class CIS_Report:
         #######################################
         
         for cert in self.__raw_oci_certificates:
-            print("\t__obp_analyze_tenancy_data: Iterating through certificates")
+            debug("\t__obp_analyze_tenancy_data: Iterating through certificates")
             
             try:
                 if cert['current_version_summary']['validity'] and \
                 datetime.datetime.strptime(self.get_date_iso_format(cert['current_version_summary']['validity']['time_of_validity_not_after']), self.__iso_time_format) >= self.cert_key_time_max_datetime:
-                    print("Good: " + cert['name'])
                     self.obp_foundations_checks['Certificates_Near_Expiry']['OBP'].append(cert)
                 else:
-                    print("Bad: " + cert['name'])
-
                     self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
             except Exception as e:
-                print("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after")
-                print("Horrible: " + cert['name'])
+                debug("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after" + cert['name'])
                 self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
 
         if self.obp_foundations_checks['Certificates_Near_Expiry']['Findings']:

@@ -554,7 +554,11 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read vss-family in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read usage-budgets in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read usage-reports in tenancy",
-        "allow group ${join(",", local.auditor_group_name)} to read data-safe-family in tenancy"
+        "allow group ${join(",", local.auditor_group_name)} to read data-safe-family in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read vaults in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read keys in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read tag-namespaces in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}"
       ]
     },
     (local.announcement_reader_policy_name) = {

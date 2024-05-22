@@ -2991,7 +2991,8 @@ class CIS_Report:
             print("\tProcessed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")
             return self.__autonomous_databases
         except Exception as e:
-            raise RuntimeError("Error in __adb_read_adbs " + str(e.args))
+            print("Error in __adb_read_adbs " + str(e.args))
+            self.__errors.append({'id' : '__adb_read_adbs', 'error' : str(e)})
 
     ############################################
     # Load Oracle Integration Cloud
@@ -3591,9 +3592,8 @@ class CIS_Report:
             return self.__tag_defaults
 
         except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read_tag_defaults " + str(e.args))
-
+            print("Error in __identity_read_tag_defaults " + str(e.args))
+            self.__errors.append({'id' : '__identity_read_tag_defaults', 'error' : str(e)})
     ##########################################################################
     # Get Service Connectors
     ##########################################################################

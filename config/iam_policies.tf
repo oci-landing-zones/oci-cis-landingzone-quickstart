@@ -558,6 +558,7 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read vaults in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read keys in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read tag-namespaces in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read serviceconnectors in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}"
       ]
     },

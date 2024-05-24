@@ -2726,15 +2726,14 @@ class CIS_Report:
                     compartments.add(adb.compartment_id)
 
                 for compartment in compartments:
-                    #autonomous_databases = oci.pagination.list_call_get_all_results(
-                        #region_values['adb_client'].list_autonomous_databases,
-                        #compartment_id=compartment
-                    #).data
-                    autonomous_databases = region_values['adb_client'].list_autonomous_databases(
-                            compartment_id=compartment
-                            ).data
+                    autonomous_databases = oci.pagination.list_call_get_all_results(
+                        region_values['adb_client'].list_autonomous_databases,
+                        compartment_id=compartment
+                    ).data
+                    # autonomous_databases = region_values['adb_client'].list_autonomous_databases(
+                    #         compartment_id=compartment
+                    #         ).data
                     for adb in autonomous_databases:
-                        print (adb)
                         try:
                             deep_link = self.__oci_adb_uri + adb.id + '?region=' + region_key
                             # Issue 295 fixed

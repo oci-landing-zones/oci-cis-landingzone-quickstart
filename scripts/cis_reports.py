@@ -2755,7 +2755,8 @@ class CIS_Report:
             print("\tProcessed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")
             return self.__autonomous_databases
         except Exception as e:
-            raise RuntimeError("Error in __adb_read_adbs " + str(e.args))
+            print("Error in __adb_read_adbs " + str(e.args))
+            self.__errors.append({'id' : '__adb_read_adbs', 'error' : str(e)})
 
     ############################################
     # Load Oracle Integration Cloud
@@ -3290,6 +3291,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
+        debug("__ons_read_subscriptions: Starting: ")
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterate through compartments to get all subscriptions
@@ -3298,7 +3300,7 @@ class CIS_Report:
                     search_details=oci.resource_search.models.StructuredSearchDetails(
                         query="query OnsSubscription resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                 ).data
-
+                debug("\t__ons_read_subscriptions: Recieved " + str(len(subs_data)) + " subscriptions in region " + str(region_key))
                 for sub in subs_data:
                     deep_link = self.__oci_onssub_uri + sub.identifier + '?region=' + region_key
                     record = {
@@ -3354,9 +3356,8 @@ class CIS_Report:
             return self.__tag_defaults
 
         except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read_tag_defaults " + str(e.args))
-
+            print("Error in __identity_read_tag_defaults " + str(e.args))
+            self.__errors.append({'id' : '__identity_read_tag_defaults', 'error' : str(e)})
     ##########################################################################
     # Get Service Connectors
     ##########################################################################

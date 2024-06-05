@@ -35,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.8.2"
-PYTHON_SDK_VERSION = "2.125.3"
-UPDATED_DATE = "April 18, 2024"
+RELEASE_VERSION = "2.8.3"
+PYTHON_SDK_VERSION = "2.127.0"
+UPDATED_DATE = "June XX, 2024"
 
 
 ##########################################################################

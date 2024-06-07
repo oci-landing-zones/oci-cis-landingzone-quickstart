@@ -175,7 +175,8 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to read instance-agent-plugins in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage keys in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use key-delegate in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}",
+    "allow group ${join(",", local.network_admin_group_name)} to manage repos in compartment ${local.network_compartment_name}"]
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = [
@@ -214,7 +215,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"]
+    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}",
+  "allow group ${join(",", local.database_admin_group_name)} to manage repos in compartment ${local.database_compartment_name}"]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -552,7 +554,12 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read vss-family in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read usage-budgets in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read usage-reports in tenancy",
-        "allow group ${join(",", local.auditor_group_name)} to read data-safe-family in tenancy"
+        "allow group ${join(",", local.auditor_group_name)} to read data-safe-family in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read vaults in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read keys in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read tag-namespaces in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read serviceconnectors in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}"
       ]
     },
     (local.announcement_reader_policy_name) = {

@@ -23,14 +23,27 @@ The **Auditors Group** that is created as part of the CIS Landing Zone Terraform
 **Access to audit retention requires the user to be part of the Administrator group* - the only recommendation affected is CIS recommendation 3.1.
 
 ```
-Allow group Auditor-Group to inspect all-resources in tenancy
-Allow group Auditor-Group to read buckets in tenancy
-Allow group Auditor-Group to read file-family in tenancy
-Allow group Auditor-Group to read network-security-groups in tenancy
-Allow group Auditor-Group to read users in tenancy
-Allow group Auditor-Group to use cloud-shell in tenancy
-Allow group Auditor-Group to read dynamic-groups in tenancy
-Allow group Auditor-Group to read tag-defaults in tenancy
+allow group Auditor-Group to inspect all-resources in tenancy
+allow group Auditor-Group to read instances in tenancy
+allow group Auditor-Group to read load-balancers in tenancy
+allow group Auditor-Group to read buckets in tenancy
+allow group Auditor-Group to read nat-gateways in tenancy
+allow group Auditor-Group to read public-ips in tenancy
+allow group Auditor-Group to read file-family in tenancy
+allow group Auditor-Group to read instance-configurations in tenancy
+allow group Auditor-Group to read network-security-groups in tenancy
+allow group Auditor-Group to read resource-availability in tenancy
+allow group Auditor-Group to read audit-events in tenancy
+allow group Auditor-Group to read users in tenancy	
+allow group Auditor-Group to use cloud-shell in tenancy
+allow group Auditor-Group to read vss-family in tenancy
+allow group Auditor-Group to read usage-budgets in tenancy
+allow group Auditor-Group to read usage-reports in tenancy
+allow group Auditor-Group to read data-safe-family in tenancy
+allow group Auditor-Group to read vaults in tenancy
+allow group Auditor-Group to read keys in tenancy
+allow group Auditor-Group to read tag-namespaces in tenancy
+allow group Auditor-Group to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}
 ```
 
 ### Setup the script to run on a local machine

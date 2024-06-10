@@ -1,7 +1,31 @@
+#  June 7, 2024 Release Notes - 2.8.3
+1. [Cloud Guard Detector and Security Zones Rules Mapped to CIS OCI Benchmark 2.0.0](#2-8-3-mapping-updates)
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-3-script-updates)
+1. [Updates/Fixes to the Terraform](#2-8-3-terraform-updates)
+
+
+## <a name="#2-8-3-mapping-updates">Cloud Guard Detector and Security Zones Rules Mapped to CIS OCI Benchmark 2.0.0</a>
+The CIS OCI Benchmark mapping in the [compliance-script.md](./compliance-script.md) now maps to Cloud Guard Detectors and Security Zone Rules.
+
+## <a name="#2-8-3-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+**Fixes**
+- Fixed numbering issue for Logging and Monitoring checks 4.3 - 4.12.
+- Fixed to Auditor policy documented in the [compliance-script.md](./compliance-script.md) to support running OBP checks.
+- Fixed language for observations and error messages.
+
+**Updates**
+- Reduced code associated with ADB collection function.
+- Added additional debugging statements.
+
+## <a name="#2-8-3-terraform-updates">Updates/Fixes to the Terraform</a>
+**Updates**
+- Updated to Auditor policy to align with the [compliance-script.md](./compliance-script.md) update.
+- Updated Network and Database Admins with permissions to include repo management.
+
 #  April 18, 2024 Release Notes - 2.8.2
 1. [New OBP for Certificate Service Certificate Expiration](#2-8-2-certificate-check)
 1. [OCI CIS Landing Zone Oracle Access Governance Support](#2-8-2-oag-support)
-1. [Updates/Fixes to the Terraform](#2-8-2)
+1. [Updates/Fixes to the Terraform](#2-8-2-terraform-updates)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-2-script-updates)
 
 ## <a name="#2-8-2-certificate-check">New OBP for Certificate Service Certificate Expiration</a>

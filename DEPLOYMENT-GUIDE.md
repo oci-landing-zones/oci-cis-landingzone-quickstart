@@ -436,6 +436,43 @@ A foundational budget can be deployed to alert customers on their OCI spending. 
 
 > **_NOTE:_** Budgeting is not mandated by CIS Foundations Benchmark.
 
+### Oracle Access Governance
+
+#### Overview
+Landing Zone may optionally deploy the OCI IAM policies for deploying an [Oracle Access Governance]() instance.  To do this select **Enable Oracle Access Governance groups and policies** in your Oracle Resource Manager stack deployment in OCI or set `enable_oag_prerequisite_policies` to `true`.  When enabled the Landing Zone will provide a new or existing group with the policies required for the Oracle Access Governance instance's service account and add policies to the Security Administrator to be able to create and Oracle Access Governance (OAG) instance in the security compartment.
+
+#### Policies
+
+The policies granted to the Access Governance Group which are used for the OAG Instance to query OCI services in the tenancy are read only.  This allows for OAG to review access in the OCI tenancy and align to the CIS OCI Foundations Benchmark.  The policy statements are below:
+
+```
+allow group <label>-access-gorvernance-group to inspect all-resources in tenancy
+allow group <label>-access-gorvernance-group to read policies in tenancy
+allow group <label>-access-gorvernance-group to read domains in tenancy
+```
+
+The Security Admin group is granted following additional policies to deploy an Oracle Access Governance instance in the Security compartment: 
+
+```
+allow group <label>-security-admin-group to manage agcs-instance in compartment <label>-security-cmp
+```
+
+#### Deploying OAG an instance 
+As a user in the <labal>-security-admin-group follow the steps in [Set Up Service Instance](https://docs.oracle.com/en/cloud/paas/access-governance/cagsi/).
+
+#### Enabling an OAG an instance to review OCI IAM access in the tenancy
+After the OAG instance is provisioned follow steps from the [Integrate with Oracle Cloud Infrastructure (OCI) Identity and Access Management (IAM) ](https://docs.oracle.com/en/cloud/paas/access-governance/tjrtj/index.html#GUID-29D81CB5-08BB-45CB-8911-416F6FFDB0C9) to configure the OAG Instance to review the OCI IAM policies .  
+
+1. As a user in the <label>-iam-admin-group or the Administrator group go to the **Set up Identity Resources Manually** section and preform the below steps:
+    1. Follow the these steps and the links provided to set up identity resources in your cloud tenancy.
+        1. [Create an identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingusers.htm#three), agcs_user, in the Default domain for Oracle Access Governance access.
+        1. [Provision the user](https://docs.oracle.com/en-us/iaas/Content/Identity/access/managing-user-credentials.htm) with the following capabilities:
+            - API keys: Select the check box for API authentication.
+        1. [Assign the identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managinggroups.htm#three) (agcs_user) to the identity group (<label>-access_governance-group) 
+1. As a user in the <label>-cred-admin-group or the Administrator group go to the **Generate API Keys and Oracle Cloud Identifier (OCID) to configure your Cloud Environment in the Oracle Access Governance Console** section and complete all steps in this section.
+
+1. As a user in the <label>-security-admin-group go to the **Establish Connection by Adding a New Connected System - OCI IAM** and complete all steps in this section.
+
 ## 4.4 Security Services
 
 Landing Zone enables the following OCI security services for a strong security posture. 

@@ -35,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.8.1"
-PYTHON_SDK_VERSION = "2.124.1"
-UPDATED_DATE = "March 25, 2024"
+RELEASE_VERSION = "2.8.3"
+PYTHON_SDK_VERSION = "2.127.0"
+UPDATED_DATE = "June 7, 2024"
 
 
 ##########################################################################
@@ -85,39 +85,10 @@ class CIS_Report:
     _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
     __home_region = []
+    __days_to_expiry = 30
 
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
-
-    # OCI Link
-    __oci_cloud_url = "https://cloud.oracle.com"
-    __oci_users_uri = __oci_cloud_url + "/identity/users/"
-    __oci_policies_uri = __oci_cloud_url + "/identity/policies/"
-    __oci_groups_uri = __oci_cloud_url + "/identity/groups/"
-    __oci_dynamic_groups_uri = __oci_cloud_url + "/identity/dynamicgroups/"
-    __oci_identity_domains_uri = __oci_cloud_url + '/identity/domains/'
-    __oci_buckets_uri = __oci_cloud_url + "/object-storage/buckets/"
-    __oci_boot_volumes_uri = __oci_cloud_url + "/block-storage/boot-volumes/"
-    __oci_block_volumes_uri = __oci_cloud_url + "/block-storage/volumes/"
-    __oci_fss_uri = __oci_cloud_url + "/fss/file-systems/"
-    __oci_networking_uri = __oci_cloud_url + "/networking/vcns/"
-    __oci_adb_uri = __oci_cloud_url + "/db/adb/"
-    __oci_oicinstance_uri = __oci_cloud_url + "/oic/integration-instances/"
-    __oci_oacinstance_uri = __oci_cloud_url + "/analytics/instances/"
-    __oci_compartment_uri = __oci_cloud_url + "/identity/compartments/"
-    __oci_drg_uri = __oci_cloud_url + "/networking/drgs/"
-    __oci_cpe_uri = __oci_cloud_url + "/networking/cpes/"
-    __oci_ipsec_uri = __oci_cloud_url + "/networking/vpn-connections/"
-    __oci_events_uri = __oci_cloud_url + "/events/rules/"
-    __oci_loggroup_uri = __oci_cloud_url + "/logging/log-groups/"
-    __oci_vault_uri = __oci_cloud_url + "/security/kms/vaults/"
-    __oci_budget_uri = __oci_cloud_url + "/usage/budgets/"
-    __oci_cgtarget_uri = __oci_cloud_url + "/cloud-guard/targets/"
-    __oci_onssub_uri = __oci_cloud_url + "/notification/subscriptions/"
-    __oci_serviceconnector_uri = __oci_cloud_url + "/connector-hub/service-connectors/"
-    __oci_fastconnect_uri = __oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
-    __oci_instances_uri = __oci_cloud_url + "/compute/instances/"
-
 
     __oci_ocid_pattern = r'ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}'
 
@@ -137,8 +108,14 @@ class CIS_Report:
         datetime.timedelta(days=__KMS_DAYS_OLD)
     str_kms_key_time_max_datetime = kms_key_time_max_datetime.strftime(__iso_time_format)
     kms_key_time_max_datetime = datetime.datetime.strptime(str_kms_key_time_max_datetime, __iso_time_format)
+    # For Certificates Check 
+    cert_key_time_max_datetime = start_datetime + \
+        datetime.timedelta(days=__days_to_expiry)
+    str_cert_key_time_max_datetime = cert_key_time_max_datetime.strftime(__iso_time_format)
+    cert_key_time_max_datetime = datetime.datetime.strptime(str_cert_key_time_max_datetime, __iso_time_format)
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, debug=False, all_resources=True):
+
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
 
         # CIS Foundation benchmark 2.0.0
         self.cis_foundations_benchmark_2_0 = {
@@ -432,7 +409,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition in the Events services by selecting Identity in the Service Name Drop-down and selecting Identity Provider – Create, Identity Provider - Delete and Identity Provider – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider changes."
+                "Observation": "notifications have been configured for Identity Provider changes."
             },
             "4.4": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Identity Provider Group Mappings are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level",
@@ -440,7 +417,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Find and click the Rule that handles Idp Group Mapping Changes. Click the Edit Rule button and verify that the RuleConditions section contains a condition for the Service Identity and Event Types: Idp Group Mapping – Create, Idp Group Mapping – Delete, and Idp Group Mapping – Update and confirm Action Type contains: Notifications and that a valid Topic is referenced.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider Group Mapping changes."
+                "Observation": "notifications have been configured for Identity Provider Group Mapping changes."
             },
             "4.5": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -448,7 +425,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Group – Create, Group – Delete and Group – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Identity Provider changes."
+                "Observation": "notifications have been configured for IAM Group changes."
             },
             "4.6": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Policies are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -456,7 +433,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Identity in the Service Name Drop-down and selecting Policy – Change Compartment, Policy – Create, Policy - Delete and Policy – Update. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for IAM Policy changes."
+                "Observation": "notifications have been configured for IAM Policy changes."
             },
             "4.7": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when IAM Users are created, updated, deleted, capabilities updated, or state updated. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -464,7 +441,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles IAM User Changes and verify that the Rule Conditions section contains a condition for the Service Identity and Event Types: User – Create, User – Delete, User – Update, User Capabilities – Update, User State – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for user changes."
+                "Observation": "notifications have been configured for user changes."
             },
             "4.8": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Virtual Cloud Networks are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -472,7 +449,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles VCN Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: VCN – Create, VCN - Delete, and VCN – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for VCN changes."
+                "Observation": "notifications have been configured for VCN changes."
             },
             "4.9": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when route tables are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -480,7 +457,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Route Table Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Route Table – Change Compartment, Route Table – Create, Route Table - Delete, and Route Table – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes to route tables."
+                "Observation": "notifications have been configured for changes to route tables."
             },
             "4.10": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when security lists are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -488,7 +465,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Security List Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Security List – Change Compartment, Security List – Create, Security List - Delete, and Security List – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for security list changes."
+                "Observation": "notifications have been configured for security list changes."
             },
             "4.11": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when network security groups are created, updated or deleted. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -496,7 +473,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Network Security Group changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: Network Security Group – Change Compartment, Network Security Group – Create, Network Security Group - Delete, and Network Security Group – Update.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes on Network Service Groups."
+                "Observation": "notifications have been configured for changes on Network Service Groups."
             },
             "4.12": {
                 "Description": "It is recommended to setup an Event Rule and Notification that gets triggered when Network Gateways are created, updated, deleted, attached, detached, or moved. This recommendation includes Internet Gateways, Dynamic Routing Gateways, Service Gateways, Local Peering Gateways, and NAT Gateways. Event Rules are compartment scoped and will detect events in child compartments, it is recommended to create the Event rule at the root compartment level.",
@@ -504,7 +481,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Edit Rule that handles Network Gateways Changes and verify that the RuleConditions section contains a condition for the Service Networking and Event Types: DRG – Create, DRG - Delete, DRG - Update, DRG Attachment – Create, DRG Attachment – Delete, DRG Attachment - Update, Internet Gateway – Create, Internet Gateway – Delete, Internet Gateway - Update, Internet Gateway – Change Compartment, Local Peering Gateway – Create, Local Peering Gateway – Delete End, Local Peering Gateway - Update, Local Peering Gateway – Change Compartment, NAT Gateway – Create, NAT Gateway – Delete, NAT Gateway - Update, NAT Gateway – Change Compartment,Compartment, Service Gateway – Create, Service Gateway – Delete Begin, Service Gateway – Delete End, Service Gateway – Update, Service Gateway – Attach Service, Service Gateway – Detach Service, Service Gateway – Change Compartment.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for changes on network gateways."
+                "Observation": "notifications have been configured for changes on network gateways."
             },
             "4.13": {
                 "Description": "VCN flow logs record details about traffic that has been accepted or rejected based on the security list rule.",
@@ -528,7 +505,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
                 "Remediation": "Create a Rule Condition by selecting Cloud Guard in the Service Name Drop-down and selecting Detected – Problem, Remediated – Problem and Dismissed - Problem. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
                 "Recommendation": "",
-                "Observation": "notification has been configured for Cloud Guard Problems"            
+                "Observation": "notifications have been configured for Cloud Guard Problems."            
             },
             "4.16": {
                 "Description": "Oracle Cloud Infrastructure Vault securely stores master encryption keys that protect your encrypted data. You can use the Vault service to rotate keys to generate new cryptographic material. Periodically rotating keys limits the amount of data encrypted by one key version.",
@@ -622,6 +599,7 @@ class CIS_Report:
             'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
             'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
+            'Certificates_Near_Expiry': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -630,57 +608,57 @@ class CIS_Report:
 
         # CIS monitoring notifications check
         self.cis_monitoring_checks = {
-            "4.4": [
+            "4.3": [
                 'com.oraclecloud.identitycontrolplane.createidentityprovider',
                 'com.oraclecloud.identitycontrolplane.deleteidentityprovider',
                 'com.oraclecloud.identitycontrolplane.updateidentityprovider'
             ],
-            "4.5": [
+            "4.4": [
                 'com.oraclecloud.identitycontrolplane.createidpgroupmapping',
                 'com.oraclecloud.identitycontrolplane.deleteidpgroupmapping',
                 'com.oraclecloud.identitycontrolplane.updateidpgroupmapping'
             ],
-            "4.6": [
+            "4.5": [
                 'com.oraclecloud.identitycontrolplane.creategroup',
                 'com.oraclecloud.identitycontrolplane.deletegroup',
                 'com.oraclecloud.identitycontrolplane.updategroup'
             ],
-            "4.7": [
+            "4.6": [
                 'com.oraclecloud.identitycontrolplane.createpolicy',
                 'com.oraclecloud.identitycontrolplane.deletepolicy',
                 'com.oraclecloud.identitycontrolplane.updatepolicy'
             ],
-            "4.8": [
+            "4.7": [
                 'com.oraclecloud.identitycontrolplane.createuser',
                 'com.oraclecloud.identitycontrolplane.deleteuser',
                 'com.oraclecloud.identitycontrolplane.updateuser',
                 'com.oraclecloud.identitycontrolplane.updateusercapabilities',
                 'com.oraclecloud.identitycontrolplane.updateuserstate'
             ],
-            "4.9": [
+            "4.8": [
                 'com.oraclecloud.virtualnetwork.createvcn',
                 'com.oraclecloud.virtualnetwork.deletevcn',
                 'com.oraclecloud.virtualnetwork.updatevcn'
             ],
-            "4.10": [
+            "4.9": [
                 'com.oraclecloud.virtualnetwork.changeroutetablecompartment',
                 'com.oraclecloud.virtualnetwork.createroutetable',
                 'com.oraclecloud.virtualnetwork.deleteroutetable',
                 'com.oraclecloud.virtualnetwork.updateroutetable'
             ],
-            "4.11": [
+            "4.10": [
                 'com.oraclecloud.virtualnetwork.changesecuritylistcompartment',
                 'com.oraclecloud.virtualnetwork.createsecuritylist',
                 'com.oraclecloud.virtualnetwork.deletesecuritylist',
                 'com.oraclecloud.virtualnetwork.updatesecuritylist'
             ],
-            "4.12": [
+            "4.11": [
                 'com.oraclecloud.virtualnetwork.changenetworksecuritygroupcompartment',
                 'com.oraclecloud.virtualnetwork.createnetworksecuritygroup',
                 'com.oraclecloud.virtualnetwork.deletenetworksecuritygroup',
                 'com.oraclecloud.virtualnetwork.updatenetworksecuritygroup'
             ],
-            "4.13": [
+            "4.12": [
                 'com.oraclecloud.virtualnetwork.createdrg',
                 'com.oraclecloud.virtualnetwork.deletedrg',
                 'com.oraclecloud.virtualnetwork.updatedrg',
@@ -847,6 +825,8 @@ class CIS_Report:
         # Compute Resources - Thinking about
         self.__Instance = []
 
+        # Certificates raw resources
+        self.__raw_oci_certificates = []
         # Setting list of regions to run in
 
         # Start print time info
@@ -994,6 +974,40 @@ class CIS_Report:
             self.__obp_checks = True
             self.__output_raw_data = True
 
+        # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
+        self.__oci_cloud_url = "https://cloud.oracle.com"
+        if oci_url:
+            self.__oci_cloud_url = oci_url
+
+        # OCI Link
+        self.__oci_users_uri = self.__oci_cloud_url + "/identity/users/"
+        self.__oci_policies_uri = self.__oci_cloud_url + "/identity/policies/"
+        self.__oci_groups_uri = self.__oci_cloud_url + "/identity/groups/"
+        self.__oci_dynamic_groups_uri = self.__oci_cloud_url + "/identity/dynamicgroups/"
+        self.__oci_identity_domains_uri = self.__oci_cloud_url + '/identity/domains/'
+        self.__oci_buckets_uri = self.__oci_cloud_url + "/object-storage/buckets/"
+        self.__oci_boot_volumes_uri = self.__oci_cloud_url + "/block-storage/boot-volumes/"
+        self.__oci_block_volumes_uri = self.__oci_cloud_url + "/block-storage/volumes/"
+        self.__oci_fss_uri = self.__oci_cloud_url + "/fss/file-systems/"
+        self.__oci_networking_uri = self.__oci_cloud_url + "/networking/vcns/"
+        self.__oci_adb_uri = self.__oci_cloud_url + "/db/adb/"
+        self.__oci_oicinstance_uri = self.__oci_cloud_url + "/oic/integration-instances/"
+        self.__oci_oacinstance_uri = self.__oci_cloud_url + "/analytics/instances/"
+        self.__oci_compartment_uri = self.__oci_cloud_url + "/identity/compartments/"
+        self.__oci_drg_uri = self.__oci_cloud_url + "/networking/drgs/"
+        self.__oci_cpe_uri = self.__oci_cloud_url + "/networking/cpes/"
+        self.__oci_ipsec_uri = self.__oci_cloud_url + "/networking/vpn-connections/"
+        self.__oci_events_uri = self.__oci_cloud_url + "/events/rules/"
+        self.__oci_loggroup_uri = self.__oci_cloud_url + "/logging/log-groups/"
+        self.__oci_vault_uri = self.__oci_cloud_url + "/security/kms/vaults/"
+        self.__oci_budget_uri = self.__oci_cloud_url + "/usage/budgets/"
+        self.__oci_cgtarget_uri = self.__oci_cloud_url + "/cloud-guard/targets/"
+        self.__oci_onssub_uri = self.__oci_cloud_url + "/notification/subscriptions/"
+        self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
+        self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
+        self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
+        self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
+
     ##########################################################################
     # Create regional config, signers adds appends them to self.__regions object
     ##########################################################################
@@ -1099,6 +1113,11 @@ class CIS_Report:
                 if proxy:
                     instance.base_client.session.proxies = {'https': proxy}
                 region_values['instance'] = instance
+
+                certificate_client = oci.certificates_management.CertificatesManagementClient(region_config, signer=region_signer)
+                if proxy:
+                    search.base_client.session.proxies = {'https': proxy}
+                region_values['certificate_client'] = certificate_client 
 
             except Exception as e:
                 debug("__create_regional_signers: error reading" + str(self.__config))
@@ -2648,7 +2667,7 @@ class CIS_Report:
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']] = []
                         self.__network_ipsec_connections[ip_sec.additional_details['drgId']].append(record)
 
-            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Conenctions")
+            print("\tProcessed " + str(len((list(itertools.chain.from_iterable(self.__network_ipsec_connections.values()))))) + " IP SEC Connections")
             return self.__network_ipsec_connections
         except Exception as e:
             raise RuntimeError(
@@ -2698,6 +2717,7 @@ class CIS_Report:
         try:
             for region_key, region_values in self.__regions.items():
                 # UPDATED JB
+                #adb_query_resources = self.__search_query_resource_type("AutonomousDatabase", region_values['search_client'])
                 adb_query_resources = oci.pagination.list_call_get_all_results(
                     region_values['search_client'].search_resources,
                     search_details=oci.resource_search.models.StructuredSearchDetails(
@@ -2705,7 +2725,6 @@ class CIS_Report:
                 ).data
 
                 compartments = set()
-
                 for adb in adb_query_resources:
                     compartments.add(adb.compartment_id)
 
@@ -2714,268 +2733,33 @@ class CIS_Report:
                         region_values['adb_client'].list_autonomous_databases,
                         compartment_id=compartment
                     ).data
+                    # autonomous_databases = region_values['adb_client'].list_autonomous_databases(
+                    #         compartment_id=compartment
+                    #         ).data
                     for adb in autonomous_databases:
                         try:
                             deep_link = self.__oci_adb_uri + adb.id + '?region=' + region_key
                             # Issue 295 fixed
                             if adb.lifecycle_state not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
-                                record = {
-                                    "id": adb.id,
-                                    "display_name": adb.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
-                                    "apex_details": adb.apex_details,
-                                    "are_primary_whitelisted_ips_used": adb.are_primary_whitelisted_ips_used,
-                                    "autonomous_container_database_id": adb.autonomous_container_database_id,
-                                    "autonomous_maintenance_schedule_type": adb.autonomous_maintenance_schedule_type,
-                                    "available_upgrade_versions": adb.available_upgrade_versions,
-                                    "backup_config": adb.backup_config,
-                                    "compartment_id": adb.compartment_id,
-                                    "connection_strings": adb.connection_strings,
-                                    "connection_urls": adb.connection_urls,
-                                    "cpu_core_count": adb.cpu_core_count,
-                                    "customer_contacts": adb.cpu_core_count,
-                                    "data_safe_status": adb.data_safe_status,
-                                    "data_storage_size_in_gbs": adb.data_storage_size_in_gbs,
-                                    "data_storage_size_in_tbs": adb.data_storage_size_in_tbs,
-                                    "database_management_status": adb.database_management_status,
-                                    "dataguard_region_type": adb.dataguard_region_type,
-                                    "db_name": adb.db_name,
-                                    "db_version": adb.db_version,
-                                    "db_workload": adb.db_workload,
-                                    "defined_tags": adb.defined_tags,
-                                    "failed_data_recovery_in_seconds": adb.failed_data_recovery_in_seconds,
-                                    "freeform_tags": adb.freeform_tags,
-                                    "infrastructure_type": adb.infrastructure_type,
-                                    "is_access_control_enabled": adb.is_access_control_enabled,
-                                    "is_auto_scaling_enabled": adb.is_auto_scaling_enabled,
-                                    "is_data_guard_enabled": adb.is_data_guard_enabled,
-                                    "is_dedicated": adb.is_dedicated,
-                                    "is_free_tier": adb.is_free_tier,
-                                    "is_mtls_connection_required": adb.is_mtls_connection_required,
-                                    "is_preview": adb.is_preview,
-                                    "is_reconnect_clone_enabled": adb.is_reconnect_clone_enabled,
-                                    "is_refreshable_clone": adb.is_refreshable_clone,
-                                    "key_history_entry": adb.key_history_entry,
-                                    "key_store_id": adb.key_store_id,
-                                    "key_store_wallet_name": adb.key_store_wallet_name,
-                                    "kms_key_id": adb.kms_key_id,
-                                    "kms_key_lifecycle_details": adb.kms_key_lifecycle_details,
-                                    "kms_key_version_id": adb.kms_key_version_id,
-                                    "license_model": adb.license_model,
-                                    "lifecycle_details": adb.lifecycle_details,
-                                    "lifecycle_state": adb.lifecycle_state,
-                                    "nsg_ids": adb.nsg_ids,
-                                    "ocpu_count": adb.ocpu_count,
-                                    "open_mode": adb.open_mode,
-                                    "operations_insights_status": adb.operations_insights_status,
-                                    "peer_db_ids": adb.peer_db_ids,
-                                    "permission_level": adb.permission_level,
-                                    "private_endpoint": adb.private_endpoint,
-                                    "private_endpoint_ip": adb.private_endpoint_ip,
-                                    "private_endpoint_label": adb.private_endpoint_label,
-                                    "refreshable_mode": adb.refreshable_mode,
-                                    "refreshable_status": adb.refreshable_status,
-                                    "role": adb.role,
-                                    "scheduled_operations": adb.scheduled_operations,
-                                    "service_console_url": adb.service_console_url,
-                                    "source_id": adb.source_id,
-                                    "standby_whitelisted_ips": adb.standby_whitelisted_ips,
-                                    "subnet_id": adb.subnet_id,
-                                    "supported_regions_to_clone_to": adb.supported_regions_to_clone_to,
-                                    "system_tags": adb.system_tags,
-                                    "time_created": adb.time_created.strftime(self.__iso_time_format),
-                                    "time_data_guard_role_changed": str(adb.time_data_guard_role_changed),
-                                    "time_deletion_of_free_autonomous_database": str(adb.time_deletion_of_free_autonomous_database),
-                                    "time_local_data_guard_enabled": str(adb.time_local_data_guard_enabled),
-                                    "time_maintenance_begin": str(adb.time_maintenance_begin),
-                                    "time_maintenance_end": str(adb.time_maintenance_end),
-                                    "time_of_last_failover": str(adb.time_of_last_failover),
-                                    "time_of_last_refresh": str(adb.time_of_last_refresh),
-                                    "time_of_last_refresh_point": str(adb.time_of_last_refresh_point),
-                                    "time_of_last_switchover": str(adb.time_of_last_switchover),
-                                    "time_of_next_refresh": str(adb.time_of_next_refresh),
-                                    "time_reclamation_of_free_autonomous_database": str(adb.time_reclamation_of_free_autonomous_database),
-                                    "time_until_reconnect_clone_enabled": str(adb.time_until_reconnect_clone_enabled),
-                                    "used_data_storage_size_in_tbs": str(adb.used_data_storage_size_in_tbs),
-                                    "vault_id": adb.vault_id,
-                                    "whitelisted_ips": adb.whitelisted_ips,
-                                    "region": region_key,
-                                    "notes": ""
-                                }
+                                record = oci.util.to_dict(adb)
+                                record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['error'] = ""
+                                self.__autonomous_databases.append(record)
                             else:
-                                record = {
-                                    "id": adb.id,
-                                    "display_name": adb.display_name,
-                                    "deep_link": self.__generate_csv_hyperlink(deep_link, adb.display_name),
-                                    "apex_details": "",
-                                    "are_primary_whitelisted_ips_used": "",
-                                    "autonomous_container_database_id": "",
-                                    "autonomous_maintenance_schedule_type": "",
-                                    "available_upgrade_versions": "",
-                                    "backup_config": "",
-                                    "compartment_id": adb.compartment_id,
-                                    "connection_strings": "",
-                                    "connection_urls": "",
-                                    "cpu_core_count": "",
-                                    "customer_contacts": "",
-                                    "data_safe_status": "",
-                                    "data_storage_size_in_gbs": "",
-                                    "data_storage_size_in_tbs": "",
-                                    "database_management_status": "",
-                                    "dataguard_region_type": "",
-                                    "db_name": "",
-                                    "db_version": "",
-                                    "db_workload": "",
-                                    "defined_tags": "",
-                                    "failed_data_recovery_in_seconds": "",
-                                    "freeform_tags": "",
-                                    "infrastructure_type": "",
-                                    "is_access_control_enabled": "",
-                                    "is_auto_scaling_enabled": "",
-                                    "is_data_guard_enabled": "",
-                                    "is_dedicated": "",
-                                    "is_free_tier": "",
-                                    "is_mtls_connection_required": "",
-                                    "is_preview": "",
-                                    "is_reconnect_clone_enabled": "",
-                                    "is_refreshable_clone": "",
-                                    "key_history_entry": "",
-                                    "key_store_id": "",
-                                    "key_store_wallet_name": "",
-                                    "kms_key_id": "",
-                                    "kms_key_lifecycle_details": "",
-                                    "kms_key_version_id": "",
-                                    "license_model": "",
-                                    "lifecycle_details": "",
-                                    "lifecycle_state": adb.lifecycle_state,
-                                    "nsg_ids": "",
-                                    "ocpu_count": "",
-                                    "open_mode": "",
-                                    "operations_insights_status": "",
-                                    "peer_db_ids": "",
-                                    "permission_level": "",
-                                    "private_endpoint": "",
-                                    "private_endpoint_ip": "",
-                                    "private_endpoint_label": "",
-                                    "refreshable_mode": "",
-                                    "refreshable_status": "",
-                                    "role": "",
-                                    "scheduled_operations": "",
-                                    "service_console_url": "",
-                                    "source_id": "",
-                                    "standby_whitelisted_ips": "",
-                                    "subnet_id": "",
-                                    "supported_regions_to_clone_to": "",
-                                    "system_tags": "",
-                                    "time_created": "",
-                                    "time_data_guard_role_changed": "",
-                                    "time_deletion_of_free_autonomous_database": "",
-                                    "time_local_data_guard_enabled": "",
-                                    "time_maintenance_begin": "",
-                                    "time_maintenance_end": "",
-                                    "time_of_last_failover": "",
-                                    "time_of_last_refresh": "",
-                                    "time_of_last_refresh_point": "",
-                                    "time_of_last_switchover": "",
-                                    "time_of_next_refresh": "",
-                                    "time_reclamation_of_free_autonomous_database": "",
-                                    "time_until_reconnect_clone_enabled": "",
-                                    "used_data_storage_size_in_tbs": "",
-                                    "vault_id": "",
-                                    "whitelisted_ips": "",
-                                    "region": region_key,
-                                    "notes": ""
-                                }
+                                record = record = oci.util.to_dict(adb)
+                                record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['error'] = ""
+                                self.__autonomous_databases.append(record)
                         except Exception as e:
-                            record = {
-                                "id": "",
-                                "display_name": "",
-                                "deep_link": "",
-                                "apex_details": "",
-                                "are_primary_whitelisted_ips_used": "",
-                                "autonomous_container_database_id": "",
-                                "autonomous_maintenance_schedule_type": "",
-                                "available_upgrade_versions": "",
-                                "backup_config": "",
-                                "compartment_id": "",
-                                "connection_strings": "",
-                                "connection_urls": "",
-                                "cpu_core_count": "",
-                                "customer_contacts": "",
-                                "data_safe_status": "",
-                                "data_storage_size_in_gbs": "",
-                                "data_storage_size_in_tbs": "",
-                                "database_management_status": "",
-                                "dataguard_region_type": "",
-                                "db_name": "",
-                                "db_version": "",
-                                "db_workload": "",
-                                "defined_tags": "",
-                                "failed_data_recovery_in_seconds": "",
-                                "freeform_tags": "",
-                                "infrastructure_type": "",
-                                "is_access_control_enabled": "",
-                                "is_auto_scaling_enabled": "",
-                                "is_data_guard_enabled": "",
-                                "is_dedicated": "",
-                                "is_free_tier": "",
-                                "is_mtls_connection_required": "",
-                                "is_preview": "",
-                                "is_reconnect_clone_enabled": "",
-                                "is_refreshable_clone": "",
-                                "key_history_entry": "",
-                                "key_store_id": "",
-                                "key_store_wallet_name": "",
-                                "kms_key_id": "",
-                                "kms_key_lifecycle_details": "",
-                                "kms_key_version_id": "",
-                                "license_model": "",
-                                "lifecycle_details": "",
-                                "lifecycle_state": "",
-                                "nsg_ids": "",
-                                "ocpu_count": "",
-                                "open_mode": "",
-                                "operations_insights_status": "",
-                                "peer_db_ids": "",
-                                "permission_level": "",
-                                "private_endpoint": "",
-                                "private_endpoint_ip": "",
-                                "private_endpoint_label": "",
-                                "refreshable_mode": "",
-                                "refreshable_status": "",
-                                "role": "",
-                                "scheduled_operations": "",
-                                "service_console_url": "",
-                                "source_id": "",
-                                "standby_whitelisted_ips": "",
-                                "subnet_id": "",
-                                "supported_regions_to_clone_to": "",
-                                "system_tags": "",
-                                "time_created": "",
-                                "time_data_guard_role_changed": "",
-                                "time_deletion_of_free_autonomous_database": "",
-                                "time_local_data_guard_enabled": "",
-                                "time_maintenance_begin": "",
-                                "time_maintenance_end": "",
-                                "time_of_last_failover": "",
-                                "time_of_last_refresh": "",
-                                "time_of_last_refresh_point": "",
-                                "time_of_last_switchover": "",
-                                "time_of_next_refresh": "",
-                                "time_reclamation_of_free_autonomous_database": "",
-                                "time_until_reconnect_clone_enabled": "",
-                                "used_data_storage_size_in_tbs": "",
-                                "vault_id": "",
-                                "whitelisted_ips": "",
-                                "region": region_key,
-                                "notes": str(e)
-                            }
-                        self.__autonomous_databases.append(record)
+                            record = record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                            record['error'] = str(e)
+                            self.__autonomous_databases.append(record)
 
             print("\tProcessed " + str(len(self.__autonomous_databases)) + " Autonomous Databases")
             return self.__autonomous_databases
         except Exception as e:
-            raise RuntimeError("Error in __adb_read_adbs " + str(e.args))
+            print("Error in __adb_read_adbs " + str(e.args))
+            self.__errors.append({'id' : '__adb_read_adbs', 'error' : str(e)})
 
     ############################################
     # Load Oracle Integration Cloud
@@ -3141,6 +2925,7 @@ class CIS_Report:
                     record = {
                         "compartment_id": event_rule.compartment_id,
                         "condition": event_rule.additional_details['condition'],
+                        "actions": event_rule.additional_details['actionsDetails'],
                         "description": event_rule.additional_details['description'],
                         "display_name": event_rule.display_name,
                         "deep_link": self.__generate_csv_hyperlink(deep_link, event_rule.display_name),
@@ -3509,6 +3294,7 @@ class CIS_Report:
     # Oracle Notifications Services for Subscriptions
     ##########################################################################
     def __ons_read_subscriptions(self):
+        debug("__ons_read_subscriptions: Starting: ")
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterate through compartments to get all subscriptions
@@ -3517,7 +3303,7 @@ class CIS_Report:
                     search_details=oci.resource_search.models.StructuredSearchDetails(
                         query="query OnsSubscription resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'")
                 ).data
-
+                debug("\t__ons_read_subscriptions: Recieved " + str(len(subs_data)) + " subscriptions in region " + str(region_key))
                 for sub in subs_data:
                     deep_link = self.__oci_onssub_uri + sub.identifier + '?region=' + region_key
                     record = {
@@ -3573,9 +3359,8 @@ class CIS_Report:
             return self.__tag_defaults
 
         except Exception as e:
-            raise RuntimeError(
-                "Error in __identity_read_tag_defaults " + str(e.args))
-
+            print("Error in __identity_read_tag_defaults " + str(e.args))
+            self.__errors.append({'id' : '__identity_read_tag_defaults', 'error' : str(e)})
     ##########################################################################
     # Get Service Connectors
     ##########################################################################
@@ -3785,6 +3570,57 @@ class CIS_Report:
             raise RuntimeError("Error in __core_instance_read_compute " + str(e.args))
 
 
+    ##########################################################################
+    # Returns a region name for a region key
+    # Takes: region key
+    ##########################################################################
+    def __get_region_name_from_key(self,region_key):
+        debug("__get_region_name_from_key")
+        for key, region_values in self.__regions.items():
+            if region_values['region_key'].upper() == region_key.upper() or region_values['region_name'].upper() == region_key.upper(): 
+                return region_values['region_name']
+    
+    ##########################################################################
+    # Query All certificates in the tenancy
+    ##########################################################################
+    def __certificates_read_certificates(self):
+        debug("__certificates_read_certificates")
+        try:
+            for region_key, region_values in self.__regions.items():
+                certificates_data = oci.pagination.list_call_get_all_results(
+                        region_values['search_client'].search_resources,
+                        search_details=oci.resource_search.models.StructuredSearchDetails(
+                            query="query certificate resources return allAdditionalFields")
+                    ).data
+                cert_compartments = {}
+                debug("\t__certificates_read_certificates: Got Ceritificates from ")
+
+                for certificate in certificates_data:
+                    cert_compartments[certificate.compartment_id] = certificate.compartment_id
+
+                for compartment in cert_compartments:
+                    certs = oci.pagination.list_call_get_all_results(
+                        region_values['certificate_client'].list_certificates,
+                        compartment_id=compartment).data
+                    for cert in certs:
+                        record = oci.util.to_dict(cert)
+                        debug("\t__certificates_read_certificates: Coverted Certificate Object to Dict")
+
+                        region_id = record['id'].split(".")[3]
+                        debug("\t__certificates_read_certificates: Got region id")
+
+                        region_name = self.__get_region_name_from_key(region_id)
+                        deep_link = self.__oci_cert_uri + record['id'] + "?region=" + region_name
+                        record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name']),
+                        record['region'] = region_name
+                        debug("\t__certificates_read_certificates: Added region name and deeplink to certificate record.")
+                        self.__raw_oci_certificates.append(record)
+        except Exception as e:
+            debug("__certificates_read_certificates failed to process: " + str(e))
+        print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
+    
+    
+    
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
@@ -4884,6 +4720,28 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
+        #######################################
+        # Certificate Expiry Check
+        #######################################
+        
+        for cert in self.__raw_oci_certificates:
+            debug("\t__obp_analyze_tenancy_data: Iterating through certificates")
+            
+            try:
+                if cert['current_version_summary']['validity'] and \
+                datetime.datetime.strptime(self.get_date_iso_format(cert['current_version_summary']['validity']['time_of_validity_not_after']), self.__iso_time_format) >= self.cert_key_time_max_datetime:
+                    self.obp_foundations_checks['Certificates_Near_Expiry']['OBP'].append(cert)
+                else:
+                    self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
+            except Exception as e:
+                debug("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after" + cert['name'])
+                self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
+
+        if self.obp_foundations_checks['Certificates_Near_Expiry']['Findings']:
+            self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = False
+        else:
+            self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = True
+
     ##########################################################################
     # Orchestrates data collection and CIS report generation
     ##########################################################################
@@ -5367,7 +5225,8 @@ class CIS_Report:
             self.__block_volume_read_block_volumes,
             self.__boot_volume_read_boot_volumes,
             self.__fss_read_fsss,
-            self.__core_instance_read_compute
+            self.__core_instance_read_compute,
+            self.__certificates_read_certificates
         ]
 
         # Oracle Best practice functions
@@ -5443,7 +5302,8 @@ class CIS_Report:
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
             "regions": self.__raw_regions,
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
-            "instances": self.__Instance
+            "instances": self.__Instance,
+            "certificates" : self.__raw_oci_certificates
         }
         for key in raw_csv_files:
             rfn = self.__print_to_csv_file('raw_data', key, raw_csv_files[key])
@@ -5876,6 +5736,8 @@ def execute_report():
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
     parser.add_argument('--redact_output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files.')
+    parser.add_argument('--deeplink-url-override', default=None, dest='oci_url',
+                    help='Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).')
     parser.add_argument('-ip', action='store_true', default=False,
                         dest='is_instance_principals', help='Use Instance Principals for Authentication.')
     parser.add_argument('-dt', action='store_true', default=False,
@@ -5895,7 +5757,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, debug=cmd.debug, all_resources=cmd.all_resources)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     try:

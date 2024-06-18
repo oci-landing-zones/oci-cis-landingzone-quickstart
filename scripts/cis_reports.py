@@ -602,7 +602,7 @@ class CIS_Report:
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
-        self.__cis_regional_checks = {"4.3","4.4","4.5","4.7", "4.8", "4.9", "4.10", "4.11", "4.12", }
+        self.__cis_regional_checks = {"4.3","4.4","4.5","4.7", "4.8", "4.9", "4.10", "4.11", "4.12"}
         self.__obp_regional_checks = {}
 
         # CIS monitoring notifications check
@@ -4073,6 +4073,12 @@ class CIS_Report:
                         # Checking if each region has the required events
                         if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
                             self.__cis_regional_findings_data[key][event['region']] = True
+                        
+                        # Cloud Guard Check is only required in the Cloud Guard Reporting Region
+                        elif key == "4.15" and event['region'] == self.__cloud_guard_config.reporting_region and \
+                            (all(x in eventtype_dict['eventtype'] for x in changes)):
+                            self.cis_foundations_benchmark_2_0[key]['Status'] = True
+                        
                         # For Checks that are home region based checking those
                         elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
                             key not in self.__cis_regional_checks and event['region'] == self.__home_region:
@@ -4085,7 +4091,6 @@ class CIS_Report:
         # ******* Iterating through Regional Checks adding findings
         for key, findings in self.__cis_regional_findings_data.items():
             if all(findings.values()):
-                print("Regional Check worked for " + str(key))
                 self.cis_foundations_benchmark_2_0[key]['Status'] = True
 
         # CIS Check 4.13 - VCN FlowLog enable

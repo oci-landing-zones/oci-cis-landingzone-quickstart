@@ -161,8 +161,27 @@ The modules in this collection are designed for flexibility, are straightforward
 Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
 
 
-## <a name="feedback"></a>Feedback
-We welcome your feedback. To post feedback, submit feature ideas or report bugs, please use the Issues section on this repository.	
+## Help
+
+Open an issue in this repository.
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md).
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process.
+
+## License
+
+Copyright (c) 2020,2024 Oracle and/or its affiliates.
+
+*Replace this statement if your project is not licensed under the UPL*
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>.
+
 
 ## <a name="known-issues"></a>Known Issues
 * **Terraform Apply Failure 404-NotAuthorizedorNotFound**    

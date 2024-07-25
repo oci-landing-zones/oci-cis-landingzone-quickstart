@@ -162,7 +162,7 @@ class CIS_Report:
             '4.12': {'section': 'Logging and Monitoring', 'recommendation_#': '4.12', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
             '4.13': {'section': 'Logging and Monitoring', 'recommendation_#': '4.13', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '13.6'], 'CCCS Guard Rail': '', 'Remediation': []},             
             '4.14': {'section': 'Logging and Monitoring', 'recommendation_#': '4.14', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '8.11'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
-            '4.15': {'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '4.15': {'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': False, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '', 'Remediation': []},
             '4.16': {'section': 'Logging and Monitoring', 'recommendation_#': '4.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail': '6,7', 'Remediation': []},
             '4.17': {'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '', 'Remediation': []},
 
@@ -588,7 +588,7 @@ class CIS_Report:
             }
         }
 
-        # MAP Checks
+        # OBP Checks
         self.obp_foundations_checks = {
             'Cost_Tracking_Budgets': {'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
             'SIEM_Audit_Log_All_Comps': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
@@ -600,7 +600,9 @@ class CIS_Report:
             'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
             'Certificates_Near_Expiry': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
         }
-        # MAP Regional Data
+        #  CIS and OBP Regional Data
+        # 4.6 is not regional because OCI IAM Policies only exist in the home region
+        self.__cis_regional_checks = {"4.3","4.4","4.5","4.7", "4.8", "4.9", "4.10", "4.11", "4.12"}
         self.__obp_regional_checks = {}
 
         # CIS monitoring notifications check
@@ -3623,6 +3625,15 @@ class CIS_Report:
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
 
+        self.__cis_regional_findings_data = {}
+
+        for check in self.__cis_regional_checks:
+            self.__cis_regional_findings_data[check] = {}
+            for region_key, region_values in self.__regions.items():
+                self.__cis_regional_findings_data[check][region_key] = None
+
+
+      
         # 1.1 Check - Checking for policy statements that are not restricted to a service
 
         for policy in self.__policies:
@@ -4048,21 +4059,39 @@ class CIS_Report:
         # Iterate through all event rules
         for event in self.__event_rules:
             # Convert Event Condition to dict
-            jsonable_str = event['condition'].lower().replace("'", "\"")
+            eventtype_jsonable_str = event['condition'].lower().replace("'", "\"")
             try:
-                event_dict = json.loads(jsonable_str)
+                eventtype_dict = json.loads(eventtype_jsonable_str)
             except Exception:
                 print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
-                event_dict = {}
-            # Issue 256: 'eventtype' not in event_dict (i.e. missing in event condition)
-            if event_dict and 'eventtype' in event_dict:
+                eventtype_dict = {}
+            # Issue 256: 'eventtype' not in eventtype_dict (i.e. missing in event condition)
+            if eventtype_dict and 'eventtype' in eventtype_dict:
                 for key, changes in self.cis_monitoring_checks.items():
                     # Checking if all cis change list is a subset of event condition
                     try:
-                        if (all(x in event_dict['eventtype'] for x in changes)):
+                        # Checking if each region has the required events
+                        if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
+                            self.__cis_regional_findings_data[key][event['region']] = True
+                        
+                        # Cloud Guard Check is only required in the Cloud Guard Reporting Region
+                        elif key == "4.15" and event['region'] == self.__cloud_guard_config.reporting_region and \
+                            (all(x in eventtype_dict['eventtype'] for x in changes)):
                             self.cis_foundations_benchmark_2_0[key]['Status'] = True
+                        
+                        # For Checks that are home region based checking those
+                        elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
+                            key not in self.__cis_regional_checks and event['region'] == self.__home_region:
+                            self.cis_foundations_benchmark_2_0[key]['Status'] = True
+
                     except Exception:
                         print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
+
+
+        # ******* Iterating through Regional Checks adding findings
+        for key, findings in self.__cis_regional_findings_data.items():
+            if all(findings.values()):
+                self.cis_foundations_benchmark_2_0[key]['Status'] = True
 
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
@@ -4135,7 +4164,7 @@ class CIS_Report:
                         bucket)
                     self.cis_foundations_benchmark_2_0['5.1.3']['Status'] = False
 
-        # CIS Check 4.1.1,4.1.2,4.1.3 Total - Adding All Buckets to total
+        # CIS Check 5.1.1,5.1.2,5.1.3 Total - Adding All Buckets to total
         self.cis_foundations_benchmark_2_0['5.1.1']['Total'] = self.__buckets
         self.cis_foundations_benchmark_2_0['5.1.2']['Total'] = self.__buckets
         self.cis_foundations_benchmark_2_0['5.1.3']['Total'] = self.__buckets

@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This ZIP file provides terraform code and a Resource Manager UI that can be used to partially setup SIEM integration: SIEM Integration on the OCI side
+This terraform code can be used to partially setup SIEM integration from the OCI side.
 
 **Logging Monitoring and Alerting Events and Notifications:**
 

@@ -1,5 +1,7 @@
 # OCI MAP Foundations Remediation
 
+![Landing Zone logo](../../images/landing%20zone_300.png)
+
 ## Introduction
 
 This ZIP file provides terraform code and a Resource Manager UI that can be used to partially setup SIEM integration: SIEM Integration on the OCI side
@@ -7,6 +9,41 @@ This ZIP file provides terraform code and a Resource Manager UI that can be used
 **Logging Monitoring and Alerting Events and Notifications:**
 
 - Configure a SIEM method based on requirements for OCI and 3rd Party solutions.
+
+## Variables
+### <a name="tf_variables"></a>Terraform Provider Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**tenancy_ocid** | The OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console. | Yes | None
+**user_ocid** | The OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources. | Yes | ""
+**fingerprint** | The user's public key fingerprint. This information can be obtained in OCI Console. | Yes | ""
+**private_key_path** | The local path to the user private key. | Yes | ""
+**private_key_password** | The private key password, if any. | No | ""
+
+### <a name="env_variables"></a>Environment Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**homeregion** | The tenancy's home region identifier where the Terraform should provision the resources. | Yes | None
+**service_label** | A label used as a prefix for naming resources. | Yes | None
+
+### <a name="siem_variables"></a>SIEM Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**integration_type** | Select an integration pattern to provision in your tenancy. Valid choices are: "Generic Stream-based", "Splunk", or "Stellar Cyber | Yes | ""
+**compartment_id_for_stream** | The compartment where the stream should reside. | Yes | null
+**name_for_stream** | Customize the stream name. Service Label will be prefixed.. | Yes | "siem-integration-stream"
+**compartment_id_for_service_connector_stream** | The compartment where the Service Connector should reside. | Yes | null
+**name_for_service_connector_stream** | Customize the service connector name. Service Label will be prefixed. | No | "audit_logs_to_stream"
+**create_iam_resources_stream** | Create a group in the Default Identity Domain and the required IAM Stream read policy. The IAM policy will be created in the same compartment as the stream. | No | null
+**access_method_stream** | Select how the SIEM will access OCI APIs. | No | "API Signing Key"
+**stream_partitions_count** | Number of partitions in the stream. Default to 1. | No | 1
+**stream_retention_in_hours** | Stream retention in hours. Default 24 hours. | No | 24
+
+### <a name="la_variables"></a>Logging Analytics Variables
+Variable Name | Description | Required | Default Value
+**create_iam_resources_la** | Determines whether the required IAM permissions for Logging Analytics will be created. | No | null
+**integration_link** | Select an integration pattern to provision in your tenancy. | No | null
+**integration_info** | Information needed to configure the Integration on the SIEM Side. | No | null
 
 ## Prerequisites
 
@@ -80,18 +117,24 @@ Consider, who should receive a Budget Alert when it is forecasted that the month
 
 The provisioning of resources will fail, If you have setup tags to be required at resource creations, since the stack cannot provide these tags.
 
-## How to run the stack
+## How to execute
+### Via Resource Manager
+1. [![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
+*If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
+1. Under **Working directory select the directory ending with *cis_oci_benchmark_logging_monitoring_workload*
+![Working_Directory](images/image1.png)
+1. Click Next
+1. Enter the required variables
+![variables](images/image2.png)
+1. Click Next
+1. Click Next
+1. Click Apply
 
-Start by creating a stack in the Home Region and leaving the "Home Region Deployment" box checked. This will create both global(Cloud guard, Budget and IAM Events) and regional resources(Network Events and Alarms) in the home region.
-
-After successfully  applying the stack in the home region you need to switch to the next region and create a new stack and deselect "Home Region Deployment". Provide the same service label as used in the home region and provide information for "Network Event Notifications" and "Alarms for FastConnect...".
-
-1.  Stack Creation
-2.  Customization
-3.  Plan and Apply
-4.  Review the Log
-5.  Run stack in additional non-home regions if needed
-6.  Accept the Email Subscriptions
+### Via Terraform CLI
+1. Enter required variables from input.auto.tfvars
+1. terraform init
+1. terraform plan
+1. terraforom apply
 
 ## Expected outcome and known issues
 

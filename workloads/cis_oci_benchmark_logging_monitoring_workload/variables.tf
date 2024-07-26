@@ -54,7 +54,7 @@ variable "budget_alert_threshold" {
 variable "budget_amount" {
   type        = number
   default     = 1000
-  description = "The amount of the budget expressed as a whole number in the currency of the customer's rate card"
+  description = "The amount of the budget expressed as a whole number in the currency of the customer's rate card."
 }
 variable "create_budget" {
   type        = bool
@@ -76,7 +76,7 @@ variable "budget_alert_email_endpoints" {
 # ------------------------------------------------------
 variable "enable_net_events" {
   type        = bool
-  description = "Enable Network Event Notifications"
+  description = "Enable Network Event Notifications."
   default     = false
 }
 
@@ -91,7 +91,7 @@ variable "network_admin_email_endpoints" {
 }
 
 variable "compartment_id_for_net_events" {
-  description = "The compartment where network events should reside will default to root"
+  description = "The compartment where network events should reside will default to root."
   type        = string
   default     = null
 }
@@ -113,7 +113,7 @@ variable "security_admin_email_endpoints" {
 }
 
 variable "compartment_id_for_iam_events" {
-  description = "The compartment where iam events should reside will default to root"
+  description = "The compartment where iam events should reside will default to root."
   type        = string
   default     = null
 }
@@ -121,7 +121,7 @@ variable "compartment_id_for_iam_events" {
 variable "create_alarms_as_enabled" {
   type        = bool
   default     = false
-  description = "Creates alarm artifacts in disabled state when set to false"
+  description = "Creates alarm artifacts in disabled state when set to false."
 }
 
 variable "alarms_admin_email_endpoints" {
@@ -135,7 +135,7 @@ variable "alarms_admin_email_endpoints" {
 }
 
 variable "compartment_id_for_alarms" {
-  description = "The compartment where alarm events should reside will default to root"
+  description = "The compartment where alarm events should reside will default to root."
   type        = string
   default     = null
 }
@@ -157,7 +157,7 @@ variable "cloud_guard_reporting_region" {
 }
 
 variable "compartment_id_for_cg_events" {
-  description = "The compartment where Cloud Guard events should reside will default to root"
+  description = "The compartment where Cloud Guard events should reside will default to root."
   type        = string
   default     = null
 }

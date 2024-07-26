@@ -1,0 +1,390 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "Map SIEM Integration Remediation"
+#stackDescription: "Stack Description"
+description: "This stack implements SIEM streaming in your OCI Tenancy at a regional level."
+schemaVersion: 1.1.0
+version: "0.1"
+locale: "en"
+
+# URL of SIEM Diagram.
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
+
+#Environment
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "homeregion"
+      - "service_label"
+
+  #Integration selector
+  - title: "Logging Monitoring and Alerting SIEM Integration for OCI Audit"
+    variables:
+      - "integration_type"
+
+  - title: "Stream-based SIEM integration"
+    variables:
+      - compartment_id_for_stream
+      - name_for_stream
+      - compartment_id_for_service_connector_stream
+      - name_for_service_connector_stream
+      - create_iam_resources_stream
+      - access_method_stream
+
+  - title: "Object Storage-based SIEM integration"
+    variables:
+      - compartment_id_for_bucket
+      - name_for_bucket
+      - compartment_id_for_service_connector_bucket
+      - name_for_service_connector_bucket
+      - create_iam_resources_bucket
+    visible:
+      - eq:
+          - integration_type
+          - "Object Storage-based"
+
+  - title: "Logging Analytics Integration"
+    variables:
+      - compartment_id_for_la_log_group
+      - name_for_la_log_group
+      - compartment_id_for_service_connector_la
+      - name_for_service_connector_la
+      - create_iam_resources_la
+    visible:
+      - eq:
+          - integration_type
+          - "OCI Native - Logging Analytics"
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "region"
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+      - "integration_link"
+      - "integration_info"
+      - "stream_partitions_count"
+      - "stream_retention_in_hours"
+
+variables:
+  # Enviroment Section
+  service_label:
+    type: string
+    title: "Service Label"
+    minLength: 1
+    maxLength: 8
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
+    description: "A unique label that gets prepended to all resources created by this stack."
+    required: true
+
+  homeregion:
+    type: boolean
+    title: "Home Region Deployment"
+    description: "Deselect if this is not a home region deployment."
+    required: true
+    default: true
+
+  # Integration Selector Section
+  integration_type:
+    type: enum
+    title: "Integration Type"
+    enum:
+      - "Generic Stream-based"
+      #- "OCI Native - Logging Analytics"
+      - "Splunk"
+      - "Stellar Cyber"
+    #default: NONE
+    required: true
+    description: "Select an integration pattern to provision in your tenancy."
+
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "The region for resource deployment."
+    required: true
+    visible: false
+
+  #Stream-Based Section
+  compartment_id_for_service_connector_stream:
+    type: oci:identity:compartment:id
+    title: "Compartment for Service Connector"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      or:
+        - eq:
+            - integration_type
+            - "Generic Stream-based"
+        - eq:
+            - integration_type
+            - "Splunk"
+        - eq:
+            - integration_type
+            - "Stellar Cyber"
+
+  compartment_id_for_stream:
+    type: oci:identity:compartment:id
+    title: "Compartment for Stream"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      or:
+        - eq:
+            - integration_type
+            - "Generic Stream-based"
+        - eq:
+            - integration_type
+            - "Splunk"
+        - eq:
+            - integration_type
+            - "Stellar Cyber"
+
+  name_for_stream:
+    type: string
+    title: "Stream Name"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: required
+    #description: "Customize the stream name. Service Label will be prefixed."
+    #default: "siem_stream"
+    visible:
+      or:
+        - eq:
+            - integration_type
+            - "Generic Stream-based"
+        - eq:
+            - integration_type
+            - "Splunk"
+        - eq:
+            - integration_type
+            - "Stellar Cyber"
+
+  name_for_service_connector_stream:
+    type: string
+    title: "Service Connector Name"
+    #description: "Customize the service connector name. Service Label will be prefixed."
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    #default: "audit_logs_to_stream"
+    visible:
+      or:
+        - eq:
+            - integration_type
+            - "Generic Stream-based"
+        - eq:
+            - integration_type
+            - "Splunk"
+        - eq:
+            - integration_type
+            - "Stellar Cyber"
+
+  create_iam_resources_stream:
+    type: boolean
+    title: "Create IAM resources"
+    #description: "Create a group and required IAM policy to read from the stream. "
+    required: false
+    default: true
+    dependsOn: homeregion
+    visible:
+      and:
+        - eq:
+            - homeregion
+            - true
+        - or:
+            - eq:
+                - integration_type
+                - "Generic Stream-based"
+            - eq:
+                - integration_type
+                - "Splunk"
+            - eq:
+                - integration_type
+                - "Stellar Cyber"
+
+  access_method_stream:
+    type: enum
+    title: "Select Access Method"
+    enum:
+      - "API Signing Key"
+      - "Instance Principal"
+    required: true
+    allowMultiple: false
+    default: "API Signing Key"
+    #description: "Select how the SIEM will access OCI APIs."
+    visible:
+      and:
+        - eq:
+            - create_iam_resources_stream
+            - true
+        - eq:
+            - homeregion
+            - true
+        - or:
+            - eq:
+                - integration_type
+                - "Generic Stream-based"
+            - eq:
+                - integration_type
+                - "Splunk"
+
+  compartment_id_for_bucket:
+    type: oci:identity:compartment:id
+    title: "Compartment for Bucket"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "Object Storage-based"
+
+  compartment_id_for_service_connector_la:
+    type: oci:identity:compartment:id
+    title: "Compartment for Service Connector"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "OCI Native - Logging Analytics"
+
+  compartment_id_for_la_log_group:
+    type: oci:identity:compartment:id
+    title: "Compartment for LA Log Group"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "OCI Native - Logging Analytics"
+
+  compartment_id_for_service_connector_bucket:
+    type: oci:identity:compartment:id
+    title: "Compartment for Service Connector"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "Object Storage-based"
+
+  name_for_bucket:
+    type: string
+    title: "Bucket Name"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: false
+    description: "Customize the bucket name. Service Label will be prefixed."
+    default: "siem_bucket"
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "Object Storage-based"
+
+  name_for_la_log_group:
+    type: string
+    title: "LA Log Group Name"
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: false
+    description: "Customize the Log Group name. Service Label will be prefixed."
+    default: "audit_log_group"
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "OCI Native - Logging Analytics"
+
+  name_for_service_connector_la:
+    type: string
+    title: "Service Connector Name"
+    description: "Customize the service connector name. Service Label will be prefixed."
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: false
+    default: "audit_logs_to_la"
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "OCI Native - Logging Analytics"
+
+  name_for_service_connector_bucket:
+    type: string
+    title: "Service Connector Name"
+    description: "Customize the service connector name. Service Label will be prefixed."
+    #dependsOn:
+    #  integration_type: "Stream-based"
+    required: false
+    default: "audit_logs_to_bucket"
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "Object Storage-based"
+
+  create_iam_resources_bucket:
+    type: boolean
+    title: "Create IAM resources"
+    description: "Create a group and required IAM policy to read objects from the bucket. "
+    required: false
+    default: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "Object Storage-based"
+
+  create_iam_resources_la:
+    type: boolean
+    title: "Create IAM resources"
+    description: "Create groups and required IAM policies to work with Logging Analytics."
+    required: false
+    default: true
+    visible:
+      and:
+        - eq:
+            - integration_type
+            - "OCI Native - Logging Analytics"
+  # Select Identity domain
+
+#compartment_id_for_logs:
+#  type: oci:identity:compartment:id
+#  title:  "Compartment for logs"
+#  dependsOn:
+#       enable_siem_integration: "true"
+#  required: true
+#  visible:  enable_siem_integration
+
+outputs:
+  next_steps:
+    type: copyableString
+    title: "Next Steps"
+
+  integration_link:
+    type: link
+    title: "SIEM Integration documentation"
+    visible: false
+
+primaryOutputButton: integration_link
+
+outputGroups:
+  - title: Integration Information
+    outputs:
+      - ${next_steps}
+      - ${integration_link}

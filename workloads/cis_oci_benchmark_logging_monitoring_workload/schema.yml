@@ -1,0 +1,254 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "CIS Landing Zone Lite "
+stackDescription: "This stack implements basic security controls in your OCI Tenancy"
+description: "This stack implements basic security controls in your OCI Tenancy"
+schemaVersion: 1.1.0
+version: "1.2"
+locale: "en"
+
+# URL of Logo insertion icon used on Application Information tab.
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
+
+variableGroups:
+  - title: "Environment"
+    variables:
+      - "homeregion"
+      - "service_label"
+
+  - title: "Logging Monitoring and Alerting Events and Notifications"
+    variables:
+      - "enable_net_events"
+      - "network_admin_email_endpoints"
+      - "compartment_id_for_net_events"
+      - "enable_iam_events"
+      - "security_admin_email_endpoints"
+      - "compartment_id_for_iam_events"
+      - "create_alarms_as_enabled"
+      - "alarms_admin_email_endpoints"
+      - "compartment_id_for_alarms"
+
+  - title: "Cloud Security and Posture Management - Cloud Guard"
+    variables:
+      - "configure_cloud_guard"
+      - "compartment_id_for_cg_events"
+      - "cloudguard_email_endpoints"
+      - "cloud_guard_reporting_region"
+
+  # - title: "Cloud Security and Posture Management - Vulnerability Scanning - SPM6, SPM7"
+  #   variables:
+  #     - "vss_create"
+  #     - "compartment_id_for_vss"
+
+  - title: "Cloud Governance - Budget"
+    variables:
+      - "create_budget"
+      - "budget_alert_threshold"
+      - "budget_amount"
+      - "budget_alert_email_endpoints"
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "fingerprint"
+      - "region"
+      - "private_key_path"
+      - "private_key_password"
+
+variables:
+  homeregion:
+    type: boolean
+    title: "Home Region Deployment"
+    description: "Deselect if this is not a home region deployment."
+    required: true
+    default: true
+
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "The region for resources deployment."
+    required: true
+
+  service_label:
+    type: string
+    title: "Service Label"
+    minLength: 1
+    maxLength: 20
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,19}$"
+    description: "A unique label that gets prepended to all resources created by this stack. Max length of 20 alphanumeric characters starting with a letter."
+    required: true
+
+  # Notifications variables
+  enable_iam_events:
+    type: boolean
+    title: "Security Notifications for IAM"
+    required: false
+
+  enable_net_events:
+    type: boolean
+    title: "Network Event Notifications"
+    required: false
+
+  network_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Network Admin Email Endpoints"
+    required: true
+    description: "List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: enable_net_events
+
+  compartment_id_for_net_events:
+    type: oci:identity:compartment:id
+    title: "Compartment for Network Events"
+    dependsOn:
+      enable_net_events: "true"
+    required: false
+    visible: enable_net_events
+
+  security_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Security Admin Email Endpoints"
+    required: true
+    description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: enable_iam_events
+
+  compartment_id_for_iam_events:
+    type: oci:identity:compartment:id
+    title: "Compartment for Security Events"
+    dependsOn:
+      enable_iam_events: "true"
+    required: false
+    visible: enable_iam_events
+
+  # Add default alarms
+
+  create_alarms_as_enabled:
+    type: boolean
+    title: "Create Default Alarms for FastConnect and VPN Status Alarms"
+    description: "Alarms will be in an enabled state by default."
+    default: false
+
+  alarms_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Alarm Emails for FastConnect and VPN Status Alarms"
+    required: true
+    description: "List of email addresses for related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: create_alarms_as_enabled
+
+  compartment_id_for_alarms:
+    type: oci:identity:compartment:id
+    title: "Compartment for FastConnect and VPN Status Alarms"
+    dependsOn:
+      create_alarms_as_enabled: "true"
+    required: false
+    visible: create_alarms_as_enabled
+
+  # setup cloud guard
+
+  configure_cloud_guard:
+    type: boolean
+    title: "Enable Cloud Guard Service? (Uncheck if Cloud Guard is already enabled and a target exists for the Root compartment)"
+    description: "If selected, Cloud Guard service is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a #target exists for the Root compartment, unselect this option."
+    dependsOn:
+      homeregion: "true"
+    required: false
+    visible: homeregion
+
+  cloud_guard_reporting_region:
+    type: oci:identity:region:name
+    title: "Reporting Region"
+    dependsOn:
+      configure_cloud_guard: "true"
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
+    required: false
+    visible: configure_cloud_guard
+
+  compartment_id_for_cg_events:
+    type: oci:identity:compartment:id
+    title: "Compartment for Cloud Guard Events"
+    dependsOn:
+      configure_cloud_guard: "true"
+    required: false
+    visible: configure_cloud_guard
+
+  cloudguard_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    dependsOn:
+      configure_cloud_guard: "true"
+    title: "List of email addresses for Cloud Guard related events"
+    required: true
+    description: "List of email addresses for related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: configure_cloud_guard
+
+  # Cost Management
+  create_budget:
+    type: boolean
+    title: "Create a budget with specific values and set a email notification?"
+    description: "If checked, a budget will be created at the root based on forecast spend."
+    #default: false
+    dependsOn: homeregion
+    homeregion: "true"
+    visible: homeregion
+
+  budget_alert_threshold:
+    type: integer
+    title: "Percentage of Budget"
+    description: "The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. 100% is the default."
+    required: false
+    visible: create_budget
+
+  budget_amount:
+    type: integer
+    title: "Monthly Budget Amount (in US$)"
+    description: "The amount of the budget expressed as a whole number in the currency of the customer's rate card."
+    required: false
+    visible: create_budget
+
+  budget_alert_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Budget Alert Email Endpoints"
+    required: false
+    visible: create_budget
+    description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+
+outputs:
+  release:
+    type: string
+    title: CIS Landing Zone Lite
+
+  region:
+    type: string
+    title: Region
+
+  service_label:
+    type: string
+    title: Service Label
+
+  compartments:
+    type: json
+    title: Compartments
+
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${release}
+      - ${region}
+      - ${service_label}
+      - ${compartments}

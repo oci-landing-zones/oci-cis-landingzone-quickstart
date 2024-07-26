@@ -35,9 +35,9 @@ try:
 except Exception:
     OUTPUT_TO_XLSX = False
 
-RELEASE_VERSION = "2.8.3"
+RELEASE_VERSION = "2.8.4"
 PYTHON_SDK_VERSION = "2.127.0"
-UPDATED_DATE = "June 7, 2024"
+UPDATED_DATE = "July 7, 2024"
 
 
 ##########################################################################
@@ -1383,13 +1383,13 @@ class CIS_Report:
     ##########################################################################
     def __identity_domains_get_all_results(self, func, args):
                 
-        if not 'start_index' in args:
+        if "start_index" not in args:
             args['start_index'] = 1
-        if not "count" in args:
+        if "count" not in args:
             args["count"] = 1000     
-        if not "filter" in args:
+        if "filter" not in args:
             args["filter"] = ''
-        if not "attribute_sets" in args:
+        if "attribute_sets" not in args:
             args["attribute_sets"] = ['all']
 
         debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
@@ -2677,7 +2677,7 @@ class CIS_Report:
     ############################################
     def __network_topology_dump(self):
         debug("__network_topology_dump: Starting")
-        if type(self.__signer) == oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
+        if type(self.__signer) is not oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
             self.__errors.append({"id": "__network_topology_dump", "error": "Delegated Tokens via Cloud Shell not supported." })
             return
         def api_function(region_key, region_values, tenancy_id):
@@ -3093,7 +3093,7 @@ class CIS_Report:
                         wrapping_key_id = self.__vaults[vault]['kms_client'].get_wrapping_key().data.id
                         debug("\t__kms_read_keys: Succeeded Adding Wrapping Key Id: " + str(wrapping_key_id))
                         self.__vaults[vault]['wrapping_key_id'] = wrapping_key_id
-                    except Exception as e:
+                    except Exception:
                         debug("\t__kms_read_keys: Failed Adding Wrapping Key Id for vault: " + str(vault))
                         self.__vaults[vault]['wrapping_key_id'] = None
 
@@ -3477,7 +3477,7 @@ class CIS_Report:
                                 "region": region_key
                             }
                             self.cis_foundations_benchmark_2_0['6.2']['Total'].append(record)
-                    except:
+                    except Exception:
                         self.__errors.append({"id": "search_resources_in_root_compartment Invalid OCID", "error" : str(item)})
                         debug(f'__search_resources_in_root_compartment: Invalid OCID: {str(item)}')
 
@@ -3502,7 +3502,8 @@ class CIS_Report:
             ).data
             
             return oci.util.to_dict(results)
-        except Exception as e:
+        except Exception:
+            debug("__search_query_resource_type: failed to get type: " + str(resource_type))
             return []
     
     ##########################################################################
@@ -4124,7 +4125,7 @@ class CIS_Report:
                     self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
                     self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
                         key)
-            except:    
+            except Exception:    
                     self.cis_foundations_benchmark_2_0['4.16']['Status'] = False
                     self.cis_foundations_benchmark_2_0['4.16']['Findings'].append(
                         key)
@@ -4737,7 +4738,7 @@ class CIS_Report:
                     self.obp_foundations_checks['Certificates_Near_Expiry']['OBP'].append(cert)
                 else:
                     self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
-            except Exception as e:
+            except Exception:
                 debug("\t__obp_analyze_tenancy_data: Certificate is missing time of validity not after" + cert['name'])
                 self.obp_foundations_checks['Certificates_Near_Expiry']['Findings'].append(cert)
 
@@ -5069,7 +5070,7 @@ class CIS_Report:
                         if item_value != "":
                             html_file.write(f"<h5>{item_key.title()}</h5>")
                             if item_key == 'Observation':
-                                if fing['Status'] == None:
+                                if fing['Status'] is None:
                                     pfx = '<b>Manually check for</b>'
                                 else:
                                     num_findings = len(fing['Findings'])

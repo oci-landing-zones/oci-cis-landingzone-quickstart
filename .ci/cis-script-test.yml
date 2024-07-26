@@ -1,0 +1,121 @@
+variables:
+  WORKING_DIR: "/tmp/$CI_PIPELINE_ID"
+  ISSUE_DIR: "$WORKING_DIR/issue"
+  MAIN_DIR: "$WORKING_DIR/main"
+  PIPELINE_TAR: "pipeline-$CI_PIPELINE_ID.tar.gz"
+  BUCKET_NAME: "gitlab_script_output"
+  NAMESPACE: "$LZTEAM_NAMESPACE"
+  PROXY_SERVER: $PROXY_SERVER
+  PAR_LOCATION: ""
+
+cis-compliance-script-flake-job:
+  stage: cis-script-flake8
+  tags:
+    - cis-script-runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Flake8 Check -----  "
+    - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME 
+    - flake8 scripts/cis_reports.py --ignore=E101,E111,E114,E115,E116,E117,E12,E13,E2,E3,E401,E5,E70,W1,W2,W3,W5 --show-source --statistics --count
+    - echo " ----- SUCCESS - Flake8 Check ----- "
+
+cis-compliance-script-setup-core:
+  stage: cis-script-setup-core
+  tags:
+    - cis-script-runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Core Script Setup -----  "
+    - echo "Making Working Directory - $WORKING_DIR"
+    - mkdir $WORKING_DIR
+    - echo "Making Issue Directory - $ISSUE_DIR"
+    - mkdir $ISSUE_DIR
+    - echo "Making Main Directory - $MAIN_DIR"
+    - mkdir $MAIN_DIR
+    - ls $WORKING_DIR
+    - echo "  ----- SUCCESS - Core Script Setup -----  "
+
+cis-compliance-script-setup-issue:
+  stage: cis-script-setup-issue
+  tags:
+    - cis-script-runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Issue Script Setup -----  "
+    - echo "Copying to issue code"
+    - echo "Working Directory is $WORKING_DIR"
+    - ls $WORKING_DIR
+    - cp scripts/cis_reports.py $ISSUE_DIR
+    - python3 $ISSUE_DIR/cis_reports.py -v
+    - echo "  ----- SUCCESS - Issue Script Setup -----  "
+
+cis-compliance-script-setup-main:
+  stage: cis-script-setup-main
+  tags:
+    - cis-script-runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Main Script Setup -----  "
+    - echo "Fetching main branch"
+    - git fetch origin main
+    - echo "Checking out main branch"
+    - git checkout main
+    - echo "Copying to issue code"
+    - cp scripts/cis_reports.py $MAIN_DIR
+    - python3 $MAIN_DIR/cis_reports.py -v
+    - echo "  ----- SUCCESS - Main Script Setup -----  "
+    
+cis-compliance-script-run-checking-script:
+  stage: cis-script-run-checking-script
+  tags:
+    - cis-script-runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - scripts/cis_reports.py  
+  script:
+    - echo "  ----- BEGIN - Checking Script Execution -----  "
+    - echo "Moving to $WORKING_DIR"
+    - cd $WORKING_DIR
+    - DATE=$(date +%Y-%d-%m_%H-%M-%S)
+    - echo output-${DATE}.txt
+    - export https_proxy=$PROXY_SERVER
+    - if [ $CI_PIPELINE_SOURCE == "push" ]; then CONFIG_FILE="push_config"; else CONFIG_FILE="merge_config"; fi
+    - python3 /home/gitlab-runner/simple_matching_data.py --release $MAIN_DIR --issue $ISSUE_DIR --config /home/gitlab-runner/${CONFIG_FILE} > output-${DATE}.txt
+    - echo "  ----- SUCCESS - Checking Script Execution -----  "
+    - echo "  ----- BEGIN - Packaging Output -----  "
+    - echo " Changing to /tmp"
+    - cd /tmp
+    - echo " TAR $CI_PIPELINE_ID folder"
+    - tar -czvf $PIPELINE_TAR $CI_PIPELINE_ID
+    - echo "  ----- SUCCESS - Packaging Output -----  "
+    - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
+    - UPLOAD_REQUEST=$(oci os object put -bn $BUCKET_NAME -ns $NAMESPACE --file $PIPELINE_TAR)
+    - echo $UPLOAD_REQUEST 
+    - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
+    - echo "  ----- BEGIN - Creating PAR  -----  "
+    - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
+    - echo " PAR Expiration is - $PAR_DATETIME "
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $BUCKET_NAME --namespace-name $NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --query data.\"full-path\")
+    - echo "  ----- SUCCESS - Creating PAR  -----  "
+    - echo "  ----- PAR Location  -----  "
+    - PAR_LOCATION+=$PIPELINE_TAR
+    - echo $PAR_LOCATION
+    - echo "  ----- BEGIN - Clean Script Execution -----  "
+    - cd /tmp 
+    - rm -rf $PIPELINE_TAR
+    - rm -rf $CI_PIPELINE_ID
+    - echo $PAR_LOCATION | tr -d '"'
+    - echo "  ----- SUCCESS - Clean Script Execution -----  "

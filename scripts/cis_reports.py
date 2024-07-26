@@ -36,8 +36,8 @@ except Exception:
     OUTPUT_TO_XLSX = False
 
 RELEASE_VERSION = "2.8.4"
-PYTHON_SDK_VERSION = "2.127.0"
-UPDATED_DATE = "July 7, 2024"
+PYTHON_SDK_VERSION = "2.129.4"
+UPDATED_DATE = "July 26, 2024"
 
 
 ##########################################################################

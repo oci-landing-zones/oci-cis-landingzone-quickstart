@@ -2,7 +2,7 @@
 1. [CIS OCI Benchmark Logging and Monitoring Workload](#2-8-4-cis-workload)
 1. [SIEM (Security information and event management) Workload](#2-8-4-siem-workload)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-4-script-updates)
-1. [Documentation Updates] (#2-8-4-general-updates)
+1. [Documentation Updates](#2-8-4-general-updates)
 
 ## <a name="#2-8-4-cis-workload">CIS OCI Benchmark Logging and Monitoring Workload</a>
 The CIS OCI Benchmark Logging and Monitoring Workload adds the following to an existing OCI tenancy:

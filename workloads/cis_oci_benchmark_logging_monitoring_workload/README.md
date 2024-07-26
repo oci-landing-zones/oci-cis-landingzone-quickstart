@@ -1,8 +1,10 @@
-# OCI Landing Zone Lite
+# CIS OCI Benchmark Logging and Monitoring Remediation Workload
+
+![Landing Zone logo](../../images/landing%20zone_300.png)
 
 ## Introduction
 
-This ZIP file provides terraform code and a Resource Manager UI that can be used to deploy the following in an OCI Tenancy:
+The terraform code in this folder adds to an existing OCI tenancy to deploy the following:
 
 **Logging Monitoring and Alerting Events and Notifications:**
 
@@ -11,7 +13,7 @@ This ZIP file provides terraform code and a Resource Manager UI that can be used
 - Connectivity alerting & monitoring enabled
 - Alerts sent to correct people
 
-**Cloud Security and Posture Management - Cloud Guard:**
+**Cloud Security and Posture Management (CSPM)- Cloud Guard:**
 
 - CSPM integrated with tenancy
 - Cloud Guard enabled and configured
@@ -22,6 +24,56 @@ This ZIP file provides terraform code and a Resource Manager UI that can be used
 
 - Root Level budget has been defined
 - Budget is forecast based
+
+## Variables
+### <a name="tf_variables"></a>Terraform Provider Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**tenancy_ocid** | The OCI tenancy id where this configuration will be executed. This information can be obtained in OCI Console. | Yes | None
+**user_ocid** | The OCI user id that will execute this configuration. This information can be obtained in OCI Console. The user must have the necessary privileges to provision the resources. | Yes | ""
+**fingerprint** | The user's public key fingerprint. This information can be obtained in OCI Console. | Yes | ""
+**private_key_path** | The local path to the user private key. | Yes | ""
+**private_key_password** | The private key password, if any. | No | ""
+
+### <a name="env_variables"></a>Environment Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**homeregion** | The tenancy's home region identifier where the Terraform should provision the resources. | Yes | None
+**service_label** | A label used as a prefix for naming resources. | Yes | None
+
+### <a name="budget_variables"></a>Budget Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_budget** | Determines whether or not a budget will be created. | Yes | false
+**budget_alert_threshold** | The threshold for triggering the alert expressed as a percentage. 100% is the default. | No | 100
+**budget_amount** | The amount of the budget expressed as a whole number in the currency of the customer's rate card. | No | 1000
+**budget_alert_email_endpoints** | List of email addresses for all cost related notifications. | No | []
+
+### <a name="events_variables"></a>Security and Network Events Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**enable_net_events** |  Determines whether or not a network events aligned with the CIS OCI Foundations Benchmark will be created.  | No | false
+**network_admin_email_endpoints** | List of email addresses for all network notifications. | No | []
+**compartment_id_for_net_events** | The compartment where network events should reside will default to root. | No | (root)
+**enable_iam_events** |  Determines whether or not a IAM events aligned with the CIS OCI Foundations Benchmark will be created.  | No | false
+**security_admin_email_endpoints** | List of email addresses for all security notifications. | No | []
+**compartment_id_for_iam_events** | The compartment where iam events should reside will default to root. | No | (root)
+
+### <a name="alarms_variables"></a>Alarms Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to false. | No | false
+**alarms_admin_email_endpoints** | List of email addresses for all alarms related notifications. | No | []
+**compartment_id_for_iam_events** | The compartment where alarm events should reside will default to root. | No | (root)
+**create_alarms_as_enabled** | Creates alarm artifacts in disabled state when set to false. | No | false
+
+### <a name="cg_variables"></a>Cloud Guard Variables
+Variable Name | Description | Required | Default Value
+--------------|-------------|----------|--------------
+**configure_cloud_guard** | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). | No | false
+**cloud_guard_reporting_region** | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | No | null
+**compartment_id_for_cg_events** | The compartment where Cloud Guard events should reside will default to root. | No | null
+**cloudguard_email_endpoints** | List of email addresses for Cloud Guard related events. | No | []
 
 ## Prerequisites
 
@@ -95,18 +147,24 @@ Consider, who should receive a Budget Alert when it is forecasted that the month
 
 The provisioning of resources will fail, If you have setup tags to be required at resource creations, since the stack cannot provide these tags.
 
-## How to run the stack
+## How to execute
+### Via Resource Manager
+1. [![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
+*If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
+1. Under **Working directory select the directory ending with *cis_oci_benchmark_logging_monitoring_workload*
+![Working_Directory](images/image1.png)
+1. Click Next
+1. Enter the required variables
+![variables](images/image2.png)
+1. Click Next
+1. Click Next
+1. Click Apply
 
-Start by creating a stack in the Home Region and leaving the "Home Region Deployment" box checked. This will create both global(Cloud guard, Budget and IAM Events) and regional resources(Network Events and Alarms) in the home region.
-
-After successfully  applying the stack in the home region you need to switch to the next region and create a new stack and deselect "Home Region Deployment". Provide the same service label as used in the home region and provide information for "Network Event Notifications" and "Alarms for FastConnect...".
-
-1.  Stack Creation
-2.  Customization
-3.  Plan and Apply
-4.  Review the Log
-5.  Run stack in additional non-home regions if needed
-6.  Accept the Email Subscriptions
+### Via Terraform CLI
+1. Enter required variables from input.auto.tfvars
+1. terraform init
+1. terraform plan
+1. terraforom apply
 
 ## Expected outcome and known issues
 

@@ -1,3 +1,30 @@
+#  July 26, 2024 Release Notes - 2.8.4
+1. [CIS OCI Benchmark Logging and Monitoring Workload](#2-8-4-cis-workload)
+1. [SIEM (Security information and event management) Workload](#2-8-4-siem-workload)
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-4-script-updates)
+1. [Documentation Updates](#2-8-4-general-updates)
+
+## <a name="#2-8-4-cis-workload">CIS OCI Benchmark Logging and Monitoring Workload</a>
+The CIS OCI Benchmark Logging and Monitoring Workload adds the following to an existing OCI tenancy:
+- Logging Monitoring and Alerting Events and Notifications as recommended by the CIS OCI Foundation Benchmark
+- Enables Cloud Guard as recommended by the CIS OCI Foundations Benchmark
+- Enables Budgets for Cloud Governance
+
+## <a name="#2-8-4-siem-workload">SIEM (Security information and event management) Workload</a>
+The workload can be used to partially set up SIEM integration from the OCI side for integration with SIEMs like Stellar Cyber, Splunk, or SIEMs that read from OCI Streams.
+
+## <a name="#2-8-4-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+**Fixes**
+- Fixed issue on 4.15, “Ensure a notification is configured for Oracle Cloud Guard problems detect” check, which defaulted to True
+
+**Updates**
+- Updated CIS recommendation 4.3 - 4.12 to ensure event notifications are created in all OCI subscribed regions.
+
+## <a name="#2-8-4-general-updates">Documentation Updates</a>
+- Logo Updated.
+- Updated README.md, CONTRIBUTING.md, and LICENSE.txt files.
+- Added SECURITY.md file.
+
 #  June 7, 2024 Release Notes - 2.8.3
 1. [Cloud Guard Detector and Security Zones Rules Mapped to CIS OCI Benchmark 2.0.0](#2-8-3-mapping-updates)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-3-script-updates)

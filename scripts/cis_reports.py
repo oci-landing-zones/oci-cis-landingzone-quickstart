@@ -4757,7 +4757,9 @@ class CIS_Report:
         summary_report = []
         for key, recommendation in self.cis_foundations_benchmark_2_0.items():
             if recommendation['Level'] <= level:
-                report_filename = "cis" + " " + recommendation['section'] + "_" + recommendation['recommendation_#']
+                # report_filename = "cis" + " " + recommendation['section'] + "_" + recommendation['recommendation_#']
+                # report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_", "_") + ".csv"
+                report_filename = f'{self.__report_prefix}cis {recommendation['section']}_{recommendation['recommendation_#']}'
                 report_filename = report_filename.replace(" ", "_").replace(".", "-").replace("_-_", "_") + ".csv"
                 if recommendation['Status']:
                     compliant_output = "Yes"
@@ -4831,13 +4833,6 @@ class CIS_Report:
     # Generates an HTML report
     ##########################################################################
     def __report_generate_html_summary_report(self, header, file_subject, data):
-        try:
-            # Creating report directory
-            if not os.path.isdir(self.__report_directory):
-                os.mkdir(self.__report_directory)
-
-        except Exception as e:
-            raise Exception("Error in creating report directory: " + str(e.args))
 
         try:
             # if no data
@@ -4845,9 +4840,7 @@ class CIS_Report:
                 return None
 
             # get the file name of the HTML
-            file_name = header + "_" + file_subject
-            file_name = (file_name.replace(" ", "_")).replace(".", "-").replace("_-_", "_") + ".html"
-            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
+            file_path = self.__get_output_file_path(header, file_subject, '.html')
 
             # add report_datetimeto each dictionary
             result = [dict(item, extract_date=self.start_time_str)
@@ -5085,20 +5078,19 @@ class CIS_Report:
                                 html_file.write(f"<p>{v}</p>\n")
                 html_file.write("</div></section>\n")
                 # Closing HTML
+                report_year = str(self.start_datetime.strftime('%Y'))
                 html_file.write("""<div id="resources" class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
                 <div class="u10w2"><div class="u10w3" aria-labelledby="resourcesfor"><a class="u10btn" tabindex="-1" aria-labelledby="resourcesfor"></a>
                 <h4 class="u10ttl" id="resourcesfor">Resources</h4><ul>
-                <li><a href="https://www.cisecurity.org/benchmark/Oracle_Cloud">CIS OCI Foundation Benchmark</a></li>
-                <li><a href="https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html">Deploy a secure landing zone that meets the CIS Foundations Benchmark for Oracle Cloud</a></li>
-                <li><a href="https://docs.oracle.com/en/solutions/oci-security-checklist/index.html">Security checklist for Oracle Cloud Infrastructure</a></li>
-                <li><a href="https://docs.oracle.com/en-us/iaas/Content/Security/Concepts/security.htm">OCI Documentation – Securely configure your Oracle Cloud Infrastructure services and resources</a></li>
-                <li><a href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">Best practices framework for Oracle Cloud Infrastructure</a></li>
-                <li><a href="https://www.oracle.com/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
+                <li><a target="_blank" href="https://www.cisecurity.org/benchmark/Oracle_Cloud">CIS OCI Foundation Benchmark</a></li>
+                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html">Deploy a secure landing zone that meets the CIS Foundations Benchmark for Oracle Cloud</a></li>
+                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/oci-security-checklist/index.html">Security checklist for Oracle Cloud Infrastructure</a></li>
+                <li><a target="_blank" href="https://docs.oracle.com/en-us/iaas/Content/Security/Concepts/security.htm">OCI Documentation – Securely configure your Oracle Cloud Infrastructure services and resources</a></li>
+                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">Best practices framework for Oracle Cloud Infrastructure</a></li>
+                <li><a target="_blank" href="https://www.oracle.com/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
                 </ul></div></div><div class="u10w4"><hr></div></nav>
-                <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">
-                <ul class="u10-links"><li></li><li><a href="https://www.oracle.com/legal/copyright.html">© 2023 Oracle</a></li>
-                </ul></nav></div>""")
-                html_file.write("</div></div></body></html>\n")
+                <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">""")
+                html_file.write(f'<ul class="u10-links"><li></li><li><a target="_blank" href="https://www.oracle.com/legal/copyright.html">© {report_year} Oracle</a></li></ul></nav></div></div></div></body></html>\n')
 
             print("HTML: " + file_subject.ljust(22) + " --> " + file_path)
             # Used by Upload
@@ -5353,18 +5345,26 @@ class CIS_Report:
                 "Error opening file os_copy_report_to_object_storage: " + str(e.args))
 
     ##########################################################################
-    # Print to CSV
+    # Get output file path with suffix
     ##########################################################################
-    def __print_to_csv_file(self, header, file_subject, data):
-        debug("__print_to_csv_file: " + header + "_" + file_subject)
+    def __get_output_file_path(self, header, file_subject, suffix):
         try:
             # Creating report directory
             if not os.path.isdir(self.__report_directory):
                 os.mkdir(self.__report_directory)
 
         except Exception as e:
-            raise Exception(
-                "Error in creating report directory: " + str(e.args))
+            raise Exception(f'Error in creating report directory: {str(e.args)}')
+
+        file_name = f'{header}_{file_subject}'
+        file_name = f'{file_name.replace(" ", "_").replace(".", "-").replace("_-_", "_")}{suffix}'
+        return os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
+
+    ##########################################################################
+    # Print to CSV
+    ##########################################################################
+    def __print_to_csv_file(self, header, file_subject, data):
+        debug("__print_to_csv_file: " + header + "_" + file_subject)
 
         try:
             # if no data
@@ -5372,10 +5372,7 @@ class CIS_Report:
                 return None
 
             # get the file name of the CSV
-
-            file_name = header + "_" + file_subject
-            file_name = (file_name.replace(" ", "_")).replace(".", "-").replace("_-_", "_") + ".csv"
-            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
+            file_path = self.__get_output_file_path(header, file_subject, '.csv')
 
             # add report_datetimeto each dictionary
             result = [dict(item, extract_date=self.start_time_str)
@@ -5423,26 +5420,14 @@ class CIS_Report:
     # Print to JSON
     ##########################################################################
     def __print_to_json_file(self, header, file_subject, data):
-        try:
-            # Creating report directory
-            if not os.path.isdir(self.__report_directory):
-                os.mkdir(self.__report_directory)
-
-        except Exception as e:
-            raise Exception(
-                "Error in creating report directory: " + str(e.args))
 
         try:
             # if no data
             if len(data) == 0:
                 return None
             
-            # get the file name of the CSV
-            
-            file_name = header + "_" + file_subject
-            file_name = (file_name.replace(" ", "_")
-                         ).replace(".", "-").replace("_-_","_") + ".json"
-            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
+            # get the file name of the JSON
+            file_path = self.__get_output_file_path(header, file_subject, '.json')
 
             # Serializing JSON to string
             json_object = json.dumps(data, indent=4)
@@ -5470,26 +5455,14 @@ class CIS_Report:
     # Print to PKL
     ##########################################################################
     def __print_to_pkl_file(self, header, file_subject, data):
-        try:
-            # Creating report directory
-            if not os.path.isdir(self.__report_directory):
-                os.mkdir(self.__report_directory)
-
-        except Exception as e:
-            raise Exception(
-                "Error in creating report directory: " + str(e.args))
 
         try:
             # if no data
             if len(data) == 0:
                 return None
             
-            # get the file name of the CSV
-            
-            file_name = header + "_" + file_subject
-            file_name = (file_name.replace(" ", "_")
-                         ).replace(".", "-").replace("_-_","_") + ".pkl"
-            file_path = os.path.join(self.__report_directory, f'{self.__report_prefix}{file_name}')
+            # get the file name of the PKL
+            file_path = self.__get_output_file_path(header, file_subject, '.pkl')
 
             # Writing to json file
             with open(file_path, 'wb') as pkl_file:
@@ -5504,9 +5477,7 @@ class CIS_Report:
 
         except Exception as e:
             raise Exception("Error in __print_to_pkl_file: " + str(e.args))
-    
-
-    
+        
     ##########################################################################
     # Orchestrates Data collection and reports
     ##########################################################################
@@ -5769,7 +5740,9 @@ def execute_report():
         if OUTPUT_TO_XLSX:
             report_prefix = f'{cmd.report_prefix}_' if cmd.report_prefix else ''
             workbook = Workbook(f'{csv_report_directory}/{report_prefix}Consolidated_Report.xlsx', {'in_memory': True})
-            for csvfile in glob.glob(f'{csv_report_directory}/{report_prefix}*.csv'):
+            csvfiles = glob.glob(f'{csv_report_directory}/{report_prefix}*.csv')
+            csvfiles.sort()
+            for csvfile in csvfiles:
 
                 worksheet_name = csvfile.split(os.path.sep)[-1].replace(report_prefix, "").replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
 
@@ -5797,9 +5770,11 @@ def execute_report():
                             # Skipping the deep link due to formating errors in xlsx
                             if "=HYPERLINK" not in col:
                                 worksheet.write(r, c, col)
+                    worksheet.autofilter(0, 0, r - 1, c - 1)
+                    worksheet.autofit()
             workbook.close()
     except Exception as e:
-        print("** Failed to output to excel. Please use CSV files. **")
+        print("** Failed to output to Excel. Please use CSV files. **")
         print(e)
 
 

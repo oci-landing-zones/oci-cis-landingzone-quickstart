@@ -4598,14 +4598,15 @@ class CIS_Report:
                             number_of_valid_site_to_site_connection += 1
 
                 elif attachment['network_type'].upper() == 'VIRTUAL_CIRCUIT':
-
+                    # Making sure there are virutal circuits
+                    if self.__network_fastconnects[attachment['drg_id']]:
                     # Checking for Provision and BGP enabled Virtual Circuits and that it is associated
-                    for virtual_circuit in self.__network_fastconnects[attachment['drg_id']]:
-                        if attachment['network_id'] == virtual_circuit['id']:
-                            if virtual_circuit['lifecycle_state'].upper() == 'PROVISIONED' and virtual_circuit['bgp_session_state'].upper() == "UP":
-                                # Good VC to increment number of VCs and append the provider name
-                                fast_connect_providers.add(virtual_circuit['provider_name'])
-                                number_of_valid_fast_connect_circuits += 1
+                        for virtual_circuit in self.__network_fastconnects[attachment['drg_id']]:
+                            if attachment['network_id'] == virtual_circuit['id']:
+                                if virtual_circuit['lifecycle_state'].upper() == 'PROVISIONED' and virtual_circuit['bgp_session_state'].upper() == "UP":
+                                    # Good VC to increment number of VCs and append the provider name
+                                    fast_connect_providers.add(virtual_circuit['provider_name'])
+                                    number_of_valid_fast_connect_circuits += 1
 
             try:
                 record = {

@@ -237,8 +237,8 @@ locals {
   #------------------------------------------------------------------------
   #-- Access Governance Group 
   #------------------------------------------------------------------------
-  access_governance_group_key = "${var.service_label}-access-gorvernance-group"
-  default_access_governance_group_name = "access-gorvernance-group"
+  access_governance_group_key = "${var.service_label}-access-governance-group"
+  default_access_governance_group_name = "access-governance-group"
   provided_access_governance_group_name = local.custom_access_governance_group_name != null ? local.custom_access_governance_group_name : "${var.service_label}-${local.default_access_governance_group_name}"
   
   access_governance_group = length(var.existing_access_governance_group_name) == 0 && length(trimspace(var.rm_existing_access_governance_group_name)) == 0 && var.enable_access_governance_policies ? {

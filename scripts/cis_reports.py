@@ -4607,7 +4607,7 @@ class CIS_Report:
                                     # Good VC to increment number of VCs and append the provider name
                                     fast_connect_providers.add(virtual_circuit['provider_name'])
                                     number_of_valid_fast_connect_circuits += 1
-                    except:
+                    except Exception:
                         debug("__obp_analyze_tenancy_data: Fast Connect Connections check: DRG ID not found " + str(drg_id))
                         self.__errors.append({"id" : str(drg_id), "error" : str("__obp_analyze_tenancy_data: Fast Connect Connections check: DRG ID not found")})
             try:

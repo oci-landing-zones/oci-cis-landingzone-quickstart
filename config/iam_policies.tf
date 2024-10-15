@@ -72,7 +72,6 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to use cloud-shell in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to read usage-budgets in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to read usage-reports in tenancy",
-    "allow group ${join(",", local.security_admin_group_name)} to manage zpr-configuration in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to manage zpr-policy in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to manage zpr-security-attribute in tenancy"]
 
@@ -153,7 +152,6 @@ locals {
 
   ## Network admin permissions to be created always at the root compartment
   network_admin_grants_on_root_cmp = [
-    "allow group ${join(",", local.network_admin_group_name)} to read zpr-configuration in tenancy",
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-policy in tenancy",
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-security-attribute in tenancy"]
 
@@ -578,7 +576,6 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read tag-namespaces in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read serviceconnectors in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}",
-        "allow group ${join(",", local.auditor_group_name)} to read zpr-configuration in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read zpr-policy in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read zpr-security-attribute in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read network-firewall-family in tenancy"

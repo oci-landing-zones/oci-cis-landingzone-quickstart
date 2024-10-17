@@ -13,6 +13,7 @@ locals {
   security_admin_policy_name         = "${var.service_label}-security-admin-policy"
   security_admin_root_policy_name    = "${var.service_label}-security-admin-root-policy"
   network_admin_policy_name          = "${var.service_label}-network-admin-policy"
+  network_admin_root_policy_name     = "${var.service_label}-network-admin-root-policy"
   compute_agent_policy_name          = "${var.service_label}-compute-agent-policy"
   database_admin_policy_name         = "${var.service_label}-database-admin-policy"
   database_dynamic_group_policy_name = "${var.service_label}-database-dynamic_group-policy"
@@ -30,8 +31,6 @@ locals {
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
   iam_grants_condition = [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"]
-
-
 
   ### User Group Policies ###
   ## IAM admin grants at the root compartment
@@ -56,14 +55,14 @@ locals {
     # Statements scoped to allow an IAM admin to deploy IAM resources via ORM
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-stacks in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-jobs in tenancy",
-  "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"]
+    "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"]
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
   iam_admin_grants_on_enclosing_cmp = [
     "allow group ${join(",", local.iam_admin_group_name)} to manage policies in ${local.policy_scope}",
-  "allow group ${join(",", local.iam_admin_group_name)} to manage compartments in ${local.policy_scope}"]
+    "allow group ${join(",", local.iam_admin_group_name)} to manage compartments in ${local.policy_scope}"]
 
-  // Security admin permissions to be created always at the root compartment
+  ## Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = [
     #  "allow group ${join(",",local.security_admin_group_name)} to manage cloudevents-rules in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to manage cloudevents-rules in tenancy",
@@ -72,7 +71,10 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to read objectstorage-namespaces in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to use cloud-shell in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to read usage-budgets in tenancy",
-  "allow group ${join(",", local.security_admin_group_name)} to read usage-reports in tenancy"]
+    "allow group ${join(",", local.security_admin_group_name)} to read usage-reports in tenancy",
+    "allow group ${join(",", local.security_admin_group_name)} to manage zpr-configuration in tenancy",
+    "allow group ${join(",", local.security_admin_group_name)} to manage zpr-policy in tenancy",
+    "allow group ${join(",", local.security_admin_group_name)} to manage security-attribute-namespace in tenancy"]
 
   ## Security admin grants at the enclosing compartment level, which *can* be the root compartment
   security_admin_grants_on_enclosing_cmp = [
@@ -82,7 +84,7 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to read audit-events in ${local.policy_scope}",
     "allow group ${join(",", local.security_admin_group_name)} to read app-catalog-listing in ${local.policy_scope}",
     "allow group ${join(",", local.security_admin_group_name)} to read instance-images in ${local.policy_scope}",
-  "allow group ${join(",", local.security_admin_group_name)} to inspect buckets in ${local.policy_scope}"]
+    "allow group ${join(",", local.security_admin_group_name)} to inspect buckets in ${local.policy_scope}"]
 
   ## Security admin grants on Security compartment
   security_admin_grants_on_security_cmp = [
@@ -112,7 +114,7 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to manage cloudevents-rules in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to manage alarms in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to manage metrics in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.security_admin_group_name)} to use key-delegate in compartment ${local.security_compartment_name}"]
+    "allow group ${join(",", local.security_admin_group_name)} to use key-delegate in compartment ${local.security_compartment_name}"]
 
 ## Security admin grants on Security compartment
   security_admin_grants_for_oag_on_security_cmp = var.enable_access_governance_policies == true ? [
@@ -127,7 +129,8 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to use network-security-groups in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to use vnics in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.security_admin_group_name)} to read keys in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.security_admin_group_name)} to read keys in compartment ${local.network_compartment_name}",
+    "allow group ${join(",", local.security_admin_group_name)} to use network-firewall-family in compartment ${local.network_compartment_name}"]
 
   ## Security admin grants on AppDev compartment
   security_admin_grants_on_appdev_cmp = [
@@ -147,6 +150,12 @@ locals {
   ## All security admin grants
   security_admin_grants = concat(local.security_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_security_cmp, local.security_admin_grants_on_network_cmp,
   local.security_admin_grants_on_appdev_cmp, local.security_admin_grants_on_database_cmp, local.security_admin_grants_on_exainfra_cmp, local.security_admin_grants_for_oag_on_security_cmp)
+
+  ## Network admin permissions to be created always at the root compartment
+  network_admin_grants_on_root_cmp = [
+    "allow group ${join(",", local.network_admin_group_name)} to read zpr-configuration in tenancy",
+    "allow group ${join(",", local.network_admin_group_name)} to read zpr-policy in tenancy",
+    "allow group ${join(",", local.network_admin_group_name)} to read security-attribute-namespace in tenancy"]
 
   ## Network admin grants on Network compartment
   network_admin_grants_on_network_cmp = [
@@ -176,7 +185,8 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to manage keys in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use key-delegate in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}",
-    "allow group ${join(",", local.network_admin_group_name)} to manage repos in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.network_admin_group_name)} to manage repos in compartment ${local.network_compartment_name}",
+    "allow group ${join(",", local.network_admin_group_name)} to manage network-firewall-family in compartment ${local.network_compartment_name}"]
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = [
@@ -184,7 +194,7 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to use bastion in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use vaults in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.network_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}"]
+    "allow group ${join(",", local.network_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}"]
 
   ## All network admin grants
   network_admin_grants = concat(local.network_admin_grants_on_network_cmp, local.network_admin_grants_on_security_cmp)
@@ -216,7 +226,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage repos in compartment ${local.database_compartment_name}"]
+    "allow group ${join(",", local.database_admin_group_name)} to manage repos in compartment ${local.database_compartment_name}"]
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = [
@@ -225,7 +235,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use subnets in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to use network-security-groups in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.database_admin_group_name)} to use network-security-groups in compartment ${local.network_compartment_name}"]
 
   ## Database admin grants on Security compartment
   database_admin_grants_on_security_cmp = [
@@ -233,7 +243,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vaults in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use bastion in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}"]
+    "allow group ${join(",", local.database_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}"]
 
   ## Database admin grants on Exainfra compartment
   database_admin_grants_on_exainfra_cmp = var.deploy_exainfra_cmp == true ? [
@@ -278,7 +288,7 @@ locals {
     "allow group ${join(",", local.appdev_admin_group_name)} to read instance-agent-plugins in compartment ${local.appdev_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage keys in compartment ${local.appdev_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to use key-delegate in compartment ${local.appdev_compartment_name}",
-  "allow group ${join(",", local.appdev_admin_group_name)} to manage secret-family in compartment ${local.appdev_compartment_name}"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to manage secret-family in compartment ${local.appdev_compartment_name}"]
 
   ## AppDev admin grants on Network compartment
   appdev_admin_grants_on_network_cmp = [
@@ -287,7 +297,7 @@ locals {
     "allow group ${join(",", local.appdev_admin_group_name)} to use network-security-groups in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to use vnics in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.appdev_admin_group_name)} to use load-balancers in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to use load-balancers in compartment ${local.network_compartment_name}"]
 
   ## AppDev admin grants on Security compartment
   appdev_admin_grants_on_security_cmp = [
@@ -297,18 +307,18 @@ locals {
     "allow group ${join(",", local.appdev_admin_group_name)} to read vss-family in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to use bastion in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.appdev_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}"]
 
   ## AppDev admin grants on Database compartment
   appdev_admin_grants_on_database_cmp = [
     "allow group ${join(",", local.appdev_admin_group_name)} to read autonomous-database-family in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.appdev_admin_group_name)} to read database-family in compartment ${local.database_compartment_name}"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to read database-family in compartment ${local.database_compartment_name}"]
 
   ## AppDev admin grants on enclosing compartment
   appdev_admin_grants_on_enclosing_cmp = [
     "allow group ${join(",", local.appdev_admin_group_name)} to read app-catalog-listing in ${local.policy_scope}",
     "allow group ${join(",", local.appdev_admin_group_name)} to read instance-images in ${local.policy_scope}",
-  "allow group ${join(",", local.appdev_admin_group_name)} to read repos in ${local.policy_scope}"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to read repos in ${local.policy_scope}"]
 
   ## All AppDev admin grants
   appdev_admin_grants = concat(local.appdev_admin_grants_on_appdev_cmp, local.appdev_admin_grants_on_network_cmp,
@@ -329,7 +339,7 @@ locals {
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage keys in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to use key-delegate in compartment ${local.exainfra_compartment_name}",
-  "allow group ${join(",", local.exainfra_admin_group_name)} to manage secret-family in compartment ${local.exainfra_compartment_name}"]
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage secret-family in compartment ${local.exainfra_compartment_name}"]
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = [
@@ -337,7 +347,7 @@ locals {
     "allow group ${join(",", local.exainfra_admin_group_name)} to use vaults in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to read logging-family in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to use bastion in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.exainfra_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}"]
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage bastion-session in compartment ${local.security_compartment_name}"]
 
   ## Exainfra admin grants on Network compartment
   exainfra_admin_grants_on_network_cmp = [
@@ -345,7 +355,7 @@ locals {
     "allow group ${join(",", local.exainfra_admin_group_name)} to use subnets in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to use network-security-groups in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to use vnics in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.exainfra_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}"]
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}"]
 
   ## All Exainfra admin grants 
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
@@ -354,20 +364,20 @@ locals {
   cost_root_permissions = ["define tenancy usage-report as ocid1.tenancy.oc1..aaaaaaaaned4fkpkisbwjlr56u7cj63lf3wffbilvqknstgtvzub7vhqkggq",
     "endorse group ${join(",", local.cost_admin_group_name)} to read objects in tenancy usage-report",
     "allow group ${join(",", local.cost_admin_group_name)} to manage usage-report in tenancy",
-  "allow group ${join(",", local.cost_admin_group_name)} to manage usage-budgets in tenancy"]
+    "allow group ${join(",", local.cost_admin_group_name)} to manage usage-budgets in tenancy"]
 
   ### Dynamic Group Policies ###
   ## Compute Agent grants
   compute_agent_grants = [
     "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to manage management-agents in compartment ${local.appdev_compartment_name}",
     "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use metrics in compartment ${local.appdev_compartment_name}",
-  "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment_name}"]
+    "allow dynamic-group ${local.appdev_computeagent_dynamic_group_name} to use tag-namespaces in compartment ${local.appdev_compartment_name}"]
 
   ## ADB grants
   autonomous_database_grants = [
     "allow dynamic-group ${local.database_kms_dynamic_group_name} to use vaults in compartment ${local.security_compartment_name}",
     "allow dynamic-group ${local.database_kms_dynamic_group_name} to use keys in compartment ${local.database_compartment_name}",
-  "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.database_compartment_name}"]
+    "allow dynamic-group ${local.database_kms_dynamic_group_name} to use secret-family in compartment ${local.database_compartment_name}"]
 
   ## Storage admin grants
   storage_admin_grants = [
@@ -523,6 +533,14 @@ locals {
       freeform_tags    = local.policies_freeform_tags
       statements       = local.security_admin_grants_on_root_cmp
     },
+    (local.network_admin_root_policy_name) = {
+      compartment_ocid = var.tenancy_ocid
+      name             = local.network_admin_root_policy_name
+      description      = "CIS Landing Zone root compartment policy for ${join(",", local.network_admin_group_name)} group."
+      defined_tags     = local.policies_defined_tags
+      freeform_tags    = local.policies_freeform_tags
+      statements       = local.network_admin_grants_on_root_cmp
+    },
     (local.iam_admin_root_policy_name) = {
       compartment_ocid = var.tenancy_ocid
       name             = local.iam_admin_root_policy_name
@@ -559,7 +577,11 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read keys in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read tag-namespaces in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read serviceconnectors in tenancy",
-        "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}"
+        "allow group ${join(",", local.auditor_group_name)} to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}",
+        "allow group ${join(",", local.auditor_group_name)} to read zpr-configuration in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read zpr-policy in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read security-attribute-namespace in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read network-firewall-family in tenancy"
       ]
     },
     (local.announcement_reader_policy_name) = {

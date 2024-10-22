@@ -44,7 +44,7 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v1.2](cis-architecture-mapping.md)
+    1. [Mapping to CIS OCI Benchmark v2.0.0](cis-architecture-mapping.md)
 1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)

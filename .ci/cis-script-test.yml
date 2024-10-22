@@ -92,6 +92,8 @@ cis-compliance-script-run-checking-script:
     - DATE=$(date +%Y-%d-%m_%H-%M-%S)
     - echo output-${DATE}.txt
     - export https_proxy=$PROXY_SERVER
+    - echo " ----- Upgrading OCI SDK"  ----- "
+    - pip3 install --upgrade oci
     - if [ $CI_PIPELINE_SOURCE == "push" ]; then CONFIG_FILE="push_config"; else CONFIG_FILE="merge_config"; fi
     - python3 /home/gitlab-runner/simple_matching_data.py --release $MAIN_DIR --issue $ISSUE_DIR --config /home/gitlab-runner/${CONFIG_FILE} > output-${DATE}.txt
     - echo "  ----- SUCCESS - Checking Script Execution -----  "

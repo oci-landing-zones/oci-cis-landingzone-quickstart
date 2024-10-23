@@ -39,7 +39,6 @@ locals {
     description   = "Dynamic group for application functions execution for workload ${cmp.workload_name}."
     # matching_rule = "ALL {resource.type = 'fnfunc'"
     matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${module.workload_compartments.compartments[key].id}'}"
-
     defined_tags  = local.dynamic_groups_defined_tags
     freeform_tags = local.dynamic_groups_freeform_tags
     }

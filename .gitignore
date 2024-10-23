@@ -17,3 +17,4 @@ test/**
 **/tfvars/**
 **/scripts/**/*.json
 **/scripts/**/*.pkl
+**/scripts/**/*.png

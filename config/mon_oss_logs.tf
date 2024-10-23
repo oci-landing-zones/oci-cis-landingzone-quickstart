@@ -14,7 +14,7 @@ locals {
     log_config_source_source_type = "OCISERVICE",
     log_config_compartment        = local.security_compartment_id,
     log_is_enabled                = true,
-    log_retention_duration        = 30,
+    log_retention_duration        = 90,
     defined_tags                  = local.oss_defined_tags,
     freeform_tags                 = local.oss_freeform_tags
   }} : {}

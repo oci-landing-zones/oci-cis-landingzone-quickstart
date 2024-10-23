@@ -1,3 +1,26 @@
+#  October 25, 2024 Release Notes - 2.8.5
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-5-script-updates)
+1. [Updates to the Terraform](#2-8-5-terraform-updates)
+1. [Documentation Updates](#2-8-5-general-updates)
+
+## <a name="#2-8-5-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+- Updates
+    - CIS Summary HTML report now has Dashboard Graphics. Showing overall CIS Recommendation Compliance and CIS Recommendation Compliance per Focus Area.
+- Fixes:
+    - Fixed a bug related to legacy DRGs with stale states creating exceptions
+    - Minor HTML fixes to the CIS Summary report
+
+## <a name="#2-8-5-terraform-updates">Updates/Fixes to the Terraform</a>
+- Updated Network Admin Group IAM permissions for ZPR and OCI Network Firewall
+    - Allow reading of ZPR namespaces, attributes, and configurations
+    - Allow management of OCI Network Firewall
+- Updated Security Admin Group IAM permissions for ZPR and OCI Network Firewall
+    - Allow management of ZPR namespaces, attributes, and configurations
+    - Allow use of OCI Network Firewall
+
+## <a name="#2-8-5-general-updates">Documentation Updates</a>
+- Updated README.md with the current CIS OCI Foundations Benchmark version 
+
 #  July 26, 2024 Release Notes - 2.8.4
 1. [CIS OCI Benchmark Logging and Monitoring Workload](#2-8-4-cis-workload)
 1. [SIEM (Security information and event management) Workload](#2-8-4-siem-workload)

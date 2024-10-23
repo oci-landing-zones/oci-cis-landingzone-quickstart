@@ -1,4 +1,4 @@
-#  October 25, 2024 Release Notes - 2.8.5
+#  October 23, 2024 Release Notes - 2.8.5
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-5-script-updates)
 1. [Updates to the Terraform](#2-8-5-terraform-updates)
 1. [Documentation Updates](#2-8-5-general-updates)

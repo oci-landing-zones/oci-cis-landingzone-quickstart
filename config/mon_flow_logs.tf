@@ -18,7 +18,7 @@ locals {
       log_config_source_source_type = "OCISERVICE",
       log_config_compartment        = local.security_compartment_id #module.lz_compartments.compartments[local.security_compartment.key].id,
       log_is_enabled                = true,
-      log_retention_duration        = 30,
+      log_retention_duration        = 90,
       defined_tags                  = local.flow_logs_defined_tags,
       freeform_tags                 = local.flow_logs_freeform_tags
     }

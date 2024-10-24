@@ -61,6 +61,16 @@ pip3 install oci
 pip3 install pytz
 pip3 install requests
 ```
+1. Libraries for Dashboard Graphics (optional)
+```
+pip3 install numpy
+pip3 install matplotlib
+```
+
+1. Libraries for XLSX Output (optional) 
+```
+pip3 install xlsxwriter
+```
 
 ### Setup the script to run in a Cloud Shell Environment without a Python virtual environment
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
@@ -81,8 +91,16 @@ pip3 install oci
 pip3 install pytz
 pip3 install requests
 ```
+1. Libraries for Dashboard Graphics (optional)
+```
+pip3 install numpy
+pip3 install matplotlib
+```
 
-
+1. Libraries for XLSX Output (optional) 
+```
+pip3 install xlsxwriter
+```
 
 ## <a name="output"></a>Output
 The script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
@@ -437,3 +455,18 @@ To run on a local machine with the default profile and output raw data as well a
     `Allow group SYSADMINS_PROD to manage object-family in compartment PROD where request.permission!='OBJECT_DELETE'`
 
     The SYSADMIN_PROD group has access to [object-family](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/objectstoragepolicyreference.htm#Details_for_Object_Storage_Archive_Storage_and_Data_Transfer) which includes buckets and objects. This means they would be able to delete a bucket violating the intent of the rule.  Even though you can't delete a bucket with objects in it if you don't have permissions to the underlying objects you could delete an empty you created thus violating the intent.
+1. Why are there no dashboard graphics in the HTML page?
+   * Creating dashboard graphics is optional and requires the presence of the Python library `matplotlib`. To get the dashboard
+     graphics, install the library.
+1. Why is the XLSX file not created?
+   * Writing an XLSX file is optional and requires the presence of Python library `xslxwriter`. To get an XLSX ooutput file, install
+     the library.
+
+## Known Issues
+1. XLSX write will fail when cell values are too big
+   * This is a known limitation of Excel and will only happen if the xlsxwriter library has been installed. The XLSX writing
+     routine will be executed after the tenancy has been checked and all findings are written to CSV files. This issue does
+     not impact the overall verification result of script.
+1. Diagrams are not part of the HTML page.
+   * This may be because of broken `numpy` installation. The following command should resolve this:
+   `pip3 install --upgrade --force-reinstall --user numpy`

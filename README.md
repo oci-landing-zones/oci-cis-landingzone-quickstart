@@ -44,7 +44,7 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v1.2](cis-architecture-mapping.md)
+    1. [Mapping to CIS OCI Benchmark v2.0.0](cis-architecture-mapping.md)
 1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
 1. [Executing Instructions](#instructions)
     1. [Terraform Configuration](terraform.md)
@@ -57,7 +57,7 @@
 1. [Frequently Asked Questions](FAQ.md)
 
 ## <a name="overview"></a>Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v1.2](https://www.cisecurity.org/benchmark/oracle_cloud/).    
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
 

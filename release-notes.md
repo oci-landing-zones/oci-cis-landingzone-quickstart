@@ -1,3 +1,11 @@
+#  November 20, 2024 Release Notes - 2.8.6
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-6-script-updates)
+## <a name="#2-8-6-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+- Updates:
+    - Added tenancy ID to search query to improve multi-tenancy access
+- Fixes:
+    - Fixed release version in script
+
 #  October 23, 2024 Release Notes - 2.8.5
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-5-script-updates)
 1. [Updates to the Terraform](#2-8-5-terraform-updates)

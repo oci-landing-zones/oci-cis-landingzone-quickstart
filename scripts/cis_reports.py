@@ -44,7 +44,7 @@ except Exception:
 
 RELEASE_VERSION = "2.8.6"
 PYTHON_SDK_VERSION = "2.139.0"
-UPDATED_DATE = "November 21, 2024"
+UPDATED_DATE = "November 20, 2024"
 
 
 ##########################################################################

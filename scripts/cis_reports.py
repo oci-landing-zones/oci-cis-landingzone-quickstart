@@ -763,7 +763,7 @@ class CIS_Report:
         self.__network_security_lists = []
         self.__network_subnets = []
         self.__network_vcns = []
-        self.__network_capturefilters = []
+        self.__network_capturefilters = {}
 
         self.__network_fastconnects = {}  # Indexed by DRG ID
         self.__network_drgs = {}  # Indexed by DRG ID
@@ -999,6 +999,7 @@ class CIS_Report:
         self.__oci_block_volumes_uri = self.__oci_cloud_url + "/block-storage/volumes/"
         self.__oci_fss_uri = self.__oci_cloud_url + "/fss/file-systems/"
         self.__oci_networking_uri = self.__oci_cloud_url + "/networking/vcns/"
+        self.__oci_network_capturefilter_uri = self.__oci_cloud_url + "/networking/network-command-center/capture-filters/"
         self.__oci_adb_uri = self.__oci_cloud_url + "/db/adb/"
         self.__oci_oicinstance_uri = self.__oci_cloud_url + "/oic/integration-instances/"
         self.__oci_oacinstance_uri = self.__oci_cloud_url + "/analytics/instances/"
@@ -2306,7 +2307,7 @@ class CIS_Report:
                 "Error in __network_read_network_subnets " + str(e.args))
 
     ##########################################################################
-    # Network Subnets Lists
+    # Network VCNs Lists
     ##########################################################################
     def __network_read_network_vcns(self):
         try:
@@ -2333,6 +2334,33 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in __network_read_network_vcns " + str(e.args))
 
+    ##########################################################################
+    # Network Capture Filters Dictionary
+    ##########################################################################
+    def __network_read_network_capturefilters(self):
+        try:
+            for region_key, region_values in self.__regions.items():
+                capturefilter_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query capturefilter resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
+                    tenant_id=self.__tenancy.id
+                ).data
+
+                for filter in capturefilter_data:
+                    deep_link = self.__oci_network_capturefilter_uri + filter.identifier + '?region=' + region_key
+                    record = oci.util.to_dict(filter)
+                    record['deep_link'] = deep_link
+                    
+                    # Adding CaptureFilter to CaptureFilter Dict   
+                    self.__network_capturefilters[filter.identifier] = record
+
+            print("\tProcessed " + str(len(self.__network_capturefilters)) + " Network Capture Filters ")
+
+            return self.__network_subnets
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
     # Load DRG Attachments
@@ -5384,6 +5412,7 @@ class CIS_Report:
             self.__network_read_network_security_groups_rules,
             self.__network_read_network_vcns,
             self.__network_read_network_subnets,
+            self.__network_read_network_capturefilters,
             self.__adb_read_adbs,
             self.__oic_read_oics,
             self.__oac_read_oacs,
@@ -5449,6 +5478,7 @@ class CIS_Report:
             "network_security_lists": self.__network_security_lists,
             "network_subnets": self.__network_subnets,
             "network_vcns": self.__network_vcns,
+            "network_capture_filters": list(self.__network_capturefilters.values()),
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,
             "integration_instances": self.__integration_instances,

@@ -762,6 +762,9 @@ class CIS_Report:
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
+        self.__network_vcns = []
+        self.__network_capturefilters = []
+
         self.__network_fastconnects = {}  # Indexed by DRG ID
         self.__network_drgs = {}  # Indexed by DRG ID
         self.__raw_network_drgs = []
@@ -2301,6 +2304,35 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_network_subnets " + str(e.args))
+
+    ##########################################################################
+    # Network Subnets Lists
+    ##########################################################################
+    def __network_read_network_vcns(self):
+        try:
+            for region_key, region_values in self.__regions.items():
+                vcn_data = oci.pagination.list_call_get_all_results(
+                    region_values['search_client'].search_resources,
+                    search_details=oci.resource_search.models.StructuredSearchDetails(
+                        query="query VCN resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
+                    tenant_id=self.__tenancy.id
+                ).data
+
+                for vcn in vcn_data:
+                    deep_link = self.__oci_networking_uri + vcn.identifier + '?region=' + region_key
+                    record = oci.util.to_dict(vcn)
+                    record['deep_link'] = deep_link
+                    
+                    # Adding VCN to VCN list
+                    self.__network_vcns.append(record)
+
+            print("\tProcessed " + str(len(self.__network_vcns)) + " Virtual Cloud Networks ")
+
+            return self.__network_subnets
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __network_read_network_vcns " + str(e.args))
+
 
     ##########################################################################
     # Load DRG Attachments
@@ -5350,6 +5382,7 @@ class CIS_Report:
             self.__ons_read_subscriptions,
             self.__network_read_network_security_lists,
             self.__network_read_network_security_groups_rules,
+            self.__network_read_network_vcns,
             self.__network_read_network_subnets,
             self.__adb_read_adbs,
             self.__oic_read_oics,
@@ -5415,6 +5448,7 @@ class CIS_Report:
             "network_security_groups": self.__network_security_groups,
             "network_security_lists": self.__network_security_lists,
             "network_subnets": self.__network_subnets,
+            "network_vcns": self.__network_vcns,
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,
             "integration_instances": self.__integration_instances,

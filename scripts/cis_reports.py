@@ -788,6 +788,7 @@ class CIS_Report:
         self.__event_rules = []
         self.__logging_list = []
         self.__subnet_logs = {}
+        self.__all_logs = {}
         self.__write_bucket_logs = {}
         self.__read_bucket_logs = {}
         self.__load_balancer_access_logs = []
@@ -3091,6 +3092,43 @@ class CIS_Report:
                                     log_record["source_source_type"] = log.configuration.source.source_type
                                     log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
 
+                                    #### TESTING SOMETHING NEW ####
+                                    # print(log.configuration.source.service)
+                                    # print("working")
+
+                                # try:
+                                #     self.__all_logs[log.configuration.source.service][log.configuration.source.resource].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})                                
+                                # except Exception:
+                                #     self.__all_logs[log.configuration.source.service][log.configuration.source.resource] = []
+                                #     self.__all_logs[log.configuration.source.service][log.configuration.source.resource].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})                                
+
+                                    if self.__all_logs:
+                                        print("Not Empty")
+                                        if log.configuration.source.service in self.__all_logs:
+                                            print("Service in DICT")
+                                            print(log.configuration.source.service)
+                                            print(log.configuration.source.category)
+
+                                            if log.configuration.source.category in self.__all_logs[log.configuration.source.service]:
+                                                print("Service and Resource are here")
+                                                self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})
+                                            else:
+                                                print("Adding category" + log.configuration.source.category)
+                                                self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
+                                                self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})
+                                        else:
+                                            print("Adding Service, and resource")
+                                            self.__all_logs[log.configuration.source.service] = {}
+                                            self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
+                                        self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})
+                                    else:
+                                        print("Nothing here at all")
+                                        self.__all_logs[log.configuration.source.service] = {}
+                                        self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
+                                        self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name})
+                                
+                                
+                                print(self.__all_logs)
                                 if log.configuration.source.service == 'flowlogs':
                                     self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
 

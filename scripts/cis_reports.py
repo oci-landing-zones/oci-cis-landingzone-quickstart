@@ -4253,6 +4253,7 @@ class CIS_Report:
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             if not (subnet['id'] in self.__all_logs['flowlogs']['all']):
+                
             # if not (subnet['id'] in self.__subnet_logs):
                 self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(

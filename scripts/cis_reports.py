@@ -3123,29 +3123,7 @@ class CIS_Report:
                                         self.__all_logs[log_record["source_service"]] = {}
                                         self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
                                         self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "region": region_key}
-                                    # if self.__all_logs:
-                                    #     if log.configuration.source.service in self.__all_logs:
-                                    #         # print("Service in DICT")
-                                    #         # print(log.configuration.source.service)
-                                    #         # print(log.configuration.source.category)
 
-                                    #         if log.configuration.source.category in self.__all_logs[log.configuration.source.service]:
-                                    #             debug("__logging_read_log_groups_and_logs: Adding log for existing service and category ")
-                                    #             self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name, "region": region_key})
-                                    #         else:
-                                    #             debug(f'__logging_read_log_groups_and_logs: Adding category {log.configuration.source.category}')
-                                    #             self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
-                                    #             self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name, "region": region_key})
-                                    #     else:
-                                    #         debug(f'__logging_read_log_groups_and_logs: Adding Service {log.configuration.source.service}, and category {log.configuration.source.category}')
-                                    #         self.__all_logs[log.configuration.source.service] = {}
-                                    #         self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
-                                    #         self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name, "region": region_key})
-                                    # else:
-                                    #     debug(f'__logging_read_log_groups_and_logs: Starting Dict: Adding Service {log.configuration.source.service}, and category {log.configuration.source.category}' )
-                                    #     self.__all_logs[log.configuration.source.service] = {}
-                                    #     self.__all_logs[log.configuration.source.service][log.configuration.source.category] = []
-                                    #     self.__all_logs[log.configuration.source.service][log.configuration.source.category].append({"log_group_id": log.log_group_id, "log_id": log.id, "log_name": log.display_name, "region": region_key})
                                 except Exception as e:
                                     self.__errors.append({"id" : log_record["id"], "error" : str(e)})
                                     print(f'\tFailed to parse log: {log_record["id"]}')
@@ -4253,8 +4231,6 @@ class CIS_Report:
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             if not (subnet['id'] in self.__all_logs['flowlogs']['all']):
-                
-            # if not (subnet['id'] in self.__subnet_logs):
                 self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(
                     subnet)
@@ -4293,7 +4269,7 @@ class CIS_Report:
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names
         for bucket in self.__buckets:
-            if not (bucket['name'] in self.__write_bucket_logs):
+            if not (bucket['name'] in self.__all_logs['objectstorage']['write']):
                 self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
                     bucket)

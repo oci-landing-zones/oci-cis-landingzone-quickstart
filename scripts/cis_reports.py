@@ -3091,41 +3091,50 @@ class CIS_Report:
                                     log_record["source_service"] = log.configuration.source.service
                                     log_record["source_source_type"] = log.configuration.source.source_type
                                     log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
+                                    log_record["capture_filter"] = log.configuration.source.parameters.capture_filter if log.configuration.source.parameters else None
+
                                 elif log.log_type:# and log.lifecycle_state == 'ACTIVE':
                                     log_record["source_category"] = log.log_type
                                     log_record["source_service"] = log.log_type
-
+                                    log_record["source_resource"] = log.log_type
+                                    log_record["capture_filter"] = None
 
                                 #### TESTING SOMETHING NEW ####
 
                                 try: 
                                     if self.__all_logs:
-                                        # print("*" * 80)
-                                        # print(log_record)
-                                        # print("*" * 80)
+
                                         if log_record["source_service"] in self.__all_logs:
-                                            # print("Service in DICT")
 
                                             if log_record["source_category"] in self.__all_logs[log_record["source_service"]]:
                                                 debug("\t__logging_read_log_groups_and_logs: Adding log for existing service and category ")
-                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "region": region_key}
+                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
+                                                      {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
                                             else:
                                                 debug(f'\t__logging_read_log_groups_and_logs: Adding category {log_record["source_category"]}')
                                                 self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "region": region_key}
+                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
+                                                    {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
                                         else:
                                             debug(f'\t__logging_read_log_groups_and_logs: Adding Service {log_record["source_service"]}, and category {log_record["source_category"]}')
                                             self.__all_logs[log_record["source_service"]] = {}
                                             self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                            self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "region": region_key}
+                                            self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
+                                                {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
                                     else:
                                         debug(f'\t__logging_read_log_groups_and_logs: Starting Dict: Adding Service {log_record["source_service"]}, and category {log_record["source_category"]}' )
                                         self.__all_logs[log_record["source_service"]] = {}
                                         self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                        self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "region": region_key}
+                                        self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
+                                            {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
 
                                 except Exception as e:
                                     self.__errors.append({"id" : log_record["id"], "error" : str(e)})
+                                    # print("*" * 80)
+                                    # print(log.display_name)
+                                    # print(log.configuration)
+                                    # print(e)
+                                    # print("*" * 80)
                                     print(f'\tFailed to parse log: {log_record["id"]}')
 
                                 if log.configuration.source.service == 'flowlogs':
@@ -3159,7 +3168,6 @@ class CIS_Report:
                         self.__errors.append({"id" : log_group.identifier, "error" : str(e) })
                         record['notes'] = str(e)
                         
-
                     self.__logging_list.append(record)
 
             print("\tProcessed " + str(len(self.__logging_list)) + " Log Group Logs")

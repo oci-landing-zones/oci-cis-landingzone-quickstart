@@ -3066,6 +3066,7 @@ class CIS_Report:
                             log_group_id=log_group.identifier
                         ).data
                         for log in logs:
+
                             deep_link = self.__oci_loggroup_uri + log_group.identifier + "/logs/" + log.id + '?region=' + region_key
                             log_record = {
                                 "compartment_id": log.compartment_id,
@@ -3084,27 +3085,37 @@ class CIS_Report:
                                 "region" : region_key
                             }
                             try:
-                                # if log.configuration: # and log.lifecycle_state == 'ACTIVE':
-                                if log_record['log_type'] == 'SERVICE' and log_record['lifecycle_state'] == 'ACTIVE':
-                                    log_record["configuration_compartment_id"] = log.configuration.compartment_id
-                                    log_record["source_category"] = log.configuration.source.category
-                                    log_record["source_parameters"] = log.configuration.source.parameters
-                                    log_record["source_resource"] = log.configuration.source.resource
-                                    log_record["source_service"] = log.configuration.source.service
-                                    log_record["source_source_type"] = log.configuration.source.source_type
-                                    log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
-                                    log_record["capture_filter"] = log.configuration.source.parameters.capture_filter if log.configuration.source.parameters else None
-
-                                # else: # log.log_type:# and log.lifecycle_state == 'ACTIVE':
-                                elif log_record['lifecycle_state'] == 'ACTIVE':
-                                    log_record["source_category"] = log.log_type
-                                    log_record["source_service"] = log.log_type
-                                    log_record["source_resource"] = log.id
-                                    log_record["capture_filter"] = None
-
+                                try:
+                                    if log_record["log_type"] == "SERVICE" and log_record['lifecycle_state'] == "ACTIVE":
+                                        log_record["configuration_compartment_id"] = log.configuration.compartment_id
+                                        log_record["source_category"] = log.configuration.source.category
+                                        log_record["source_parameters"] = log.configuration.source.parameters
+                                        log_record["source_source_type"] = log.configuration.source.source_type
+                                        log_record["source_service"] = log.configuration.source.service
+                                        # Object storage buckets are indexed by BucketName-region
+                                        if log_record["source_service"] == "objectstorage":
+                                            log_record["source_resource"] = log.configuration.source.resource + "-" + region_key
+                                        else:
+                                            log_record["source_resource"] = log.configuration.source.resource
+                                        log_record["archiving_enabled"] = log.configuration.archiving.is_enabled
+                                        if log_record["source_parameters"] and isinstance(log_record["source_parameters"],dict):
+                                            log_record["capture_filter"] = log.configuration.source.parameters["capture_filter"]
+                                        else:
+                                            log_record["capture_fitler"] = None
+             
+                                    elif log_record["lifecycle_state"] == "ACTIVE":
+                                        log_record["source_category"] = log.log_type
+                                        log_record["source_service"] = log.log_type
+                                        log_record["source_resource"] = log.id
+                                        log_record["capture_filter"] = None
+                                except Exception as e:
+                                    print(log)
+                                    print(e)
                                 #### TESTING SOMETHING NEW ####
 
+
                                 try: 
+                                    ## Active means your logging
                                     if log_record['lifecycle_state'] == 'ACTIVE':
                                         if self.__all_logs:
 
@@ -3112,25 +3123,25 @@ class CIS_Report:
 
                                                 if log_record["source_category"] in self.__all_logs[log_record["source_service"]]:
                                                     debug("\t__logging_read_log_groups_and_logs: Adding log for existing service and category ")
-                                                    self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
-                                                        {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
+                                                    self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = log_record
+                                                        
                                                 else:
                                                     debug(f'\t__logging_read_log_groups_and_logs: Adding category {log_record["source_category"]}')
                                                     self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                                    self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
-                                                        {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
+                                                    self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = log_record
+                                                        
                                             else:
                                                 debug(f'\t__logging_read_log_groups_and_logs: Adding Service {log_record["source_service"]}, and category {log_record["source_category"]}')
                                                 self.__all_logs[log_record["source_service"]] = {}
                                                 self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
-                                                    {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
+                                                self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = log_record
+                                                    
                                         else:
                                             debug(f'\t__logging_read_log_groups_and_logs: Starting Dict: Adding Service {log_record["source_service"]}, and category {log_record["source_category"]}' )
                                             self.__all_logs[log_record["source_service"]] = {}
                                             self.__all_logs[log_record["source_service"]][log_record["source_category"]] = {}
-                                            self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = \
-                                                {"log_group_id": log_record['log_group_id'], "log_id": log_record['id'], "log_name": log_record['display_name'], "capture_filter": log_record['capture_filter'], "region": region_key}
+                                            self.__all_logs[log_record["source_service"]][log_record["source_category"]][log_record["source_resource"]] = log_record
+                                                
 
                                 except Exception as e:
                                     print(f'\tFailed to parse log: {log_record["id"]}')
@@ -4282,12 +4293,7 @@ class CIS_Report:
         # Generating list of buckets names
         ## Testing ##
         for bucket in self.__buckets:
-            if not (bucket['name'] in self.__all_logs['objectstorage']['write']):
-                self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
-                    bucket)
-            elif bucket['name'] in self.__all_logs['objectstorage']['write'] \
-            and bucket['region'] != self.__all_logs['objectstorage']['write'][bucket['name']]['region']:
+            if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                 self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
                     bucket)

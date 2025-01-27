@@ -3841,11 +3841,11 @@ class CIS_Report:
                     self.cis_foundations_benchmark_2_0['1.10']['Total'].append(
                         key)
     # CIS 1.11 Check - Old DB Password
-        __iso_time_format1 = "%Y-%m-%dT%H:%M:%S.%fZ"
+        #__iso_time_format1 = "%Y-%m-%dT%H:%M:%S.%fZ"
         for user in self.__users:
             if user['database_passwords']:
                 for key in user['database_passwords']:
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['last_modified'], self.__iso_time_format1):
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['last_modified'], self.__iso_time_format):
                         self.cis_foundations_benchmark_2_0['1.11']['Status'] = False
                         
                         finding = {

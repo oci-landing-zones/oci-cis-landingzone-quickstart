@@ -1689,8 +1689,9 @@ class CIS_Report:
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
                     record['deep_link'] = deep_link
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     database_password.append(record)
-
+                
                 return database_password
 
             except Exception as e:
@@ -3845,7 +3846,7 @@ class CIS_Report:
         for user in self.__users:
             if user['database_passwords']:
                 for key in user['database_passwords']:
-                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['last_modified'], self.__iso_time_format):
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
                         self.cis_foundations_benchmark_2_0['1.11']['Status'] = False
                         
                         finding = {

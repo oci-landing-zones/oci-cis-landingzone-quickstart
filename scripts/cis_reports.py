@@ -2330,7 +2330,7 @@ class CIS_Report:
 
             print("\tProcessed " + str(len(self.__network_vcns)) + " Virtual Cloud Networks ")
 
-            return self.__network_subnets
+            return self.__network_vcns
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_network_vcns " + str(e.args))
@@ -3111,8 +3111,8 @@ class CIS_Report:
                                 except Exception as e:
                                     print(log)
                                     print(e)
+                                
                                 #### TESTING SOMETHING NEW ####
-
 
                                 try: 
                                     ## Active means your logging
@@ -4250,13 +4250,61 @@ class CIS_Report:
             if all(findings.values()):
                 self.cis_foundations_benchmark_2_0[key]['Status'] = True
 
+        ### Testing ###
+        good_capture_filter = {'ruleAction': 'INCLUDE',
+                        'protocol': 'all',
+                        'udpOptions': None,
+                        'sourceCidr': None,
+                        'isEnabled': True,
+                        'samplingRate': 1,
+                        'flowLogType': 'ALL',
+                        'destinationCidr': None,
+                        'icmpOptions': None,
+                        'priority': 0,
+                        'tcpOptions': None}
+
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
-            if not (subnet['id'] in self.__all_logs['flowlogs']['all']):
+            print(subnet['id'])
+            if (subnet['id'] in self.__all_logs['flowlogs']['all'] or\
+               subnet['vcn_id'] in self.__all_logs['flowlogs']['vcn']):
+                vcn_id = subnet['vcn_id']
+                if vcn_id in self.__all_logs['flowlogs']['vcn'] and \
+                    self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
+                        # VCN is being logging but it is has a capture filter we need to check
+                        print("&&&" * 30)
+                        capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
+                        print(capture_filter_id)
+                        capture_filter = self.__network_capturefilters[capture_filter_id]
+                        for rule in capture_filter['additional_details']['flowLogCaptureFilterRules']:
+                            print(rule)
+                        
+                        self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
+
+
+
+                # print("*" * 80)
+                # print(subnet['id'])
+                # print(subnet['vcn_id'])
+                # print("*" * 80)
                 self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                 self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(
                     subnet)
+                
+            if subnet['vcn_id'] in self.__all_logs['flowlogs']['vcn']:
+                print("$" * 80)
+                print(subnet['id'])
+                print(subnet['vcn_id'])
+                print("-" * 80)
+                vcn_id = subnet['vcn_id']
+                cap_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
+                print(cap_id)
+                print("-" * 80)
+                print(self.__network_capturefilters[cap_id])
+                print("*" * 80)
+
 
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_2_0['4.13']['Total'] = self.__network_subnets

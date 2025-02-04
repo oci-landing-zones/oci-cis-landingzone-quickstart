@@ -4251,47 +4251,59 @@ class CIS_Report:
                 self.cis_foundations_benchmark_2_0[key]['Status'] = True
 
         ### Testing ###
-        good_capture_filter = {'ruleAction': 'INCLUDE',
-                        'protocol': 'all',
-                        'udpOptions': None,
-                        'sourceCidr': None,
-                        'isEnabled': True,
-                        'samplingRate': 1,
-                        'flowLogType': 'ALL',
-                        'destinationCidr': None,
-                        'icmpOptions': None,
-                        'priority': 0,
-                        'tcpOptions': None}
+        good_capture_filter_rule = {'ruleAction': 'INCLUDE',
+                                'protocol': 'all',
+                                'udpOptions': None,
+                                'sourceCidr': '0.0.0.0/0',
+                                'isEnabled': True,
+                                'samplingRate': 1,
+                                'flowLogType': 'ALL',
+                                'icmpOptions': None,
+                                'destinationCidr': '0.0.0.0/0',
+                                'priority': 0,
+                                'tcpOptions': None}
 
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             print(subnet['id'])
-            if (subnet['id'] in self.__all_logs['flowlogs']['all'] or\
-               subnet['vcn_id'] in self.__all_logs['flowlogs']['vcn']):
-                vcn_id = subnet['vcn_id']
-                if vcn_id in self.__all_logs['flowlogs']['vcn'] and \
-                    self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
-                        # VCN is being logging but it is has a capture filter we need to check
-                        print("&&&" * 30)
-                        capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
-                        print(capture_filter_id)
+            # if (subnet['id'] in self.__all_logs['flowlogs']['subnet'] or\
+            # subnet['vcn_id'] in self.__all_logs['flowlogs']['vcn']):
+            vcn_id = subnet['vcn_id']
+            print(vcn_id)
+            if vcn_id in self.__all_logs['flowlogs']['vcn'] and \
+                self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
+                    print("----VCN-----" * 3)
+                    capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
+                    print(capture_filter_id)
+                    capture_filter = self.__network_capturefilters[capture_filter_id]
+                    print(capture_filter)
+
+                    if not(good_capture_filter_rule in capture_filter['additional_details']['flowLogCaptureFilterRules']):
+                    # VCN is being logging but it is has a capture filter we need to check
+                        print("--Bad--Filter--" * 5)
                         capture_filter = self.__network_capturefilters[capture_filter_id]
-                        for rule in capture_filter['additional_details']['flowLogCaptureFilterRules']:
-                            print(rule)
-                        
                         self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                         self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
-
-
-
-                # print("*" * 80)
-                # print(subnet['id'])
-                # print(subnet['vcn_id'])
-                # print("*" * 80)
+            elif subnet['id'] in self.__all_logs['flowlogs']['subnet'] and \
+                self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']:
+                    print("----Subnet-----" * 3)
+                    capture_filter_id = self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']
+                    print(capture_filter_id)
+                    capture_filter = self.__network_capturefilters[capture_filter_id]
+                    print(capture_filter)
+                    
+                    if not(good_capture_filter_rule in capture_filter['additional_details']['flowLogCaptureFilterRules']):
+                    # VCN is being logging but it is has a capture filter we need to check
+                        print("--Bad--Filter--" * 5)
+                        self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
+            elif not(subnet['id'] in self.__all_logs['flowlogs']['all']):
                 self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(
-                    subnet)
+                self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
+
+            else:
+                pass
                 
             if subnet['vcn_id'] in self.__all_logs['flowlogs']['vcn']:
                 print("$" * 80)
@@ -4339,7 +4351,6 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names
-        ## Testing ##
         for bucket in self.__buckets:
             if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                 self.cis_foundations_benchmark_2_0['4.17']['Status'] = False

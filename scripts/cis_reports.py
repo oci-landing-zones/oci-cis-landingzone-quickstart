@@ -4262,17 +4262,18 @@ class CIS_Report:
                                 'destinationCidr': '0.0.0.0/0',
                                 'priority': 0,
                                 'tcpOptions': None}
-        {'ruleAction': 'INCLUDE', 
-         'protocol': 'all', 
-         'udpOptions': None, 
-         'isEnabled': True, 
-         'sourceCidr': None, 
-         'samplingRate': 1, 
-         'flowLogType': 'ALL', 
-         'destinationCidr': None, 
-         'icmpOptions': None, 
-         'priority': 0, 
-         'tcpOptions': None}
+        
+        good_capture_filter_rule = {'ruleAction': 'INCLUDE', 
+                                    'protocol': 'all', 
+                                    'udpOptions': None, 
+                                    'isEnabled': True, 
+                                    'sourceCidr': None, 
+                                    'samplingRate': 1, 
+                                    'flowLogType': 'ALL', 
+                                    'destinationCidr': None, 
+                                    'icmpOptions': None, 
+                                    'priority': 0, 
+                                    'tcpOptions': None}
 
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs

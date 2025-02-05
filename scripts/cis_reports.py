@@ -4251,7 +4251,7 @@ class CIS_Report:
                 self.cis_foundations_benchmark_2_0[key]['Status'] = True
 
         ### Testing ###
-        good_capture_filter_rule_old = {'ruleAction': 'INCLUDE',
+        good_capture_filter_rule = {'ruleAction': 'INCLUDE',
                                 'protocol': 'all',
                                 'udpOptions': None,
                                 'sourceCidr': '0.0.0.0/0',

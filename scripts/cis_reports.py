@@ -4319,7 +4319,7 @@ class CIS_Report:
                     print(f"Unable to read capturefilter rules for:  {str(e)}.\n*** Please ensure your auditor has permissions: 'to read capture-filters in tenancy' . ***")
                     self.__errors.append({"id" : str(e), "error" : "Unable to read capturefilter rules *** Please ensure your auditor has permissions: 'to read capture-filters in tenancy'."})
                 else:
-                    print(f"Unable to process all logs and capture filter rules.")
+                    print('Unable to process all logs and capture filter rules.')
                     self.__errors.append({"id" : "__network_subnets", "error" : "Unable to process all logs and capture filter rules."})
         
         # CIS Check 4.13 Total - Adding All Subnets to total

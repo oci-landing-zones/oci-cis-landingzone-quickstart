@@ -4280,8 +4280,8 @@ class CIS_Report:
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
             try:    
-                if vcn_id in self.__all_logs['flowlogs']['vcn'] and \
-                    self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
+                if vcn_id in self.__all_logs['flowlogs']['vcn']:
+                    if self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
                         debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking VCN {vcn_id} for Subnet: {subnet['id']} ")
                         capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
                         capture_filter = self.__network_capturefilters[capture_filter_id]
@@ -4292,26 +4292,45 @@ class CIS_Report:
                             capture_filter = self.__network_capturefilters[capture_filter_id]
                             self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
-                elif subnet['id'] in self.__all_logs['flowlogs']['subnet'] and \
-                    self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']:
-                        debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in VCN: {vcn_id} ")
+                    else:
+                        pass
+                
+                elif subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
+                    debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in subnet")
+                    debug(self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter'])
+                    if self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']:
+                        debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} capture filter in subnet")
+
                         capture_filter_id = self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']
-                        print(capture_filter_id)
-                        capture_filter = self.__network_capturefilters[capture_filter_id]
-                        print(capture_filter)
-                        
+                        capture_filter = self.__network_capturefilters[capture_filter_id]    
                         if not(good_capture_filter_rule in capture_filter['additional_details']['flowLogCaptureFilterRules']):
                         # VCN is being logging but it is has a capture filter we need to check
                             debug(f"__report_cis_analyze_tenancy_data: Flowlogs Capture Filter {capture_filter_id} Rules not compliant.")
                             self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
-                elif not(subnet['id'] in self.__all_logs['flowlogs']['all']):
-                    debug(f"__report_cis_analyze_tenancy_data: Flowlogs Subnet {subnet['id']} not logged")
-                    self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
-                    self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
+                    else:
+                        pass
+
+                elif subnet['id'] in self.__all_logs['flowlogs']['all']:
+                    debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in all")
+                    debug(self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter'])
+                    if self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter']:
+                        debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} capture filter in all")
+
+                        capture_filter_id = self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter']
+                        capture_filter = self.__network_capturefilters[capture_filter_id]    
+                        if not(good_capture_filter_rule in capture_filter['additional_details']['flowLogCaptureFilterRules']):
+                        # VCN is being logging but it is has a capture filter we need to check
+                            debug(f"__report_cis_analyze_tenancy_data: Flowlogs Capture Filter {capture_filter_id} Rules not compliant.")
+                            self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
+                            self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
+                    else:
+                        pass
 
                 else:
-                    pass
+                    debug(f"__report_cis_analyze_tenancy_data: Flowlogs count not find Subnet {subnet['id']}, it is a finding")
+                    self.cis_foundations_benchmark_2_0['4.13']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.13']['Findings'].append(subnet)
 
             except Exception as e:
                 self.cis_foundations_benchmark_2_0['4.13']['Status'] = False            
@@ -4320,7 +4339,7 @@ class CIS_Report:
                     self.__errors.append({"id" : str(e), "error" : "Unable to read capturefilter rules *** Please ensure your auditor has permissions: 'to read capture-filters in tenancy'."})
                 else:
                     print('Unable to process all logs and capture filter rules.')
-                    self.__errors.append({"id" : "__network_subnets", "error" : "Unable to process all logs and capture filter rules."})
+                    self.__errors.append({"id" : "__network_subnets", "error" : str(e)})
         
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_2_0['4.13']['Total'] = self.__network_subnets

@@ -3192,7 +3192,7 @@ class CIS_Report:
                     self.__logging_list.append(record)
 
             print("\tProcessed " + str(len(self.__logging_list)) + " Log Group Logs")
-            print(self.__all_logs)
+            # print(self.__all_logs)
 
             return self.__logging_list
         except Exception as e:

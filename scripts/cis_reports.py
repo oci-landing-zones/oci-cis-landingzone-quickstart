@@ -1464,13 +1464,13 @@ class CIS_Report:
                                 record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
                                 record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
                                 record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
-                                record['database_passowrds'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                                record['database_passwords'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
                             else:
                                 debug("__identity_read_users: skipping user API Key collection for user: " + str(user.user_name))
                                 record['api_keys'] = None
                                 record['auth_tokens'] = None
                                 record['customer_secret_keys'] = None
-                                record['database_passowrds'] = None
+                                record['database_passwords'] = None
                             self.__users.append(record)
 
                     except Exception as e:
@@ -1526,7 +1526,7 @@ class CIS_Report:
                             user.id)
                         record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(
                             user.id)
-                        record['database_passowrds'] = self.__identity_read_user_database_password(user.id)
+                        record['database_passwords'] = self.__identity_read_user_database_password(user.id)
                         self.__users.append(record)
                     print("\tProcessed " + str(len(self.__users)) + " Users")
                     return self.__users
@@ -1689,8 +1689,9 @@ class CIS_Report:
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
                     record['deep_link'] = deep_link
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     database_password.append(record)
-
+                
                 return database_password
 
             except Exception as e:
@@ -3840,6 +3841,27 @@ class CIS_Report:
                     # CIS Total 1.10 Adding - Keys to CIS Total
                     self.cis_foundations_benchmark_2_0['1.10']['Total'].append(
                         key)
+    # CIS 1.11 Check - Old DB Password
+        #__iso_time_format1 = "%Y-%m-%dT%H:%M:%S.%fZ"
+        for user in self.__users:
+            if user['database_passwords']:
+                for key in user['database_passwords']:
+                    if self.api_key_time_max_datetime >= datetime.datetime.strptime(key['time_created'], self.__iso_time_format):
+                        self.cis_foundations_benchmark_2_0['1.11']['Status'] = False
+                        
+                        finding = {
+                            "user_name": user['name'],
+                            "user_id": user['id'],
+                            "id": key['ocid'],
+                            "description": key['description'],
+                            # "expires-on": key['expires_on']
+                        }
+
+                        self.cis_foundations_benchmark_2_0['1.11']['Findings'].append(finding)
+
+                # CIS Total 1.11 Adding - Keys to CIS Total
+                    self.cis_foundations_benchmark_2_0['1.11']['Total'].append(key)
+                    
 
         # CIS 1.12 Active Admins with API keys
         # Iterating through all users to see if they have API Keys and if they are active users

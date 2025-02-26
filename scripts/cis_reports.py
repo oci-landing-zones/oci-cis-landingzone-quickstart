@@ -1690,6 +1690,7 @@ class CIS_Report:
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
                     record['deep_link'] = deep_link
+                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     database_password.append(record)
 
                 return database_password

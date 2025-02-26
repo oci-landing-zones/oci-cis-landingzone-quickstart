@@ -1,7 +1,7 @@
 [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)<br>
-*If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI. 
+*If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI. *
 
-**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)** *
+**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)**
 <br>
 <details><summary>To deploy to non-commercial realms and regions click here</summary>
 

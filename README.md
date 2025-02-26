@@ -1,5 +1,7 @@
 [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)<br>
-*If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
+*If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI. 
+
+**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)** *
 <br>
 <details><summary>To deploy to non-commercial realms and regions click here</summary>
 
@@ -57,7 +59,9 @@
 1. [Frequently Asked Questions](FAQ.md)
 
 ## <a name="overview"></a>Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
+This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/) and a standalone [Python script](compliance-script.md) that assess an existing tenancy for recommendations in the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
+
+**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)**
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
 
@@ -79,7 +83,7 @@ The template uses multiple compartments, groups, and IAM policies to segregate a
  This repository encloses two deliverables:
 
 - A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
-- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations. The script is completely independent of the Terraform code and can be used against any existing tenancy.
+- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations and Oracle Best Practices. The script is completely independent of the Terraform code and can be used against any existing tenancy.
 
  ## <a name="architecture"></a>Architecture
  ### <a name="arch-iam"></a>IAM

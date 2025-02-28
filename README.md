@@ -5,7 +5,7 @@
 
 As of March 2025, CIS Landing Zone **only** the Terraform deliverable is in maintenance mode.
 - **The [CIS compliance checking script]((compliance-script.md)) in this repository is not impacted. Users should continue using it to determine tenancy compliance with the CIS OCI Foundations Benchmark.**
-- Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and is compliant with CIS OCI Foundations Benchmark for OCI. 2.0.0.
+- Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and is compliant with CIS OCI Foundations Benchmark 2.0.0.
 - Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones).
 
 ---
@@ -70,7 +70,6 @@ As of March 2025, CIS Landing Zone **only** the Terraform deliverable is in main
 1. [Frequently Asked Questions](FAQ.md)
 
 ## <a name="overview"></a>Overview
-
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/) and a standalone [Python script](compliance-script.md) that assess an existing tenancy for recommendations in the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:

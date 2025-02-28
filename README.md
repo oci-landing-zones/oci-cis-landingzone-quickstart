@@ -1,7 +1,14 @@
+
+**The [CIS compliance checking script]((compliance-script.md)) in this repository is not impacted. Users should continue using it to determine tenancy compliance with the CIS OCI Foundations Benchmark.**
+
+As of March 2025, CIS Landing Zone Terraform deliverable is in maintenance mode.
+- Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and is compliant with CIS OCI Foundations Benchmark for OCI. 2.0.0.
+- Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones).
+
+
 [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)<br>
 *If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI. *
 
-**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)**
 <br>
 <details><summary>To deploy to non-commercial realms and regions click here</summary>
 
@@ -60,8 +67,6 @@
 
 ## <a name="overview"></a>Overview
 This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/) and a standalone [Python script](compliance-script.md) that assess an existing tenancy for recommendations in the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
-
-**For new deployments Landing Zones deployments customers should go to the new [OCI Landing Zones GitHub Organization](https://github.com/oci-landing-zones)**
 
 The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
 

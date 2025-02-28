@@ -4,4 +4,3 @@
 output "compartments" {
   value = module.workload_compartments.compartments
 }
-

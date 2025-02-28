@@ -14,7 +14,6 @@ Updated README to guide new Landing Zone adopters to the Core Landing Zone or th
     - Fixed HTML report non-compliant issues text box being too large. 
     - Fixed check "Ensure Compute Instance Legacy Metadata service endpoint is disabled" level to `2`.
     
-
 #  November 20, 2024 Release Notes - 2.8.6
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-6-script-updates)
 ## <a name="#2-8-6-script-updates">Updates/Fixes to the CIS Compliance Script</a>

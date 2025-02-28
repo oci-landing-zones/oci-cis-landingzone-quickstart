@@ -1,7 +1,9 @@
 
 
 ---
+
 **NOTE**
+
 ---
 As of March 2025, CIS Landing Zone **only** the Terraform deliverable is in maintenance mode.
 - **The [CIS compliance checking script]((compliance-script.md)) in this repository is not impacted. Users should continue using it to determine tenancy compliance with the CIS OCI Foundations Benchmark.**

@@ -2,7 +2,8 @@
 1. [README Update](#2-8-7-readme-update)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-7-script-updates)
 ## <a name="#2-8-7-readme-update">README Update for Core Landing Zone</a>
-Updated README to guide new Landing Zone adopters to the Core Landing Zone or the Operating Entities Landing Zone.
+Updated README to guide new Landing Zone adopters to the Core Landing Zone or the Operating Entities Landing Zone. 
+**The compliance checker script is not impacted.**
 
 ## <a name="#2-8-7-script-updates">Updates/Fixes to the CIS Compliance Script</a>
 - Updates:

@@ -1,3 +1,20 @@
+#  February 27, 2024 Release Notes - 2.8.7
+1. [README Update](#2-8-7-readme-update)
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-7-script-updates)
+## <a name="#2-8-7-readme-update">README Update for Core Landing Zone</a>
+Updated README to guide new Landing Zone adopters to the Core Landing Zone or the Operating Entities Landing Zone. 
+**The compliance checker script is not impacted.**
+
+## <a name="#2-8-7-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+- Updates:
+    - Adding improved support for all OCI Service log types. This is the precursor to completing the feature request [156](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/156)  
+- Fixes:
+    - Fixed check "Ensure user IAM Database Passwords rotate within 90 days" from issue [155](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/155)
+    - Fixed check "Ensure VCN flow logging is enabled for all subnets" from issue [149](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/149)
+    - Fixed HTML report non-compliant issues text box being too large. 
+    - Fixed check "Ensure Compute Instance Legacy Metadata service endpoint is disabled" level to `2`.
+    
+
 #  November 20, 2024 Release Notes - 2.8.6
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-6-script-updates)
 ## <a name="#2-8-6-script-updates">Updates/Fixes to the CIS Compliance Script</a>

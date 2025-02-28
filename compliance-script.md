@@ -32,6 +32,7 @@ allow group Auditor-Group to read public-ips in tenancy
 allow group Auditor-Group to read file-family in tenancy
 allow group Auditor-Group to read instance-configurations in tenancy
 allow group Auditor-Group to read network-security-groups in tenancy
+allow group Auditor-Group to read capture-filters in tenancy
 allow group Auditor-Group to read resource-availability in tenancy
 allow group Auditor-Group to read audit-events in tenancy
 allow group Auditor-Group to read users in tenancy	

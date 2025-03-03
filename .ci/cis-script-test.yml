@@ -68,12 +68,10 @@ cis-compliance-script-setup-main:
         - scripts/cis_reports.py
   script:
     - echo "  ----- BEGIN - Main Script Setup -----  "
-    - echo "Fetching main branch"
-    - git fetch origin main
-    - echo "Checking out main branch"
-    - git checkout main
-    - echo "Copying to issue code"
-    - cp scripts/cis_reports.py $MAIN_DIR
+    - echo "Setting up Proxy"
+    - export https_proxy=$PROXY_SERVER
+    - echo "Downloading script from Public Github"
+    - wget -O $MAIN_DIR/cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
     - python3 $MAIN_DIR/cis_reports.py -v
     - echo "  ----- SUCCESS - Main Script Setup -----  "
     

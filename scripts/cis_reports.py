@@ -4374,12 +4374,17 @@ class CIS_Report:
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs
-        # Generating list of buckets names
-        for bucket in self.__buckets:
-            if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
-                self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
-                    bucket)
+        # Generating list of buckets names and need to make sure they have write level bucekt logs
+        if 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+            for bucket in self.__buckets:
+                if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
+                    self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
+                        bucket)
+        else:
+            self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
+            self.cis_foundations_benchmark_2_0['4.17']['Findings'] +=self.__buckets
+
         # CIS Check 4.17 Total - Adding All Buckets to total
         self.cis_foundations_benchmark_2_0['4.17']['Total'] = self.__buckets
 

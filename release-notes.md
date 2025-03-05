@@ -1,3 +1,17 @@
+#  March 4, 2024 Release Notes - 2.8.8
+1. [Updates/Fixes to the CIS Compliance Script](#2-8-8-script-updates)
+1. [README Update](#2-8-8-readme-update)
+## <a name="#2-8-8-script-updates">Updates/Fixes to the CIS Compliance Script</a>
+- Fixes:
+    - Fixed an issue for tenancies that do not have bucket logging enabled.
+    - Fixed an issue for DB Password expiry check in tenancy's without Identity Domains.
+
+## <a name="#2-8-8-readme-update">README Update for Core Landing Zone</a>
+Updated a broken link and small grammar improvement.
+**The compliance checker script is not impacted.**
+
+    
+
 #  February 27, 2024 Release Notes - 2.8.7
 1. [README Update](#2-8-7-readme-update)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-7-script-updates)

@@ -42,9 +42,9 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-RELEASE_VERSION = "2.8.7"
-PYTHON_SDK_VERSION = "2.145.0"
-UPDATED_DATE = "February 27, 2024"
+RELEASE_VERSION = "2.8.8"
+PYTHON_SDK_VERSION = "2.147.0"
+UPDATED_DATE = "March 4, 2024"
 
 
 ##########################################################################
@@ -1722,7 +1722,9 @@ class CIS_Report:
                     debug("__identity_read_user_database_password: Got Password")
                     deep_link = self.__oci_users_uri + user_ocid + "/db-password"
                     record = oci.util.to_dict(password)
+                    record['ocid'] = record['id']
                     record['deep_link'] = deep_link
+                    record['time_created'] = self.get_date_iso_format(record['time_created'])
                     database_password.append(record)
 
                 return database_password
@@ -4374,12 +4376,17 @@ class CIS_Report:
             self.cis_foundations_benchmark_2_0['4.16']['Total'].append(key)
 
         # CIS Check 4.17 - Object Storage with Logs
-        # Generating list of buckets names
-        for bucket in self.__buckets:
-            if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
-                self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
-                self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
-                    bucket)
+        # Generating list of buckets names and need to make sure they have write level bucekt logs
+        if 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+            for bucket in self.__buckets:
+                if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
+                    self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
+                    self.cis_foundations_benchmark_2_0['4.17']['Findings'].append(
+                        bucket)
+        else:
+            self.cis_foundations_benchmark_2_0['4.17']['Status'] = False
+            self.cis_foundations_benchmark_2_0['4.17']['Findings'] +=self.__buckets
+
         # CIS Check 4.17 Total - Adding All Buckets to total
         self.cis_foundations_benchmark_2_0['4.17']['Total'] = self.__buckets
 

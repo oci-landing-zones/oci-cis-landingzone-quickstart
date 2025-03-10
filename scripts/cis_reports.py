@@ -5581,8 +5581,7 @@ class CIS_Report:
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
                 self.__sch_read_service_connectors,
-                self.__network_topology_dump
-            ]
+                ]
         else:
             obp_functions = []
 
@@ -5591,6 +5590,7 @@ class CIS_Report:
         if self.__all_resources:
             all_resources = [
                 self.__search_resources_all_resources_in_tenancy,
+                self.__network_topology_dump
             ]
         else:
             all_resources = []

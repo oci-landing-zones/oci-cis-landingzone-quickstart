@@ -4105,8 +4105,15 @@ class CIS_Report:
         for sl in self.__network_security_lists:
             if sl['display_name'].startswith("Default Security List for "):
                 self.cis_foundations_benchmark_2_0['2.5']['Total'].append(sl)
-                for irule in sl['ingress_security_rules']:
-                    if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                for irule in sl['ingress_security_rules'] + sl['egress_security_rules']:
+                    if 'source' in irule and irule['source'] == "0.0.0.0/0":
+                        debug("__report_cis_analyze_tenancy_data: Security List has bad ingress rule")
+                        self.cis_foundations_benchmark_2_0['2.5']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.5']['Findings'].append(
+                            sl)
+                        break
+                    elif 'destination' in irule and irule['destination'] == "0.0.0.0/0":
+                        debug("Security List has bad egress rule")
                         self.cis_foundations_benchmark_2_0['2.5']['Status'] = False
                         self.cis_foundations_benchmark_2_0['2.5']['Findings'].append(
                             sl)

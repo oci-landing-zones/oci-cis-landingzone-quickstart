@@ -146,7 +146,7 @@ class CIS_Report:
             '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
+            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP within VCN .', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
@@ -339,10 +339,10 @@ class CIS_Report:
                 "Observation": "Network security groups that allow internet access to port 3389. (Note this does not necessarily mean external traffic can reach a compute instance)."
             },
             "2.5": {
-                "Description": "A default security list is created when a Virtual Cloud Network (VCN) is created. Security lists provide stateful filtering of ingress and egress network traffic to OCI resources. It is recommended no security list allows unrestricted ingress access to Secure Shell (SSH) via port 22.",
-                "Rationale": "Removing unfettered connectivity to remote console services, such as SSH on port 22, reduces a server's exposure to unauthorized access.",
+                "Description": "A default security list is created when a Virtual Cloud Network (VCN) is created and attached to the public subnets in the VCN. Security lists provide stateful or stateless filtering of ingress and egress network traffic to OCI resources in the VCN. It is recommended that the default security list does not allow unrestricted ingress and egress access to resources in the VCN.",
+                "Rationale": "Removing unfettered connectivity to OCI resource, reduces a server's exposure to unauthorized access or data exfiltration.",
                 "Impact": "For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to ports 22 and/or 3389 through another security group.",
-                "Remediation": "Select Default Security List for <VCN Name> and Remove the Ingress Rule with Source 0.0.0.0/0, IP Protocol 22 and Destination Port Range 22.",
+                "Remediation": "For updating an existing environment, care should be taken to ensure that administrators currently relying on an existing ingress from 0.0.0.0/0 have access to port 22 through another network security group and servers have egress to specified ports and protocols through another network security group.",
                 "Recommendation": "Create specific custom security lists with workload specific rules and attach to subnets.",
                 "Observation": "Default Security lists that allow more traffic then ICMP."
             },
@@ -4105,8 +4105,15 @@ class CIS_Report:
         for sl in self.__network_security_lists:
             if sl['display_name'].startswith("Default Security List for "):
                 self.cis_foundations_benchmark_2_0['2.5']['Total'].append(sl)
-                for irule in sl['ingress_security_rules']:
-                    if irule['source'] == "0.0.0.0/0" and irule['protocol'] != '1':
+                for irule in sl['ingress_security_rules'] + sl['egress_security_rules']:
+                    if 'source' in irule and irule['source'] == "0.0.0.0/0":
+                        debug("__report_cis_analyze_tenancy_data: Security List has bad ingress rule")
+                        self.cis_foundations_benchmark_2_0['2.5']['Status'] = False
+                        self.cis_foundations_benchmark_2_0['2.5']['Findings'].append(
+                            sl)
+                        break
+                    elif 'destination' in irule and irule['destination'] == "0.0.0.0/0":
+                        debug("Security List has bad egress rule")
                         self.cis_foundations_benchmark_2_0['2.5']['Status'] = False
                         self.cis_foundations_benchmark_2_0['2.5']['Findings'].append(
                             sl)

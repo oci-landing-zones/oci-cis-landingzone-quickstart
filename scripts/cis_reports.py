@@ -141,6 +141,7 @@ class CIS_Report:
             '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
             '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
             '1.15': {'section': 'Identity and Access Management', 'recommendation_#': '1.15', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.8'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
+            '1.17': {'section': 'Identity and Access Management', 'recommendation_#': '1.17', 'Title': 'Ensure there is only one active API Key for any single OCI IAM user.', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5'], 'CCCS Guard Rail': '2', 'Remediation': []},
 
             '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
             '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
@@ -305,6 +306,13 @@ class CIS_Report:
                 "Remediation": "Add the appropriate where condition to any policy statement that allows the storage service-level to manage the storage service.",
                 "Recommendation": "To apply a separation of duties security principle, it is recommended to restrict service-level administrators from being able to delete resources they are managing.",
                 "Observation": "IAM Policies that give service administrator the ability to delete service resources."
+            },
+            "1.17":{
+                "Description": "API Keys are long-term credentials for an OCI IAM user. They can be used to make programmatic requests to the OCI APIs directly or via, OCI SDKs or the OCI CLI.",
+                "Rationale": "Having a single API Key for an OCI IAM reduces attack surface area and makes it easier to manage.",
+                "Impact": "Deletion of an OCI API Key will remove programmatic access to OCI APIs.",
+                "Remediation": "Remove one of the API Keys.",
+                "Observation": "OCI API Key will grant programmatic access to OCI APIs with the same access as the user it is attached to."
             },
             "2.1": {
                 "Description": "Security lists provide stateful or stateless filtering of ingress/egress network traffic to OCI resources on a subnet level. It is recommended that no security group allows unrestricted ingress access to port 22.",

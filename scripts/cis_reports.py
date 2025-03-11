@@ -2770,7 +2770,7 @@ class CIS_Report:
     ############################################
     def __network_topology_dump(self):
         debug("__network_topology_dump: Starting")
-        if type(self.__signer) is not oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
+        if type(self.__signer) is oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
             self.__errors.append({"id": "__network_topology_dump", "error": "Delegated Tokens via Cloud Shell not supported." })
             return
         def api_function(region_key, region_values, tenancy_id):
@@ -5580,9 +5580,8 @@ class CIS_Report:
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
-                self.__sch_read_service_connectors,
-                self.__network_topology_dump
-            ]
+                self.__sch_read_service_connectors
+                ]
         else:
             obp_functions = []
 
@@ -5590,7 +5589,8 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__search_resources_all_resources_in_tenancy,
+                self.__network_topology_dump,
+                self.__search_resources_all_resources_in_tenancy
             ]
         else:
             all_resources = []

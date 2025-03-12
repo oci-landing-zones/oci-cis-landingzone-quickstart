@@ -171,7 +171,8 @@ class CIS_Report:
             '4.14': {'section': 'Logging and Monitoring', 'recommendation_#': '4.14', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '8.11'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
             '4.15': {'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': False, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '', 'Remediation': []},
             '4.16': {'section': 'Logging and Monitoring', 'recommendation_#': '4.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '4.17': {'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '', 'Remediation': []},
+            '4.17': {'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
+            '4.18': {'section': 'Logging and Monitoring', 'recommendation_#': '4.18', 'Title': 'Ensure a notification is configured for Local OCI User Authentication.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
 
             '5.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '', 'Remediation': []},
             '5.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
@@ -510,7 +511,7 @@ class CIS_Report:
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard generates a Problem. It is recommended to setup an Event Rule and Notification that gets triggered when Oracle Cloud Guard Problems are created, dismissed or remediated. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
                 "Rationale": "Cloud Guard provides an automated means to monitor a tenancy for resources that are configured in an insecure manner as well as risky network activity from these resources. Monitoring and alerting on Problems detected by Cloud Guard will help in identifying changes to the security posture.",
                 "Impact": "There is no performance impact when enabling the above described features but depending on the amount of notifications sent per month there may be a cost associated.",
-                "Remediation": "Create a Rule Condition by selecting Cloud Guard in the Service Name Drop-down and selecting Detected – Problem, Remediated – Problem and Dismissed - Problem. In the Actions section select Notifications as Action Type and selct the compartment and topic to be used.",
+                "Remediation": "Create a Rule Condition by selecting Cloud Guard in the Service Name Drop-down and selecting Detected – Problem, Remediated – Problem and Dismissed - Problem. In the Actions section select Notifications as Action Type and select the compartment and topic to be used.",
                 "Recommendation": "",
                 "Observation": "notifications have been configured for Cloud Guard Problems."
             },
@@ -529,6 +530,14 @@ class CIS_Report:
                 "Remediation": "To the relevant bucket enable log by providing Write Access Events from the Log Category. Beforehand create log group if required.",
                 "Recommendation": "",
                 "Observation": "object stores have no write level logging enabled."
+            },
+            "4.18": {
+                "Description": "It is recommended that an Event Rule and Notification be set up when a user in the via OCI local authentication. Event Rules are compartment-scoped and will detect events in child compartments. This Event rule is required to be created at the root compartment level.",
+                "Rationale": "Users should rarely use OCI local authenticated and be authenticated via organizational standard Identity providers, not local credentials. Access in this matter would represent a break glass activity and should be monitored to see if changes made impact the security posture.",
+                "Impact": "There is no performance impact when enabling the above-described features but depending on the amount of notifications sent per month there may be a cost associated.",
+                "Remediation": "Create a Rule Condition by selecting Identity SignOn in the Service Name Drop-down and selecting and Event Types: Interactive Login. In the Actions section select Notifications as Action Type and select the compartment and topic to be used.",
+                "Recommendation": "",
+                "Observation": "notifications have been configured Local User Authentication."
             },
             "5.1.1": {
                 "Description": "A bucket is a logical container for storing objects. It is associated with a single compartment that has policies that determine what action a user can perform on a bucket and on all the objects in the bucket. It is recommended that no bucket be publicly accessible.",

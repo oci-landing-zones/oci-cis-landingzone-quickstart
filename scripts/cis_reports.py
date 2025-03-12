@@ -4074,6 +4074,19 @@ class CIS_Report:
         # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_2_0['1.15']['Total'] = self.__policies
 
+
+        # CIS 1.17  Check - Ensure there is only one active API Key for any single OCI IAM user 
+        for user in self.__users:
+            if user['api_keys'] and not(len(user['api_keys']) < 2):
+                self.cis_foundations_benchmark_2_0['1.17']['Findings'].append(user)
+
+        if self.cis_foundations_benchmark_2_0['1.17']['Findings']:
+            self.cis_foundations_benchmark_2_0['1.17']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_2_0['1.17']['Status'] = True
+        # CIS Total 1.17 Adding - All IAM Policies for to CIS Total
+        self.cis_foundations_benchmark_2_0['1.17']['Total'] = self.__users
+
         # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:

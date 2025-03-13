@@ -948,7 +948,7 @@ class CIS_Report:
 
         # Checking if a Tenancy has Identity Domains enabled
         try:
-            identity_domains += oci.pagination.list_call_get_all_results(
+            oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_domains,
                     compartment_id = self.__tenancy.id,
                     lifecycle_state = "ACTIVE",

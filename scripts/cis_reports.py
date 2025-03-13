@@ -956,7 +956,7 @@ class CIS_Report:
                 ).data
             self.__identity_domains_enabled=True
             # print_header("Identity Domains in Tenancy")            
-        except Exception as e:
+        except:
             self.__identity_domains_enabled = False
             # print_header("No Identity Domains in Tenancy")            
         

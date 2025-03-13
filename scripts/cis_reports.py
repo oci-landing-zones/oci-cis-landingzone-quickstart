@@ -948,26 +948,17 @@ class CIS_Report:
 
         # Checking if a Tenancy has Identity Domains enabled
         try:
-            identity_domains =[]
             identity_domains += oci.pagination.list_call_get_all_results(
                     self.__regions[self.__home_region]['identity_client'].list_domains,
                     compartment_id = self.__tenancy.id,
-                    lifecycle_state = "ACTIVE"
+                    lifecycle_state = "ACTIVE",
+                    name="Default"
                 ).data
-        #print(identity_domains)
-            for domains in identity_domains:
-                domain_dict = oci.util.to_dict(domains)
-                if domain_dict['display_name'] == "Default":
-                    self.__identity_domains_enabled=True
-                else:
-                    self.__identity_domains_enabled=False
-            
+            self.__identity_domains_enabled=True
+            # print_header("Identity Domains in Tenancy")            
         except Exception as e:
             self.__identity_domains_enabled = False
-            debug("__init__: Exception checking identity domains status\n" + str(e))
-            self.__errors.append({"id" : "__init__", "error" : str(e)})
-        
-        
+            # print_header("No Identity Domains in Tenancy")            
         
         
         # Creating signers and config for all regions

@@ -705,6 +705,9 @@ class CIS_Report:
                 'com.oraclecloud.cloudguard.problemdetected',
                 'com.oraclecloud.cloudguard.problemdismissed',
                 'com.oraclecloud.cloudguard.problemremediated'
+            ],
+            "4.18": [
+                'com.oraclecloud.identitysignon.interactivelogin'
             ]
         }
 
@@ -4259,7 +4262,7 @@ class CIS_Report:
         # CIS Check 4.2 Total - All Subscriptions to CIS Total
         self.cis_foundations_benchmark_2_0['4.2']['Total'] = self.__subscriptions
 
-        # CIS Checks 4.3 - 4.12 and 4.15
+        # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
         for event in self.__event_rules:
             # Convert Event Condition to dict

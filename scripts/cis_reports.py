@@ -955,11 +955,14 @@ class CIS_Report:
                     name="Default"
                 ).data
             self.__identity_domains_enabled=True
-            # print_header("Identity Domains in Tenancy")            
-        except:
-            self.__identity_domains_enabled = False
-            # print_header("No Identity Domains in Tenancy")            
-        
+            print_header("Identity Domains Enabled in Tenancy")            
+        except Exception as e:
+            if e.status == 404:
+                print_header("Identity Domains Disabled in Tenancy")            
+                self.__identity_domains_enabled = False
+            else:
+                raise RuntimeError(
+                    "Failed to list identity domains." + str(e.args))
         
         # Creating signers and config for all regions
         self.__create_regional_signers(proxy)

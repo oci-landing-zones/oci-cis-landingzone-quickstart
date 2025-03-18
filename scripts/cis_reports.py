@@ -956,16 +956,21 @@ class CIS_Report:
 
         # Checking if a Tenancy has Identity Domains enabled
         try:
-            domains_checking_url = "https://login.oci.oraclecloud.com/v1/tenantMetadata/" + self.__tenancy.name
-            domains_check_raw = requests.get(url=domains_checking_url)
-            domains_check_dict = json.loads(domains_check_raw.content)
-            self.__identity_domains_enabled = domains_check_dict['flights']['isHenosisEnabled']
+            oci.pagination.list_call_get_all_results(
+                    self.__regions[self.__home_region]['identity_client'].list_domains,
+                    compartment_id = self.__tenancy.id,
+                    lifecycle_state = "ACTIVE",
+                    name="Default"
+                ).data
+            self.__identity_domains_enabled=True
+            print_header("Identity Domains Enabled in Tenancy")            
         except Exception as e:
-            # To be safe if it fails I'll check
-            self.__identity_domains_enabled = True
-            debug("__init__: Exception checking identity domains status\n" + str(e))
-            self.__errors.append({"id" : "__init__", "error" : str(e)})
-        
+            if e.status == 404:
+                print_header("Identity Domains Disabled in Tenancy")            
+                self.__identity_domains_enabled = False
+            else:
+                raise RuntimeError(
+                    "Failed to list identity domains." + str(e.args))
         
         # Creating signers and config for all regions
         self.__create_regional_signers(proxy)

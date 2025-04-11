@@ -1616,6 +1616,12 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in identity_read_user_api_key: " + str(e.args))
 
+
+    ##########################################################################
+    # Search API Key Last Usage Over 45 days https://github.com/tstahl/oci-remove-unused-apikey-cg-responder/blob/main/func.py
+    ##########################################################################
+
+
     ##########################################################################
     # Load user auth tokens
     ##########################################################################

@@ -1149,7 +1149,12 @@ class CIS_Report:
                 if proxy:
                     search.base_client.session.proxies = {'https': proxy}
                 region_values['certificate_client'] = certificate_client 
-
+                
+                logging_search_client = oci.loggingsearch.LogSearchClient(region_config, signer=region_signer)
+                if proxy:
+                    search.base_client.session.proxies = {'https': proxy}
+                region_values['logging_search_client'] = logging_search_client 
+            
             except Exception as e:
                 debug("__create_regional_signers: error reading" + str(self.__config))
                 self.__errors.append({"id" : "__create_regional_signers", "error" : str(e)})

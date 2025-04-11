@@ -1188,9 +1188,10 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_compartments(self):
         print("\nProcessing Compartments...")
+        self.__compartments = []
         try:
             debug("__identity_read_compartments: Processing Compartments:")
-            self.__compartments = oci.pagination.list_call_get_all_results(
+            self.__compartments += oci.pagination.list_call_get_all_results(
                 self.__regions[self.__home_region]['identity_client'].list_compartments,
                 compartment_id=self.__tenancy.id,
                 compartment_id_in_subtree=True,

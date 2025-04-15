@@ -1,3 +1,18 @@
+#  April XX, 2025 Release Notes - 3.0.0
+1. [CIS Updates](#3-0-0-cis-updates)
+1. [README Update](#3-0-0-readme-update)
+1. [Bug Fix](#3-0-0-script-fixes)
+
+## <a name="#3-0-0-cis-updates">New CIS Recommendations</a>
+With no compartments
+
+## <a name="#3-0-0-readme-update">README Update Only compliance checking script</a>
+Removing CIS Landing Zone and pointing to 2.8.8
+
+## <a name="#3-0-0-script-updates">Script Updates</a>
+- Fixed running script in tenancy with no compartments
+- move network topology to all-resources from --raw-data
+
 #  March 4, 2024 Release Notes - 2.8.8
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-8-script-updates)
 1. [README Update](#2-8-8-readme-update)

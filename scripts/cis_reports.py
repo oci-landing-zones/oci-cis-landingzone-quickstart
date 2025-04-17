@@ -1591,6 +1591,8 @@ class CIS_Report:
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     api_keys.append(record)
+                    self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
+
 
             else:
                 user_api_keys_data = oci.pagination.list_call_get_all_results(
@@ -1605,6 +1607,7 @@ class CIS_Report:
                     record['id'] = record['key_id']
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     api_keys.append(record)
+                    self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
             
             return api_keys
 
@@ -1620,7 +1623,14 @@ class CIS_Report:
     ##########################################################################
     # Search API Key Last Usage Over 45 days https://github.com/tstahl/oci-remove-unused-apikey-cg-responder/blob/main/func.py
     ##########################################################################
+    def __identity_check_logging_for_api_activity(self, user_ocid, api_key):
+        debug("__identity_check_logging_for_api_activity: Checking API Key")
+        principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
+        tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
+        search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
+        debug("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
 
+        pass
 
     ##########################################################################
     # Load user auth tokens

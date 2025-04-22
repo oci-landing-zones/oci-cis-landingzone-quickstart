@@ -1629,7 +1629,29 @@ class CIS_Report:
         tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
         search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
         debug("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
-
+        
+        def numOfDays(date1, date2):
+        #check which date is greater to avoid days output in -ve number
+            if date2 > date1:   
+                return (date2-date1).days
+            else:
+                return (date1-date2).days
+            
+        def get_date_ranges(start_date, end_date, date_ranges, chunk=9):
+            days_between = numOfDays(start_date, end_date)
+            print("__identity_check_logging_for_api_activity:Chunk is: " + str(chunk))
+            if days_between > chunk:
+                    # print("Days between over 13 is: " + str(days_between))
+                    next_date = start_date + datetime.timedelta(days=chunk)
+                    # print(next_date)
+                    date_ranges.append({"start_date" : start_date, "end_date" : next_date})
+                    return get_date_ranges(next_date + datetime.timedelta(days=1), end_date, date_ranges, chunk=chunk)
+            else:
+                # print("Days between under 13 is: " + str(days_between))
+                #next_date = start_date + timedelta(days=days_between)
+                date_ranges.append({"start_date" : start_date, "end_date" : end_date})
+                return date_ranges
+        
         pass
 
     ##########################################################################

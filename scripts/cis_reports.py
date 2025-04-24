@@ -93,6 +93,7 @@ class CIS_Report:
     __KMS_DAYS_OLD = 365
     __home_region = []
     __days_to_expiry = 30
+    __days_used = 45
 
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
@@ -1624,35 +1625,58 @@ class CIS_Report:
     # Search API Key Last Usage Over 45 days https://github.com/tstahl/oci-remove-unused-apikey-cg-responder/blob/main/func.py
     ##########################################################################
     def __identity_check_logging_for_api_activity(self, user_ocid, api_key):
-        debug("__identity_check_logging_for_api_activity: Checking API Key")
-        principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
-        tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
-        search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
-        debug("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
-        
+        print("Hello" * 40)
         def numOfDays(date1, date2):
         #check which date is greater to avoid days output in -ve number
             if date2 > date1:   
                 return (date2-date1).days
             else:
                 return (date1-date2).days
+        
+        ##########################################################################
+        # Inputs: start_date(date), end_date(date), data_ranges(list) max_days_between(int)
+        # Returns: List of dicts with {"start_date" : start_date, "end_date" : end_date}}
+        ##########################################################################
+        def get_date_ranges(start_date, end_date, date_ranges, max_days_between=9):
             
-        def get_date_ranges(start_date, end_date, date_ranges, chunk=9):
             days_between = numOfDays(start_date, end_date)
-            print("__identity_check_logging_for_api_activity:Chunk is: " + str(chunk))
-            if days_between > chunk:
+            print("__identity_check_logging_for_api_activity: Date Range is: " + str(max_days_between))
+            if days_between > max_days_between:
                     # print("Days between over 13 is: " + str(days_between))
-                    next_date = start_date + datetime.timedelta(days=chunk)
+                    next_date = start_date + datetime.timedelta(days=max_days_between)
                     # print(next_date)
                     date_ranges.append({"start_date" : start_date, "end_date" : next_date})
-                    return get_date_ranges(next_date + datetime.timedelta(days=1), end_date, date_ranges, chunk=chunk)
+                    return get_date_ranges(next_date + datetime.timedelta(days=1), end_date, date_ranges, max_days_between=max_days_between)
             else:
                 # print("Days between under 13 is: " + str(days_between))
                 #next_date = start_date + timedelta(days=days_between)
                 date_ranges.append({"start_date" : start_date, "end_date" : end_date})
                 return date_ranges
         
-        pass
+
+
+        print("__identity_check_logging_for_api_activity: Checking API Key")
+        principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
+        tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
+        search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
+        print("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
+        print("#" * 80)
+        
+        start_date = datetime.datetime(self.start_datetime.year, self.start_datetime.month, self.start_datetime.day)
+   
+        print(start_date)
+        end_date = start_date - datetime.timedelta(days=self.__days_used)
+        print(end_date)
+        try:
+            ranges_to_search = get_date_ranges(start_date=start_date, \
+                                           end_date=end_date, \
+                                            date_ranges=[],
+                                            max_days_between=13)
+
+            print(ranges_to_search)
+        except Exception as e:
+            print(e)
+
 
     ##########################################################################
     # Load user auth tokens

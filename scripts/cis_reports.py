@@ -1652,7 +1652,41 @@ class CIS_Report:
                 #next_date = start_date + timedelta(days=days_between)
                 date_ranges.append({"start_date" : start_date, "end_date" : end_date})
                 return date_ranges
-        
+            
+        ##########################################################################
+        # Inputs: search_query, start_date and end_date in datetime
+        # Returns: Bool if the key was used in 
+        ##########################################################################
+        def run_logging_search_query(search_query, start_date: datetime, end_date: datetime):
+            for region_key, region_values in self.__regions.items():
+                try:
+                    
+                    response = region_values['logging_search_client'].search_logs(
+                        search_logs_details=oci.loggingsearch.models.SearchLogsDetails(
+                            search_query=search_query,
+                            time_start=start_date,
+                            time_end=end_date,
+                            is_return_field_info=False),
+                            limit=100)
+
+                    audit_logs = response.data
+                    print(audit_logs)
+
+                    if audit_logs.summary.result_count > 0:
+                        for result in audit_logs.results:
+                            userInfo = {
+                                        "principalName" : result.data["data.identity.principalName"], 
+                                        "principalId" : result.data["data.identity.principalId"]
+                                        }
+                            print(userInfo)
+                            return True
+                    else:
+                        print("No APIKey usage records found in the past 14 days in: ")
+                            
+                    print("No Log Entries Found - Eradicate the Key")
+                    return False
+                except Exception as e:
+                    print("Exception is : " + str(e))
 
 
         print("__identity_check_logging_for_api_activity: Checking API Key")
@@ -1678,6 +1712,17 @@ class CIS_Report:
             print(range_to_search['start_date'])
             print(range_to_search['end_date'])
 
+        threads = []
+        for dates in search_date_range:
+            thread = Thread(target=run_logging_search_query, args=(search_query, dates['start_date'], dates['end_date']))
+            threads.append(thread)
+
+        print("Processing Audit Logs...")
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join()
 
 
     ##########################################################################

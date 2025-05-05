@@ -1625,7 +1625,7 @@ class CIS_Report:
     # Search API Key Last Usage Over 45 days https://github.com/tstahl/oci-remove-unused-apikey-cg-responder/blob/main/func.py
     ##########################################################################
     def __identity_check_logging_for_api_activity(self, user_ocid, api_key):
-        print("Hello" * 40)
+
         def numOfDays(date1, date2):
         #check which date is greater to avoid days output in -ve number
             if date2 > date1:   
@@ -1662,20 +1662,22 @@ class CIS_Report:
         print("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
         print("#" * 80)
         
-        start_date = datetime.datetime(self.start_datetime.year, self.start_datetime.month, self.start_datetime.day)
-   
-        print(start_date)
-        end_date = start_date - datetime.timedelta(days=self.__days_used)
-        print(end_date)
-        try:
-            ranges_to_search = get_date_ranges(start_date=start_date, \
-                                           end_date=end_date, \
-                                            date_ranges=[],
-                                            max_days_between=13)
+        end_date = self.start_datetime
+        start_date = end_date - datetime.timedelta(days=self.__days_used)
+       
+        search_date_range = get_date_ranges(start_date=start_date, \
+                                        end_date=end_date, \
+                                        date_ranges=[],
+                                        max_days_between=13)
 
-            print(ranges_to_search)
-        except Exception as e:
-            print(e)
+        print("*" * 80)
+        print(search_date_range)
+        print("*" * 80)
+        search_threads = []
+        for range_to_search in search_date_range:
+            print(range_to_search['start_date'])
+            print(range_to_search['end_date'])
+
 
 
     ##########################################################################

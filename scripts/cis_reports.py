@@ -1704,10 +1704,6 @@ class CIS_Report:
                                         date_ranges=[],
                                         max_days_between=13)
 
-        print("*" * 80)
-        print(search_date_range)
-        print("*" * 80)
-        search_threads = []
         for range_to_search in search_date_range:
             print(range_to_search['start_date'])
             print(range_to_search['end_date'])

@@ -1215,7 +1215,7 @@ class CIS_Report:
             # Need to convert for raw output
             for compartment in self.__compartments:
                 debug("__identity_read_compartments: Getting Compartments: " + compartment.name)
-                deep_link = self.__oci_compartment_uri + compartment.id
+                deep_link = self.__oci_compartment_uri + self.__tenancy.id
                 record = {
                     'id': compartment.id,
                     'name': compartment.name,
@@ -1659,14 +1659,11 @@ class CIS_Report:
         def get_date_ranges(start_date, end_date, date_ranges, max_days_between=9):
             days_between = numOfDays(start_date, end_date)
             if days_between > max_days_between:
-                    # print("Days between over 13 is: " + str(days_between))
                     next_date = start_date + datetime.timedelta(days=max_days_between)
-                    # print(next_date)
                     date_ranges.append({"start_date" : start_date, "end_date" : next_date})
                     return get_date_ranges(next_date + datetime.timedelta(days=1), end_date, date_ranges, max_days_between=max_days_between)
             else:
-                # print("Days between under 13 is: " + str(days_between))
-                #next_date = start_date + timedelta(days=days_between)
+
                 date_ranges.append({"start_date" : start_date, "end_date" : end_date})
                 return date_ranges
             
@@ -1694,27 +1691,25 @@ class CIS_Report:
                                         "principalName" : result.data["data.identity.principalName"], 
                                         "principalId" : result.data["data.identity.principalId"]
                                         }
-                            print(userInfo)
+                            debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
                             api_key_used.append(userInfo)
-                            print("APIKey found!!")
                             break
-                            return api_key_used
-                    else:
-                        print("No APIKey usage records found in the past 14 days in: ")
                             
-                    print("No Log Entries Found - Eradicate the Key")
+                    else:
+                        debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
+                            
                     return api_key_used
                 except Exception as e:
                     print("Exception is : " + str(e))
 
 
-        print("__identity_check_logging_for_api_activity: Checking API Key")
+        debug("__identity_check_logging_for_api_activity: Checking API Key")
         principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
-        print("__identity_check_logging_for_api_activity: API key is: " + principle_id)
+        debug(f'__identity_check_logging_for_api_activity: API key is: {api_key}')
 
         tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
         search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
-        print("__identity_check_logging_for_api_activity: Search Query is: " + search_query)
+        print(f'__identity_check_logging_for_api_activity: Search Query is: {search_query}')
         
         end_date = self.start_datetime
         start_date = end_date - datetime.timedelta(days=self.__days_used)
@@ -1724,7 +1719,7 @@ class CIS_Report:
                                         date_ranges=[],
                                         max_days_between=13)
         
-        print("__identity_check_logging_for_api_activity: Initiated Threads for dates range : " + str(search_date_range))
+        print(f'__identity_check_logging_for_api_activity: Initiated Threads for dates range :  {str(search_date_range)}')
 
         threads = []
         for dates in search_date_range:
@@ -4193,16 +4188,16 @@ class CIS_Report:
                                 clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
                                 if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
                                     not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data no permissions to delete storage: " + str(policy['name']))
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 no permissions to delete storage: " + str(policy['name']))
                                     pass
                                 # Checking if this is the Storage admin with allowed 
                                 elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
                                     not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data storage admin policy is: " + str(policy['name']))
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
                                     pass
                                 else:
                                     self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
-                                    debug("__report_cis_analyze_tenancy_data else policy is\n: " + str(policy['name']))
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
 
                             else:
                                 self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
@@ -4218,43 +4213,43 @@ class CIS_Report:
         # CIS 1.16 Check -  Users with API Keys over 45 days
 
         for user in self.__users:
-            # print("federated")
-            # print(type(user['is_federated']))
-            # print("Can use console")
-            # print(type(user['can_use_console_password']))
-            # print("Life Cycle State")
-            # print(type(user['lifecycle_state']))
-            over_45_days = None
+
+            login_over_45_days = None
+            api_key_over_45_days = None
             if user['lifecycle_state'] and not(user['is_federated']) and user['can_use_console_password']:
-                print(f'Over 45 days is: {over_45_days}')
+                debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
                 if user['previous_successful_login_date']:
                     previous_successful_login_date = user['previous_successful_login_date'].split(".")[0]
                     if self.local_user_time_max_datetime > datetime.datetime.strptime(previous_successful_login_date, self.__iso_time_format):
-                        over_45_days = True
-                        print(f"Last login is {user['previous_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
+                        login_over_45_days = True
+                        debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['previous_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                     else:
-                        over_45_days = False
+                        login_over_45_days = False
                 else:
-                    print("No Last login")
+                    debug("__report_cis_analyze_tenancy_data CIS 1.16 No Last login")
+                    login_over_45_days = True
 
-                    over_45_days = True
             else:
-                print("INACTIVE USE")
-                over_45_days = False
+                debug("__report_cis_analyze_tenancy_data CIS 1.16 INACTIVE USE")
+                login_over_45_days = False
                 
             if user['api_keys']:
-                print("API Key")
+                debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
                 for api_key in user['api_keys']:
                     if not(api_key['apikey_used_in_45_days']):
-                        print("API Key used in under 45 days")
-                        over_45_days = False
+                        debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key used in under 45 days")
+                        api_key_over_45_days = False
                     else: 
-                        over_45_days = True
+                        api_key_over_45_days = True
 
 
-            print(f'Over 45 days is now: {over_45_days}')
-            if over_45_days:
-                self.cis_foundations_benchmark_3_0['1.16']['Findings'].append(user)
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over Login Over 45: {login_over_45_days}')
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over API Key Over 45: {api_key_over_45_days}')
+            if login_over_45_days or api_key_over_45_days:
+                finding = user.copy()
+                finding['login_over_45_days'] = login_over_45_days
+                finding['api_key_over_45_days'] = api_key_over_45_days
+                self.cis_foundations_benchmark_3_0['1.16']['Findings'].append(finding)
 
         if self.cis_foundations_benchmark_3_0['1.16']['Findings']:
             self.cis_foundations_benchmark_3_0['1.16']['Status'] = False

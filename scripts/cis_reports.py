@@ -1498,7 +1498,7 @@ class CIS_Report:
                                 'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                                 'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                                 'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'previous_successful_login_date': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.previous_successful_login_date if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.previous_successful_login_date else None,
+                                'previous_successful_login_date': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.previous_successful_login_date if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
                                 'groups': []
                             }
                             # Adding Groups to the user
@@ -1700,8 +1700,10 @@ class CIS_Report:
                             
                     return api_key_used
                 except Exception as e:
-                    print("Exception is : " + str(e))
-
+                    self.__errors.append({"id" : "run_logging_search_query", "error" : str(e)})
+                    debug('__identity_check_logging_for_api_activity: Exception is:')
+                    debug("\tException is : " + str(e))
+                    return api_key_used
 
         debug("__identity_check_logging_for_api_activity: Checking API Key")
         principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
@@ -1709,7 +1711,7 @@ class CIS_Report:
 
         tenancy_search_str = f'\"{self.__tenancy.id}/_Audit_Include_Subcompartment\"'
         search_query = "search " + tenancy_search_str + """ | data.identity.credentials = '""" + principle_id + """' and data.identity.tenantId = '""" + self.__tenancy.id + """' | summarize count() by data.identity.principalId,  data.identity.principalName"""
-        print(f'__identity_check_logging_for_api_activity: Search Query is: {search_query}')
+        debug(f'__identity_check_logging_for_api_activity: Search Query is: {search_query}')
         
         end_date = self.start_datetime
         start_date = end_date - datetime.timedelta(days=self.__days_used)
@@ -1719,7 +1721,7 @@ class CIS_Report:
                                         date_ranges=[],
                                         max_days_between=13)
         
-        print(f'__identity_check_logging_for_api_activity: Initiated Threads for dates range :  {str(search_date_range)}')
+        debug(f'__identity_check_logging_for_api_activity: Initiated Threads for dates range :  {str(search_date_range)}')
 
         threads = []
         for dates in search_date_range:
@@ -1728,7 +1730,7 @@ class CIS_Report:
                                   dates['start_date'], dates['end_date']))
             threads.append(thread)
 
-        print("Processing Audit Logs...")
+        print("Processing Audit Logs for API Key Usage...")
         for thread in threads:
             thread.start()
 

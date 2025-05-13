@@ -130,7 +130,7 @@ class CIS_Report:
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
 
-        # CIS Foundation benchmark 2.0.0
+        # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = {
             '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.7'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
             '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
@@ -1215,7 +1215,7 @@ class CIS_Report:
             # Need to convert for raw output
             for compartment in self.__compartments:
                 debug("__identity_read_compartments: Getting Compartments: " + compartment.name)
-                deep_link = self.__oci_compartment_uri + self.__tenancy.id
+                deep_link = self.__oci_compartment_uri + compartment.id
                 record = {
                     'id': compartment.id,
                     'name': compartment.name,
@@ -1235,7 +1235,7 @@ class CIS_Report:
 
             # Add root compartment which is not part of the list_compartments
             self.__compartments.append(self.__tenancy)
-            deep_link = self.__oci_compartment_uri + compartment.id
+            deep_link = self.__oci_compartment_uri + self.__tenancy.id
             root_compartment = {
                 "id": self.__tenancy.id,
                 "name": self.__tenancy.name,
@@ -4220,10 +4220,6 @@ class CIS_Report:
             api_key_over_45_days = None
             if user['lifecycle_state'] and not(user['is_federated']) and user['can_use_console_password']:
                 debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
-                print("---" * 40)
-                print(user['previous_successful_login_date'])
-                print(type(user['previous_successful_login_date']))
-                print("---" * 40)
                 if user['previous_successful_login_date']:
                     previous_successful_login_date = user['previous_successful_login_date'].split(".")[0]
                     if self.local_user_time_max_datetime > datetime.datetime.strptime(previous_successful_login_date, self.__iso_time_format):
@@ -5254,7 +5250,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
 
         # Screen output for CIS Summary Report
-        print_header("CIS Foundations Benchmark 2.0.0 Summary Report")
+        print_header("CIS Foundations Benchmark 3.0.0 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
@@ -5429,7 +5425,7 @@ class CIS_Report:
             # generate fields
             fields = ['Recommendation #', 'Compliant', 'Section', 'Details']
 
-            html_title = 'CIS OCI Foundations Benchmark 2.0.0 - Compliance Report'
+            html_title = 'CIS OCI Foundations Benchmark 3.0.0 - Compliance Report'
             with open(file_path, mode='w') as html_file:
                 # Creating table header
                 html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')

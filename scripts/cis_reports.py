@@ -42,9 +42,9 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-RELEASE_VERSION = "2.8.8"
+RELEASE_VERSION = "3.0.0"
 PYTHON_SDK_VERSION = "2.147.0"
-UPDATED_DATE = "March 4, 2024"
+UPDATED_DATE = "May X, 2025"
 
 
 ##########################################################################

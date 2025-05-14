@@ -4016,7 +4016,7 @@ class CIS_Report:
                     
 
                     if domain['password_policy']['num_passwords_in_history']:
-                        if domain['password_policy']['num_passwords_in_history'] < 24:
+                        if domain['password_policy']['num_passwords_in_history'] < 24 or domain['password_policy']['num_passwords_in_history'] is None:
                             self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 
                 else:

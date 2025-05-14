@@ -4013,11 +4013,14 @@ class CIS_Report:
                     if domain['password_policy']['password_expires_after']:
                         if domain['password_policy']['password_expires_after'] > 365:
                             self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
-                    
+                    else:
+                        self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
 
                     if domain['password_policy']['num_passwords_in_history']:
-                        if domain['password_policy']['num_passwords_in_history'] < 24 or domain['password_policy']['num_passwords_in_history'] is None:
+                        if domain['password_policy']['num_passwords_in_history'] < 24:
                             self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
+                    else:
+                        self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 
                 else:
                     debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")

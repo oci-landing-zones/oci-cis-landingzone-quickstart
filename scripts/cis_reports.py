@@ -1498,7 +1498,7 @@ class CIS_Report:
                                 'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                                 'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                                 'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'previous_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.previous_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
+                                'last_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.last_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
                                 'groups': []
                             }
                             # Adding Groups to the user
@@ -1560,7 +1560,7 @@ class CIS_Report:
                             'can_use_db_credentials': user.capabilities.can_use_db_credentials,
                             'can_use_o_auth2_client_credentials': user.capabilities.can_use_o_auth2_client_credentials,
                             'can_use_smtp_credentials': user.capabilities.can_use_smtp_credentials,
-                            'previous_successful_login_date': self.get_date_iso_format(user.last_successful_login_time),
+                            'last_successful_login_date': self.get_date_iso_format(user.last_successful_login_time),
                             'groups': []
                         }
                         # Adding Groups to the user
@@ -4220,11 +4220,11 @@ class CIS_Report:
             api_key_over_45_days = None
             if user['lifecycle_state'] and not(user['is_federated']) and user['can_use_console_password']:
                 debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
-                if user['previous_successful_login_date']:
-                    previous_successful_login_date = user['previous_successful_login_date'].split(".")[0]
-                    if self.local_user_time_max_datetime > datetime.datetime.strptime(previous_successful_login_date, self.__iso_time_format):
+                if user['last_successful_login_date']:
+                    last_successful_login_date = user['last_successful_login_date'].split(".")[0]
+                    if self.local_user_time_max_datetime > datetime.datetime.strptime(last_successful_login_date, self.__iso_time_format):
                         login_over_45_days = True
-                        debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['previous_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
+                        debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['last_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                     else:
                         login_over_45_days = False
                 else:

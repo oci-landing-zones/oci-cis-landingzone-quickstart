@@ -3876,9 +3876,11 @@ class CIS_Report:
 
                 # Returning Instances
                 print("\tProcessed " + str(len(self.__Instance)) + " Compute Instances")
-                return self.__service_connectors
+                return self.__Instance
         except Exception as e:
-            raise RuntimeError("Error in __core_instance_read_compute " + str(e.args))
+            print("__core_instance_read_compute failed to process: " + str(e))
+            self.__errors.append({'id' : '__core_instance_read_compute', 'error' : str(e)})
+            return []
 
 
     ##########################################################################
@@ -4221,7 +4223,7 @@ class CIS_Report:
 
             login_over_45_days = None
             api_key_over_45_days = None
-            if user['lifecycle_state'] and not(user['is_federated']) and user['can_use_console_password']:
+            if user['lifecycle_state']: # and not(user['is_federated']) and user['can_use_console_password']:
                 debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
                 if user['last_successful_login_date']:
                     last_successful_login_date = user['last_successful_login_date'].split(".")[0]
@@ -4237,17 +4239,19 @@ class CIS_Report:
             else:
                 debug("__report_cis_analyze_tenancy_data CIS 1.16 INACTIVE USE")
                 login_over_45_days = False
-                
+
             if user['api_keys']:
                 debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
                 for api_key in user['api_keys']:
-                    if not(api_key['apikey_used_in_45_days']):
-                        debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key used in under 45 days")
-                        api_key_over_45_days = False
-                    else: 
+                    if api_key['apikey_used_in_45_days']:
                         api_key_over_45_days = True
+                    else: 
+                        debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key used in under 45 days")
+                        api_key_over_45_days = True
+            # else:
+            #     api_key_over_45_days = False
 
-
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 User: {user['id']}')
             debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over Login Over 45: {login_over_45_days}')
             debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over API Key Over 45: {api_key_over_45_days}')
             if login_over_45_days or api_key_over_45_days:

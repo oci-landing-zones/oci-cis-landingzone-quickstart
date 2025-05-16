@@ -16,7 +16,9 @@ With the release of the CIS OCI Foundations Benchmark 3.0.0 the script has updat
 - 2.5 - Ensure the default security list of every VCN restricts all traffic except ICMP within VCN 
 
 ## <a name="#3-0-0-readme-update">README Update Only compliance checking script</a>
-As of March 2025, the **Terraform template** of the CIS Landing Zone is in maintenance mode. Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and complies with CIS OCI Foundations Benchmark 3.0.0. Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones). The last release CIS Landing Zone terraform is [Release 2.8.8](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/releases/tag/v2.8.8). 
+As of May 2025, the **Terraform template** of the CIS Landing Zone is retired. The last release of CIS Landing Zone terraform is [Release 2.8.8](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/releases/tag/v2.8.8).
+
+Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and complies with CIS OCI Foundations Benchmark 3.0.0. Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones).  
 
 ## <a name="#3-0-0-script-fixes">Script Fixes and Updates</a>
 Updates:

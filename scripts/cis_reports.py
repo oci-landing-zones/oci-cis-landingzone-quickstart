@@ -4263,7 +4263,6 @@ class CIS_Report:
             # else:
             #     api_key_over_45_days = False
 
-            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 User: {user['id']}')
             debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over Login Over 45: {login_over_45_days}')
             debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over API Key Over 45: {api_key_over_45_days}')
             if login_over_45_days or api_key_over_45_days:

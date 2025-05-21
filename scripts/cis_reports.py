@@ -5805,7 +5805,6 @@ class CIS_Report:
             self.__boot_volume_read_boot_volumes,
             self.__fss_read_fsss,
             self.__core_instance_read_compute,
-            self.__certificates_read_certificates
         ]
 
         # Oracle Best practice functions
@@ -5815,7 +5814,8 @@ class CIS_Report:
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
                 self.__network_read_drg_attachments,
-                self.__sch_read_service_connectors
+                self.__sch_read_service_connectors,
+                self.__certificates_read_certificates
                 ]
         else:
             obp_functions = []

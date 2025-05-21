@@ -3,175 +3,374 @@
 
 **NOTE**
 
-As of March 2025, the **Terraform template** of the CIS Landing Zone is in maintenance mode..
-- **The [CIS compliance checking script](compliance-script.md) in this repository is not impacted. Users should continue using it to determine tenancy compliance with the CIS OCI Foundations Benchmark.**
+### This repository is the official home of the CIS Compliance Script. The CIS Landing Zone **Terraform configuration**, is retired as of May 2025. The last release of CIS Landing Zone Terraform configuration is [Release 2.8.8](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/releases/tag/v2.8.8).
+
 - Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and is compliant with CIS OCI Foundations Benchmark 2.0.0.
 - Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones).
-
 ---
 
-[![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)<br>
-*If you are logged into your OCI tenancy in the Commercial Realm (OC1), the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI. *
-
-<br>
-<details><summary>To deploy to non-commercial realms and regions click here</summary>
-
-**OC2 Realm**
-- [ Deploy to us-langley-1](https://console.us-langley-1.oraclegovcloud.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-- [Deploy to us-luke-1](https://console.us-luke-1.oraclegovcloud.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-
-
-**OC3 Realm**
-- [Deploy to us-gov-ashburn-1](https://console.us-gov-ashburn-1.oraclegovcloud.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-- [Deploy to us-gov-chicago-1](https://console.us-gov-chicago-1.oraclegovcloud.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-- [Deploy to us-gov-phoenix-1](https://console.us-gov-phoenix-1.oraclegovcloud.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-
-**OC4 Realm**
-- [Deploy to uk-gov-london-1](https://console.uk-gov-london-1.oraclegovcloud.uk/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-- [Deploy to uk-gov-cardiff-1](https://console.uk-gov-cardiff-1.oraclegovcloud.uk/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-
-**OC10 Realm**
-- [Deploy to ap-dcc-canberra-1](https://oc10.cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
-
-**OC19 Realm**
-- [Deploy to eu-frankfurt-2](https://cloud.oracle.eu/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip&region=eu-frankfurt-2)
-
-- [Deploy to eu-madrid-2](https://cloud.oracle.eu/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip&region=eu-madrid-2)
-
-</details>
-<br>
-<br>
-<img align="left" src="./images/the_o.png" height="30" width="30">&nbsp;&nbsp;Check [CIS Landing Zone course](https://mylearn.oracle.com/ou/course/oci-landing-zone/123962/193003) in Oracle University for a comprehensive introduction.
-<br>
-<br>
-<img align="left" src="./images/livelab.png" height="30" width="30">&nbsp;&nbsp;Also check our [Live Lab](https://apexapps.oracle.com/pls/apex/r/dbpm/livelabs/view-workshop?wid=3662) for key use cases and hands on deployment experience.
-<br>
-<br>
-
-# CIS OCI Landing Zone Quick Start Template
+# CIS Compliance Script
 ![Landing_Zone_Logo](images/landing%20zone_300.png)
 ## Table of Contents
 1. [Overview](#overview)
-1. [Deliverables](#deliverables)
-1. [Architecture](#architecture)
-    1. [IAM](#arch-iam)
-    1. [Network](#arch-network)
-    1. [Diagram](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v2.0.0](cis-architecture-mapping.md)
-1. [Deployment Guide](DEPLOYMENT-GUIDE.md)
-1. [Executing Instructions](#instructions)
-    1. [Terraform Configuration](terraform.md)
-    1. [Compliance Checking](compliance-script.md)
-1. [Blog Posts](#documentation)
-1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
-1. [Feedback](#feedback)
-1. [Known Issues](#known-issues)
-1. [Contribute](CONTRIBUTING.md)
+1. [Setup](#setup)
+1. [Arguments](#arguments)
+1. [Usage Examples](#usage)
+1. [Output Examples](#output)
+1. [Known Issues](ISSUES.md)
 1. [Frequently Asked Questions](FAQ.md)
+1. [Blogs](#blogs)
+1. [Landing Zone Resources](#resources)
+1. [Contribute](CONTRIBUTING.md)
+1. [Feedback](#feedback)
 
 ## <a name="overview"></a>Overview
-This Landing Zone template deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/) and a standalone [Python script](compliance-script.md) that assess an existing tenancy for recommendations in the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
 
-The template uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources within the template are configured to meet the CIS OCI Foundations Benchmark settings related to:
+The CIS Compliance Script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. In addition to CIS checks it can be check for alignment to OCI Best Practices  by using the `--obp` flag.  These checks review the following OCI best practices in your tenancy:
+- Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
+- A Budget for cost track is created in your tenancy
+- Network connectivity to on-premises is redundant 
+- Cloud Guard is configured at the root compartment with detectors and responders 
+- Certificates close to expiration
 
-- IAM (Identity & Access Management)
-- Networking
-- Keys
-- Cloud Guard
-- Logging
-- Vulnerability Scanning
-- Bastion
-- Events
-- Alarms
-- Notifications
-- Object Storage
-- Budgets
-- Security Zone
+The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
 
- ## <a name="deliverables"></a>Deliverables
- This repository encloses two deliverables:
+## <a name="setup"></a>Setup 
 
-- A reference implementation written in Terraform HCL (Hashicorp Language) that provisions fully functional resources in an OCI tenancy.
-- A Python script that performs compliance checks for most of the CIS OCI Foundations Benchmark recommendations and Oracle Best Practices. The script is completely independent of the Terraform code and can be used against any existing tenancy.
+### Required Permissions
+The **Auditors Group** that is created as part of the CIS Landing Zone Terraform has all the permissions required to run the compliance checking in the tenancy.  Below is the minimum OCI IAM Policy to grant a group the script in a tenancy.
 
- ## <a name="architecture"></a>Architecture
- ### <a name="arch-iam"></a>IAM
-The Landing Zone template creates a few compartments in the tenancy root compartment or under an enclosing compartment:
- - Network compartment: for all networking resources.
- - Security compartment: for all logging, key management, scanning, and notifications resources. 
- - Application Development compartment: for application development related services, including Compute, Storage, Functions, Streams, Kubernetes, API Gateway, etc. 
- - Database compartment: for all database resources. 
- - Exadata infrastructure compartment: this is an optional compartment. While preparing for deploying Exadata Cloud Service, customers can choose between creating a specific compartment or using the Database compartment.   
- - Enclosing compartment: a compartment at any level in the compartment hierarchy to hold the above compartments. 
+**Access to audit retention requires the user to be part of the Administrator group* - the only recommendation affected is CIS recommendation 3.1.
 
-The compartment design reflects a basic functional structure observed across different organizations, where IT responsibilities are typically split among networking, security, application development and database admin teams. Each compartment is assigned an admin group, with enough permissions to perform its duties. The provided permissions lists are not exhaustive and are expected to be appended with new statements as new resources are brought into the Terraform template.
+```
+allow group Auditor-Group to inspect all-resources in tenancy
+allow group Auditor-Group to read instances in tenancy
+allow group Auditor-Group to read load-balancers in tenancy
+allow group Auditor-Group to read buckets in tenancy
+allow group Auditor-Group to read nat-gateways in tenancy
+allow group Auditor-Group to read public-ips in tenancy
+allow group Auditor-Group to read file-family in tenancy
+allow group Auditor-Group to read instance-configurations in tenancy
+allow group Auditor-Group to read network-security-groups in tenancy
+allow group Auditor-Group to read capture-filters in tenancy
+allow group Auditor-Group to read resource-availability in tenancy
+allow group Auditor-Group to read audit-events in tenancy
+allow group Auditor-Group to read users in tenancy	
+allow group Auditor-Group to use cloud-shell in tenancy
+allow group Auditor-Group to read vss-family in tenancy
+allow group Auditor-Group to read usage-budgets in tenancy
+allow group Auditor-Group to read usage-reports in tenancy
+allow group Auditor-Group to read data-safe-family in tenancy
+allow group Auditor-Group to read vaults in tenancy
+allow group Auditor-Group to read keys in tenancy
+allow group Auditor-Group to read tag-namespaces in tenancy
+allow group Auditor-Group to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}
+```
 
- ### <a name="arch-networking"></a>Networking
- The Terraform code provisions a standard three-tier network architecture within one or more Virtual Cloud Network (VCN)s. The three tiers are divided into:
- 
- - One public subnet for load balancers and bastion servers;
- - Two private subnets: one for the application tier and one for the database tier.
+### Setup the script to run on a local machine
+1. [Setup and Prerequisites](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm)
+1. Ensure your OCI `config` file is in the `~/.oci/` directory
+1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
+```
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+```
+1. Create a Python Virtual Environment with required modules
+```
+python3 -m venv python-venv
+source python-venv/bin/activate
+pip3 install oci
+pip3 install pytz
+pip3 install requests
+```
+1. Libraries for Dashboard Graphics (optional)
+```
+pip3 install numpy
+pip3 install matplotlib
+```
 
-Optionally, the Terraform code can provision one or more VCNs configured for Exadata deployments. These VCNs are comprised of:
+1. Libraries for XLSX Output (optional) 
+```
+pip3 install xlsxwriter
+```
 
-- One private client subnet;
-- One private backup subnet.
- 
-The VCNs are either stand alone networks or in one of the below Hub and Spoke architectures:
-- **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over a single FastConnect private virtual circuit or Site-to-Site VPN and uses a DRG as the hub.
-- **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a hub VCN before they can be sent to another network.
+### Setup the script to run in a Cloud Shell Environment without a Python virtual environment
+1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
+```
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+```
 
-The above can be deployed without the creation of Internet Gateways and NAT Gateways to provide a more isolated network. 
+### Setup the script to run in a Cloud Shell Environment with a Python virtual environment
+1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
+```
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+```
+1. Create a Python Virtual Environment with required modules
+```
+python3 -m venv python-venv
+source python-venv/bin/activate
+pip3 install oci
+pip3 install pytz
+pip3 install requests
+```
+1. Libraries for Dashboard Graphics (optional)
+```
+pip3 install numpy
+pip3 install matplotlib
+```
 
-### <a name="arch-diagram"></a>Diagram
-The diagram below shows services and resources that are deployed in a single VCN deployment:
+1. Libraries for XLSX Output (optional) 
+```
+pip3 install xlsxwriter
+```
 
-![Architecture_Single_VCN](images/Architecture_Single_VCN.png)
 
-[Get the diagram in SVG format.](images/Architecture_Single_VCN.svg)
+## <a name="arguments"></a>Arguments
+```
+  -h, --help                           show this help message and exit
+  -c FILE_LOCATION                     OCI config file location.
+  -t CONFIG_PROFILE                    Config file section to use (tenancy profile).
+  -p PROXY                             Set Proxy (i.e. www-proxy-server.com:80).
+  --output-to-bucket OUTPUT_BUCKET     Set Output bucket name (i.e. my-reporting-bucket).
+  --report-directory REPORT_DIRECTORY  Set Output report directory by default it is the current date (i.e. reports-date).
+  --report-prefix REPORT_PREFIX        Set Output report prefix to allow unique files for better baseline comparison.
+  --report-summary-json                Write summary report as JSON file, too.
+  --print-to-screen PRINT_TO_SCREEN    Set to False if you want to see only non-compliant findings (i.e. False).
+  --level LEVEL                        CIS Recommendation Level options are: 1 or 2. Set to 2 by default.
+  --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.
+  --raw                                Outputs all resource data into CSV files.
+  --obp                                Checks for OCI best practices.
+  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp)
+                                       and All resource to csv (--raw) flags.
+  --redact_output                      Redacts OCIDs in output CSV and JSON files.
+  --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
+  -ip                                  Use Instance Principals for Authentication.
+  -dt                                  Use Delegation Token for Authentication in Cloud Shell.
+  -st                                  Authenticate using Security Token.
+  -v                                   Show the version of the script and exit.
+  --debug                              Enables debugging messages. This feature is in beta.
+```
 
-The diagram below shows services and resources that are deployed in a Hub & Spoke VCN deployment:
+## <a name="usage"></a>Usage Examples
 
-![Architecture_HS_VCN](images/Architecture_HS_VCN.png)
+### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
+To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
+```
+% python3 cis_reports.py -dt --obp --raw
+```
 
-[Get the diagram in SVG format.](images/Architecture_HS_VCN.svg)
+### Executing in Cloud Shell to check CIS, OCI Best Practices with raw data, and get all resource via the Advanced Search Query service
+To run using Cloud Shell in all regions and check for OCI Best Practices with raw data, network topology and get all resource via the Advanced Search Query service
+```
+% python3 cis_reports.py -dt --all-resources
+``` 
 
-The greyed out icons in the AppDev and Database compartments indicate services not provisioned by the template.
+### Executing on local machine with a specific OCI Config file
+To run on a local machine using a specific OCI Config file.
+```
+% python3 cis_reports.py -c <file_location>
+```
+where ```<file_location>``` is the fully qualified path to an OCI client config file (default location is `~/.oci/config`). An OCI config file contains profiles that define the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File).
 
-## <a name="instructions"></a>Executing Instructions
+```
+  [<Profile_Name>]
+	tenancy=<tenancy_ocid>
+	region=us-ashburn-1
+	user=<user_ocid>
+	fingerprint=<api_key_finger_print>
+	key_file=/path_to_my_private_key_file.pem
+```
 
-- [Terraform Configuration](terraform.md)
-- [Compliance Checking](compliance-script.md)
+### Executing on local machine with a specific profile
+To run on a local machine using a specific profile in the an OCI Config file.
+```
+% python3 cis_reports.py -t <Profile_Name>
+```
+where ```<Profile_Name>``` is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
+```
+  [<Profile_Name>]
+  tenancy=<tenancy_ocid>
+  region=us-ashburn-1
+  user=<user_ocid>
+  fingerprint=<api_key_finger_print>
+  key_file=/path_to_my_private_key_file.pem
+```
 
-## <a name="documentation"></a>Documentation
-- [Deploy a Secure Landing Zone that Meets the CIS Foundations Benchmark for Oracle Cloud](https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html#GUID-4572A461-E54D-41E8-89E8-9576B8EBA7D8)
-- [CIS OCI Landing Zone Quick Start Template Version 2](https://www.ateam-oracle.com/cis-oci-landing-zone-quick-start-template-version-2)
-- [Deployment Modes for CIS OCI Landing Zone](https://www.ateam-oracle.com/deployment-modes-for-cis-oci-landing-zone)
-- [Tenancy Pre Configuration For Deploying CIS OCI Landing Zone as a non-Administrator](https://www.ateam-oracle.com/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator)
-- [Strong Security Posture Monitoring with Cloud Guard](https://www.ateam-oracle.com/cloud-guard-support-in-cis-oci-landing-zone)
-- [Logging Consolidation with Service Connector Hub](https://www.ateam-oracle.com/security-log-consolidation-in-cis-oci-landing-zone)
-- [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/vulnerability-scanning-in-cis-oci-landing-zone)
-- [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service)
-- [Operational Monitoring and Alerting in the CIS Landing Zone](https://www.ateam-oracle.com/operational-monitoring-and-alerting-in-the-cis-landing-zone)
-- [How to Deploy Landing Zone for a Security Partner Network Appliance](https://www.ateam-oracle.com/post/how-to-deploy-landing-zone-for-a-security-partner-network-appliance)
-- [Adding Our Security Partners to a CIS OCI Landing Zone](https://blogs.oracle.com/cloud-infrastructure/post/adding-our-security-partners-to-a-cis-oci-landing-zone)
-- [Advanced Configuration using Terraform Overrides](https://www.ateam-oracle.com/post/oci-cis-landing-zone-advanced-configuration-using-terraform-overrides)
-- [Creating a Secure Multi-Region Landing Zone](https://www.ateam-oracle.com/post/creating-a-secure-multi-region-landing-zone)
-- [The Center for Internet Security Oracle Cloud Infrastructure Foundations Benchmark 1.2 Release update](https://www.ateam-oracle.com/post/the-center-for-internet-security-oracle-cloud-infrastructure-foundations-benchmark-12-release-update)
+### Executing on a local machine via Security Token (oci session authenticate)
+To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
+Execute the oci command.
+```
+% oci session authenticate
+```
+This command will prompt for Region details, provide region name ex: us-ashburn-1.
+Browser will open the OCI console window and asks for user credentials. Once after providing the credentials get back to the command prompt. This will create config file using the provided credentials in the "/Users/***/.oci/sessions/config.
+Execute the python script.
+```
+% python3 cis_reports.py -st
+```
+#### Executing using Cloud Shell
+To run in Cloud Shell with delegated token authentication.
+```
+% python3 cis_reports.py -dt'
+``` 
 
-## <a name="modules"></a>CIS OCI Foundations Benchmark Modules Collection
+#### Executing in Australia Government and Defense realm
+To run in Cloud Shell with delegated token authentication.
+```
+% python3 cis_reports.py --deeplink-url-override  https://oc10.cloud.oracle.com'
+``` 
 
-This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
-- [Identity & Access Management](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking)
-- [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
-- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
-- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
-- [Secure Workloads](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
+#### Executing on local machine with using instance principal
+To run on an OCI instance that associated with Instance Principal. 
+```
+% python3 cis_reports.py -ip'
+``` 
 
-The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
+#### Executing using Cloud Shell in only two regions
+To run on using Cloud Shell in on us-ashburn-1 and us-phoenix-1. IAM checks will performed in the tenancy's Home Region.
+```
+% python3 cis_reports.py -dt --region us-ashburn-1,us-phoenix-1'
+``` 
 
-Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
+#### Executing using output to an bucket
+To write the output files to an Object Storage bucket.
+ ```
+% python3 cis_reports.py --output-to-bucket 'my-example-bucket-1'
+``` 
+Using --output-to-bucket ```<bucket-name>``` the reports will be copied to the Object Storage bucket in a folder(default location) with the region, tenancy name, and current day's date ex. ```us-ashburn-1-<tenancy_name>-2020-12-08```.  The bucket must already exist and the user executing the script must have permissions to use the bucket. If using the --report-directory flag as well the folder must already exist in the bucket.
+
+#### Executing using report directory
+To write the output files to an specified directory.
+ ```
+% python3 cis_reports.py --report-directory 'my-directory'
+``` 
+Using --report-directory ```<directory-name>``` the reports will be copied to the specified directory. The directory must already exist.
+
+#### Executing using report directory and output to a bucket
+To write the output files to an specified directory in an object storage bucket.
+ ```
+% python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
+``` 
+Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+
+#### Executing using report directory and output to a bucket
+To write the output files to an specified directory in an object storage bucket.
+ ```
+% python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
+``` 
+Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+
+#### Executing on local machine and output raw data
+To run on a local machine with the default profile and output raw data as well as the reports.
+```
+% python3 cis_reports.py --raw
+``` 
+
+
+
+## <a name="output"></a>Output Examples
+
+The CIS Compliance Script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
+
+- **Num**: the recommendation number in the CIS Benchmark document.
+- **Level**: the recommendation level. Level 1 recommendations are less restrictive than Level 2.
+- **Compliant**: whether the tenancy is in compliance with the recommendation.
+- **Findings**: the number of offending findings for the recommendation.
+- **Total**: Total number of that resources
+- **Title**: the recommendation description.
+
+In the sample output below, we see the tenancy is not compliant with several recommendations. Among those is item 1.7 where the output shows 33 users do not have MFA enabled for accessing OCI Console.
+
+![cis](images\regular-run.png)
+
+For each non-compliant report item, a file with findings details is generated, as shown in the last part of the output:
+```
+##########################################################################################
+#                               Writing CIS reports to CSV                               #
+##########################################################################################
+CSV: summary_report         --> tenancy1-2025-05-20_17-32-08/cis_summary_report.csv
+HTML: html_summary_report    --> tenancy1-2025-05-20_17-32-08/cis_html_summary_report.html
+CSV: Identity and Access Management_1.1 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-1.csv
+CSV: Identity and Access Management_1.5 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-5.csv
+CSV: Identity and Access Management_1.6 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-6.csv
+CSV: Identity and Access Management_1.7 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-7.csv
+CSV: Identity and Access Management_1.8 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-8.csv
+CSV: Identity and Access Management_1.9 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-9.csv
+CSV: Identity and Access Management_1.10 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-10.csv
+CSV: Identity and Access Management_1.11 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-11.csv
+CSV: Identity and Access Management_1.12 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-12.csv
+CSV: Identity and Access Management_1.13 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-13.csv
+CSV: Identity and Access Management_1.15 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-15.csv
+CSV: Identity and Access Management_1.16 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-16.csv
+CSV: Identity and Access Management_1.17 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-17.csv
+CSV: Networking_2.1         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-1.csv
+CSV: Networking_2.2         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-2.csv
+CSV: Networking_2.3         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-3.csv
+CSV: Networking_2.4         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-4.csv
+CSV: Networking_2.5         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-5.csv
+CSV: Compute_3.2            --> tenancy1-2025-05-20_17-32-08/cis_Compute_3-2.csv
+CSV: Logging and Monitoring_4.13 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-13.csv
+CSV: Logging and Monitoring_4.16 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-16.csv
+CSV: Logging and Monitoring_4.17 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-17.csv
+CSV: Storage - Object Storage_5.1.1 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-1.csv
+CSV: Storage - Object Storage_5.1.2 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-2.csv
+CSV: Storage - Object Storage_5.1.3 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-3.csv
+CSV: Asset Management_6.2   --> tenancy1-2025-05-20_17-32-08/cis_Asset_Management_6-2.csv
+```
+Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
+
+#### **Output Non-compliant Findings Only**
+
+Using `--print-to-screen False` will only print non-compliant findings to the screen. 
+
+In the sample output below:
+
+![false](images\print-false.png)
+
+
+#### **Output Level 1 Findings Only**
+
+Using `--level 1` will only print Level 1 findings. 
+
+In the sample output below:
+
+![level1](images\level1.png)
+
+
+#### **Output OCI Best Practice Summary Report**
+Using `--obp` will check for a tenancy's alignment to the available OCI Best Practices. 
+
+```
+##########################################################################################
+#                              OCI Best Practices Findings                               #
+##########################################################################################
+Category                                Compliant       Findings        Best Practices
+##########################################################################################
+Cost_Tracking_Budgets                   True            40              1
+SIEM_Audit_Log_All_Comps                True            0               1
+SIEM_Audit_Incl_Sub_Comp                True            0               1
+SIEM_VCN_Flow_Logging                   False           196             0
+SIEM_Write_Bucket_Logs                  False           45              0
+SIEM_Read_Bucket_Logs                   False           45              0
+Networking_Connectivity                 False           17              0
+Cloud_Guard_Config                      False           1               0
+Certificates_Near_Expiry                False           12              5
+```
+
+
+## <a name="blogs"></a>Blogs
+- [Automate CIS Compliance Checking with OCI Functions and OCI Resource Scheduler](https://www.ateam-oracle.com/post/automate-cis-compliance-checking)
+
+## <a name="resources"></a>OCI Landing Zones Resources
+- [OCI Landing Zone Organization](https://github.com/oci-landing-zones)
+- [Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone)
+- [Operating Entities Landing Zone](https://github.com/oci-landing-zones/terraform-oci-open-lz)
+- [OCI Landing Zones IAM Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
+- [OCI Landing Zones Networking Module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking)
+- [OCI Landing Zones Governance Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
+- [OCI Landing Zone Security Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
+- [OCI Landing Zone Observability Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+- [OCI Landing Zones Secure Workload Modules](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
+
 
 
 ## Help
@@ -188,55 +387,7 @@ Please consult the [security guide](./SECURITY.md) for our responsible security 
 
 ## License
 
-Copyright (c) 2020,2024 Oracle and/or its affiliates.
+Copyright (c) 2020,2025 Oracle and/or its affiliates.
 
 Released under the Universal Permissive License v1.0 as shown at
 <https://oss.oracle.com/licenses/upl/>.
-
-
-## <a name="known-issues"></a>Known Issues
-* **Terraform Apply Failure 404-NotAuthorizedorNotFound**    
-    * Terraform CLI or Resource Manager fails to apply with a message similar as this:
-    ```
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO]
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error: 404-NotAuthorizedOrNotFound
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Provider version: 4.33.0, released on 2021-06-30.  
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Service: Identity Policy
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error Message: Authorization failed or requested resource not found
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] OPC request ID: f14a700dc5d00272933a327c8feb2871/5053FB2DA16689F6421821A1B178D450/D3F2FE52F3BF8FB2C769AEFF7754A9B0
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
-    ```
-
-    This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
-
-    **If your plan continues to fail, please ensure the OCI service is available in your realm.  All the OCI services in the CIS OCI Landing Zone are available in the commercial (OC1) realm but may not be in others.**
-
-* **OCI Tags**
-    * By design, the CIS OCI Landing Zone Quick Start sets a freeform tag as an indicator for resources created by its Terraform scripts.
-    * The OCI Tag Defaults may not be applied to OCI Keys during creation. This issue is currently under investigation.
-    * Creating and using Defined Tags requires a two step process:
-      1. Create the tag namespace and the tags.
-      2. Assign the ```defined_tags```. 
-    * Assigning an empty map (```{}```) to ```defined_tags``` or ```freeform_tags``` deletes all prevouisly set values and also prevents tag defaults to be applied.
-    * Tag defaults are applied when providing a ```null``` value ```defined_tags = null```. 
-
-
-* **OCI Compartment Deletion**
-    * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is ok if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
-
-
-* **OCI Vault Deletion**
-    * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
-
-
-* **Enabling no internet access on an existing deployment**
-    * Enabling *no_internet_access* on a currently deployed stack fails to apply due to timeout. This is due to OCI Terraform provider not being able remove Internet Gateway(s) and NAT Gateway(s) when there are route table rules referencing them. For enabling *no_internet_access* on a deployed stack, you have to first manually remove the rules from the route tables that reference the gateways. 
-
-
-* **Resource Manager does not allow elements with same value in array type** 
-    * This impacts the ability to deploy custom subnets with the same size, as subnets_sizes is an array of strings. If you need custom subnets sizes, do not use Resource Manager UI. Deploy with either Terraform CLI or Resource Manager APIs.
-
-    ![ORM Array Issue](images/orm_array_issue.png)
-
-* **Support for free tier tenancies**
-    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a pay-go. 

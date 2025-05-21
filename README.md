@@ -170,12 +170,15 @@ To run on a local machine using a specific OCI Config file.
 % python3 cis_reports.py -c <file_location>
 ```
 where ```<file_location>``` is the fully qualified path to an OCI client config file (default location is `~/.oci/config`). An OCI config file contains profiles that define the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File).
-	[<Profile_Name>]
+
+```
+  [<Profile_Name>]
 	tenancy=<tenancy_ocid>
 	region=us-ashburn-1
 	user=<user_ocid>
 	fingerprint=<api_key_finger_print>
 	key_file=/path_to_my_private_key_file.pem
+```
 
 ### Executing on local machine with a specific profile
 To run on a local machine using a specific profile in the an OCI Config file.
@@ -183,12 +186,14 @@ To run on a local machine using a specific profile in the an OCI Config file.
 % python3 cis_reports.py -t <Profile_Name>
 ```
 where ```<Profile_Name>``` is the profile name in OCI client config file (typically located under $HOME/.oci). A profile defines the connecting parameters to your tenancy, like tenancy id, region, user id, fingerprint and key file.
-	[<Profile_Name>]
-	tenancy=<tenancy_ocid>
-	region=us-ashburn-1
-	user=<user_ocid>
-	fingerprint=<api_key_finger_print>
-	key_file=/path_to_my_private_key_file.pem
+```
+  [<Profile_Name>]
+  tenancy=<tenancy_ocid>
+  region=us-ashburn-1
+  user=<user_ocid>
+  fingerprint=<api_key_finger_print>
+  key_file=/path_to_my_private_key_file.pem
+```
 
 ### Executing on a local machine via Security Token (oci session authenticate)
 To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
@@ -315,7 +320,7 @@ Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* 
 
 #### **Output Non-compliant Findings Only**
 
-Using --print-to-screen ```False``` will only print non-compliant findings to the screen. 
+Using `--print-to-screen False` will only print non-compliant findings to the screen. 
 
 In the sample output below:
 
@@ -324,7 +329,7 @@ In the sample output below:
 
 #### **Output Level 1 Findings Only**
 
-Using --level ```1``` will only print Level 1 findings. 
+Using `--level 1` will only print Level 1 findings. 
 
 In the sample output below:
 

@@ -30,7 +30,7 @@ Fix:
 - Fixed an issue with the compartment Deeplink for the Root compartment
 
 
-#  March 4, 2024 Release Notes - 2.8.8
+#  March 4, 2025 Release Notes - 2.8.8
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-8-script-updates)
 1. [README Upda
 
@@ -46,7 +46,7 @@ Updated a broken link and small grammar improvement.
 
     
 
-#  February 27, 2024 Release Notes - 2.8.7
+#  February 27, 2025 Release Notes - 2.8.7
 1. [README Update](#2-8-7-readme-update)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-7-script-updates)
 ## <a name="#2-8-7-readme-update">README Update for Core Landing Zone</a>

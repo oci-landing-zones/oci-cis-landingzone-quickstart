@@ -196,7 +196,8 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
 ```
 
 ### Executing on a local machine via Security Token (oci session authenticate)
-To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm)
+To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm).
+
 Execute the oci command.
 ```
 % oci session authenticate
@@ -210,7 +211,7 @@ Execute the python script.
 #### Executing using Cloud Shell
 To run in Cloud Shell with delegated token authentication.
 ```
-% python3 cis_reports.py -dt'
+% python3 cis_reports.py -dt
 ``` 
 
 #### Executing in Australia Government and Defense realm
@@ -219,10 +220,10 @@ To run in Cloud Shell with delegated token authentication.
 % python3 cis_reports.py --deeplink-url-override  https://oc10.cloud.oracle.com'
 ``` 
 
-#### Executing on local machine with using instance principal
+#### Executing on local machine with using Instance Principal
 To run on an OCI instance that associated with Instance Principal. 
 ```
-% python3 cis_reports.py -ip'
+% python3 cis_reports.py -ip
 ``` 
 
 #### Executing using Cloud Shell in only two regions
@@ -243,21 +244,21 @@ To write the output files to an specified directory.
  ```
 % python3 cis_reports.py --report-directory 'my-directory'
 ``` 
-Using --report-directory ```<directory-name>``` the reports will be copied to the specified directory. The directory must already exist.
+Using ```--report-directory <directory-name>``` the reports will be copied to the specified directory. The directory must already exist.
 
 #### Executing using report directory and output to a bucket
 To write the output files to an specified directory in an object storage bucket.
  ```
 % python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
 ``` 
-Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+Using ```--report-directory <directory-name>``` and ```--output-to-bucket <bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
 
 #### Executing using report directory and output to a bucket
 To write the output files to an specified directory in an object storage bucket.
  ```
 % python3 cis_reports.py --report-directory 'bucket-directory' --output-to-bucket 'my-example-bucket-1'
 ``` 
-Using --report-directory ```<directory-name>``` and --output-to-bucket ```<bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
+Using ```--report-directory <directory-name>``` and ```--output-to-bucket <bucket-name>``` together the reports will be copied to the specified directory in the specified bucket. The bucket must already exist in the **Tenancy's Home Region** and user must have permissions to write to that bucket.
 
 #### Executing on local machine and output raw data
 To run on a local machine with the default profile and output raw data as well as the reports.

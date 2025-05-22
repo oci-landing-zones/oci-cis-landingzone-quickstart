@@ -641,7 +641,7 @@ class CIS_Report:
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
-        self.__cis_regional_checks = {"4.3","4.4","4.5","4.7", "4.8", "4.9", "4.10", "4.11", "4.12"}
+        self.__cis_regional_checks = {"4.3","4.4","4.5","4.7","4.8", "4.9", "4.10", "4.11", "4.12", "4.18"}
         self.__obp_regional_checks = {}
 
         # CIS monitoring notifications check

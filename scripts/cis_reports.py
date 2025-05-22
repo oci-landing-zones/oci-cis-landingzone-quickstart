@@ -43,8 +43,8 @@ except Exception:
     OUTPUT_DIAGRAMS = False
 
 RELEASE_VERSION = "3.0.0"
-PYTHON_SDK_VERSION = "2.147.0"
-UPDATED_DATE = "May X, 2025"
+PYTHON_SDK_VERSION = "2.152.1"
+UPDATED_DATE = "May 23, 2025"
 
 
 ##########################################################################

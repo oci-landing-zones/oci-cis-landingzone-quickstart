@@ -1,4 +1,4 @@
-#  May XX, 2025 Release Notes - 3.0.0
+#  May 23, 2025 Release Notes - 3.0.0
 1. [CIS OCI Foundations 3.0.0 New Recommendations](#3-0-0-cis-new)
 1. [CIS OCI Foundations 3.0.0 Updated Recommendations](#3-0-0-cis-updates)
 1. [README Updates for CIS Compliance Script](#3-0-0-readme-update)
@@ -24,7 +24,7 @@ As of May 2025, the **Terraform template** of the CIS Landing Zone is retired. T
 ## <a name="#3-0-0-script-fixes">Script Fixes and Updates</a>
 Updates:
 - Network topology now runs as part of `--all-resources` flag instead of `--obp`
-Fix:
+Fixes:
 - Fixed an issue for CIS checks 1.5 and 1.6 an edge case where password history or password expiration is `None`
 - Fixed an issue where the script fails to run in a tenancy with no compartments
 - Fixed an issue with the compartment Deeplink for the Root compartment

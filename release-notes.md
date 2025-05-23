@@ -8,7 +8,6 @@
 With the release of the CIS OCI Foundations Benchmark 3.0.0 the script has added the following new CIS recommendations:
 - 1.16 - Ensure OCI IAM credentials unused for 45 days or more are disabled
 - 1.17 - Ensure there is only one active API Key for any single OCI IAM user
-- 2.5 - Ensure the default security list of every VCN restricts all traffic except ICMP within VCN
 - 4.18 -  Ensure a notification is configured for Local OCI User Authentication
 
 ## <a name="#3-0-0-cis-updates">CIS OCI Foundations 3.0.0 Updated Recommendations</a>

@@ -1,6 +1,39 @@
-#  March 4, 2024 Release Notes - 2.8.8
+#  May 23, 2025 Release Notes - 3.0.0
+1. [CIS OCI Foundations 3.0.0 New Recommendations](#3-0-0-cis-new)
+1. [CIS OCI Foundations 3.0.0 Updated Recommendations](#3-0-0-cis-updates)
+1. [README Updates for CIS Compliance Script](#3-0-0-readme-update)
+1. [Bug Fix](#3-0-0-script-fixes)
+
+## <a name="#3-0-0-cis-new">CIS OCI Foundations 3.0.0 New Recommendations</a>
+With the release of the CIS OCI Foundations Benchmark 3.0.0 the script has added the following new CIS recommendations:
+- 1.16 - Ensure OCI IAM credentials unused for 45 days or more are disabled
+- 1.17 - Ensure there is only one active API Key for any single OCI IAM user
+- 4.18 -  Ensure a notification is configured for Local OCI User Authentication
+
+## <a name="#3-0-0-cis-updates">CIS OCI Foundations 3.0.0 Updated Recommendations</a>
+With the release of the CIS OCI Foundations Benchmark 3.0.0 the script has updated the following new CIS recommendation:
+- 2.5 - Ensure the default security list of every VCN restricts all traffic except ICMP within VCN 
+
+## <a name="#3-0-0-readme-update">README Updates for CIS Compliance Script</a>
+As of May 2025, the **Terraform template** of the CIS Landing Zone is retired. The last release of CIS Landing Zone terraform is [Release 2.8.8](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/releases/tag/v2.8.8).
+
+- Users looking for a deployment experience similar to CIS Landing Zone should now use [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone). OCI Core Landing Zone evolves CIS Landing Zone and complies with CIS OCI Foundations Benchmark 3.0.0. 
+- Users looking for a deployment experience based on fully declarable and customizable templates should use the [Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities) or the [OCI Landing Zones Modules](#modules) in the [OCI Landing Zones GitHub organization](https://github.com/oci-landing-zones).  
+
+## <a name="#3-0-0-script-fixes">Script Fixes and Updates</a>
+Updates:
+- Network topology now runs as part of `--all-resources` flag instead of `--obp`
+Fixes:
+- Fixed an issue for CIS checks 1.5 and 1.6 an edge case where password history or password expiration is `None`
+- Fixed an issue where the script fails to run in a tenancy with no compartments
+- Fixed an issue with the compartment Deeplink for the Root compartment
+
+
+#  March 4, 2025 Release Notes - 2.8.8
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-8-script-updates)
-1. [README Update](#2-8-8-readme-update)
+1. [README Upda
+
+te](#2-8-8-readme-update)
 ## <a name="#2-8-8-script-updates">Updates/Fixes to the CIS Compliance Script</a>
 - Fixes:
     - Fixed an issue for tenancies that do not have bucket logging enabled.
@@ -12,7 +45,7 @@ Updated a broken link and small grammar improvement.
 
     
 
-#  February 27, 2024 Release Notes - 2.8.7
+#  February 27, 2025 Release Notes - 2.8.7
 1. [README Update](#2-8-7-readme-update)
 1. [Updates/Fixes to the CIS Compliance Script](#2-8-7-script-updates)
 ## <a name="#2-8-7-readme-update">README Update for Core Landing Zone</a>

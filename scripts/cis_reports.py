@@ -1684,6 +1684,7 @@ class CIS_Report:
         # Returns: Bool if the key was used in 
         ##########################################################################
         def run_logging_search_query(search_query, api_key_used, start_date: datetime, end_date: datetime):
+            return api_key_used
             for region_key, region_values in self.__regions.items():
                 try:
                     
@@ -2027,6 +2028,7 @@ class CIS_Report:
                             "defined_tags": bucket_info.defined_tags,
                             "freeform_tags": bucket_info.freeform_tags,
                             "region": region_key,
+                            "source_resource" : bucket_info.name + "-" + region_key,
                             "notes": ""
                         }
                         self.__buckets.append(record)
@@ -2048,6 +2050,7 @@ class CIS_Report:
                             "defined_tags": bucket.defined_tags,
                             "freeform_tags": "",
                             "region": region_key,
+                            "source_resource" : bucket.display_name + "-" + region_key,
                             "notes": str(e)
                         }
                         self.__buckets.append(record)
@@ -3350,7 +3353,6 @@ class CIS_Report:
                     except Exception as e:
                         self.__errors.append({"id" : log_group.identifier, "error" : str(e) })
                         record['notes'] = str(e)
-                    print(self.__all_logs)  
                     self.__logging_list.append(record)
 
             print("\tProcessed " + str(len(self.__logging_list)) + " Log Group Logs")
@@ -4718,7 +4720,7 @@ class CIS_Report:
     # Initializes OBP Checks
     ##########################################################################
     def __obp_init_regional_checks(self):
-        for region_key, region_values in self.__regions.items():
+        for region_key in self.__regions.keys():
             self.__obp_regional_checks[region_key] = {
                 "Audit": {
                     "tenancy_level_audit": False,
@@ -5051,7 +5053,7 @@ class CIS_Report:
             self.obp_foundations_checks["Networking_Connectivity"]["OBP"] += region_values["Network_Connectivity"]["drgs"]
 
     #######################################
-    # Certificate Expiry Check
+    # OBP Certificate Expiry Check
     #######################################        
     def __obp_check_certificates(self):
         for cert in self.__raw_oci_certificates:
@@ -5073,7 +5075,7 @@ class CIS_Report:
             self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = True
 
     #######################################
-    # Subnet and Bucket Log Checks
+    # OBP ubnet and Bucket Log Checks
     #######################################
     def __obp_check_subnet_bucket_logs(self):
         for sch_id, sch_values in self.__service_connectors.items():
@@ -5101,17 +5103,28 @@ class CIS_Report:
                     #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
 
                 # Bucket Write Logs Checks
-                for bucket_name, log_values in self.__write_bucket_logs.items():
-                    log_id = log_values['log_id']
+                # for bucket_name, log_values in self.__write_bucket_logs.items():
+                for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
+                    log_id = log_values['id']
                     log_group_id = log_values['log_group_id']
                     log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
                     log_region = log_values['region']
 
-                    bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
-                    bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                    bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                    bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                    print("####################################bucket-name##########################################")
+                    print(bucket_name)
+                    print(log_record)
+                    print("####################################bucket_log_group_in_sch##########################################")
+                    print(bucket_log_group_in_sch)
+                    print("####################################bucket_log_in_sch##########################################")
+                    print(bucket_log_in_sch)
+                    # bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                    # bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
 
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
                     if bucket_log_group_in_sch and not (bucket_log_in_sch):
+                        print(" Found One "* 4)
                         self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
                     # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
@@ -5123,8 +5136,8 @@ class CIS_Report:
 
                 # Bucket Read Log Checks
 
-                for bucket_name, log_values in self.__read_bucket_logs.items():
-                    log_id = log_values['log_id']
+                for bucket_name, log_values in self.__all_logs['objectstorage']['read'].items():
+                    log_id = log_values['id']
                     log_group_id = log_values['log_group_id']
                     log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
 
@@ -5159,7 +5172,9 @@ class CIS_Report:
                 #     print("Found this subnet being logged but the subnet does not exist: " + str(finding))
 
             for finding in region_values['Write_Bucket']['buckets']:
-                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
+                print("Finding"*10)
+                print(finding)
+                logged_bucket = list(filter(lambda bucket: bucket['source_resource'] == finding['id'], self.__buckets))
                 if len(logged_bucket) != 0:
                     record = logged_bucket[0].copy()
                     record['sch_id'] = finding['sch_id']
@@ -5169,7 +5184,7 @@ class CIS_Report:
                     self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP'].append(record)
 
             for finding in region_values['Read_Bucket']['buckets']:
-                logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['id'], self.__buckets))
+                logged_bucket = list(filter(lambda bucket: bucket['source_resource'] == finding['id'], self.__buckets))
                 if len(logged_bucket) != 0:
                     record = logged_bucket[0].copy()
                     record['sch_id'] = finding['sch_id']

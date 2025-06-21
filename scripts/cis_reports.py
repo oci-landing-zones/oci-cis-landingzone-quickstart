@@ -828,7 +828,7 @@ class CIS_Report:
         # For Logging & Monitoring checks
         self.__event_rules = []
         self.__logging_list = []
-        self.__subnet_logs = {}
+        self.__subnet_logs = {} # to be deleted
         self.__all_logs = {}
         self.__write_bucket_logs = {}
         self.__read_bucket_logs = {}
@@ -4523,7 +4523,7 @@ class CIS_Report:
         # Generate list of subnets IDs
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
-            try:              
+            try:
                 if 'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking VCN {vcn_id} for Subnet: {subnet['id']} ")
                     if self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
@@ -5075,9 +5075,24 @@ class CIS_Report:
             self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = True
 
     #######################################
-    # OBP ubnet and Bucket Log Checks
+    # OBP Subnet and Bucket Log Checks
     #######################################
     def __obp_check_subnet_bucket_logs(self):
+        cis_logged_subnets = set()
+        all_subnet_nets = set()
+        for subnet in self.cis_foundations_benchmark_3_0['4.13']['Findings']:
+            cis_logged_subnets.add(subnet['id'] )
+        for subnet in self.cis_foundations_benchmark_3_0['4.13']['Total']:
+            all_subnet_nets.add(subnet['id'])
+
+        print("---"* 80)
+        list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
+        print("---"* 80)
+        print(list_of_properly_logged_subnets)
+        print("***"* 80)
+        print(self.__all_logs['flowlogs'])
+        print("***"* 80)
+
         for sch_id, sch_values in self.__service_connectors.items():
             # Only Active SCH with a target that is configured
             if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
@@ -5112,16 +5127,7 @@ class CIS_Report:
 
                     bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
                     bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
-                    print("####################################bucket-name##########################################")
-                    print(bucket_name)
-                    print(log_record)
-                    print("####################################bucket_log_group_in_sch##########################################")
-                    print(bucket_log_group_in_sch)
-                    print("####################################bucket_log_in_sch##########################################")
-                    print(bucket_log_in_sch)
-                    # bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
-                    # bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
-
+                    
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
                     if bucket_log_group_in_sch and not (bucket_log_in_sch):
                         print(" Found One "* 4)
@@ -5155,7 +5161,7 @@ class CIS_Report:
                         self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
         # Consolidating regional SERVICE LOGGING findings into centralized finding report
-        for region_key, region_values in self.__obp_regional_checks.items():
+        for region_values in self.__obp_regional_checks.values():
 
             for finding in region_values['VCN']['subnets']:
                 logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets))

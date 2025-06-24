@@ -803,7 +803,7 @@ class CIS_Report:
         self.__network_security_groups = []
         self.__network_security_lists = []
         self.__network_subnets = []
-        self.__network_vcns = []
+        self.__network_vcns = {}
         self.__network_capturefilters = {}
 
         self.__network_fastconnects = {}  # Indexed by DRG ID
@@ -2495,12 +2495,13 @@ class CIS_Report:
                     deep_link = self.__oci_networking_uri + vcn.identifier + '?region=' + region_key
                     record = oci.util.to_dict(vcn)
                     record['deep_link'] = deep_link
-                    
+                    record['subnets'] = {} 
+                    record['network_security_groups'] = {}
+                    record['security_lists'] = {} 
                     # Adding VCN to VCN list
-                    self.__network_vcns.append(record)
+                    self.__network_vcns[vcn.identifier] = record
 
             print("\tProcessed " + str(len(self.__network_vcns)) + " Virtual Cloud Networks ")
-
             return self.__network_vcns
         except Exception as e:
             raise RuntimeError(
@@ -3947,8 +3948,30 @@ class CIS_Report:
             debug("__certificates_read_certificates failed to process: " + str(e))
         print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
     
-    
-    
+    ##########################################################################
+    # Unifying Network information into a single object for easier processing
+    ##########################################################################
+    def __unify_network_data(self):
+        if self.__network_drg_attachments:
+            print(" DRG Attachments " * 5)
+            print(self.__network_drg_attachments)
+            print(" DRG Attachments " * 5)
+        if self.__network_fastconnects:
+            print(" Fast Connect " * 5)
+            print(self.__network_read_fastonnects)
+            print(" Fast Connect " * 5)
+        if self.__network_drgs:
+            print(" DRGs " * 10)
+            print(self.__network_drg_attachments)
+            print(" DRGs " * 10)
+        for subnet in self.__network_subnets:
+            self.__network_vcns[subnet['vcn_id']]['subnets'][subnet['id']] = subnet
+        for nsg in self.__network_security_groups:
+            self.__network_vcns[nsg['vcn_id']]['network_security_groups'][nsg['id']] = nsg
+        for sl in self.__network_security_lists:
+            self.__network_vcns[sl['vcn_id']]['security_lists'][sl['id']] = sl
+
+
     ##########################################################################
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
@@ -5075,49 +5098,72 @@ class CIS_Report:
             self.obp_foundations_checks['Certificates_Near_Expiry']['Status'] = True
 
     #######################################
-    # OBP Subnet and Bucket Log Checks
+    # OBP Subnet Log Checks
     #######################################
-    def __obp_check_subnet_bucket_logs(self):
+    def __obp_check_subnet_logs(self):
         cis_logged_subnets = set()
         all_subnet_nets = set()
         for subnet in self.cis_foundations_benchmark_3_0['4.13']['Findings']:
-            cis_logged_subnets.add(subnet['id'] )
+            cis_logged_subnets.add(subnet['id'])
         for subnet in self.cis_foundations_benchmark_3_0['4.13']['Total']:
             all_subnet_nets.add(subnet['id'])
-
-        print("---"* 80)
+    
         list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
-        print("---"* 80)
-        print(list_of_properly_logged_subnets)
-        print("***"* 80)
-        print(self.__all_logs['flowlogs'])
-        print("***"* 80)
-
+        # need to check for no logs
         for sch_id, sch_values in self.__service_connectors.items():
-            # Only Active SCH with a target that is configured
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
-                # Subnet Logs Checks
-                for subnet_id, log_values in self.__subnet_logs.items():
-
-                    log_id = log_values['log_id']
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
+                for subnet_id in list_of_properly_logged_subnets:
+                    log_values = None
+                    if subnet_id in self.__all_logs['flowlogs']['subnet']:
+                        log_values = self.__all_logs['flowlogs']['subnet'][subnet_id]
+                    elif subnet_id in self.__all_logs['flowlogs']['all']:
+                        log_values = self.__all_logs['flowlogs']['all'][subnet_id]
+                    elif self.__all_logs['flowlogs']['vcn']:
+                        for vcn_id, vcn_values in self.__network_vcns.items():
+                            if subnet_id in vcn_values['subnets']:
+                                log_values = self.__all_logs['flowlogs']['vcn'][vcn_id]
+                    
+                    log_id = log_values['id']
                     log_group_id = log_values['log_group_id']
                     log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": subnet_id}
-
+    
                     subnet_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id, sch_values['log_sources']))
                     subnet_log_in_sch = list(filter(lambda source: source['log_id'] == log_id, sch_values['log_sources']))
-
-                    # Checking if the Subnets's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
+    
                     if subnet_log_group_in_sch and not (subnet_log_in_sch):
                         self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
-
-                    # Checking if the Subnet's log id in is in the service connector's log sources if so I will add it
                     elif subnet_log_in_sch:
                         self.__obp_regional_checks[sch_values['region']]['VCN']['subnets'].append(log_record)
+    
+        for region_values in self.__obp_regional_checks.values():
+            for finding in region_values['VCN']['subnets']:
+                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets))
+                existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+                if len(logged_subnet) != 0:
+                    record = logged_subnet[0].copy()
+                    record['sch_id'] = finding['sch_id']
+                    record['sch_name'] = finding['sch_name']
+                if logged_subnet and not (existing_finding):
+                    self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(record)
+    
+        for finding in self.__network_subnets:
+            logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
+            if not (logged_subnet):
+                self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(finding)
+    
+        if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
+        else:
+            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
 
-                    # else:
-                    #     self.__obp_regional_checks[sch_values['region']]['VCN']['findings'].append(subnet_id)
+    #######################################
+    # OBP Subnet and Bucket Log Checks
+    #######################################
+    def __obp_check_bucket_logs(self):
+        for sch_id, sch_values in self.__service_connectors.items():
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
 
-                # Bucket Write Logs Checks
+                 # Bucket Write Logs Checks
                 # for bucket_name, log_values in self.__write_bucket_logs.items():
                 for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
                     log_id = log_values['id']
@@ -5130,7 +5176,6 @@ class CIS_Report:
                     
                     # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
                     if bucket_log_group_in_sch and not (bucket_log_in_sch):
-                        print(" Found One "* 4)
                         self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
                     # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
@@ -5162,24 +5207,7 @@ class CIS_Report:
 
         # Consolidating regional SERVICE LOGGING findings into centralized finding report
         for region_values in self.__obp_regional_checks.values():
-
-            for finding in region_values['VCN']['subnets']:
-                logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.__network_subnets))
-                # Checking that the subnet has not already been written to OBP
-                existing_finding = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
-                if len(logged_subnet) != 0:
-                    record = logged_subnet[0].copy()
-                    record['sch_id'] = finding['sch_id']
-                    record['sch_name'] = finding['sch_name']
-
-                if logged_subnet and not (existing_finding):
-                    self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP'].append(record)
-                # else:
-                #     print("Found this subnet being logged but the subnet does not exist: " + str(finding))
-
             for finding in region_values['Write_Bucket']['buckets']:
-                print("Finding"*10)
-                print(finding)
                 logged_bucket = list(filter(lambda bucket: bucket['source_resource'] == finding['id'], self.__buckets))
                 if len(logged_bucket) != 0:
                     record = logged_bucket[0].copy()
@@ -5208,20 +5236,6 @@ class CIS_Report:
             write_logged_bucket = list(filter(lambda bucket: bucket['name'] == finding['name'] and bucket['region'] == finding['region'], self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['OBP']))
             if not (write_logged_bucket):
                 self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings'].append(finding)
-
-        # Finding looking at all subnet and seeing if they meet one of the OBPs in one of the regions
-        for finding in self.__network_subnets:
-            logged_subnet = list(filter(lambda subnet: subnet['id'] == finding['id'], self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['OBP']))
-            if not (logged_subnet):
-                self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings'].append(finding)
-
-        # Setting VCN Flow Logs Findings
-        if self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Findings']:
-            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = False
-
-        else:
-            self.obp_foundations_checks['SIEM_VCN_Flow_Logging']['Status'] = True
-
         # Setting Write Bucket Findings
         if self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Findings']:
             self.obp_foundations_checks['SIEM_Write_Bucket_Logs']['Status'] = False
@@ -5244,7 +5258,7 @@ class CIS_Report:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Findings'] += self.__buckets
         else:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
-
+    
 
     ##########################################################################
     # Analyzes Tenancy Data for Oracle Best Practices Report
@@ -5256,7 +5270,9 @@ class CIS_Report:
         self.__obp_check_cloud_guard()    
         self.__obp_check_networking()
         self.__obp_check_certificates()
-        self.__obp_check_subnet_bucket_logs()
+        self.__obp_check_bucket_logs()
+        self.__obp_check_subnet_logs()
+
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation
@@ -5871,6 +5887,9 @@ class CIS_Report:
             for future in concurrent.futures.as_completed(futures):
                 future.result()
 
+        if obp_functions:
+            self.__unify_network_data()
+
     ##########################################################################
     # Generate Raw Data Output
     ##########################################################################
@@ -5890,7 +5909,7 @@ class CIS_Report:
             "network_security_groups": self.__network_security_groups,
             "network_security_lists": self.__network_security_lists,
             "network_subnets": self.__network_subnets,
-            "network_vcns": self.__network_vcns,
+            "network_vcns": list(self.__network_vcns.values()),
             "network_capture_filters": list(self.__network_capturefilters.values()),
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,

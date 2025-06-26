@@ -4506,34 +4506,35 @@ class CIS_Report:
         # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
         for event in self.__event_rules:
-            # Convert Event Condition to dict
-            eventtype_jsonable_str = event['condition'].lower().replace("'", "\"")
-            try:
-                eventtype_dict = json.loads(eventtype_jsonable_str)
-            except Exception:
-                print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
-                eventtype_dict = {}
-            # Issue 256: 'eventtype' not in eventtype_dict (i.e. missing in event condition)
-            if eventtype_dict and 'eventtype' in eventtype_dict:
-                for key, changes in self.cis_monitoring_checks.items():
-                    # Checking if all cis change list is a subset of event condition
-                    try:
-                        # Checking if each region has the required events
-                        if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
-                            self.__cis_regional_findings_data[key][event['region']] = True
-                        
-                        # Cloud Guard Check is only required in the Cloud Guard Reporting Region
-                        elif key == "4.15" and event['region'] == self.__cloud_guard_config.reporting_region and \
-                            (all(x in eventtype_dict['eventtype'] for x in changes)):
-                            self.cis_foundations_benchmark_3_0[key]['Status'] = True
-                        
-                        # For Checks that are home region based checking those
-                        elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
-                            key not in self.__cis_regional_checks and event['region'] == self.__home_region:
-                            self.cis_foundations_benchmark_3_0[key]['Status'] = True
+            if event['lifecycle_state'] == "ACTIVE":
+                # Convert Event Condition to dict
+                eventtype_jsonable_str = event['condition'].lower().replace("'", "\"")
+                try:
+                    eventtype_dict = json.loads(eventtype_jsonable_str)
+                except Exception:
+                    print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
+                    eventtype_dict = {}
+                # Issue 256: 'eventtype' not in eventtype_dict (i.e. missing in event condition)
+                if eventtype_dict and 'eventtype' in eventtype_dict:
+                    for key, changes in self.cis_monitoring_checks.items():
+                        # Checking if all cis change list is a subset of event condition
+                        try:
+                            # Checking if each region has the required events
+                            if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
+                                self.__cis_regional_findings_data[key][event['region']] = True
+                            
+                            # Cloud Guard Check is only required in the Cloud Guard Reporting Region
+                            elif key == "4.15" and event['region'] == self.__cloud_guard_config.reporting_region and \
+                                (all(x in eventtype_dict['eventtype'] for x in changes)):
+                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
+                            
+                            # For Checks that are home region based checking those
+                            elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
+                                key not in self.__cis_regional_checks and event['region'] == self.__home_region:
+                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
 
-                    except Exception:
-                        print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
+                        except Exception:
+                            print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
 
 
         # ******* Iterating through Regional Checks adding findings

@@ -975,7 +975,7 @@ class CIS_Report:
             self.__raw_regions.append(record)
 
         # By Default it is today's date
-        self.__report_directory = f'{report_directory}/' if report_directory else f'{self.__tenancy.name}-{self.report_datetime}'
+        self.__report_directory = f'{report_directory}' if report_directory else f'{self.__tenancy.name}-{self.report_datetime}'
 
         self.__report_prefix = f'{report_prefix}_' if report_prefix else ''
         self.__report_summary_json = report_summary_json
@@ -6327,8 +6327,8 @@ def execute_report():
             if OUTPUT_DIAGRAMS:
                 try:
                     worksheet = workbook.add_worksheet('cis_summary_charts')
-                    worksheet.insert_image('B2', f'{csv_report_directory}{report_prefix}cis_summary_compliance.png')
-                    worksheet.insert_image('L2', f'{csv_report_directory}{report_prefix}cis_summary_compliance_by_focus_area.png')
+                    worksheet.insert_image('B2', f'{csv_report_directory}/{report_prefix}cis_summary_compliance.png')
+                    worksheet.insert_image('L2', f'{csv_report_directory}/{report_prefix}cis_summary_compliance_by_focus_area.png')
                 except Exception:
                     pass
             csvfiles = glob.glob(f'{csv_report_directory}/{report_prefix}*.csv')

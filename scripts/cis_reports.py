@@ -4365,7 +4365,7 @@ class CIS_Report:
                         self.cis_foundations_benchmark_3_0['2.5']['Findings'].append(
                             sl)
                         break
-                    elif 'destination' in irule and irule['destination'] == "0.0.0.0/0":
+                    elif 'destination' in irule and irule['destination'] == "0.0.0.0/0" and irule['protocol'] != '1':
                         debug("Security List has bad egress rule")
                         self.cis_foundations_benchmark_3_0['2.5']['Status'] = False
                         self.cis_foundations_benchmark_3_0['2.5']['Findings'].append(

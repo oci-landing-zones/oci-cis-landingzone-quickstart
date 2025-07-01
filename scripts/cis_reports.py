@@ -1683,7 +1683,7 @@ class CIS_Report:
         # Inputs: search_query, start_date and end_date in datetime, results
         # Returns: Bool if the key was used in 
         ##########################################################################
-        def run_logging_search_query(search_query, api_key_used, start_date: datetime, end_date: datetime):
+        def run_logging_search_query_api_usage(search_query, api_key_used, start_date: datetime, end_date: datetime):
             return api_key_used
             for region_key, region_values in self.__regions.items():
                 try:
@@ -1713,7 +1713,7 @@ class CIS_Report:
                             
                     return api_key_used
                 except Exception as e:
-                    self.__errors.append({"id" : "run_logging_search_query", "error" : str(e)})
+                    self.__errors.append({"id" : "run_logging_search_query_api_usage", "error" : str(e)})
                     debug('__identity_check_logging_for_api_activity: Exception is:')
                     debug("\tException is : " + str(e))
                     return api_key_used
@@ -1738,7 +1738,7 @@ class CIS_Report:
 
         threads = []
         for dates in search_date_range:
-            thread = Thread(target=run_logging_search_query, \
+            thread = Thread(target=run_logging_search_query_api_usage, \
                             args=(search_query, apikey_used_in_45_days, \
                                   dates['start_date'], dates['end_date']))
             threads.append(thread)

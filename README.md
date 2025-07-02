@@ -141,7 +141,7 @@ pip3 install xlsxwriter
   --obp                                Checks for OCI best practices.
   --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp)
                                        and All resource to csv (--raw) flags.
-  --redact_output                      Redacts OCIDs in output CSV and JSON files.
+  --redact-output                      Redacts OCIDs in output CSV and JSON files.
   --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
   -ip                                  Use Instance Principals for Authentication.
   -dt                                  Use Delegation Token for Authentication in Cloud Shell.

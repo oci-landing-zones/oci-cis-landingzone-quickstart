@@ -128,7 +128,10 @@ class CIS_Report:
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,\
+                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, \
+                    redact_output, oci_url=None, debug=False, all_resources=True, \
+                        disable_api_keys=False):
 
         # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = {
@@ -1030,6 +1033,9 @@ class CIS_Report:
             self.__obp_checks = True
             self.__output_raw_data = True
 
+        # Determining if OCI API unused for 45 days check is disable or not
+        self.__disable_api_keys = disable_api_keys 
+
         # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
         self.__oci_cloud_url = "https://cloud.oracle.com"
         if oci_url:
@@ -1684,39 +1690,43 @@ class CIS_Report:
         # Returns: Bool if the key was used in 
         ##########################################################################
         def run_logging_search_query_api_usage(search_query, api_key_used, start_date: datetime, end_date: datetime):
-            return api_key_used
-            for region_key, region_values in self.__regions.items():
-                try:
-                    
-                    response = region_values['logging_search_client'].search_logs(
-                        search_logs_details=oci.loggingsearch.models.SearchLogsDetails(
-                            search_query=search_query,
-                            time_start=start_date,
-                            time_end=end_date,
-                            is_return_field_info=False),
-                            limit=100)
+            if self.__disable_api_keys:
+                print("***Skipping Processing Audit Logs for API Key Usage...***")
+                return api_key_used
+            else:
+                print("Processing Audit Logs for API Key Usage...")
+                for region_key, region_values in self.__regions.items():
+                    try:
+                        
+                        response = region_values['logging_search_client'].search_logs(
+                            search_logs_details=oci.loggingsearch.models.SearchLogsDetails(
+                                search_query=search_query,
+                                time_start=start_date,
+                                time_end=end_date,
+                                is_return_field_info=False),
+                                limit=100)
 
-                    audit_logs = response.data
+                        audit_logs = response.data
 
-                    if audit_logs.summary.result_count > 0:
-                        for result in audit_logs.results:
-                            userInfo = {
-                                        "principalName" : result.data["data.identity.principalName"], 
-                                        "principalId" : result.data["data.identity.principalId"]
-                                        }
-                            debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
-                            api_key_used.append(userInfo)
-                            break
-                            
-                    else:
-                        debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
-                            
-                    return api_key_used
-                except Exception as e:
-                    self.__errors.append({"id" : "run_logging_search_query_api_usage", "error" : str(e)})
-                    debug('__identity_check_logging_for_api_activity: Exception is:')
-                    debug("\tException is : " + str(e))
-                    return api_key_used
+                        if audit_logs.summary.result_count > 0:
+                            for result in audit_logs.results:
+                                userInfo = {
+                                            "principalName" : result.data["data.identity.principalName"], 
+                                            "principalId" : result.data["data.identity.principalId"]
+                                            }
+                                debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
+                                api_key_used.append(userInfo)
+                                break
+                                
+                        else:
+                            debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
+                                
+                        return api_key_used
+                    except Exception as e:
+                        self.__errors.append({"id" : "run_logging_search_query_api_usage", "error" : str(e)})
+                        debug('__identity_check_logging_for_api_activity: Exception is:')
+                        debug("\tException is : " + str(e))
+                        return api_key_used
 
         debug("__identity_check_logging_for_api_activity: Checking API Key")
         principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
@@ -1743,7 +1753,6 @@ class CIS_Report:
                                   dates['start_date'], dates['end_date']))
             threads.append(thread)
 
-        print("Processing Audit Logs for API Key Usage...")
         for thread in threads:
             thread.start()
 
@@ -6343,7 +6352,9 @@ def execute_report():
                         help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
-    parser.add_argument('--redact_output', action='store_true', default=False,
+    parser.add_argument('--disable-api-usage-check', action='store_true', default=False,
+                        help='Disables the checking of OCI API unused for 45 days or more.')
+    parser.add_argument('--redact-output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files.')
     parser.add_argument('--deeplink-url-override', default=None, dest='oci_url',
                     help='Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).')
@@ -6356,7 +6367,7 @@ def execute_report():
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.')
     parser.add_argument('--debug', action='store_true', default=False,
-                        dest='debug', help='Enables debugging messages. This feature is in beta.')    
+                        dest='debug', help='Enables debugging messages printed to screen.')    
     cmd = parser.parse_args()
 
     if cmd.version:
@@ -6366,7 +6377,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:

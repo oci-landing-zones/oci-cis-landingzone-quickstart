@@ -128,7 +128,10 @@ class CIS_Report:
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
 
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix, report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, redact_output, oci_url=None, debug=False, all_resources=True):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,\
+                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, \
+                    redact_output, oci_url=None, debug=False, all_resources=True, \
+                        disable_api_keys=False):
 
         # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = {
@@ -1030,6 +1033,9 @@ class CIS_Report:
             self.__obp_checks = True
             self.__output_raw_data = True
 
+        # Determining if OCI API unused for 45 days check is disable or not
+        self.__disable_api_keys = disable_api_keys 
+
         # Determine if __oci_cloud_url will be override with a different realm ex. OC2 or sovreign region
         self.__oci_cloud_url = "https://cloud.oracle.com"
         if oci_url:
@@ -1683,40 +1689,44 @@ class CIS_Report:
         # Inputs: search_query, start_date and end_date in datetime, results
         # Returns: Bool if the key was used in 
         ##########################################################################
-        def run_logging_search_query(search_query, api_key_used, start_date: datetime, end_date: datetime):
-            return api_key_used
-            for region_key, region_values in self.__regions.items():
-                try:
-                    
-                    response = region_values['logging_search_client'].search_logs(
-                        search_logs_details=oci.loggingsearch.models.SearchLogsDetails(
-                            search_query=search_query,
-                            time_start=start_date,
-                            time_end=end_date,
-                            is_return_field_info=False),
-                            limit=100)
+        def run_logging_search_query_api_usage(search_query, api_key_used, start_date: datetime, end_date: datetime):
+            if self.__disable_api_keys:
+                print("***Skipping Processing Audit Logs for API Key Usage...***")
+                return api_key_used
+            else:
+                print("Processing Audit Logs for API Key Usage...")
+                for region_key, region_values in self.__regions.items():
+                    try:
+                        
+                        response = region_values['logging_search_client'].search_logs(
+                            search_logs_details=oci.loggingsearch.models.SearchLogsDetails(
+                                search_query=search_query,
+                                time_start=start_date,
+                                time_end=end_date,
+                                is_return_field_info=False),
+                                limit=100)
 
-                    audit_logs = response.data
+                        audit_logs = response.data
 
-                    if audit_logs.summary.result_count > 0:
-                        for result in audit_logs.results:
-                            userInfo = {
-                                        "principalName" : result.data["data.identity.principalName"], 
-                                        "principalId" : result.data["data.identity.principalId"]
-                                        }
-                            debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
-                            api_key_used.append(userInfo)
-                            break
-                            
-                    else:
-                        debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
-                            
-                    return api_key_used
-                except Exception as e:
-                    self.__errors.append({"id" : "run_logging_search_query", "error" : str(e)})
-                    debug('__identity_check_logging_for_api_activity: Exception is:')
-                    debug("\tException is : " + str(e))
-                    return api_key_used
+                        if audit_logs.summary.result_count > 0:
+                            for result in audit_logs.results:
+                                userInfo = {
+                                            "principalName" : result.data["data.identity.principalName"], 
+                                            "principalId" : result.data["data.identity.principalId"]
+                                            }
+                                debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
+                                api_key_used.append(userInfo)
+                                break
+                                
+                        else:
+                            debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
+                                
+                        return api_key_used
+                    except Exception as e:
+                        self.__errors.append({"id" : "run_logging_search_query_api_usage", "error" : str(e)})
+                        debug('__identity_check_logging_for_api_activity: Exception is:')
+                        debug("\tException is : " + str(e))
+                        return api_key_used
 
         debug("__identity_check_logging_for_api_activity: Checking API Key")
         principle_id = f'{self.__tenancy.id}/{user_ocid}/{api_key}'
@@ -1738,12 +1748,11 @@ class CIS_Report:
 
         threads = []
         for dates in search_date_range:
-            thread = Thread(target=run_logging_search_query, \
+            thread = Thread(target=run_logging_search_query_api_usage, \
                             args=(search_query, apikey_used_in_45_days, \
                                   dates['start_date'], dates['end_date']))
             threads.append(thread)
 
-        print("Processing Audit Logs for API Key Usage...")
         for thread in threads:
             thread.start()
 
@@ -3324,29 +3333,29 @@ class CIS_Report:
                                     print(e)
                                     print("*" * 80)
 
-                                if log.configuration.source.service == 'flowlogs':
-                                    self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
+                                # if log.configuration.source.service == 'flowlogs':
+                                #     self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
 
-                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                    # Only write logs
-                                    self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                # elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
+                                #     # Only write logs
+                                #     self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                                elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                    # Only read logs
-                                    self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                # elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
+                                #     # Only read logs
+                                #     self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                                elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                    self.__load_balancer_error_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                    self.__load_balancer_access_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                    self.__api_gateway_access_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                    self.__api_gateway_error_logs.append(
-                                        log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
+                                #     self.__load_balancer_error_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
+                                #     self.__load_balancer_access_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
+                                #     self.__api_gateway_access_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
+                                #     self.__api_gateway_error_logs.append(
+                                #         log.configuration.source.resource)
                             except Exception as e:
                                 self.__errors.append({"id" : log.id, "error" : str(e)})
                             # Append Log to log List
@@ -3952,18 +3961,6 @@ class CIS_Report:
     # Unifying Network information into a single object for easier processing
     ##########################################################################
     def __unify_network_data(self):
-        if self.__network_drg_attachments:
-            print(" DRG Attachments " * 5)
-            print(self.__network_drg_attachments)
-            print(" DRG Attachments " * 5)
-        if self.__network_fastconnects:
-            print(" Fast Connect " * 5)
-            print(self.__network_read_fastonnects)
-            print(" Fast Connect " * 5)
-        if self.__network_drgs:
-            print(" DRGs " * 10)
-            print(self.__network_drg_attachments)
-            print(" DRGs " * 10)
         for subnet in self.__network_subnets:
             self.__network_vcns[subnet['vcn_id']]['subnets'][subnet['id']] = subnet
         for nsg in self.__network_security_groups:
@@ -4548,7 +4545,9 @@ class CIS_Report:
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
             try:
-                if 'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
+                if self.__all_logs and 'flowlogs' in self.__all_logs and \
+                'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking VCN {vcn_id} for Subnet: {subnet['id']} ")
                     if self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
                         capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
@@ -4562,7 +4561,9 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif 'subnet' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
+                elif self.__all_logs and 'flowlogs' in self.__all_logs and \
+                    'subnet' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in subnet")
                     debug(self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter'])
                     if self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']:
@@ -4576,7 +4577,9 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif 'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
+                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in all")
                     debug(self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter'])
                     if self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter']:
@@ -4639,7 +4642,9 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names and need to make sure they have write level bucekt logs
-        if 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+        if self.__all_logs and 'objectstorage' in self.__all_logs and\
+              'write' in self.__all_logs['objectstorage']:
+            
             for bucket in self.__buckets:
                 if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                     self.cis_foundations_benchmark_3_0['4.17']['Status'] = False
@@ -5113,7 +5118,8 @@ class CIS_Report:
         list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
         # need to check for no logs
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
+            if self.__all_logs and  self.__all_logs['flowlogs'] and \
+                sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for subnet_id in list_of_properly_logged_subnets:
                     log_values = None
                     if subnet_id in self.__all_logs['flowlogs']['subnet']:
@@ -5163,49 +5169,51 @@ class CIS_Report:
     #######################################
     def __obp_check_bucket_logs(self):
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
+            if self.__all_logs and 'objectstorage' in self.__all_logs and \
+                sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
 
                  # Bucket Write Logs Checks
                 # for bucket_name, log_values in self.__write_bucket_logs.items():
-                for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
-                    log_id = log_values['id']
-                    log_group_id = log_values['log_group_id']
-                    log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
-                    log_region = log_values['region']
+                if 'write' in self.__all_logs['objectstorage']:
+                    for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
+                        log_id = log_values['id']
+                        log_group_id = log_values['log_group_id']
+                        log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
+                        log_region = log_values['region']
 
-                    bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
-                    bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
-                    
-                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
-                    if bucket_log_group_in_sch and not (bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
+                        bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                        bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                        
+                        # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
+                        if bucket_log_group_in_sch and not (bucket_log_in_sch):
+                            self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
-                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                    elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
+                        # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                        elif bucket_log_in_sch:
+                            self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
-                    # else:
-                    #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
+                        # else:
+                        #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
 
                 # Bucket Read Log Checks
+                if 'read' in self.__all_logs['objectstorage']:
+                    for bucket_name, log_values in self.__all_logs['objectstorage']['read'].items():
+                        log_id = log_values['id']
+                        log_group_id = log_values['log_group_id']
+                        log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
 
-                for bucket_name, log_values in self.__all_logs['objectstorage']['read'].items():
-                    log_id = log_values['id']
-                    log_group_id = log_values['log_group_id']
-                    log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
+                        log_region = log_values['region']
 
-                    log_region = log_values['region']
+                        bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                        bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
 
-                    bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
-                    bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                        # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
+                        if bucket_log_group_in_sch and not (bucket_log_in_sch):
+                            self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
-                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
-                    if bucket_log_group_in_sch and not (bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
-
-                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                    elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
+                        # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                        elif bucket_log_in_sch:
+                            self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
         # Consolidating regional SERVICE LOGGING findings into centralized finding report
         for region_values in self.__obp_regional_checks.values():
@@ -6343,7 +6351,9 @@ def execute_report():
                         help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
                         help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
-    parser.add_argument('--redact_output', action='store_true', default=False,
+    parser.add_argument('--disable-api-usage-check', action='store_true', default=False,
+                        help='Disables the checking of OCI API unused for 45 days or more.')
+    parser.add_argument('--redact-output', action='store_true', default=False,
                         help='Redacts OCIDs in output CSV and JSON files.')
     parser.add_argument('--deeplink-url-override', default=None, dest='oci_url',
                     help='Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).')
@@ -6356,7 +6366,7 @@ def execute_report():
     parser.add_argument('-v', action='store_true', default=False,
                         dest='version', help='Show the version of the script and exit.')
     parser.add_argument('--debug', action='store_true', default=False,
-                        dest='debug', help='Enables debugging messages. This feature is in beta.')    
+                        dest='debug', help='Enables debugging messages printed to screen.')    
     cmd = parser.parse_args()
 
     if cmd.version:
@@ -6366,7 +6376,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources)
+                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:

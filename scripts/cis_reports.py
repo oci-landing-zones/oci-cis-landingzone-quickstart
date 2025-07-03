@@ -4554,10 +4554,13 @@ class CIS_Report:
         ### Testing ###
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
+        self.__all_logs = {}
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
             try:
-                if 'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
+                if self.__all_logs and self.__all_logs['flowlogs'] and \
+                'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking VCN {vcn_id} for Subnet: {subnet['id']} ")
                     if self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']:
                         capture_filter_id = self.__all_logs['flowlogs']['vcn'][vcn_id]['capture_filter']
@@ -4571,7 +4574,9 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif 'subnet' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
+                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                    'subnet' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in subnet")
                     debug(self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter'])
                     if self.__all_logs['flowlogs']['subnet'][subnet['id']]['capture_filter']:
@@ -4585,7 +4590,9 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif 'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
+                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
+                    
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in all")
                     debug(self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter'])
                     if self.__all_logs['flowlogs']['all'][subnet['id']]['capture_filter']:
@@ -4648,7 +4655,9 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names and need to make sure they have write level bucekt logs
-        if 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+        if self.__all_logs and self.__all_logs['objectstorage'] and \
+            'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+            
             for bucket in self.__buckets:
                 if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                     self.cis_foundations_benchmark_3_0['4.17']['Status'] = False
@@ -5122,7 +5131,8 @@ class CIS_Report:
         list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
         # need to check for no logs
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and \
+                  self.__all_logs and  self.__all_logs['flowlogs']:
                 for subnet_id in list_of_properly_logged_subnets:
                     log_values = None
                     if subnet_id in self.__all_logs['flowlogs']['subnet']:
@@ -5172,7 +5182,8 @@ class CIS_Report:
     #######################################
     def __obp_check_bucket_logs(self):
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and self.__all_logs:
+            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] \
+                and self.__all_logs and self.__all_logs['objectstorage']:
 
                  # Bucket Write Logs Checks
                 # for bucket_name, log_values in self.__write_bucket_logs.items():

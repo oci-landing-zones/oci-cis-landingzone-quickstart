@@ -3333,29 +3333,29 @@ class CIS_Report:
                                     print(e)
                                     print("*" * 80)
 
-                                if log.configuration.source.service == 'flowlogs':
-                                    self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
+                                # if log.configuration.source.service == 'flowlogs':
+                                #     self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
 
-                                elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                    # Only write logs
-                                    self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                # elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
+                                #     # Only write logs
+                                #     self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                                elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                    # Only read logs
-                                    self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
+                                # elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
+                                #     # Only read logs
+                                #     self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
 
-                                elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                    self.__load_balancer_error_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                    self.__load_balancer_access_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                    self.__api_gateway_access_logs.append(
-                                        log.configuration.source.resource)
-                                elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                    self.__api_gateway_error_logs.append(
-                                        log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
+                                #     self.__load_balancer_error_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
+                                #     self.__load_balancer_access_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
+                                #     self.__api_gateway_access_logs.append(
+                                #         log.configuration.source.resource)
+                                # elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
+                                #     self.__api_gateway_error_logs.append(
+                                #         log.configuration.source.resource)
                             except Exception as e:
                                 self.__errors.append({"id" : log.id, "error" : str(e)})
                             # Append Log to log List
@@ -3961,18 +3961,6 @@ class CIS_Report:
     # Unifying Network information into a single object for easier processing
     ##########################################################################
     def __unify_network_data(self):
-        if self.__network_drg_attachments:
-            print(" DRG Attachments " * 5)
-            print(self.__network_drg_attachments)
-            print(" DRG Attachments " * 5)
-        if self.__network_fastconnects:
-            print(" Fast Connect " * 5)
-            print(self.__network_read_fastonnects)
-            print(" Fast Connect " * 5)
-        if self.__network_drgs:
-            print(" DRGs " * 10)
-            print(self.__network_drg_attachments)
-            print(" DRGs " * 10)
         for subnet in self.__network_subnets:
             self.__network_vcns[subnet['vcn_id']]['subnets'][subnet['id']] = subnet
         for nsg in self.__network_security_groups:
@@ -4554,11 +4542,10 @@ class CIS_Report:
         ### Testing ###
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
-        self.__all_logs = {}
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
             try:
-                if self.__all_logs and self.__all_logs['flowlogs'] and \
+                if self.__all_logs and 'flowlogs' in self.__all_logs and \
                 'vcn' in self.__all_logs['flowlogs'] and vcn_id in self.__all_logs['flowlogs']['vcn']:
                     
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking VCN {vcn_id} for Subnet: {subnet['id']} ")
@@ -4574,7 +4561,7 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                elif self.__all_logs and 'flowlogs' in self.__all_logs and \
                     'subnet' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['subnet']: 
                     
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in subnet")
@@ -4655,8 +4642,8 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names and need to make sure they have write level bucekt logs
-        if self.__all_logs and self.__all_logs['objectstorage'] and \
-            'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:
+        if self.__all_logs and 'objectstorage' in self.__all_logs and\
+              'write' in self.__all_logs['objectstorage']:
             
             for bucket in self.__buckets:
                 if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
@@ -5131,8 +5118,8 @@ class CIS_Report:
         list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
         # need to check for no logs
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] and \
-                  self.__all_logs and  self.__all_logs['flowlogs']:
+            if self.__all_logs and  self.__all_logs['flowlogs'] and \
+                sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for subnet_id in list_of_properly_logged_subnets:
                     log_values = None
                     if subnet_id in self.__all_logs['flowlogs']['subnet']:
@@ -5182,50 +5169,51 @@ class CIS_Report:
     #######################################
     def __obp_check_bucket_logs(self):
         for sch_id, sch_values in self.__service_connectors.items():
-            if sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind'] \
-                and self.__all_logs and self.__all_logs['objectstorage']:
+            if self.__all_logs and 'objectstorage' in self.__all_logs and \
+                sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
 
                  # Bucket Write Logs Checks
                 # for bucket_name, log_values in self.__write_bucket_logs.items():
-                for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
-                    log_id = log_values['id']
-                    log_group_id = log_values['log_group_id']
-                    log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
-                    log_region = log_values['region']
+                if 'write' in self.__all_logs['objectstorage']:
+                    for bucket_name, log_values in self.__all_logs['objectstorage']['write'].items():
+                        log_id = log_values['id']
+                        log_group_id = log_values['log_group_id']
+                        log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
+                        log_region = log_values['region']
 
-                    bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
-                    bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
-                    
-                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
-                    if bucket_log_group_in_sch and not (bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
+                        bucket_log_group_in_sch = any(source['log_group_id'] == log_group_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                        bucket_log_in_sch = any(source['log_id'] == log_id and sch_values['region'] == log_region for source in sch_values['log_sources'])
+                        
+                        # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
+                        if bucket_log_group_in_sch and not (bucket_log_in_sch):
+                            self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
-                    # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
-                    elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
+                        # Checking if the Bucket's log Group in is in the service connector's log sources if so I will add it
+                        elif bucket_log_in_sch:
+                            self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['buckets'].append(log_record)
 
-                    # else:
-                    #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
+                        # else:
+                        #     self.__obp_regional_checks[sch_values['region']]['Write_Bucket']['findings'].append(bucket_name)
 
                 # Bucket Read Log Checks
+                if 'read' in self.__all_logs['objectstorage']:
+                    for bucket_name, log_values in self.__all_logs['objectstorage']['read'].items():
+                        log_id = log_values['id']
+                        log_group_id = log_values['log_group_id']
+                        log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
 
-                for bucket_name, log_values in self.__all_logs['objectstorage']['read'].items():
-                    log_id = log_values['id']
-                    log_group_id = log_values['log_group_id']
-                    log_record = {"sch_id": sch_id, "sch_name": sch_values['display_name'], "id": bucket_name}
+                        log_region = log_values['region']
 
-                    log_region = log_values['region']
+                        bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                        bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
 
-                    bucket_log_group_in_sch = list(filter(lambda source: source['log_group_id'] == log_group_id and sch_values['region'] == log_region, sch_values['log_sources']))
-                    bucket_log_in_sch = list(filter(lambda source: source['log_id'] == log_id and sch_values['region'] == log_region, sch_values['log_sources']))
+                        # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
+                        if bucket_log_group_in_sch and not (bucket_log_in_sch):
+                            self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
-                    # Checking if the Bucket's log group in is in SCH's log sources & the log_id is empty so it covers everything in the log group
-                    if bucket_log_group_in_sch and not (bucket_log_in_sch):
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
-
-                    # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
-                    elif bucket_log_in_sch:
-                        self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
+                        # Checking if the Bucket's log id in is in the service connector's log sources if so I will add it
+                        elif bucket_log_in_sch:
+                            self.__obp_regional_checks[sch_values['region']]['Read_Bucket']['buckets'].append(log_record)
 
         # Consolidating regional SERVICE LOGGING findings into centralized finding report
         for region_values in self.__obp_regional_checks.values():

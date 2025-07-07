@@ -5122,11 +5122,11 @@ class CIS_Report:
                 sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for subnet_id in list_of_properly_logged_subnets:
                     log_values = None
-                    if subnet_id in self.__all_logs['flowlogs']['subnet']:
+                    if 'subnet' in self.__all_logs['flowlogs'] and subnet_id in self.__all_logs['flowlogs']['subnet']:
                         log_values = self.__all_logs['flowlogs']['subnet'][subnet_id]
-                    elif subnet_id in self.__all_logs['flowlogs']['all']:
+                    elif 'all' in self.__all_logs['flowlogs'] and subnet_id in self.__all_logs['flowlogs']['all']:
                         log_values = self.__all_logs['flowlogs']['all'][subnet_id]
-                    elif self.__all_logs['flowlogs']['vcn']:
+                    elif 'vcn' in self.__all_logs['flowlogs'] and self.__all_logs['flowlogs']['vcn']:
                         for vcn_id, vcn_values in self.__network_vcns.items():
                             if subnet_id in vcn_values['subnets']:
                                 log_values = self.__all_logs['flowlogs']['vcn'][vcn_id]

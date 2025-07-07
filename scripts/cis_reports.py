@@ -42,9 +42,9 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-RELEASE_VERSION = "3.0.0"
+RELEASE_VERSION = "3.0.1"
 PYTHON_SDK_VERSION = "2.152.1"
-UPDATED_DATE = "May 23, 2025"
+UPDATED_DATE = "July 14, 2025"
 
 
 ##########################################################################
@@ -5118,7 +5118,7 @@ class CIS_Report:
         list_of_properly_logged_subnets = all_subnet_nets - cis_logged_subnets
         # need to check for no logs
         for sch_id, sch_values in self.__service_connectors.items():
-            if self.__all_logs and  self.__all_logs['flowlogs'] and \
+            if self.__all_logs and 'flowlogs' in self.__all_logs and \
                 sch_values['lifecycle_state'].upper() == "ACTIVE" and sch_values['target_kind']:
                 for subnet_id in list_of_properly_logged_subnets:
                     log_values = None

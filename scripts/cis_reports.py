@@ -5310,6 +5310,7 @@ class CIS_Report:
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Compliant Items": str(len(recommendation['Total']) - len(recommendation['Findings'])),
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
+                    "Compliance Percentage per Recommendation": str(round(((len(recommendation.get('Total') or []) - len(recommendation.get('Findings') or [])) / len(recommendation.get('Total') or []) * 100)if len(recommendation.get('Total') or []) > 0 else 0,2)) + "%",
                     "Title": recommendation['Title'],
                     "CIS v8": recommendation['CISv8'],
                     "CCCS Guard Rail": recommendation['CCCS Guard Rail'],

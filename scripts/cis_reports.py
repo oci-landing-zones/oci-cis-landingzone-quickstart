@@ -1318,7 +1318,7 @@ class CIS_Report:
                 # Creating Identity Domains Client and storing it
                 debug("__identity_read_domains: Creating Identity Domain Client for: " +  domain.display_name)
                 domain_dict['IdentityDomainClient'] = oci.identity_domains.IdentityDomainsClient(\
-                     config=self.__config, service_endpoint=domain.url)
+                     config=self.__config, signer=self.__signer, service_endpoint=domain.url)
                 debug("__identity_read_domains: Created Identity Domain Client for: " +  domain.display_name)
 
                 pwd_policy_dict =  oci.util.to_dict(domain_dict['IdentityDomainClient'].get_password_policy(\

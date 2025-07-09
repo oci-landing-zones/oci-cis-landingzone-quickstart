@@ -1707,24 +1707,24 @@ class CIS_Report:
                                 limit=100)
 
                         audit_logs = response.data
-
+                        debug(f"run_logging_search_query_api_usage: response is: {response.data}")
                         if audit_logs.summary.result_count > 0:
                             for result in audit_logs.results:
                                 userInfo = {
                                             "principalName" : result.data["data.identity.principalName"], 
                                             "principalId" : result.data["data.identity.principalId"]
                                             }
-                                debug(f'__identity_check_logging_for_api_activity: Audit search results: {userInfo}')
+                                debug(f'run_logging_search_query_api_usage: Audit search results: {userInfo}')
                                 api_key_used.append(userInfo)
                                 break
                                 
                         else:
-                            debug('__identity_check_logging_for_api_activity: No APIKey usage records found in the past 14 days in')
+                            debug('run_logging_search_query_api_usage: No APIKey usage records found in the past 14 days in')
                                 
                         return api_key_used
                     except Exception as e:
                         self.__errors.append({"id" : "run_logging_search_query_api_usage", "error" : str(e)})
-                        debug('__identity_check_logging_for_api_activity: Exception is:')
+                        debug('run_logging_search_query_api_usage: Exception is:')
                         debug("\tException is : " + str(e))
                         return api_key_used
 

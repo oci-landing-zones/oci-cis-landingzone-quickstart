@@ -4014,7 +4014,7 @@ class CIS_Report:
         else:
             self.cis_foundations_benchmark_3_0['1.4']['Status'] = None
 
-        # 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
+        # 1.4, 1.5 and 1.6 Checking Identity Domains Password Policy for expiry less than 365 and 
         debug("__report_cis_analyze_tenancy_data: Identity Domains Enabled is: " + str(self.__identity_domains_enabled))
         if self.__identity_domains_enabled:
             for domain in self.__identity_domains:
@@ -4022,6 +4022,12 @@ class CIS_Report:
                     debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
                     debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
                     print("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
+
+                    if domain['password_policy']['min_length']:
+                        if domain['password_policy']['min_length'] >= 14:
+                            self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
+                    else:
+                        self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
 
                     if domain['password_policy']['password_expires_after']:
                         if domain['password_policy']['password_expires_after'] > 365:
@@ -4036,10 +4042,15 @@ class CIS_Report:
                         self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 
                 else:
-                    debug("__report_cis_analyze_tenancy_data 1.5 and 1.6 no password policy")
+                    debug("__report_cis_analyze_tenancy_data 1.4, 1.5 and 1.6 no password policy")
+                    self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
                     self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
                     self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 
+            if self.cis_foundations_benchmark_3_0['1.4']['Findings']:
+                self.cis_foundations_benchmark_3_0['1.4']['Status'] = False
+            else:
+                self.cis_foundations_benchmark_3_0['1.4']['Status'] = True
 
             if self.cis_foundations_benchmark_3_0['1.5']['Findings']:
                 self.cis_foundations_benchmark_3_0['1.5']['Status'] = False

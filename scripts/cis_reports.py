@@ -1327,6 +1327,8 @@ class CIS_Report:
                 domain_dict['password_policy'] = pwd_policy_dict
                 domain_dict['errors'] = None 
                 self.__identity_domains.append(domain_dict)
+                debug("-" * 100)
+                debug(f"__identity_read_domains: Domain Dict is: {domain_dict}")
 
             except Exception as e:
                 debug("Identity Domains Error is for domain " + domain.display_name + "\n" + str(e))
@@ -4004,9 +4006,11 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['1.3']['Total'] = self.__policies
 
         # 1.4 Check - Password Policy - Only in home region
-        if self.__tenancy_password_policy:
-            if self.__tenancy_password_policy.password_policy.is_lowercase_characters_required:
+        if not(self.__identity_domains_enabled) and self.__tenancy_password_policy:
+            if self.__tenancy_password_policy.password_policy.minimum_password_length >= 14:
                 self.cis_foundations_benchmark_3_0['1.4']['Status'] = True
+            else:
+                self.cis_foundations_benchmark_3_0['1.4']['Status'] = False
         else:
             self.cis_foundations_benchmark_3_0['1.4']['Status'] = None
 
@@ -4017,6 +4021,7 @@ class CIS_Report:
                 if domain['password_policy']:
                     debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
                     debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
+                    print("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
 
                     if domain['password_policy']['password_expires_after']:
                         if domain['password_policy']['password_expires_after'] > 365:
@@ -4483,6 +4488,7 @@ class CIS_Report:
                 except Exception:
                     print("*** Invalid Event Condition for event (not in JSON format): " + event['display_name'] + " ***")
                     eventtype_dict = {}
+
                 # Issue 256: 'eventtype' not in eventtype_dict (i.e. missing in event condition)
                 if eventtype_dict and 'eventtype' in eventtype_dict:
                     for key, changes in self.cis_monitoring_checks.items():
@@ -4493,7 +4499,8 @@ class CIS_Report:
                                 self.__cis_regional_findings_data[key][event['region']] = True
                             
                             # Cloud Guard Check is only required in the Cloud Guard Reporting Region
-                            elif key == "4.15" and event['region'] == self.__cloud_guard_config.reporting_region and \
+                            elif self.__cloud_guard_config and key == "4.15" and \
+                                event['region'] == self.__cloud_guard_config.reporting_region and \
                                 (all(x in eventtype_dict['eventtype'] for x in changes)):
                                 self.cis_foundations_benchmark_3_0[key]['Status'] = True
                             
@@ -4502,7 +4509,8 @@ class CIS_Report:
                                 key not in self.__cis_regional_checks and event['region'] == self.__home_region:
                                 self.cis_foundations_benchmark_3_0[key]['Status'] = True
 
-                        except Exception:
+                        except Exception as e:
+                            print(e)
                             print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
 
 

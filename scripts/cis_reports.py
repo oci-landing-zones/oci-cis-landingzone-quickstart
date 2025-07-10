@@ -4021,7 +4021,7 @@ class CIS_Report:
                 if domain['password_policy']:
                     debug("Policy " + domain['display_name'] + " password expiry is " + str(domain['password_policy']['password_expires_after']))
                     debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
-                    print("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
+                    debug("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
 
                     if domain['password_policy']['min_length']:
                         if domain['password_policy']['min_length'] >= 14:
@@ -4482,8 +4482,13 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['4.1']['Total'] = self.__tag_defaults
 
         # CIS Check 4.2 - Check for Active Notification and Subscription
-        if len(self.__subscriptions) > 0:
-            self.cis_foundations_benchmark_3_0['4.2']['Status'] = True
+        for sub in self.__subscriptions:
+            if sub['lifecycle_state'] == 'ACTIVE':
+                self.cis_foundations_benchmark_3_0['4.2']['Status'] = True
+            else:
+                self.cis_foundations_benchmark_3_0['4.2']['Findings'].append(sub)
+        
+
 
         # CIS Check 4.2 Total - All Subscriptions to CIS Total
         self.cis_foundations_benchmark_3_0['4.2']['Total'] = self.__subscriptions

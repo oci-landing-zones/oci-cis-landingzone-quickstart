@@ -4023,21 +4023,21 @@ class CIS_Report:
                     debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
                     debug("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
 
-                    if domain['password_policy']['min_length']:
-                        if domain['password_policy']['min_length'] >= 14:
-                            self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
+                    if domain['password_policy']['min_length'] and \
+                        domain['password_policy']['min_length'] > 14:
+                        self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
 
-                    if domain['password_policy']['password_expires_after']:
-                        if domain['password_policy']['password_expires_after'] > 365:
-                            self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
+                    if domain['password_policy']['password_expires_after'] and \
+                        domain['password_policy']['password_expires_after'] > 365:
+                        self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
 
-                    if domain['password_policy']['num_passwords_in_history']:
-                        if domain['password_policy']['num_passwords_in_history'] < 24:
-                            self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
+                    if domain['password_policy']['num_passwords_in_history'] and \
+                        domain['password_policy']['num_passwords_in_history'] < 24:
+                        self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 
@@ -4063,6 +4063,7 @@ class CIS_Report:
                 self.cis_foundations_benchmark_3_0['1.6']['Status'] = True
             
             # Adding all identity domains to Total
+            self.cis_foundations_benchmark_3_0['1.4']['Total'] = self.__identity_domains
             self.cis_foundations_benchmark_3_0['1.5']['Total'] = self.__identity_domains
             self.cis_foundations_benchmark_3_0['1.6']['Total'] = self.__identity_domains
 

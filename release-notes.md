@@ -1,21 +1,24 @@
 #  July 14, 2025 Release Notes - 3.0.1
-1. [CIS OCI Foundations 3.0.0 New Recommendations](#3-0-0-cis-new)
-1. [CIS OCI Foundations 3.0.0 Updated Recommendations](#3-0-0-cis-updates)
-1. [README Updates for CIS Compliance Script](#3-0-0-readme-update)
-1. [Bug Fix](#3-0-1-script-fixes)
+1. [Disable API Key Usage Check Flag](#3-0-1-disable-api-usage)
+1. [Script Updates](#3-0-1-script-updates)
+1. [Script Fixes](#3-0-1-script-fixes)
 
-## <a name="#3-0-1-disable-api-usage">Disable API Key Usage Checking</a>
+## <a name="#3-0-1-disable-api-usage">Disable API Key Usage Check</a>
 - Added a new flag, `--disable-api-usage-check,` which skips the OCI API Key usage in the last 45 days check, which is part of the recommendation *1.16 - Ensure OCI IAM credentials unused for 45 days or more are disabled.* The checking of passwords is not impacted.
 
-## <a name="#3-0-0-script-fixes">Script Fixes and Updates</a>
+## <a name="#3-0-0-script-updates">Fixes</a>
 Updates:
-- Updated --redact_output flag to --redact-output for consistency
+- Updated --redact_output flag to --redact-output for consistency.
+- Updated CIS check 1.4 to support tenancies with Identity Domains.
 - Migrated CIS and OBP checks to use all_logs to support all log types. Closes [Issue 156](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/156).
 - Updated CSV record column order for block volume and boot volume to be the same. Closes [Issue 170](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/170).
 - Updated VCNs to include NSGs, SLs, and Subnets in the VCN structure and output. 
-- Improved readability of obp_checks by breaking it up into multiple functions.
+- Improved code readability of obp_checks by breaking it up into multiple functions.
+
+## <a name="#3-0-0-script-fixes">Updates</a>
 
 Fixes:
+- Fixed CIS recommendation 4.2 to check that the subscription is active.
 - Fixed CIS recommendation checks related to OCI Events to ensure the Event Rule is active.
 - Fixed XLSX file not including PNG's [Issue 162](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/162).
 - Fixed protocol check for ICMP to CIS recommendation 2.5 egress rules [Issue 168](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/168).

@@ -5310,7 +5310,7 @@ class CIS_Report:
                     "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                     "Compliant Items": str(len(recommendation['Total']) - len(recommendation['Findings'])),
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
-                    "Compliance Percentage per Recommendation": (
+                    "Compliance Percentage Per Recommendation": (
                         "100%" if compliant_output == "Yes" else (
                         str(int((
                             (len(recommendation.get('Total') or []) - len(recommendation.get('Findings') or []))

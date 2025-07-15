@@ -44,7 +44,7 @@ except Exception:
 
 RELEASE_VERSION = "3.0.1"
 PYTHON_SDK_VERSION = "2.152.1"
-UPDATED_DATE = "July 14, 2025"
+UPDATED_DATE = "July 16, 2025"
 
 
 ##########################################################################
@@ -4023,21 +4023,23 @@ class CIS_Report:
                     debug("Policy " + domain['display_name'] + " reuse is " + str(domain['password_policy']['num_passwords_in_history']))
                     debug("Policy " + domain['display_name'] + " length is " + str(domain['password_policy']['min_length']))
 
-                    if domain['password_policy']['min_length'] and \
-                        domain['password_policy']['min_length'] > 14:
-                        self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
+
+                    if domain['password_policy']['min_length']:
+                        if domain['password_policy']['min_length'] > 14:
+                            self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
 
-                    if domain['password_policy']['password_expires_after'] and \
-                        domain['password_policy']['password_expires_after'] > 365:
-                        self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
+
+                    if domain['password_policy']['password_expires_after']:
+                        if domain['password_policy']['password_expires_after'] > 365:
+                            self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.5']['Findings'].append(domain)
 
-                    if domain['password_policy']['num_passwords_in_history'] and \
-                        domain['password_policy']['num_passwords_in_history'] < 24:
-                        self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
+                    if domain['password_policy']['num_passwords_in_history']:
+                        if domain['password_policy']['num_passwords_in_history'] < 24:
+                            self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.6']['Findings'].append(domain)
 

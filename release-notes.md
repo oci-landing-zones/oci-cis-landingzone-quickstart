@@ -1,7 +1,11 @@
-#  July 14, 2025 Release Notes - 3.0.1
+#  July 16, 2025 Release Notes - 3.0.1
+1. [Compliance Percentage Field](#3-0-1-percentage)
 1. [Disable API Key Usage Check Flag](#3-0-1-disable-api-usage)
 1. [Script Updates](#3-0-1-script-updates)
 1. [Script Fixes](#3-0-1-script-fixes)
+
+## <a name="#3-0-1-percentage">Compliance Percentage Field</a>
+Added a *Compliance Percentage Per Recommendation* field in the *cis_summary_report.csv*.  The field is calculated by dividing the number of compliant items by the total number of items. For recommendations that pass/fail, for pass, it puts '100%'. For fail, it puts '0%'. For recommendations that are Not Applicable, it puts 'N/A'. 
 
 ## <a name="#3-0-1-disable-api-usage">Disable API Key Usage Check</a>
 - Added a new flag, `--disable-api-usage-check,` which skips the OCI API Key usage in the last 45 days check, which is part of the recommendation *1.16 - Ensure OCI IAM credentials unused for 45 days or more are disabled.* The checking of passwords is not impacted.

@@ -1,3 +1,33 @@
+#  July 16, 2025 Release Notes - 3.0.1
+1. [Compliance Percentage Field](#3-0-1-percentage)
+1. [Disable API Key Usage Check Flag](#3-0-1-disable-api-usage)
+1. [Script Updates](#3-0-1-script-updates)
+1. [Script Fixes](#3-0-1-script-fixes)
+
+## <a name="#3-0-1-percentage">Compliance Percentage Field</a>
+Added a *Compliance Percentage Per Recommendation* field in the *cis_summary_report.csv*.  The field is calculated by dividing the number of compliant items by the total number of items. For recommendations that pass/fail, for pass, it puts '100%'. For fail, it puts '0%'. For recommendations that are Not Applicable, it puts 'N/A'. 
+
+## <a name="#3-0-1-disable-api-usage">Disable API Key Usage Check</a>
+- Added a new flag, `--disable-api-usage-check,` which skips the OCI API Key usage in the last 45 days check, which is part of the recommendation *1.16 - Ensure OCI IAM credentials unused for 45 days or more are disabled.* The checking of passwords is not impacted.
+
+## <a name="#3-0-0-script-updates">Fixes</a>
+Updates:
+- Updated --redact_output flag to --redact-output for consistency.
+- Updated CIS check 1.4 to support tenancies with Identity Domains.
+- Migrated CIS and OBP checks to use all_logs to support all log types. Closes [Issue 156](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/156).
+- Updated CSV record column order for block volume and boot volume to be the same. Closes [Issue 170](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/170).
+- Updated VCNs to include NSGs, SLs, and Subnets in the VCN structure and output. 
+- Improved code readability of obp_checks by breaking it up into multiple functions.
+
+## <a name="#3-0-0-script-fixes">Updates</a>
+
+Fixes:
+- Fixed CIS recommendation 4.2 to check that the subscription is active.
+- Fixed CIS recommendation checks related to OCI Events to ensure the Event Rule is active.
+- Fixed XLSX file not including PNG's [Issue 162](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/162).
+- Fixed protocol check for ICMP to CIS recommendation 2.5 egress rules [Issue 168](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/168).
+- Fixed Instance Principal not able to get the Identity domain data [Issue 169](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/169). 
+
 #  May 23, 2025 Release Notes - 3.0.0
 1. [CIS OCI Foundations 3.0.0 New Recommendations](#3-0-0-cis-new)
 1. [CIS OCI Foundations 3.0.0 Updated Recommendations](#3-0-0-cis-updates)

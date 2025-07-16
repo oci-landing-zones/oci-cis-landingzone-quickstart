@@ -26,7 +26,9 @@
 
 ## <a name="overview"></a>Overview
 
-The CIS Compliance Script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. In addition to CIS checks it can be check for alignment to OCI Best Practices  by using the `--obp` flag.  These checks review the following OCI best practices in your tenancy:
+The CIS Compliance Script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. The CIS Compliance Script has been awarded [CIS Security Software Certification](https://www.cisecurity.org/partner/oracle) for CIS Oracle Cloud Infrastructure Foundations Benchmark v3.0.0.
+
+In addition to CIS checks it can be check for alignment to OCI Best Practices  by using the `--obp` flag.  These checks review the following OCI best practices in your tenancy:
 - Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
 - A Budget for cost track is created in your tenancy
 - Network connectivity to on-premises is redundant 
@@ -141,13 +143,13 @@ pip3 install xlsxwriter
   --obp                                Checks for OCI best practices.
   --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp)
                                        and All resource to csv (--raw) flags.
-  --redact_output                      Redacts OCIDs in output CSV and JSON files.
+  --disable-api-usage-check            Disables the checking of OCI API unused for 45 days or more.
+  --redact-output                      Redacts OCIDs in output CSV and JSON files.
   --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
   -ip                                  Use Instance Principals for Authentication.
   -dt                                  Use Delegation Token for Authentication in Cloud Shell.
   -st                                  Authenticate using Security Token.
   -v                                   Show the version of the script and exit.
-  --debug                              Enables debugging messages. This feature is in beta.
 ```
 
 ## <a name="usage"></a>Usage Examples

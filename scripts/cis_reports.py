@@ -3947,18 +3947,26 @@ class CIS_Report:
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
-
         self.__cis_regional_findings_data = {}
-
         for check in self.__cis_regional_checks:
             self.__cis_regional_findings_data[check] = {}
             for region_key, region_values in self.__regions.items():
                 self.__cis_regional_findings_data[check][region_key] = None
 
+        self.__cis_check_iam_policies()
+        self.__cis_check_password_policies()
+        self.__cis_check_users()
+        self.__cis_check_dynamic_groups()
+        self.__cis_check_network_security()
+        self.__cis_check_compute_instances()
+        self.__cis_check_tagging_and_monitoring()
+        self.__cis_check_storage()
+        self.__cis_check_assets()
 
-      
+
+    def __cis_check_iam_policies(self):
+        
         # 1.1 Check - Checking for policy statements that are not restricted to a service
-
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
@@ -4005,6 +4013,42 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['1.2']['Total'] = self.__policies
         self.cis_foundations_benchmark_3_0['1.3']['Total'] = self.__policies
 
+        # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
+        # Iterating through all policies
+        for policy in self.__policies:
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
+                for statement in policy['statements']:
+                    for resource in self.cis_iam_checks['1.15']:
+                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
+                            split_statement = statement.split("where")
+                            if len(split_statement) == 2:
+                                clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
+                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 no permissions to delete storage: " + str(policy['name']))
+                                    pass
+                                # Checking if this is the Storage admin with allowed 
+                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
+                                    pass
+                                else:
+                                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
+
+                            else:
+                                self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+
+        if self.cis_foundations_benchmark_3_0['1.15']['Findings']:
+            self.cis_foundations_benchmark_3_0['1.15']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_3_0['1.15']['Status'] = True
+
+        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
+        self.cis_foundations_benchmark_3_0['1.15']['Total'] = self.__policies
+
+
+    def __cis_check_password_policies(self):
         # 1.4 Check - Password Policy - Only in home region
         if not(self.__identity_domains_enabled) and self.__tenancy_password_policy:
             if self.__tenancy_password_policy.password_policy.minimum_password_length >= 14:
@@ -4069,6 +4113,7 @@ class CIS_Report:
             self.cis_foundations_benchmark_3_0['1.5']['Total'] = self.__identity_domains
             self.cis_foundations_benchmark_3_0['1.6']['Total'] = self.__identity_domains
 
+    def __cis_check_users(self):
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
             if not(user['is_federated']) and user['can_use_console_password'] and not (user['is_mfa_activated']) and  user['lifecycle_state']:
@@ -4193,54 +4238,6 @@ class CIS_Report:
         # CIS Total 1.13 Adding - All IAM Users for to CIS Total
         self.cis_foundations_benchmark_3_0['1.13']['Total'] = self.__users
 
-        # CIS 1.14 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
-        # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
-        for dynamic_group in self.__dynamic_groups:
-            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.14']['resources']):
-                self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
-            else:
-                self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(
-                    dynamic_group)
-        # Clearing finding
-        if self.cis_foundations_benchmark_3_0['1.14']['Status']:
-            self.cis_foundations_benchmark_3_0['1.14']['Findings'] = []
-
-        # CIS Total 1.14 Adding - All Dynamic Groups  for to CIS Total
-        self.cis_foundations_benchmark_3_0['1.14']['Total'] = self.__dynamic_groups
-
-        # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
-        # Iterating through all policies
-        for policy in self.__policies:
-            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
-                for statement in policy['statements']:
-                    for resource in self.cis_iam_checks['1.15']:
-                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
-                            split_statement = statement.split("where")
-                            if len(split_statement) == 2:
-                                clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
-                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
-                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 no permissions to delete storage: " + str(policy['name']))
-                                    pass
-                                # Checking if this is the Storage admin with allowed 
-                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
-                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
-                                    pass
-                                else:
-                                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
-
-                            else:
-                                self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
-
-        if self.cis_foundations_benchmark_3_0['1.15']['Findings']:
-            self.cis_foundations_benchmark_3_0['1.15']['Status'] = False
-        else:
-            self.cis_foundations_benchmark_3_0['1.15']['Status'] = True
-
-        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
-        self.cis_foundations_benchmark_3_0['1.15']['Total'] = self.__policies
 
         # CIS 1.16 Check -  Users with API Keys over 45 days
 
@@ -4290,7 +4287,7 @@ class CIS_Report:
         else:
             self.cis_foundations_benchmark_3_0['1.16']['Status'] = True
 
-        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
+        # CIS Total 1.16 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_3_0['1.16']['Total'] = self.__users
 
 
@@ -4306,8 +4303,25 @@ class CIS_Report:
             self.cis_foundations_benchmark_3_0['1.17']['Status'] = True
         # CIS Total 1.17 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_3_0['1.17']['Total'] = self.__users
+    
+    def __cis_check_dynamic_groups(self):
+        # CIS 1.14 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
+        # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
+        for dynamic_group in self.__dynamic_groups:
+            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.14']['resources']):
+                self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
+            else:
+                self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(
+                    dynamic_group)
+        # Clearing finding
+        if self.cis_foundations_benchmark_3_0['1.14']['Status']:
+            self.cis_foundations_benchmark_3_0['1.14']['Findings'] = []
 
-        # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
+        # CIS Total 1.14 Adding - All Dynamic Groups  for to CIS Total
+        self.cis_foundations_benchmark_3_0['1.14']['Total'] = self.__dynamic_groups
+
+    def __cis_check_network_security(self):
+        # CIS 2.1, 2.2 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
@@ -4391,7 +4405,7 @@ class CIS_Report:
                     self.cis_foundations_benchmark_3_0['2.4']['Findings'].append(nsg)
                     break
 
-        # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
+        # CIS Total 2.3 & 2.4 Adding - All NSGs Instances to CIS Total
         self.cis_foundations_benchmark_3_0['2.3']['Total'] = self.__network_security_groups
         self.cis_foundations_benchmark_3_0['2.4']['Total'] = self.__network_security_groups
 
@@ -4445,10 +4459,7 @@ class CIS_Report:
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_3_0['2.8']['Total'] = self.__autonomous_databases
 
-        # From CIS 2.0 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
-        # if self.__audit_retention_period >= 365:
-        #     self.cis_foundations_benchmark_3_0['4.1']['Status'] = True
-
+    def __cis_check_compute_instances(self):
         for instance in self.__Instance:
             # CIS Check 3.1 Metadata Service v2 Enabled
             if instance['instance_options'] is None or not(instance['instance_options']['are_legacy_imds_endpoints_disabled']):
@@ -4475,6 +4486,7 @@ class CIS_Report:
         # CIS Total 3.3 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.3']['Total'] = self.__Instance
 
+    def __cis_check_tagging_and_monitoring(self):
         # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
@@ -4656,6 +4668,7 @@ class CIS_Report:
         # CIS Check 4.17 Total - Adding All Buckets to total
         self.cis_foundations_benchmark_3_0['4.17']['Total'] = self.__buckets
 
+    def __cis_check_storage(self):
         # CIS Section 5.1 Bucket Checks
         # Generating list of buckets names
         for bucket in self.__buckets:
@@ -4703,7 +4716,7 @@ class CIS_Report:
                         boot_volume)
                     self.cis_foundations_benchmark_3_0['5.2.2']['Status'] = False
 
-        # CIS Check 4.2.2 Total - Adding All Block Volumes to total
+        # CIS Check 5.2.2 Total - Adding All Block Volumes to total
         self.cis_foundations_benchmark_3_0['5.2.2']['Total'] = self.__boot_volumes
 
         # CIS Section 5.3.1 FSS Checks
@@ -4718,6 +4731,7 @@ class CIS_Report:
         # CIS Check 4.3.1 Total - Adding All Block Volumes to total
         self.cis_foundations_benchmark_3_0['5.3.1']['Total'] = self.__file_storage_system
 
+    def __cis_check_assets(self):
         # CIS Section 6 Checks
         # Checking if more than one compartment because of the ManagedPaaS Compartment
         if len(self.__compartments) < 2:

@@ -1,3 +1,15 @@
+#  August XX, 2025 Release Notes - 3.1.0
+1. [Script Updates](#3-0-1-script-updates)
+1. [Script Fixes](#3-0-1-script-fixes)
+
+## <a name="#3-0-0-script-updates">Fixes</a>
+Updates:
+- Including user's Identity Domain deeplink in CIS checks 1.8 - 1.11
+- Improved code readability of CIS checks by breaking it up into multiple functions.
+
+## <a name="#3-0-0-script-updates">Fixes</a>
+
+
 #  July 16, 2025 Release Notes - 3.0.1
 1. [Compliance Percentage Field](#3-0-1-percentage)
 1. [Disable API Key Usage Check Flag](#3-0-1-disable-api-usage)

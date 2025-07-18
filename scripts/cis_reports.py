@@ -4134,6 +4134,7 @@ class CIS_Report:
                             "user_name": user['name'],
                             "user_id": user['id'],
                             "key_id": key['id'],
+                            "domain_deeplink": user['domain_deeplink'], 
                             'fingerprint': key['fingerprint'],
                             # 'inactive_status': key['inactive_status'],
                             # 'lifecycle_state': key['lifecycle_state'],

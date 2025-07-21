@@ -4156,6 +4156,7 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
+                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['id'],
                             'display_name': key['display_name'],
                             # 'inactive_status': key['inactive_status'],
@@ -4179,6 +4180,7 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
+                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['id'],
                             "description": key['description'],
                             # "inactive_status": key['inactive_status'],
@@ -4205,6 +4207,7 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
+                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['ocid'],
                             "description": key['description'],
                             # "expires-on": key['expires_on']

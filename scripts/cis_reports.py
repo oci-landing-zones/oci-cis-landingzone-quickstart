@@ -4156,9 +4156,9 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
-                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['id'],
                             'display_name': key['display_name'],
+                            "domain_deeplink": user['domain_deeplink'],
                             # 'inactive_status': key['inactive_status'],
                             # 'lifecycle_state': key['lifecycle_state'],
                             'time_created': key['time_created'],
@@ -4180,8 +4180,8 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
-                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['id'],
+                            "domain_deeplink": user['domain_deeplink'],
                             "description": key['description'],
                             # "inactive_status": key['inactive_status'],
                             # "lifecycle_state": key['lifecycle_state'],
@@ -4196,7 +4196,7 @@ class CIS_Report:
                     # CIS Total 1.10 Adding - Keys to CIS Total
                     self.cis_foundations_benchmark_3_0['1.10']['Total'].append(
                         key)
-    # CIS 1.11 Check - Old DB Password
+    # CIS 1.11  Check - Old DB Password
         #__iso_time_format1 = "%Y-%m-%dT%H:%M:%S.%fZ"
         for user in self.__users:
             if user['database_passwords']:
@@ -4207,8 +4207,8 @@ class CIS_Report:
                         finding = {
                             "user_name": user['name'],
                             "user_id": user['id'],
-                            "domain_deeplink": user['domain_deeplink'],
                             "id": key['ocid'],
+                            "domain_deeplink": user['domain_deeplink'],
                             "description": key['description'],
                             # "expires-on": key['expires_on']
                         }

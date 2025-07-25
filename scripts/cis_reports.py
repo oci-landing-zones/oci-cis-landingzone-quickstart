@@ -4183,7 +4183,7 @@ class CIS_Report:
                             "description": key['description'],
                             # "inactive_status": key['inactive_status'],
                             # "lifecycle_state": key['lifecycle_state'],
-                            # "time_created": key['time_created'],
+                            "time_created": key['time_created']
                             # "time_expires": key['time_expires'],
                             # "token": key['token']
                         }
@@ -4207,6 +4207,7 @@ class CIS_Report:
                             "user_id": user['id'],
                             "id": key['ocid'],
                             "description": key['description'],
+                            "time_created": key['time_created']
                             # "expires-on": key['expires_on']
                         }
 

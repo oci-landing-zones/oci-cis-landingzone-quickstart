@@ -2984,12 +2984,12 @@ class CIS_Report:
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                             else:
-                                record = record = oci.util.to_dict(adb)
+                                record = oci.util.to_dict(adb)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                         except Exception as e:
-                            record = record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                            record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
                             record['error'] = str(e)
                             self.__autonomous_databases.append(record)
 

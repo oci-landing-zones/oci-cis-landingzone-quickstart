@@ -5371,7 +5371,7 @@ class CIS_Report:
             summary_file_name = self.__print_to_json_file("cis", "summary_report", summary_report)
             summary_files.append(summary_file_name)
 
-        summary_file_name = self.__report_generate_html_summary_report("cis", "html_summary_report", summary_report)
+        summary_file_name = self.__report_generate_html_summary_report("cis", "summary_report", summary_report)
         summary_files.append(summary_file_name)
 
         if OUTPUT_DIAGRAMS:
@@ -5388,7 +5388,7 @@ class CIS_Report:
 
         for key, recommendation in self.cis_foundations_benchmark_3_0.items():
             if recommendation['Level'] <= level:
-                report_file_name = self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
+                report_file_name = self.__print_to_csv_file("cis", f"{recommendation['section']}_{recommendation['recommendation_#']}", recommendation['Findings'])
                 if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
@@ -6189,7 +6189,7 @@ class CIS_Report:
     ##########################################################################
     def __generate_csv_hyperlink(self, url, name):
         if len(url) < 255:
-            return '=HYPERLINK("' + url + '","' + name + '")'
+            return f'=HYPERLINK("{url}","{name}")'
         else:
             return url
 
@@ -6399,7 +6399,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:
@@ -6440,8 +6440,12 @@ def execute_report():
                     reader = csv.reader(f)
                     for r, row in enumerate(reader):
                         for c, col in enumerate(row):
-                            # Skipping the deep link due to formating errors in xlsx
-                            if "=HYPERLINK" not in col:
+                            # Format URL only if the column starts with "=HYPERLINK"
+                            if col.startswith("=HYPERLINK"):
+                                url_info = re.findall(r'"(.*?)"', col)
+                                if url_info and len(url_info[0]) < 2079:  # Excel Link limit
+                                    worksheet.write_url(r, c, url_info[0], string=url_info[1])
+                            else:
                                 worksheet.write(r, c, col)
                 worksheet.autofilter(0, 0, r - 1, c - 1)
                 worksheet.autofit()

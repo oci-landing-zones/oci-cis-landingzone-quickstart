@@ -2,6 +2,11 @@
 1. [Script Updates](#3-0-1-script-updates)
 1. [Script Fixes](#3-0-1-script-fixes)
 
+## <a name="#3-1-0-script-updates">Fixes</a>
+Updates:
+- Improved deeplink handling in XLSX workbook.
+- Improved deeplink URLs.
+
 ## <a name="#3-0-0-script-updates">Fixes</a>
 Updates:
 - Including user's Identity Domain deeplink in CIS checks 1.8 - 1.11

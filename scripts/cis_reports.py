@@ -1354,13 +1354,13 @@ class CIS_Report:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
                                                                           args={'attribute_sets' : ['default']})
                     for grp in groups_data:
-                        members = self.__identity_read_domains_group_members(domain_client=identity_domain['IdentityDomainClient'], group_ocid=grp.id)
-                        print(members)
-                        debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
+                        print("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
+                        members = self.__identity_read_domains_group_members(domain_client=identity_domain['IdentityDomainClient'], group_ocid=grp.id)
+                        print("\t__identity_read_groups_and_membership: Number or members: " + str(len(members)))
                         if members:
                             # For groups with members print one record per user per group
-                            for member in grp.members:
+                            for member in members:
                                 debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
                                 user_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + member.ocid
                                 group_record = {
@@ -1391,9 +1391,6 @@ class CIS_Report:
                             # Adding a record per empty group
                             self.__groups_to_users.append(group_record)
                 except Exception as e:
-                    if e.status == 400 and "more than the limit of 10,000 that can be returned" in str(e.args):
-                        print("Going to deal")
-
                     self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
                     print("__identity_read_groups_and_membership: error reading" + str(e))
                     RuntimeError(
@@ -1461,11 +1458,12 @@ class CIS_Report:
     ##########################################################################
     def __identity_read_domains_group_members(self, domain_client, group_ocid):
         members = []
-        print("__identity_read_domains_group_members: Initiating Group membership collection for Identity Domain Group ID: " + group_ocid)
+        debug("__identity_read_domains_group_members: Initiating Group membership collection for Identity Domain Group ID: " + group_ocid)
         filter = f'groups.value eq "{group_ocid}"'
         members += self.__identity_domains_get_all_results(func=domain_client.list_users,
                                                                             args={'filter' : filter})
-        print("__identity_read_domains_group_members: Collected total keys: " + str(len(members)))        
+        debug("__identity_read_domains_group_members: Collected total keys: " + str(len(members))) 
+        return members
     
     ##########################################################################
     # Identity Domains Helper function for pagination

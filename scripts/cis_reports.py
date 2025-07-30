@@ -1351,26 +1351,14 @@ class CIS_Report:
                 debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 try:
-                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, args={})
+                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
+                                                                          args={'attribute_sets' : ['default']})
                     for grp in groups_data:
+                        members = self.__identity_read_domains_group_members(domain_client=identity_domain['IdentityDomainClient'], group_ocid=grp.id)
+                        print(members)
                         debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
-                        grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.ocid
-                        if not grp.members:
-                            debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
-
-                            group_record = {
-                                "id": grp.ocid,
-                                "name": grp.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
-                                "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
-                                "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
-                                "time_created" : self.get_date_iso_format(grp.meta.created),
-                                "user_id": "",
-                                "user_id_link": ""
-                            }
-                            # Adding a record per empty group
-                            self.__groups_to_users.append(group_record)
-                        else:
+                        grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
+                        if members:
                             # For groups with members print one record per user per group
                             for member in grp.members:
                                 debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
@@ -1387,8 +1375,25 @@ class CIS_Report:
                                 }
                                 # Adding a record per user to group
                                 self.__groups_to_users.append(group_record)
+                        else:
+                            debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
 
+                            group_record = {
+                                "id": grp.ocid,
+                                "name": grp.display_name,
+                                "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
+                                "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
+                                "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
+                                "time_created" : self.get_date_iso_format(grp.meta.created),
+                                "user_id": "",
+                                "user_id_link": ""
+                            }
+                            # Adding a record per empty group
+                            self.__groups_to_users.append(group_record)
                 except Exception as e:
+                    if e.status == 400 and "more than the limit of 10,000 that can be returned" in str(e.args):
+                        print("Going to deal")
+
                     self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
                     print("__identity_read_groups_and_membership: error reading" + str(e))
                     RuntimeError(
@@ -1450,6 +1455,18 @@ class CIS_Report:
                 RuntimeError(
                     "Error in __identity_read_groups_and_membership" + str(e.args))
 
+    
+    ##########################################################################
+    # Identity Domains Helper function for pagination
+    ##########################################################################
+    def __identity_read_domains_group_members(self, domain_client, group_ocid):
+        members = []
+        print("__identity_read_domains_group_members: Initiating Group membership collection for Identity Domain Group ID: " + group_ocid)
+        filter = f'groups.value eq "{group_ocid}"'
+        members += self.__identity_domains_get_all_results(func=domain_client.list_users,
+                                                                            args={'filter' : filter})
+        print("__identity_read_domains_group_members: Collected total keys: " + str(len(members)))        
+    
     ##########################################################################
     # Identity Domains Helper function for pagination
     ##########################################################################

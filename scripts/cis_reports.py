@@ -1071,126 +1071,77 @@ class CIS_Report:
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
         self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
 
-    ##########################################################################
-    # Create regional config, signers adds appends them to self.__regions object
-    ##########################################################################
+##########################################################################
+# Create Client config
+##########################################################################
+    def __create_client(self, client, service_endpoint=None, key=None, proxy=None, connection_timeout=10, read_timeout=60):
+        # Create client with optional service endpoint
+        if service_endpoint:
+            created_client = client(
+                self.__config,
+                signer=self.__signer,
+                service_endpoint=service_endpoint,
+                timeout=(connection_timeout, read_timeout)
+            )
+        else:
+            created_client = client(
+                self.__config,
+                signer=self.__signer,
+                timeout=(connection_timeout, read_timeout)
+            )
+
+        # Add proxy if configured
+        if proxy:
+            created_client.base_client.session.proxies = {'https': proxy}
+
+        return created_client
+
+##########################################################################
+# Create regional config, signers and append them to self.__regions object 
+##########################################################################
     def __create_regional_signers(self, proxy):
         print("Creating regional signers and configs...")
         for region_key, region_values in self.__regions.items():
-            debug("processing __create_regional_signers")
-            # Creating regional configs and signers
-            region_signer = self.__signer
-            region_signer.region_name = region_key
-            region_config = self.__config
-            region_config['region'] = region_key
-
             try:
-                identity = oci.identity.IdentityClient(region_config, signer=region_signer)
-                debug("__create_regional_signers: reading config data " + str(self.__config))
-                if proxy:
-                    identity.base_client.session.proxies = {'https': proxy}
-                region_values['identity_client'] = identity
+                debug("processing __create_regional_signers")
 
-                audit = oci.audit.AuditClient(region_config, signer=region_signer)
-                if proxy:
-                    audit.base_client.session.proxies = {'https': proxy}
-                region_values['audit_client'] = audit
+                # Set regional config and signer
+                region_signer = self.__signer
+                region_signer.region_name = region_key
+                region_config = self.__config
+                region_config['region'] = region_key
 
-                cloud_guard = oci.cloud_guard.CloudGuardClient(region_config, signer=region_signer)
-                if proxy:
-                    cloud_guard.base_client.session.proxies = {'https': proxy}
-                region_values['cloud_guard_client'] = cloud_guard
+                region_values['identity_client'] = self.__create_client(oci.identity.IdentityClient, key="identity", proxy=proxy)
+                region_values['audit_client'] = self.__create_client(oci.audit.AuditClient, key="audit", proxy=proxy)
+                region_values['cloud_guard_client'] = self.__create_client(oci.cloud_guard.CloudGuardClient, key="cloud_guard", proxy=proxy)
+                region_values['search_client'] = self.__create_client(oci.resource_search.ResourceSearchClient, key="resource_search", proxy=proxy)
+                region_values['network_client'] = self.__create_client(oci.core.VirtualNetworkClient, key="vcn", proxy=proxy)
+                region_values['events_client'] = self.__create_client(oci.events.EventsClient, key="events", proxy=proxy)
+                region_values['logging_client'] = self.__create_client(oci.logging.LoggingManagementClient, key="logging", proxy=proxy)
+                region_values['os_client'] = self.__create_client(oci.object_storage.ObjectStorageClient, key="object_storage", proxy=proxy)
+                region_values['vault_client'] = self.__create_client(oci.key_management.KmsVaultClient, key="vault", proxy=proxy)
+                region_values['ons_subs_client'] = self.__create_client(oci.ons.NotificationDataPlaneClient, key="ons", proxy=proxy)
+                region_values['adb_client'] = self.__create_client(oci.database.DatabaseClient, key="adb", proxy=proxy)
+                region_values['oac_client'] = self.__create_client(oci.analytics.AnalyticsClient, key="oac", proxy=proxy)
+                region_values['oic_client'] = self.__create_client(oci.integration.IntegrationInstanceClient, key="oic", proxy=proxy)
+                region_values['bv_client'] = self.__create_client(oci.core.BlockstorageClient, key="blockstorage", proxy=proxy)
+                region_values['fss_client'] = self.__create_client(oci.file_storage.FileStorageClient, key="fss", proxy=proxy)
+                region_values['sch_client'] = self.__create_client(oci.sch.ServiceConnectorClient, key="sch", proxy=proxy)
+                region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
+                region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
+                region_values['logging_search_client'] = self.__create_client(oci.loggingsearch.LogSearchClient, key="log_search", proxy=proxy)
 
-                search = oci.resource_search.ResourceSearchClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['search_client'] = search
+                # Special case: Topology client with custom endpoint
+                topology_client = self.__create_client(oci.core.VirtualNetworkClient, key="topology")
+                if topology_client:
+                    topology_client.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
+                region_values['topology_client'] = topology_client
 
-                network = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
-                if proxy:
-                    network.base_client.session.proxies = {'https': proxy}
-                region_values['network_client'] = network
-
-                events = oci.events.EventsClient(region_config, signer=region_signer)
-                if proxy:
-                    events.base_client.session.proxies = {'https': proxy}
-                region_values['events_client'] = events
-
-                logging = oci.logging.LoggingManagementClient(region_config, signer=region_signer)
-                if proxy:
-                    logging.base_client.session.proxies = {'https': proxy}
-                region_values['logging_client'] = logging
-
-                os_client = oci.object_storage.ObjectStorageClient(region_config, signer=region_signer)
-                if proxy:
-                    os_client.base_client.session.proxies = {'https': proxy}
-                region_values['os_client'] = os_client
-
-                vault = oci.key_management.KmsVaultClient(region_config, signer=region_signer)
-                if proxy:
-                    vault.session.proxies = {'https': proxy}
-                region_values['vault_client'] = vault
-
-                ons_subs = oci.ons.NotificationDataPlaneClient(region_config, signer=region_signer)
-                if proxy:
-                    ons_subs.session.proxies = {'https': proxy}
-                region_values['ons_subs_client'] = ons_subs
-
-                adb = oci.database.DatabaseClient(region_config, signer=region_signer)
-                if proxy:
-                    adb.base_client.session.proxies = {'https': proxy}
-                region_values['adb_client'] = adb
-
-                oac = oci.analytics.AnalyticsClient(region_config, signer=region_signer)
-                if proxy:
-                    oac.base_client.session.proxies = {'https': proxy}
-                region_values['oac_client'] = oac
-
-                oic = oci.integration.IntegrationInstanceClient(region_config, signer=region_signer)
-                if proxy:
-                    oic.base_client.session.proxies = {'https': proxy}
-                region_values['oic_client'] = oic
-
-                bv = oci.core.BlockstorageClient(region_config, signer=region_signer)
-                if proxy:
-                    bv.base_client.session.proxies = {'https': proxy}
-                region_values['bv_client'] = bv
-
-                fss = oci.file_storage.FileStorageClient(region_config, signer=region_signer)
-                if proxy:
-                    fss.base_client.session.proxies = {'https': proxy}
-                region_values['fss_client'] = fss
-
-                sch = oci.sch.ServiceConnectorClient(region_config, signer=region_signer)
-                if proxy:
-                    sch.base_client.session.proxies = {'https': proxy}
-                region_values['sch_client'] = sch
-
-                topology = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
-                if proxy:
-                    topology.base_client.session.proxies = {'https': proxy}
-                topology.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
-                region_values['topology_client'] = topology
-
-                instance = oci.core.ComputeClient(region_config, signer=region_signer)
-                if proxy:
-                    instance.base_client.session.proxies = {'https': proxy}
-                region_values['instance'] = instance
-
-                certificate_client = oci.certificates_management.CertificatesManagementClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['certificate_client'] = certificate_client 
-                
-                logging_search_client = oci.loggingsearch.LogSearchClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['logging_search_client'] = logging_search_client 
-            
             except Exception as e:
-                debug("__create_regional_signers: error reading" + str(self.__config))
-                self.__errors.append({"id" : "__create_regional_signers", "error" : str(e)})
+                debug("__create_regional_signers: error reading " + str(self.__config))
+                self.__errors.append({"id": "__create_regional_signers", "error": str(e)})
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
+    
 
     ##########################################################################
     # Check for Managed PaaS Compartment

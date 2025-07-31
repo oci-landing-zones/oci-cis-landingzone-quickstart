@@ -1460,10 +1460,17 @@ class CIS_Report:
         members = []
         debug("__identity_read_domains_group_members: Initiating Group membership collection for Identity Domain Group ID: " + group_ocid)
         filter = f'groups.value eq "{group_ocid}"'
-        members += self.__identity_domains_get_all_results(func=domain_client.list_users,
-                                                                            args={'filter' : filter})
-        debug("__identity_read_domains_group_members: Collected total keys: " + str(len(members))) 
-        return members
+        try:
+            members += self.__identity_domains_get_all_results(func=domain_client.list_users,
+                                                                        args={'filter' : filter})
+            debug("__identity_read_domains_group_members: Collected total keys: " + str(len(members))) 
+        
+            return members
+        except Exception as e:
+            self.__errors.append({"id" : f"__identity_read_groups_and_membership: {group_ocid}", "error" : str(e)})
+            print(f"__identity_read_groups_and_membership: {group_ocid}\n \t{str(e)}")
+            return members
+
     
     ##########################################################################
     # Identity Domains Helper function for pagination

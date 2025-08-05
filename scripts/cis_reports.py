@@ -2931,15 +2931,18 @@ class CIS_Report:
                             if adb.lifecycle_state not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                                 record = oci.util.to_dict(adb)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['region'] = region_key
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                             else:
                                 record = oci.util.to_dict(adb)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['region'] = region_key
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                         except Exception as e:
                             record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                            record['region'] = region_key
                             record['error'] = str(e)
                             self.__autonomous_databases.append(record)
 

@@ -127,11 +127,10 @@ class CIS_Report:
     str_local_user_time_max_datetime = local_user_time_max_datetime.strftime(__iso_time_format)
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
-
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,\
-                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, \
-                    redact_output, oci_url=None, debug=False, all_resources=True, \
-                        disable_api_keys=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
+                 report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
+                 redact_output, oci_url=None, debug=False, all_resources=True,
+                 disable_api_keys=False):
 
         # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = {
@@ -896,8 +895,8 @@ class CIS_Report:
         else:
             self.__print_to_screen = False
 
-        ## By Default debugging is disabled by default
-        global DEBUG 
+        # By Default debugging is disabled by default
+        global DEBUG
         DEBUG = debug
 
         # creating list of regions to run
@@ -1821,7 +1820,7 @@ class CIS_Report:
                     debug("__identity_read_user_database_password: Got Password")
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
-                    record['deep_link'] = deep_link
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name'])
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     database_password.append(record)
 
@@ -2428,10 +2427,10 @@ class CIS_Report:
                 for vcn in vcn_data:
                     deep_link = self.__oci_networking_uri + vcn.identifier + '?region=' + region_key
                     record = oci.util.to_dict(vcn)
-                    record['deep_link'] = deep_link
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['display_name'])
                     record['subnets'] = {} 
                     record['network_security_groups'] = {}
-                    record['security_lists'] = {} 
+                    record['security_lists'] = {}
                     # Adding VCN to VCN list
                     self.__network_vcns[vcn.identifier] = record
 
@@ -2457,8 +2456,8 @@ class CIS_Report:
                 for filter in capturefilter_data:
                     deep_link = self.__oci_network_capturefilter_uri + filter.identifier + '?region=' + region_key
                     record = oci.util.to_dict(filter)
-                    record['deep_link'] = deep_link
-                    
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['display_name'])
+
                     # Adding CaptureFilter to CaptureFilter Dict   
                     self.__network_capturefilters[filter.identifier] = record
 
@@ -3356,7 +3355,7 @@ class CIS_Report:
                     if key.identifier != self.__vaults[key.additional_details['vaultId']]['wrapping_key_id']:
                         deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
                         key_record = oci.util.to_dict(key)
-                        key_record['deep_link'] = deep_link
+                        key_record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key_record['display_name'])
                         try:
                             if self.__vaults[key.additional_details['vaultId']]['kms_client']:
                                 debug("\t__kms_read_keys: Getting Key version : " + str(key.additional_details['vaultId']))
@@ -6139,7 +6138,7 @@ class CIS_Report:
     # Create CSV Hyperlink
     ##########################################################################
     def __generate_csv_hyperlink(self, url, name):
-        if len(url) < 255:
+        if len(url) < 2079:  # Excel limit
             return f'=HYPERLINK("{url}","{name}")'
         else:
             return url

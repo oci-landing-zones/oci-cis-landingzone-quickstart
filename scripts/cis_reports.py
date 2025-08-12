@@ -4185,9 +4185,7 @@ class CIS_Report:
         # CIS 1.13 Check - This check is complete uses email verification
         # Iterating through all users to see if they have API Keys and if they are active users
         for user in self.__users:
-            if user['is_federated'] and user['lifecycle_state']:
-                continue
-            elif user['external_identifier'] is None and user['lifecycle_state'] and not (user['email_verified']):
+            if not (user['is_federated'] and user['lifecycle_state']) and user['external_identifier'] is None and user['lifecycle_state'] and not user['email_verified']:
                 self.cis_foundations_benchmark_3_0['1.13']['Status'] = False
                 self.cis_foundations_benchmark_3_0['1.13']['Findings'].append(
                     user)

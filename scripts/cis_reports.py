@@ -1129,6 +1129,7 @@ class CIS_Report:
                 region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
                 region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
                 region_values['logging_search_client'] = self.__create_client(oci.loggingsearch.LogSearchClient, key="log_search", proxy=proxy)
+                region_values['limits_client'] = self.__create_client(oci.limits.LimitsClient, key="log_search", proxy=proxy)
 
                 # Special case: Topology client with custom endpoint
                 topology_client = self.__create_client(oci.core.VirtualNetworkClient, key="topology")
@@ -3882,6 +3883,116 @@ class CIS_Report:
         print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
     
     ##########################################################################
+    # Query Services Limits
+    ##########################################################################  
+    def __service_limits_utilization(self):
+        debug("__service_limits_utilization: Starting")
+        
+        service_limit_name_limit_value_mapping = {}
+        
+        def regional_service_limits(oci_region):
+
+            thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+                    
+            for oci_service in oci_services:
+                
+                thread_pool.submit(service_limit_values, oci_service.name, oci_region)
+
+            thread_pool.shutdown(wait=True)
+        def service_limit_values(service_name, oci_region):
+
+            oci_service_limit_values = oci.pagination.list_call_get_all_results(
+                self.__regions[oci_region]['limits_client'].list_limit_values,
+                self.__tenancy.id, service_name).data
+            print("service_limit_values-" * 5)
+            print(oci_service_limit_values)
+            print("service_limit_values-" * 5)
+            service_limit_name_limit_value_mapping[oci_region][service_name] = oci_service_limit_values
+        
+        def utilization_function(oci_region, service_name, limit_name, compartment_ocid, availability_domain):
+
+                try:
+
+                    oci_resource_availability = self.__regions[oci_region]['limits_client'].get_resource_availability(
+                        service_name=service_name,
+                        limit_name=limit_name,
+                        compartment_id=compartment_ocid,
+                        availability_domain=availability_domain).data
+                        
+                except Exception as e:
+                    
+                    print(oci_region, service_name, limit_name, compartment_ocid, availability_domain)
+                    print(e)
+
+                else:
+                
+                    if oci_resource_availability.available:
+
+                        total = oci_resource_availability.available + oci_resource_availability.used
+                        service_limit_availability = oci_resource_availability.available / total
+                        
+                        if service_limit_availability <= .20:
+
+                            if oci_region not in self.regional_limits_dict:
+                                self.regional_limits_dict[oci_region] = [[service_name.upper(), limit_name.upper(), round(100 - (service_limit_availability*100), 1)]]
+
+                            else:
+                                self.regional_limits_dict[oci_region].append([service_name.upper(), limit_name.upper(), round(100 - (service_limit_availability*100), 1)])
+
+        def service_limit_function(region_name, service_names):
+
+            main_thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+
+            for service_name in service_names:
+
+                regional_service_list = service_limit_name_limit_value_mapping[region_name][service_name]
+
+                for service_limit in regional_service_list:
+
+                    main_thread_pool.submit(utilization_function, region_name, service_name, service_limit.name, self.__tenancy.id, service_limit.availability_domain)
+
+            main_thread_pool.shutdown(wait=True)
+
+
+        try:
+            oci_services = oci.pagination.list_call_get_all_results(
+                self.__regions[self.__home_region]['limits_client'].list_services,
+                    compartment_id=self.__tenancy.id).data
+                        
+        except Exception as e:
+            self.__errors.append({"id": "__service_limits_utilization", \
+                          "error" : str(e)})
+            raise RuntimeError(
+                "Error in __service_limits_utilization " + str(e))
+        
+        for region_key in self.__regions.keys():
+
+            regional_services={}
+
+            for oci_service in oci_services:
+                
+                regional_services[oci_service.name]=None
+                        
+            service_limit_name_limit_value_mapping[region_key] = regional_services
+
+        regional_limit_threadpool = concurrent.futures.ThreadPoolExecutor(max_workers=len(self.__regions))
+        service_limit_threadpool = concurrent.futures.ThreadPoolExecutor(max_workers=len(self.__regions))
+        
+        for region_key in self.__regions.keys():
+
+            # Get all OCI services
+            regional_limit_threadpool.submit(regional_service_limits, region_key)
+
+        regional_limit_threadpool.shutdown(wait=True)
+
+        for region_name, service_names in service_limit_name_limit_value_mapping.items():
+            service_limit_threadpool.submit(service_limit_function, region_name, service_names)
+
+        service_limit_threadpool.shutdown(wait=True)
+
+        print(service_limit_name_limit_value_mapping)
+
+    ##########################################################################
     # Unifying Network information into a single object for easier processing
     ##########################################################################
     def __unify_network_data(self):
@@ -5851,8 +5962,9 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__network_topology_dump,
-                self.__search_resources_all_resources_in_tenancy
+                # self.__network_topology_dump,
+                self.__search_resources_all_resources_in_tenancy,
+                self.__service_limits_utilization
             ]
         else:
             all_resources = []

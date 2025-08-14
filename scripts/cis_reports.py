@@ -26,7 +26,6 @@ from threading import Thread
 import hashlib
 import re
 import requests
-import pickle
 
 try:
     from xlsxwriter.workbook import Workbook

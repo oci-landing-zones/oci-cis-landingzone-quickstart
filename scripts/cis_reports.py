@@ -423,7 +423,7 @@ class CIS_Report:
                 "Description": "Using default tags is a way to ensure all resources that support tags are tagged during creation. Tags can be based on static values or based on computed values. It is recommended to setup default tags early on to ensure all created resources will get tagged.\nTags are scoped to Compartments and are inherited by Child Compartments. The recommendation is to create default tags like “CreatedBy” at the Root Compartment level to ensure all resources get tagged.\nWhen using Tags it is important to ensure that Tag Namespaces are protected by IAM Policies otherwise this will allow users to change tags or tag values.\nDepending on the age of the OCI Tenancy there may already be Tag defaults setup at the Root Level and no need for further action to implement this action.",
                 "Rationale": "In the case of an incident having default tags like “CreatedBy” applied will provide info on who created the resource without having to search the Audit logs.",
                 "Impact": "There is no performance impact when enabling the above described features",
-                "Remediation": "Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of \"${iam.principal.names}\" and a Tag Key Status of Active. Also create a Tag key definition by providing a Tag Key, Description and selecting 'Static Value' for Tag Value Type.",
+                "Remediation": "Update the root compartments tag default link.In the Tag Defaults table verify that there is a Tag with a value of \"${iam.principal.name}\" and a Tag Key Status of Active. Also create a Tag key definition by providing a Tag Key, Description and selecting 'Static Value' for Tag Value Type.",
                 "Recommendation": "",
                 "Observation": "default tags are used on resources."
             },
@@ -5349,8 +5349,10 @@ class CIS_Report:
     ##########################################################################
     # Generate summary diagrams
     ##########################################################################
-    diagram_colors = ['#4C825C','#C74634']
+    diagram_colors = ['#4C825C', '#C74634']
     diagram_values = ['Compliant', 'Non-compliant']
+    diagram_colors_na = ['#4C825C', '#C74634', '#E0DEDE']
+    diagram_values_na = ['Compliant', 'Non-compliant', 'Not applicable']
     diagram_sections = (
         'Identity and Access Management',
         'Networking',
@@ -5365,17 +5367,22 @@ class CIS_Report:
     ##########################################################################
     # __cis_compliance
     ##########################################################################
-    def __cis_compliance(self, filename, title, values=None):
+    def __cis_compliance(self, filename, title, values=None, has_na_values=False):
         plt.close('all')
-        plt.figure(figsize=(6,5))
-        wegdes, labels, pcttexts = plt.pie(values, labels=self.diagram_values, colors=self.diagram_colors, autopct='%.0f%%', wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'}, startangle=90, counterclock=False, radius=1.1)
+        plt.figure(figsize=(6, 5))
+        labels = self.diagram_values
+        colors = self.diagram_colors
+        if has_na_values:
+            labels = self.diagram_values_na
+            colors = self.diagram_colors_na
+        wegdes, labels, pcttexts = plt.pie(values, labels=labels, colors=colors, autopct='%.0f%%', wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'}, startangle=90, counterclock=False, radius=1.1)
         for t in labels:
             t.set_fontweight(self.diagram_fontweight)
         for p in pcttexts:
             p.set_fontweight(self.diagram_fontweight)
             p.set_color(self.diagram_fontcolor_reverse)
         plt.title(title, fontweight=self.diagram_fontweight, pad=30.0)
-        plt.savefig(filename)
+        plt.savefig(filename, transparent=True)
 
     ##########################################################################
     # __cis_compliance_by_area
@@ -5383,7 +5390,7 @@ class CIS_Report:
     def __cis_compliance_by_area(self, filename, title, section_values=None):
         plt.close('all')
         height = 0.4
-        fig, ax = plt.subplots(figsize=(10,5), layout='compressed')
+        fig, ax = plt.subplots(figsize=(10, 5), layout='compressed')
         y = np.arange(len(self.diagram_sections))
         p = ax.barh(y - height/2, section_values[self.diagram_values[0]], height, color=self.diagram_colors[0])
         ax.bar_label(p, padding=-16, color=self.diagram_fontcolor_reverse, fontweight=self.diagram_fontweight)
@@ -5395,7 +5402,7 @@ class CIS_Report:
         ax.set_yticklabels(self.diagram_sections, fontweight=self.diagram_fontweight)
         ax.invert_yaxis()
         plt.tick_params(left=False, right=False, labelbottom=False, bottom=False)
-        plt.savefig(filename)
+        plt.savefig(filename, transparent=True)
 
     ##########################################################################
     # __generate_compliance_diagram
@@ -5403,13 +5410,16 @@ class CIS_Report:
     def __generate_compliance_diagram(self, header, file_subject, data):
         compliant = 0
         non_compliant = 0
+        not_applicable = 0
         for finding in data:
             if finding['Compliant'] == 'Yes':
                 compliant += 1
+            elif finding['Compliant'] == 'N/A':
+                not_applicable += 1
             else:
                 non_compliant += 1
         cis_compliance_file = self.__get_output_file_path(header, file_subject, '.png')
-        self.__cis_compliance(cis_compliance_file, 'CIS Recommendation Compliance', [compliant, non_compliant])
+        self.__cis_compliance(cis_compliance_file, 'CIS Recommendation Compliance', [compliant, non_compliant, not_applicable] if not_applicable > 0 else [compliant, non_compliant], has_na_values=True if not_applicable > 0 else False)
         return cis_compliance_file
 
     ##########################################################################
@@ -5421,10 +5431,13 @@ class CIS_Report:
         for section in self.diagram_sections:
             compliant = 0
             non_compliant = 0
+            not_applicable = 0
             for finding in data:
                 if section in finding['Section']:
                     if finding['Compliant'] == 'Yes':
                         compliant += 1
+                    elif finding['Compliant'] == 'N/A':
+                        not_applicable += 1
                     else:
                         non_compliant += 1
             compliants.append(compliant)
@@ -5505,12 +5518,18 @@ class CIS_Report:
                  .u30brand{height:50px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:1344px;padding:0 48px;margin:0 auto}
                  .u30brandw1{display:flex;flex-direction:row;color:#fff;text-decoration:none;align-items:center} @media (max-width:1024px){.u30brand{padding:0 24px}}
                  #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl} #td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
-                <section id=\"u30\" class=\"u30 u30v3 pause\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section><section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
+                <section id=\"u30\" class=\"u30 u30v3 pause\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section>
+                <section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
                 html_file.write(f'<h2 id="table_top">{html_title.replace("-", "&ndash;")}</h2>')
+                html_file.write("""
+                </div></section>
+                <section class="cb132 cb132v0 cpad"><div style="height: 8px;background-image: url('data:image/png;base64,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');background-position: 0 50%; background-repeat: repeat-x"></div></section>
+                <section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">
+                """)
                 html_file.write(f'<h4>Tenancy Name: {self.__tenancy.name}</h4>')
                 # Get the extract date
                 r = result[0]
-                extract_date = r['extract_date'].replace('T',' ')
+                extract_date = r['extract_date'].replace('T', ' ')
                 html_file.write(f'<h5>Extract Date: {extract_date} UTC</h5>')
                 html_file.write('</div></section>')
                 if OUTPUT_DIAGRAMS:
@@ -5549,7 +5568,7 @@ class CIS_Report:
                         column_width = '63%'
                     html_file.write(f'<th class="otable-col-head" style=" width:{column_width};">{th}</th>')
                 html_file.write('</tr></thead><tbody>')
-                # Creating HTML Table of the summary report
+                # Creating the compliant HTML Table of the summary report
                 html_appendix = []
                 for row in result:
                     compliant = row['Compliant']
@@ -5581,7 +5600,7 @@ class CIS_Report:
                     html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
                     html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    cis_v8 = str(row["CIS v8"]).replace("[","").replace("]","").replace("'","")
+                    cis_v8 = str(row["CIS v8"]).replace("[", "").replace("]", "").replace("'", "")
                     html_file.write(f'<td>{cis_v8}</td>')
                     html_file.write(f'<td>{str(row["CCCS Guard Rail"])}</td>')
                     v = str(row['Filename'])
@@ -5616,11 +5635,11 @@ class CIS_Report:
                         column_width = '63%'
                     html_file.write(f'<th class="otable-col-head" style=" width:{column_width};">{th}</th>')
                 html_file.write('</tr></thead><tbody>')
-                # Creating HTML Table of the summary report
+                # Creating the non-compliant HTML Table of the summary report
                 html_appendix = []
                 for row in result:
                     compliant = row['Compliant']
-                    if compliant == 'Yes':
+                    if compliant != 'No':
                         continue
                     html_appendix.append(row['Recommendation #'])
                     text_color = 'red'
@@ -5702,7 +5721,7 @@ class CIS_Report:
                 <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">""")
                 html_file.write(f'<ul class="u10-links"><li></li><li><a target="_blank" href="https://www.oracle.com/legal/copyright.html">© {report_year} Oracle</a></li></ul></nav></div></div></div></body></html>\n')
 
-            print("HTML: " + file_subject.ljust(22) + " --> " + file_path)
+            print(f"HTML: {file_subject.ljust(22)} --> {file_path}")
             # Used by Upload
 
             return file_path
@@ -6022,6 +6041,8 @@ class CIS_Report:
                 writer.writeheader()
 
                 for row in result:
+                    if 'rules' in row:
+                        row['rules'] = str(row['rules']).replace('\n', '')
                     writer.writerow(row)
                     # print(row)
 

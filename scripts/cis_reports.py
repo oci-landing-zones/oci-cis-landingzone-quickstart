@@ -42,9 +42,9 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-RELEASE_VERSION = "3.0.1"
+RELEASE_VERSION = "3.1.0"
 PYTHON_SDK_VERSION = "2.152.1"
-UPDATED_DATE = "July 16, 2025"
+UPDATED_DATE = "August XX, 2025"
 
 
 ##########################################################################
@@ -127,11 +127,10 @@ class CIS_Report:
     str_local_user_time_max_datetime = local_user_time_max_datetime.strftime(__iso_time_format)
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
-
-    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,\
-                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp, \
-                    redact_output, oci_url=None, debug=False, all_resources=True, \
-                        disable_api_keys=False):
+    def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
+                 report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
+                 redact_output, oci_url=None, debug=False, all_resources=True,
+                 disable_api_keys=False):
 
         # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = {
@@ -896,8 +895,8 @@ class CIS_Report:
         else:
             self.__print_to_screen = False
 
-        ## By Default debugging is disabled by default
-        global DEBUG 
+        # By Default debugging is disabled by default
+        global DEBUG
         DEBUG = debug
 
         # creating list of regions to run
@@ -1071,126 +1070,77 @@ class CIS_Report:
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
         self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
 
-    ##########################################################################
-    # Create regional config, signers adds appends them to self.__regions object
-    ##########################################################################
+##########################################################################
+# Create Client config
+##########################################################################
+    def __create_client(self, client, service_endpoint=None, key=None, proxy=None, connection_timeout=10, read_timeout=60):
+        # Create client with optional service endpoint
+        if service_endpoint:
+            created_client = client(
+                self.__config,
+                signer=self.__signer,
+                service_endpoint=service_endpoint,
+                timeout=(connection_timeout, read_timeout)
+            )
+        else:
+            created_client = client(
+                self.__config,
+                signer=self.__signer,
+                timeout=(connection_timeout, read_timeout)
+            )
+
+        # Add proxy if configured
+        if proxy:
+            created_client.base_client.session.proxies = {'https': proxy}
+
+        return created_client
+
+##########################################################################
+# Create regional config, signers and append them to self.__regions object 
+##########################################################################
     def __create_regional_signers(self, proxy):
         print("Creating regional signers and configs...")
         for region_key, region_values in self.__regions.items():
-            debug("processing __create_regional_signers")
-            # Creating regional configs and signers
-            region_signer = self.__signer
-            region_signer.region_name = region_key
-            region_config = self.__config
-            region_config['region'] = region_key
-
             try:
-                identity = oci.identity.IdentityClient(region_config, signer=region_signer)
-                debug("__create_regional_signers: reading config data " + str(self.__config))
-                if proxy:
-                    identity.base_client.session.proxies = {'https': proxy}
-                region_values['identity_client'] = identity
+                debug("processing __create_regional_signers")
 
-                audit = oci.audit.AuditClient(region_config, signer=region_signer)
-                if proxy:
-                    audit.base_client.session.proxies = {'https': proxy}
-                region_values['audit_client'] = audit
+                # Set regional config and signer
+                region_signer = self.__signer
+                region_signer.region_name = region_key
+                region_config = self.__config
+                region_config['region'] = region_key
 
-                cloud_guard = oci.cloud_guard.CloudGuardClient(region_config, signer=region_signer)
-                if proxy:
-                    cloud_guard.base_client.session.proxies = {'https': proxy}
-                region_values['cloud_guard_client'] = cloud_guard
+                region_values['identity_client'] = self.__create_client(oci.identity.IdentityClient, key="identity", proxy=proxy)
+                region_values['audit_client'] = self.__create_client(oci.audit.AuditClient, key="audit", proxy=proxy)
+                region_values['cloud_guard_client'] = self.__create_client(oci.cloud_guard.CloudGuardClient, key="cloud_guard", proxy=proxy)
+                region_values['search_client'] = self.__create_client(oci.resource_search.ResourceSearchClient, key="resource_search", proxy=proxy)
+                region_values['network_client'] = self.__create_client(oci.core.VirtualNetworkClient, key="vcn", proxy=proxy)
+                region_values['events_client'] = self.__create_client(oci.events.EventsClient, key="events", proxy=proxy)
+                region_values['logging_client'] = self.__create_client(oci.logging.LoggingManagementClient, key="logging", proxy=proxy)
+                region_values['os_client'] = self.__create_client(oci.object_storage.ObjectStorageClient, key="object_storage", proxy=proxy)
+                region_values['vault_client'] = self.__create_client(oci.key_management.KmsVaultClient, key="vault", proxy=proxy)
+                region_values['ons_subs_client'] = self.__create_client(oci.ons.NotificationDataPlaneClient, key="ons", proxy=proxy)
+                region_values['adb_client'] = self.__create_client(oci.database.DatabaseClient, key="adb", proxy=proxy)
+                region_values['oac_client'] = self.__create_client(oci.analytics.AnalyticsClient, key="oac", proxy=proxy)
+                region_values['oic_client'] = self.__create_client(oci.integration.IntegrationInstanceClient, key="oic", proxy=proxy)
+                region_values['bv_client'] = self.__create_client(oci.core.BlockstorageClient, key="blockstorage", proxy=proxy)
+                region_values['fss_client'] = self.__create_client(oci.file_storage.FileStorageClient, key="fss", proxy=proxy)
+                region_values['sch_client'] = self.__create_client(oci.sch.ServiceConnectorClient, key="sch", proxy=proxy)
+                region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
+                region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
+                region_values['logging_search_client'] = self.__create_client(oci.loggingsearch.LogSearchClient, key="log_search", proxy=proxy)
 
-                search = oci.resource_search.ResourceSearchClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['search_client'] = search
+                # Special case: Topology client with custom endpoint
+                topology_client = self.__create_client(oci.core.VirtualNetworkClient, key="topology")
+                if topology_client:
+                    topology_client.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
+                region_values['topology_client'] = topology_client
 
-                network = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
-                if proxy:
-                    network.base_client.session.proxies = {'https': proxy}
-                region_values['network_client'] = network
-
-                events = oci.events.EventsClient(region_config, signer=region_signer)
-                if proxy:
-                    events.base_client.session.proxies = {'https': proxy}
-                region_values['events_client'] = events
-
-                logging = oci.logging.LoggingManagementClient(region_config, signer=region_signer)
-                if proxy:
-                    logging.base_client.session.proxies = {'https': proxy}
-                region_values['logging_client'] = logging
-
-                os_client = oci.object_storage.ObjectStorageClient(region_config, signer=region_signer)
-                if proxy:
-                    os_client.base_client.session.proxies = {'https': proxy}
-                region_values['os_client'] = os_client
-
-                vault = oci.key_management.KmsVaultClient(region_config, signer=region_signer)
-                if proxy:
-                    vault.session.proxies = {'https': proxy}
-                region_values['vault_client'] = vault
-
-                ons_subs = oci.ons.NotificationDataPlaneClient(region_config, signer=region_signer)
-                if proxy:
-                    ons_subs.session.proxies = {'https': proxy}
-                region_values['ons_subs_client'] = ons_subs
-
-                adb = oci.database.DatabaseClient(region_config, signer=region_signer)
-                if proxy:
-                    adb.base_client.session.proxies = {'https': proxy}
-                region_values['adb_client'] = adb
-
-                oac = oci.analytics.AnalyticsClient(region_config, signer=region_signer)
-                if proxy:
-                    oac.base_client.session.proxies = {'https': proxy}
-                region_values['oac_client'] = oac
-
-                oic = oci.integration.IntegrationInstanceClient(region_config, signer=region_signer)
-                if proxy:
-                    oic.base_client.session.proxies = {'https': proxy}
-                region_values['oic_client'] = oic
-
-                bv = oci.core.BlockstorageClient(region_config, signer=region_signer)
-                if proxy:
-                    bv.base_client.session.proxies = {'https': proxy}
-                region_values['bv_client'] = bv
-
-                fss = oci.file_storage.FileStorageClient(region_config, signer=region_signer)
-                if proxy:
-                    fss.base_client.session.proxies = {'https': proxy}
-                region_values['fss_client'] = fss
-
-                sch = oci.sch.ServiceConnectorClient(region_config, signer=region_signer)
-                if proxy:
-                    sch.base_client.session.proxies = {'https': proxy}
-                region_values['sch_client'] = sch
-
-                topology = oci.core.VirtualNetworkClient(region_config, signer=region_signer)
-                if proxy:
-                    topology.base_client.session.proxies = {'https': proxy}
-                topology.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
-                region_values['topology_client'] = topology
-
-                instance = oci.core.ComputeClient(region_config, signer=region_signer)
-                if proxy:
-                    instance.base_client.session.proxies = {'https': proxy}
-                region_values['instance'] = instance
-
-                certificate_client = oci.certificates_management.CertificatesManagementClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['certificate_client'] = certificate_client 
-                
-                logging_search_client = oci.loggingsearch.LogSearchClient(region_config, signer=region_signer)
-                if proxy:
-                    search.base_client.session.proxies = {'https': proxy}
-                region_values['logging_search_client'] = logging_search_client 
-            
             except Exception as e:
-                debug("__create_regional_signers: error reading" + str(self.__config))
-                self.__errors.append({"id" : "__create_regional_signers", "error" : str(e)})
+                debug("__create_regional_signers: error reading " + str(self.__config))
+                self.__errors.append({"id": "__create_regional_signers", "error": str(e)})
                 raise RuntimeError("Failed to create regional clients for data collection: " + str(e))
+    
 
     ##########################################################################
     # Check for Managed PaaS Compartment
@@ -1870,7 +1820,7 @@ class CIS_Report:
                     debug("__identity_read_user_database_password: Got Password")
                     deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
                     record = oci.util.to_dict(password)
-                    record['deep_link'] = deep_link
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name'])
                     record['time_created'] = self.get_date_iso_format(record['meta']['created'])
                     database_password.append(record)
 
@@ -2477,10 +2427,10 @@ class CIS_Report:
                 for vcn in vcn_data:
                     deep_link = self.__oci_networking_uri + vcn.identifier + '?region=' + region_key
                     record = oci.util.to_dict(vcn)
-                    record['deep_link'] = deep_link
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['display_name'])
                     record['subnets'] = {} 
                     record['network_security_groups'] = {}
-                    record['security_lists'] = {} 
+                    record['security_lists'] = {}
                     # Adding VCN to VCN list
                     self.__network_vcns[vcn.identifier] = record
 
@@ -2506,8 +2456,8 @@ class CIS_Report:
                 for filter in capturefilter_data:
                     deep_link = self.__oci_network_capturefilter_uri + filter.identifier + '?region=' + region_key
                     record = oci.util.to_dict(filter)
-                    record['deep_link'] = deep_link
-                    
+                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['display_name'])
+
                     # Adding CaptureFilter to CaptureFilter Dict   
                     self.__network_capturefilters[filter.identifier] = record
 
@@ -2981,15 +2931,18 @@ class CIS_Report:
                             if adb.lifecycle_state not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                                 record = oci.util.to_dict(adb)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['region'] = region_key
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                             else:
-                                record = record = oci.util.to_dict(adb)
+                                record = oci.util.to_dict(adb)
                                 record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                                record['region'] = region_key
                                 record['error'] = ""
                                 self.__autonomous_databases.append(record)
                         except Exception as e:
-                            record = record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                            record['deep_link'] = self.__generate_csv_hyperlink(deep_link, adb.display_name)
+                            record['region'] = region_key
                             record['error'] = str(e)
                             self.__autonomous_databases.append(record)
 
@@ -3405,7 +3358,7 @@ class CIS_Report:
                     if key.identifier != self.__vaults[key.additional_details['vaultId']]['wrapping_key_id']:
                         deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
                         key_record = oci.util.to_dict(key)
-                        key_record['deep_link'] = deep_link
+                        key_record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key_record['display_name'])
                         try:
                             if self.__vaults[key.additional_details['vaultId']]['kms_client']:
                                 debug("\t__kms_read_keys: Getting Key version : " + str(key.additional_details['vaultId']))
@@ -3947,18 +3900,26 @@ class CIS_Report:
     # Analyzes Tenancy Data for CIS Report
     ##########################################################################
     def __report_cis_analyze_tenancy_data(self):
-
         self.__cis_regional_findings_data = {}
-
         for check in self.__cis_regional_checks:
             self.__cis_regional_findings_data[check] = {}
             for region_key, region_values in self.__regions.items():
                 self.__cis_regional_findings_data[check][region_key] = None
 
+        self.__cis_check_iam_policies()
+        self.__cis_check_password_policies()
+        self.__cis_check_users()
+        self.__cis_check_dynamic_groups()
+        self.__cis_check_network_security()
+        self.__cis_check_compute_instances()
+        self.__cis_check_tagging_and_monitoring()
+        self.__cis_check_storage()
+        self.__cis_check_assets()
 
-      
+
+    def __cis_check_iam_policies(self):
+        
         # 1.1 Check - Checking for policy statements that are not restricted to a service
-
         for policy in self.__policies:
             for statement in policy['statements']:
                 if "allow group".upper() in statement.upper() \
@@ -4005,6 +3966,42 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['1.2']['Total'] = self.__policies
         self.cis_foundations_benchmark_3_0['1.3']['Total'] = self.__policies
 
+        # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
+        # Iterating through all policies
+        for policy in self.__policies:
+            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
+                for statement in policy['statements']:
+                    for resource in self.cis_iam_checks['1.15']:
+                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
+                            split_statement = statement.split("where")
+                            if len(split_statement) == 2:
+                                clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
+                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 no permissions to delete storage: " + str(policy['name']))
+                                    pass
+                                # Checking if this is the Storage admin with allowed 
+                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
+                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
+                                    pass
+                                else:
+                                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
+
+                            else:
+                                self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+
+        if self.cis_foundations_benchmark_3_0['1.15']['Findings']:
+            self.cis_foundations_benchmark_3_0['1.15']['Status'] = False
+        else:
+            self.cis_foundations_benchmark_3_0['1.15']['Status'] = True
+
+        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
+        self.cis_foundations_benchmark_3_0['1.15']['Total'] = self.__policies
+
+
+    def __cis_check_password_policies(self):
         # 1.4 Check - Password Policy - Only in home region
         if not(self.__identity_domains_enabled) and self.__tenancy_password_policy:
             if self.__tenancy_password_policy.password_policy.minimum_password_length >= 14:
@@ -4069,6 +4066,7 @@ class CIS_Report:
             self.cis_foundations_benchmark_3_0['1.5']['Total'] = self.__identity_domains
             self.cis_foundations_benchmark_3_0['1.6']['Total'] = self.__identity_domains
 
+    def __cis_check_users(self):
         # 1.7 Check - Local Users w/o MFA
         for user in self.__users:
             if not(user['is_federated']) and user['can_use_console_password'] and not (user['is_mfa_activated']) and  user['lifecycle_state']:
@@ -4089,6 +4087,7 @@ class CIS_Report:
                             "user_name": user['name'],
                             "user_id": user['id'],
                             "key_id": key['id'],
+                            "domain_deeplink": user['domain_deeplink'], 
                             'fingerprint': key['fingerprint'],
                             # 'inactive_status': key['inactive_status'],
                             # 'lifecycle_state': key['lifecycle_state'],
@@ -4137,7 +4136,7 @@ class CIS_Report:
                             "description": key['description'],
                             # "inactive_status": key['inactive_status'],
                             # "lifecycle_state": key['lifecycle_state'],
-                            # "time_created": key['time_created'],
+                            "time_created": key['time_created']
                             # "time_expires": key['time_expires'],
                             # "token": key['token']
                         }
@@ -4161,6 +4160,7 @@ class CIS_Report:
                             "user_id": user['id'],
                             "id": key['ocid'],
                             "description": key['description'],
+                            "time_created": key['time_created']
                             # "expires-on": key['expires_on']
                         }
 
@@ -4193,54 +4193,6 @@ class CIS_Report:
         # CIS Total 1.13 Adding - All IAM Users for to CIS Total
         self.cis_foundations_benchmark_3_0['1.13']['Total'] = self.__users
 
-        # CIS 1.14 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
-        # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
-        for dynamic_group in self.__dynamic_groups:
-            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.14']['resources']):
-                self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
-            else:
-                self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(
-                    dynamic_group)
-        # Clearing finding
-        if self.cis_foundations_benchmark_3_0['1.14']['Status']:
-            self.cis_foundations_benchmark_3_0['1.14']['Findings'] = []
-
-        # CIS Total 1.14 Adding - All Dynamic Groups  for to CIS Total
-        self.cis_foundations_benchmark_3_0['1.14']['Total'] = self.__dynamic_groups
-
-        # CIS 1.15 Check - Ensure storage service-level admins cannot delete resources they manage.
-        # Iterating through all policies
-        for policy in self.__policies:
-            if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
-                for statement in policy['statements']:
-                    for resource in self.cis_iam_checks['1.15']:
-                        if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
-                            split_statement = statement.split("where")
-                            if len(split_statement) == 2:
-                                clean_where_clause = split_statement[1].upper().replace(" ", "").replace("'", "")
-                                if all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource]) and \
-                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 no permissions to delete storage: " + str(policy['name']))
-                                    pass
-                                # Checking if this is the Storage admin with allowed 
-                                elif all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15-storage-admin'][resource]) and \
-                                    not(all(permission.upper() in clean_where_clause for permission in self.cis_iam_checks['1.15'][resource])):
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
-                                    pass
-                                else:
-                                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
-                                    debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
-
-                            else:
-                                self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
-
-        if self.cis_foundations_benchmark_3_0['1.15']['Findings']:
-            self.cis_foundations_benchmark_3_0['1.15']['Status'] = False
-        else:
-            self.cis_foundations_benchmark_3_0['1.15']['Status'] = True
-
-        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
-        self.cis_foundations_benchmark_3_0['1.15']['Total'] = self.__policies
 
         # CIS 1.16 Check -  Users with API Keys over 45 days
 
@@ -4290,7 +4242,7 @@ class CIS_Report:
         else:
             self.cis_foundations_benchmark_3_0['1.16']['Status'] = True
 
-        # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
+        # CIS Total 1.16 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_3_0['1.16']['Total'] = self.__users
 
 
@@ -4306,8 +4258,25 @@ class CIS_Report:
             self.cis_foundations_benchmark_3_0['1.17']['Status'] = True
         # CIS Total 1.17 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_3_0['1.17']['Total'] = self.__users
+    
+    def __cis_check_dynamic_groups(self):
+        # CIS 1.14 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
+        # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
+        for dynamic_group in self.__dynamic_groups:
+            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.14']['resources']):
+                self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
+            else:
+                self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(
+                    dynamic_group)
+        # Clearing finding
+        if self.cis_foundations_benchmark_3_0['1.14']['Status']:
+            self.cis_foundations_benchmark_3_0['1.14']['Findings'] = []
 
-        # CIS 2.1, 2.2, & 2.5 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
+        # CIS Total 1.14 Adding - All Dynamic Groups  for to CIS Total
+        self.cis_foundations_benchmark_3_0['1.14']['Total'] = self.__dynamic_groups
+
+    def __cis_check_network_security(self):
+        # CIS 2.1, 2.2 Check - Security List Ingress from 0.0.0.0/0 on ports 22, 3389
         for sl in self.__network_security_lists:
             for irule in sl['ingress_security_rules']:
                 if irule['source'] == "0.0.0.0/0" and irule['protocol'] == '6':
@@ -4391,7 +4360,7 @@ class CIS_Report:
                     self.cis_foundations_benchmark_3_0['2.4']['Findings'].append(nsg)
                     break
 
-        # CIS Total 2.2 & 2.4 Adding - All NSGs Instances to CIS Total
+        # CIS Total 2.3 & 2.4 Adding - All NSGs Instances to CIS Total
         self.cis_foundations_benchmark_3_0['2.3']['Total'] = self.__network_security_groups
         self.cis_foundations_benchmark_3_0['2.4']['Total'] = self.__network_security_groups
 
@@ -4433,22 +4402,17 @@ class CIS_Report:
             if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                        autonomous_database)
+                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
                 elif autonomous_database['whitelisted_ips']:
                     for value in autonomous_database['whitelisted_ips']:
-                        if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
+                        if '0.0.0.0/0' in str(value):
                             self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                                autonomous_database)
+                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
 
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_3_0['2.8']['Total'] = self.__autonomous_databases
 
-        # From CIS 2.0 CIS 4.1 Check - Ensure Audit log retention == 365 - Only checking in home region
-        # if self.__audit_retention_period >= 365:
-        #     self.cis_foundations_benchmark_3_0['4.1']['Status'] = True
-
+    def __cis_check_compute_instances(self):
         for instance in self.__Instance:
             # CIS Check 3.1 Metadata Service v2 Enabled
             if instance['instance_options'] is None or not(instance['instance_options']['are_legacy_imds_endpoints_disabled']):
@@ -4475,6 +4439,7 @@ class CIS_Report:
         # CIS Total 3.3 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.3']['Total'] = self.__Instance
 
+    def __cis_check_tagging_and_monitoring(self):
         # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
         for tag in self.__tag_defaults:
@@ -4656,6 +4621,7 @@ class CIS_Report:
         # CIS Check 4.17 Total - Adding All Buckets to total
         self.cis_foundations_benchmark_3_0['4.17']['Total'] = self.__buckets
 
+    def __cis_check_storage(self):
         # CIS Section 5.1 Bucket Checks
         # Generating list of buckets names
         for bucket in self.__buckets:
@@ -4703,7 +4669,7 @@ class CIS_Report:
                         boot_volume)
                     self.cis_foundations_benchmark_3_0['5.2.2']['Status'] = False
 
-        # CIS Check 4.2.2 Total - Adding All Block Volumes to total
+        # CIS Check 5.2.2 Total - Adding All Block Volumes to total
         self.cis_foundations_benchmark_3_0['5.2.2']['Total'] = self.__boot_volumes
 
         # CIS Section 5.3.1 FSS Checks
@@ -4718,6 +4684,7 @@ class CIS_Report:
         # CIS Check 4.3.1 Total - Adding All Block Volumes to total
         self.cis_foundations_benchmark_3_0['5.3.1']['Total'] = self.__file_storage_system
 
+    def __cis_check_assets(self):
         # CIS Section 6 Checks
         # Checking if more than one compartment because of the ManagedPaaS Compartment
         if len(self.__compartments) < 2:
@@ -5355,7 +5322,7 @@ class CIS_Report:
             summary_file_name = self.__print_to_json_file("cis", "summary_report", summary_report)
             summary_files.append(summary_file_name)
 
-        summary_file_name = self.__report_generate_html_summary_report("cis", "html_summary_report", summary_report)
+        summary_file_name = self.__report_generate_html_summary_report("cis", "summary_report", summary_report)
         summary_files.append(summary_file_name)
 
         if OUTPUT_DIAGRAMS:
@@ -5372,7 +5339,7 @@ class CIS_Report:
 
         for key, recommendation in self.cis_foundations_benchmark_3_0.items():
             if recommendation['Level'] <= level:
-                report_file_name = self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
+                report_file_name = self.__print_to_csv_file("cis", f"{recommendation['section']}_{recommendation['recommendation_#']}", recommendation['Findings'])
                 if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
@@ -6172,8 +6139,8 @@ class CIS_Report:
     # Create CSV Hyperlink
     ##########################################################################
     def __generate_csv_hyperlink(self, url, name):
-        if len(url) < 255:
-            return '=HYPERLINK("' + url + '","' + name + '")'
+        if len(url) < 2079:  # Excel limit
+            return f'=HYPERLINK("{url}","{name}")'
         else:
             return url
 
@@ -6383,7 +6350,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                    cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:
@@ -6424,8 +6391,12 @@ def execute_report():
                     reader = csv.reader(f)
                     for r, row in enumerate(reader):
                         for c, col in enumerate(row):
-                            # Skipping the deep link due to formating errors in xlsx
-                            if "=HYPERLINK" not in col:
+                            # Format URL only if the column starts with "=HYPERLINK"
+                            if col.startswith("=HYPERLINK"):
+                                url_info = re.findall(r'"(.*?)"', col)
+                                if url_info and len(url_info[0]) < 2079:  # Excel Link limit
+                                    worksheet.write_url(r, c, url_info[0], string=url_info[1])
+                            else:
                                 worksheet.write(r, c, col)
                 worksheet.autofilter(0, 0, r - 1, c - 1)
                 worksheet.autofit()

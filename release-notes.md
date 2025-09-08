@@ -12,6 +12,8 @@ Updates:
   - Header updated for Redwood style.
 - Fixed typo in Recommendation 4.1 remediation text.
 - Fixed a CSV issue with multiple newlines in a cell.
+- Check 2.8: Fixed duplicate entries when checking for multiple whitelisted IPs.
+
 
 ## <a name="#3-0-0-script-updates">Fixes</a>
 Updates:

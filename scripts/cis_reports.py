@@ -26,7 +26,6 @@ from threading import Thread
 import hashlib
 import re
 import requests
-import pickle
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -815,8 +814,6 @@ class CIS_Report:
         self.__network_cpes = []
         self.__network_ipsec_connections = {}  # Indexed by DRG ID
         self.__network_drg_attachments = {}  # Indexed by DRG ID
-        self.__network_topology_json = {}
-
 
         # For Autonomous Database Checks
         self.__autonomous_databases = []
@@ -1128,13 +1125,6 @@ class CIS_Report:
                 region_values['sch_client'] = self.__create_client(oci.sch.ServiceConnectorClient, key="sch", proxy=proxy)
                 region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
                 region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
-                region_values['logging_search_client'] = self.__create_client(oci.loggingsearch.LogSearchClient, key="log_search", proxy=proxy)
-
-                # Special case: Topology client with custom endpoint
-                topology_client = self.__create_client(oci.core.VirtualNetworkClient, key="topology")
-                if topology_client:
-                    topology_client.base_client.endpoint = f"https://vnca-api.{region_key}.oci.oraclecloud.com"
-                region_values['topology_client'] = topology_client
 
             except Exception as e:
                 debug("__create_regional_signers: error reading " + str(self.__config))
@@ -2859,42 +2849,6 @@ class CIS_Report:
         except Exception as e:
             raise RuntimeError(
                 "Error in __network_read_ip_sec_connections " + str(e.args))
-        
-    ############################################
-    # Collect Network Topology Data
-    ############################################
-    def __network_topology_dump(self):
-        debug("__network_topology_dump: Starting")
-        if type(self.__signer) is oci.auth.signers.InstancePrincipalsDelegationTokenSigner:
-            self.__errors.append({"id": "__network_topology_dump", "error": "Delegated Tokens via Cloud Shell not supported." })
-            return
-        def api_function(region_key, region_values, tenancy_id):
-            try:
-                get_vcn_topology_response = region_values['topology_client'].get_networking_topology(
-                    compartment_id=tenancy_id,
-                    access_level="ACCESSIBLE",
-                    query_compartment_subtree=True)
-                debug("__network_topology_dump: Successful queried network topology for region: " + region_key)
-
-            except Exception as e:
-                if "(-1, null, false)" in e.message:
-  
-                    return None #This error is benign. The API shows an error when there is no topology data to pull.
-                debug("__network_topology_dump: ERROR querying network topology for region: " + region_key)
-                self.__errors.append({"id" : region_key + "_network_topology_dump", "error" : str(e) })
-                print(e)
-            else:
-                self.__network_topology_json[region_key]=get_vcn_topology_response.data
-                print(f"\tProcessed {region_key} Network Topology")
-
-        # Parallelize API Calls. See https://github.com/oracle/oci-python-sdk/blob/master/examples/parallel_api_collection.py
-               
-        thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-        
-        for region_key, region_values in self.__regions.items():
-            thread_pool.submit(api_function, region_key, region_values, self.__tenancy.id)
-
-        thread_pool.shutdown(wait=True)
 
 
     ############################################
@@ -4402,14 +4356,12 @@ class CIS_Report:
             if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                        autonomous_database)
+                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
                 elif autonomous_database['whitelisted_ips']:
                     for value in autonomous_database['whitelisted_ips']:
-                        if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
+                        if '0.0.0.0/0' in str(value):
                             self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                                autonomous_database)
+                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
 
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_3_0['2.8']['Total'] = self.__autonomous_databases
@@ -5873,7 +5825,6 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__network_topology_dump,
                 self.__search_resources_all_resources_in_tenancy
             ]
         else:
@@ -5944,17 +5895,9 @@ class CIS_Report:
 
         raw_json_files = {
             "all_resources": self.__all_resources_json,
-            "oci_network_topologies": oci.util.to_dict(self.__network_topology_json)
         }
         for key in raw_json_files:
             rfn = self.__print_to_json_file('raw_data', key, raw_json_files[key])
-            list_report_file_names.append(rfn)
-
-        raw_pkl_files = {
-            "oci_network_topologies": self.__network_topology_json
-        }
-        for key in raw_pkl_files:
-            rfn = self.__print_to_pkl_file('raw_data', key, raw_json_files[key])
             list_report_file_names.append(rfn)
 
         if self.__output_bucket:
@@ -6089,32 +6032,6 @@ class CIS_Report:
         except Exception as e:
             raise Exception("Error in print_to_json_file: " + str(e.args))
     
-    ##########################################################################
-    # Print to PKL
-    ##########################################################################
-    def __print_to_pkl_file(self, header, file_subject, data):
-
-        try:
-            # if no data
-            if len(data) == 0:
-                return None
-            
-            # get the file name of the PKL
-            file_path = self.__get_output_file_path(header, file_subject, '.pkl')
-
-            # Writing to json file
-            with open(file_path, 'wb') as pkl_file:
-                pickle.dump(data,pkl_file)
-            
-            
-            print("PKL: " + file_subject.ljust(22) + " --> " + file_path)
-            
-            # Used by Upload
-            return file_path
-
-
-        except Exception as e:
-            raise Exception("Error in __print_to_pkl_file: " + str(e.args))
         
     ##########################################################################
     # Orchestrates Data collection and reports

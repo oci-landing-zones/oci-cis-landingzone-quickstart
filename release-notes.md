@@ -6,6 +6,7 @@
 Updates:
 - Improved deeplink handling in XLSX workbook.
 - Improved deeplink URLs.
+- Check 2.8: Fixed duplicate entries when checking for multiple whitelisted IPs.
 
 ## <a name="#3-0-0-script-updates">Fixes</a>
 Updates:

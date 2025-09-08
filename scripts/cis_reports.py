@@ -4356,14 +4356,12 @@ class CIS_Report:
             if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                        autonomous_database)
+                    self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
                 elif autonomous_database['whitelisted_ips']:
                     for value in autonomous_database['whitelisted_ips']:
-                        if '0.0.0.0/0' in str(autonomous_database['whitelisted_ips']):
+                        if '0.0.0.0/0' in str(value):
                             self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
-                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(
-                                autonomous_database)
+                            self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
 
         # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_3_0['2.8']['Total'] = self.__autonomous_databases

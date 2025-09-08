@@ -4429,10 +4429,11 @@ class CIS_Report:
                 self.cis_foundations_benchmark_3_0['3.2']['Findings'].append(instance)
             
             # CIS Check 3.3 Encryption in Transit enabled
-            if instance['launch_options'] is None or not(instance['launch_options']['is_pv_encryption_in_transit_enabled']):
-                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable encryption in transit")
-                self.cis_foundations_benchmark_3_0['3.3']['Status'] = False
-                self.cis_foundations_benchmark_3_0['3.3']['Findings'].append(instance)
+            if instance['lifecycle_state'] not in ["TERMINATED","TERMINATING"]:
+                if instance['launch_options'] is None or not(instance['launch_options']['is_pv_encryption_in_transit_enabled']):
+                    debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable encryption in transit")
+                    self.cis_foundations_benchmark_3_0['3.3']['Status'] = False
+                    self.cis_foundations_benchmark_3_0['3.3']['Findings'].append(instance)
 
         # CIS Total 3.1 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.1']['Total'] = self.__Instance

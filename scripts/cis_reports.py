@@ -4368,23 +4368,24 @@ class CIS_Report:
 
     def __cis_check_compute_instances(self):
         for instance in self.__Instance:
-            # CIS Check 3.1 Metadata Service v2 Enabled
-            if instance['instance_options'] is None or not(instance['instance_options']['are_legacy_imds_endpoints_disabled']):
-                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't disable IMDSv1")
-                self.cis_foundations_benchmark_3_0['3.1']['Status'] = False
-                self.cis_foundations_benchmark_3_0['3.1']['Findings'].append(instance)
-            
-            # CIS Check 3.2 Secure Boot enabled
-            if instance['platform_config'] is None or not(instance['platform_config']['is_secure_boot_enabled']):
-                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable secure boot")
-                self.cis_foundations_benchmark_3_0['3.2']['Status'] = False
-                self.cis_foundations_benchmark_3_0['3.2']['Findings'].append(instance)
-            
-            # CIS Check 3.3 Encryption in Transit enabled
-            if instance['launch_options'] is None or not(instance['launch_options']['is_pv_encryption_in_transit_enabled']):
-                debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable encryption in transit")
-                self.cis_foundations_benchmark_3_0['3.3']['Status'] = False
-                self.cis_foundations_benchmark_3_0['3.3']['Findings'].append(instance)
+            if instance['lifecycle_state'] not in ["TERMINATED","TERMINATING"]:
+                # CIS Check 3.1 Metadata Service v2 Enabled
+                if instance['instance_options'] is None or not(instance['instance_options']['are_legacy_imds_endpoints_disabled']):
+                    debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't disable IMDSv1")
+                    self.cis_foundations_benchmark_3_0['3.1']['Status'] = False
+                    self.cis_foundations_benchmark_3_0['3.1']['Findings'].append(instance)
+                
+                # CIS Check 3.2 Secure Boot enabled
+                if instance['platform_config'] is None or not(instance['platform_config']['is_secure_boot_enabled']):
+                    debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable secure boot")
+                    self.cis_foundations_benchmark_3_0['3.2']['Status'] = False
+                    self.cis_foundations_benchmark_3_0['3.2']['Findings'].append(instance)
+                
+                # CIS Check 3.3 Encryption in Transit enabled
+                if instance['launch_options'] is None or not(instance['launch_options']['is_pv_encryption_in_transit_enabled']):
+                    debug(f"__report_cis_analyze_tenancy_data {instance['display_name']} doesn't enable encryption in transit")
+                    self.cis_foundations_benchmark_3_0['3.3']['Status'] = False
+                    self.cis_foundations_benchmark_3_0['3.3']['Findings'].append(instance)
 
         # CIS Total 3.1 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.1']['Total'] = self.__Instance

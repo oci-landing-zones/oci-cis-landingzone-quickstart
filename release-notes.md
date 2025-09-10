@@ -1,12 +1,19 @@
 #  August XX, 2025 Release Notes - 3.1.0
-1. [Script Updates](#3-0-1-script-updates)
+1. [Script Updates](#3-1-0-script-updates)
 1. [Script Fixes](#3-0-1-script-fixes)
 
 ## <a name="#3-1-0-script-updates">Fixes</a>
 Updates:
 - Improved deeplink handling in XLSX workbook.
 - Improved deeplink URLs.
+- HTML output
+  - Better handling of "not applicable" checks in dashboard diagrams and non-compliant table for non-migrated tenancies, i.e., not having OCI IAM domains.
+  - Dashboard diagrams use the page background.
+  - Header updated for Redwood style.
+- Fixed typo in Recommendation 4.1 remediation text.
+- Fixed a CSV issue with multiple newlines in a cell.
 - Check 2.8: Fixed duplicate entries when checking for multiple whitelisted IPs.
+
 
 ## <a name="#3-0-0-script-updates">Fixes</a>
 Updates:

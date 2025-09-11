@@ -640,6 +640,7 @@ class CIS_Report:
             'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
             'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
             'Certificates_Near_Expiry': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
+            'Service_Limits': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -789,7 +790,9 @@ class CIS_Report:
         self.__cloud_guard_config = None
         self.__cloud_guard_config_status = None
         self.__os_namespace = None
-
+        self.regional_limits_dict = {}
+        self.__service_limits = []
+        
         # For IAM Checks
         self.__tenancy_password_policy = None
         self.__compartments = []
@@ -3880,6 +3883,8 @@ class CIS_Report:
                         self.__raw_oci_certificates.append(record)
         except Exception as e:
             debug("__certificates_read_certificates failed to process: " + str(e))
+            self.__errors.append({'id' : '__certificates_read_certificates', 'error' : str(e)})
+
         print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
     
     ##########################################################################
@@ -3904,40 +3909,35 @@ class CIS_Report:
             oci_service_limit_values = oci.pagination.list_call_get_all_results(
                 self.__regions[oci_region]['limits_client'].list_limit_values,
                 self.__tenancy.id, service_name).data
-            print("service_limit_values-" * 5)
-            print(oci_service_limit_values)
-            print("service_limit_values-" * 5)
             service_limit_name_limit_value_mapping[oci_region][service_name] = oci_service_limit_values
         
-        def utilization_function(oci_region, service_name, limit_name, compartment_ocid, availability_domain):
+        def utilization_function(oci_region, service_name, limit_name, availability_domain):
 
                 try:
 
                     oci_resource_availability = self.__regions[oci_region]['limits_client'].get_resource_availability(
                         service_name=service_name,
                         limit_name=limit_name,
-                        compartment_id=compartment_ocid,
+                        compartment_id=self.__tenancy.id,
                         availability_domain=availability_domain).data
-                        
-                except Exception as e:
-                    
-                    print(oci_region, service_name, limit_name, compartment_ocid, availability_domain)
-                    print(e)
-
-                else:
-                
+                    record = {}
+                    record['service_name'] = service_name
+                    record['limit_name'] = limit_name
+                    record['total'] = None
+                    record['service_limit_availability'] = None
+                    record['region'] = oci_region
+                    record = {**record, **oci.util.to_dict(oci_resource_availability)}
                     if oci_resource_availability.available:
-
                         total = oci_resource_availability.available + oci_resource_availability.used
                         service_limit_availability = oci_resource_availability.available / total
-                        
-                        if service_limit_availability <= .20:
+                        record['total'] = total
+                        record['service_limit_availability']  =  round(100 - (service_limit_availability*100), 1)
+                    self.__service_limits.append(record)
 
-                            if oci_region not in self.regional_limits_dict:
-                                self.regional_limits_dict[oci_region] = [[service_name.upper(), limit_name.upper(), round(100 - (service_limit_availability*100), 1)]]
+                except Exception as e:
+                    debug( f"__service_limits_utilization_{service_name}_{limit_name}: " + str(e))
+                    self.__errors.append({'id' : f"__service_limits_utilization_{service_name}_{limit_name}", 'error' : str(e)})
 
-                            else:
-                                self.regional_limits_dict[oci_region].append([service_name.upper(), limit_name.upper(), round(100 - (service_limit_availability*100), 1)])
 
         def service_limit_function(region_name, service_names):
 
@@ -3949,10 +3949,9 @@ class CIS_Report:
 
                 for service_limit in regional_service_list:
 
-                    main_thread_pool.submit(utilization_function, region_name, service_name, service_limit.name, self.__tenancy.id, service_limit.availability_domain)
+                    main_thread_pool.submit(utilization_function, region_name, service_name, service_limit.name, service_limit.availability_domain)
 
             main_thread_pool.shutdown(wait=True)
-
 
         try:
             oci_services = oci.pagination.list_call_get_all_results(
@@ -3989,8 +3988,7 @@ class CIS_Report:
             service_limit_threadpool.submit(service_limit_function, region_name, service_names)
 
         service_limit_threadpool.shutdown(wait=True)
-
-        print(service_limit_name_limit_value_mapping)
+        print(f"\tProcessed {len(self.__service_limits)} service limits")
 
     ##########################################################################
     # Unifying Network information into a single object for easier processing
@@ -4107,7 +4105,6 @@ class CIS_Report:
 
         # CIS Total 1.15 Adding - All IAM Policies for to CIS Total
         self.cis_foundations_benchmark_3_0['1.15']['Total'] = self.__policies
-
 
     def __cis_check_password_policies(self):
         # 1.4 Check - Password Policy - Only in home region
@@ -5346,6 +5343,23 @@ class CIS_Report:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
     
 
+    #######################################
+    # OBP Service Limit Check
+    #######################################    
+    def __obp_check_close_service_limits(self):
+        if True:
+            for limit in self.__service_limits:
+                # If the limit is greater than 80% we should note it for an OBP
+                if limit['service_limit_availability'] and limit['service_limit_availability'] >= 80.0:
+                    self.obp_foundations_checks['Service_Limits']['Findings'].append(limit)
+                else:
+                    self.obp_foundations_checks['Service_Limits']['OBP'].append(limit)
+            
+            if self.obp_foundations_checks['Service_Limits']['Findings']:
+                self.obp_foundations_checks['Service_Limits']['Status'] = False
+            else:
+                self.obp_foundations_checks['Service_Limits']['Status'] = True
+
     ##########################################################################
     # Analyzes Tenancy Data for Oracle Best Practices Report
     ##########################################################################
@@ -5358,7 +5372,7 @@ class CIS_Report:
         self.__obp_check_certificates()
         self.__obp_check_bucket_logs()
         self.__obp_check_subnet_logs()
-
+        self.__obp_check_close_service_limits()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation
@@ -6026,7 +6040,8 @@ class CIS_Report:
             "regions": self.__raw_regions,
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
             "instances": self.__Instance,
-            "certificates" : self.__raw_oci_certificates
+            "certificates" : self.__raw_oci_certificates,
+            "service_limits" : self.__service_limits
         }
         for key in raw_csv_files:
             rfn = self.__print_to_csv_file('raw_data', key, raw_csv_files[key])

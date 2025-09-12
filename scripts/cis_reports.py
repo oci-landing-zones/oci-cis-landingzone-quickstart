@@ -5357,7 +5357,7 @@ class CIS_Report:
             
             if self.obp_foundations_checks['Service_Limits']['Findings']:
                 self.obp_foundations_checks['Service_Limits']['Status'] = False
-            else:
+            elif self.obp_foundations_checks['Service_Limits']['OBP']:
                 self.obp_foundations_checks['Service_Limits']['Status'] = True
 
     ##########################################################################
@@ -5845,10 +5845,11 @@ class CIS_Report:
         # Adding data to summary report
         for key, recommendation in self.obp_foundations_checks.items():
             padding = str(key).ljust(25, " ")
-            print(padding + "\t\t" + str(recommendation['Status']) + "\t" + "\t" + str(len(recommendation['Findings'])) + "\t" + "\t" + str(len(recommendation['OBP'])))
+            compliant = ("Yes" if recommendation['Status'] is True else "No" if recommendation['Status'] is False else "N/A")
+            print(padding + "\t\t" + compliant + "\t" + "\t" + str(len(recommendation['Findings'])) + "\t" + "\t" + str(len(recommendation['OBP'])))
             record = {
                 "Recommendation": str(key),
-                "Compliant": ('Yes' if recommendation['Status'] else 'No'),
+                "Compliant": compliant,
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Documentation": recommendation['Documentation']

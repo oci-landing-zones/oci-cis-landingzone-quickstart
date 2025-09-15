@@ -1848,19 +1848,33 @@ class CIS_Report:
                 debug("__identity_read_user_database_password: Error: " + str(e))
 
                 return database_password
+     ##########################################################################
+    # OCI Helper function to search for OCI resource type Indira
+    ##########################################################################
+
+    def __search_resource_in_region(self, resource: str, region_values: dict):
+   
+        query = (
+            f"query {resource} resources return allAdditionalFields "
+            f"where compartmentId != '{self.__managed_paas_compartment_id}'"
+        )
+        search_details = oci.resource_search.models.StructuredSearchDetails(query=query)
+
+        resp = oci.pagination.list_call_get_all_results(
+            region_values['search_client'].search_resources,
+            search_details=search_details
+        )
+
+        return getattr(resp, "data", []) or []
 
     ##########################################################################
-    # Tenancy IAM Policies
+    # Tenancy IAM Policies Indira
     ##########################################################################
     def __identity_read_tenancy_policies(self):
         try:
             debug("__identity_read_tenancy_policies: Getting Tenancy policies: ")
-            policies_data = oci.pagination.list_call_get_all_results(
-                self.__regions[self.__home_region]['search_client'].search_resources,
-                search_details=oci.resource_search.models.StructuredSearchDetails(
-                    query="query Policy resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id 
-            ).data
+            policies_data = self.__search_resource_in_region("Policy", self.__regions[self.__home_region])
+
 
             for policy in policies_data:
                 debug("__identity_read_tenancy_policies: Reading Tenancy policies: " + policy.display_name)
@@ -1944,7 +1958,7 @@ class CIS_Report:
                 "Error in __identity_read_availability_domains: " + str(e.args))
 
     ##########################################################################
-    # Get Objects Store Buckets
+    # Get Objects Store Buckets Indira
     ##########################################################################
     def __os_read_buckets(self):
 
@@ -1952,13 +1966,8 @@ class CIS_Report:
         try:
             # looping through regions
             for region_key, region_values in self.__regions.items():
-                buckets_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Bucket resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id 
+                buckets_data = self.__search_resource_in_region("Bucket", region_values)
 
-                ).data
                 # Getting Bucket Info
                 for bucket in buckets_data:
                     try:
@@ -2015,18 +2024,13 @@ class CIS_Report:
             raise RuntimeError("Error in __os_read_buckets " + str(e.args))
 
     ############################################
-    # Load Block Volumes
+    # Load Block Volumes Indira
     ############################################
     def __block_volume_read_block_volumes(self):
         try:
             for region_key, region_values in self.__regions.items():
-                volumes_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Volume resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id 
+                volumes_data = self.__search_resource_in_region("Volume", region_values)
 
-                ).data
 
                 # Getting Block Volume inf
                 for volume in volumes_data:
@@ -2074,17 +2078,13 @@ class CIS_Report:
             raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))
 
     ############################################
-    # Load Boot Volumes
+    # Load Boot Volumes Indira
     ############################################
     def __boot_volume_read_boot_volumes(self):
         try:
             for region_key, region_values in self.__regions.items():
-                boot_volumes_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query BootVolume resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id 
-                ).data
+                boot_volumes_data = self.__search_resource_in_region("BootVolume", region_values)
+
 
                 for boot_volume in boot_volumes_data:
                     deep_link = self.__oci_boot_volumes_uri + boot_volume.identifier + '?region=' + region_key
@@ -2131,17 +2131,13 @@ class CIS_Report:
             raise RuntimeError("Error in __boot_volume_read_boot_volumes " + str(e.args))
 
     ############################################
-    # Load FSS
+    # Load FSS Indira
     ############################################
     def __fss_read_fsss(self):
         try:
             for region_key, region_values in self.__regions.items():
-                fss_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query FileSystem resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                fss_data = self.__search_resource_in_region("FileSystem", region_values)
+
 
                 for fss in fss_data:
                     deep_link = self.__oci_fss_uri + fss.identifier + '?region=' + region_key
@@ -2192,19 +2188,15 @@ class CIS_Report:
             raise RuntimeError("Error in __fss_read_fsss " + str(e.args))
 
     ##########################################################################
-    # Network Security Groups
+    # Network Security Groups Indira
     ##########################################################################
     def __network_read_network_security_groups_rules(self):
         self.__network_security_groups = []
         # Loopig Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
-                nsgs_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query NetworkSecurityGroup resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                nsgs_data = self.__search_resource_in_region("NetworkSecurityGroup", region_values)
+
 
                 # Looping through NSGs to to get
                 for nsg in nsgs_data:
@@ -2258,18 +2250,14 @@ class CIS_Report:
                 "Error in __network_read_network_security_groups_rules " + str(e.args))
 
     ##########################################################################
-    # Network Security Lists
+    # Network Security Lists Indira
     ##########################################################################
     def __network_read_network_security_lists(self):
         # Looping Through Compartments Except Managed
         try:
             for region_key, region_values in self.__regions.items():
-                security_lists_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query SecurityList resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                security_lists_data = self.__search_resource_in_region("SecurityList", region_values)
+
 
                 # Looping through Security Lists to to get
                 for security_list in security_lists_data:
@@ -2327,17 +2315,13 @@ class CIS_Report:
                 "Error in __network_read_network_security_lists " + str(e.args))
 
     ##########################################################################
-    # Network Subnets Lists
+    # Network Subnets Lists Indira
     ##########################################################################
     def __network_read_network_subnets(self):
         try:
             for region_key, region_values in self.__regions.items():
-                subnets_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Subnet resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                subnets_data = self.__search_resource_in_region("Subnet", region_values)
+
 
                 try:
                     for subnet in subnets_data:
@@ -2405,17 +2389,13 @@ class CIS_Report:
                 "Error in __network_read_network_subnets " + str(e.args))
 
     ##########################################################################
-    # Network VCNs Lists
+    # Network VCNs Lists Indira
     ##########################################################################
     def __network_read_network_vcns(self):
         try:
             for region_key, region_values in self.__regions.items():
-                vcn_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query VCN resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                vcn_data = self.__search_resource_in_region("VCN", region_values)
+
 
                 for vcn in vcn_data:
                     deep_link = self.__oci_networking_uri + vcn.identifier + '?region=' + region_key
@@ -2434,17 +2414,13 @@ class CIS_Report:
                 "Error in __network_read_network_vcns " + str(e.args))
 
     ##########################################################################
-    # Network Capture Filters Dictionary
+    # Network Capture Filters Dictionary Indira
     ##########################################################################
     def __network_read_network_capturefilters(self):
         try:
             for region_key, region_values in self.__regions.items():
-                capturefilter_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query capturefilter resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                capturefilter_data = self.__search_resource_in_region("capturefilter", region_values)
+
 
                 for filter in capturefilter_data:
                     deep_link = self.__oci_network_capturefilter_uri + filter.identifier + '?region=' + region_key
@@ -2462,19 +2438,15 @@ class CIS_Report:
                 "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
-    # Load DRG Attachments
+    # Load DRG Attachments Indira
     ##########################################################################
     def __network_read_drg_attachments(self):
         count_of_drg_attachments = 0
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                drg_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query DrgAttachment resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                drg_resources = self.__search_resource_in_region("DrgAttachment", region_values)
+
 
                 compartments = set()
 
@@ -2549,18 +2521,14 @@ class CIS_Report:
                 "Error in __network_read_drg_attachments " + str(e.args))
 
     ##########################################################################
-    # Load DRGs
+    # Load DRGs Indira
     ##########################################################################
     def __network_read_drgs(self):
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                drg_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Drg resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                drg_resources = self.__search_resource_in_region("Drg", region_values)
+
 
                 compartments = set()
 
@@ -2634,18 +2602,14 @@ class CIS_Report:
                 "Error in __network_read_drgs " + str(e.args))
 
     ##########################################################################
-    # Load Network FastConnect
+    # Load Network FastConnect Indira
     ##########################################################################
     def __network_read_fastonnects(self):
         try:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
-                fastconnects = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query VirtualCircuit resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                fastconnects = self.__search_resource_in_region("VirtualCircuit", region_values)
+
 
                 compartments = set()
 
@@ -2750,17 +2714,13 @@ class CIS_Report:
                 "Error in __network_read_fastonnects " + str(e.args))
 
     ##########################################################################
-    # Load IP Sec Connections
+    # Load IP Sec Connections Indira
     ##########################################################################
     def __network_read_ip_sec_connections(self):
         try:
             for region_key, region_values in self.__regions.items():
-                ip_sec_connections_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query IPSecConnection resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                ip_sec_connections_data = self.__search_resource_in_region("IPSecConnection", region_values)
+
 
                 for ip_sec in ip_sec_connections_data:
                     try:
@@ -2855,19 +2815,15 @@ class CIS_Report:
 
 
     ############################################
-    # Load Autonomous Databases
+    # Load Autonomous Databases Indira
     ############################################
     def __adb_read_adbs(self):
         try:
             for region_key, region_values in self.__regions.items():
                 # UPDATED JB
                 #adb_query_resources = self.__search_query_resource_type("AutonomousDatabase", region_values['search_client'])
-                adb_query_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query AutonomousDatabase resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                adb_query_resources = self.__search_resource_in_region("AutonomousDatabase", region_values)
+
 
                 compartments = set()
                 for adb in adb_query_resources:
@@ -2910,17 +2866,13 @@ class CIS_Report:
             self.__errors.append({'id' : '__adb_read_adbs', 'error' : str(e)})
 
     ############################################
-    # Load Oracle Integration Cloud
+    # Load Oracle Integration Cloud Indira
     ############################################
     def __oic_read_oics(self):
         try:
             for region_key, region_values in self.__regions.items():
-                oic_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query IntegrationInstance resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                oic_resources = self.__search_resource_in_region("IntegrationInstance", region_values)
+
 
                 compartments = set()
 
@@ -2988,17 +2940,13 @@ class CIS_Report:
             raise RuntimeError("Error in __oic_read_oics " + str(e.args))
 
     ############################################
-    # Load Oracle Analytics Cloud
+    # Load Oracle Analytics Cloud Indira
     ############################################
     def __oac_read_oacs(self):
         try:
             for region_key, region_values in self.__regions.items():
-                oac_resources = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query AnalyticsInstance resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                oac_resources = self.__search_resource_in_region("AnalyticsInstance", region_values)
+
 
                 compartments = set()
 
@@ -3058,18 +3006,14 @@ class CIS_Report:
             raise RuntimeError("Error in __oac_read_oacs " + str(e.args))
 
     ##########################################################################
-    # Events
+    # Events Indira
     ##########################################################################
     def __events_read_event_rules(self):
 
         try:
             for region_key, region_values in self.__regions.items():
-                events_rules_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query EventRule resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                events_rules_data = self.__search_resource_in_region("EventRule", region_values)
+
 
                 for event_rule in events_rules_data:
                     deep_link = self.__oci_events_uri + event_rule.identifier + '?region=' + region_key
@@ -3094,18 +3038,14 @@ class CIS_Report:
             raise RuntimeError("Error in events_read_rules " + str(e.args))
 
     ##########################################################################
-    # Logging - Log Groups and Logs
+    # Logging - Log Groups and Logs Indira
     ##########################################################################
     def __logging_read_log_groups_and_logs(self):
 
         try:
             for region_key, region_values in self.__regions.items():
-                log_groups = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query LogGroup resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                log_groups = self.__search_resource_in_region("LogGroup", region_values)
+
 
                 # Looping through log groups to get logs
                 for log_group in log_groups:
@@ -3258,19 +3198,15 @@ class CIS_Report:
                 "Error in __logging_read_log_groups_and_logs " + str(e.args))
 
     ##########################################################################
-    # Vault Keys
+    # Vault Keys Indira
     ##########################################################################
     def __kms_read_keys(self):
         debug("__kms_read_keys: Initiating")
         try:
             debug("\t__kms_read_keys: Getting all keys in regions")
             for region_key, region_values in self.__regions.items():
-                keys_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query Key resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                keys_data = self.__search_resource_in_region("Key", region_values)
+
 
                 vaults_set = set()
                 for key in keys_data:
@@ -3504,19 +3440,15 @@ class CIS_Report:
                 raise RuntimeError("Error in __identity_read_tenancy_password_policy " + str(e.args))
 
     ##########################################################################
-    # Oracle Notifications Services for Subscriptions
+    # Oracle Notifications Services for Subscriptions Indira
     ##########################################################################
     def __ons_read_subscriptions(self):
         debug("__ons_read_subscriptions: Starting: ")
         try:
             for region_key, region_values in self.__regions.items():
                 # Iterate through compartments to get all subscriptions
-                subs_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query OnsSubscription resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                subs_data = self.__search_resource_in_region("OnsSubscription", region_values)
+
                 debug("\t__ons_read_subscriptions: Recieved " + str(len(subs_data)) + " subscriptions in region " + str(region_key))
                 for sub in subs_data:
                     deep_link = self.__oci_onssub_uri + sub.identifier + '?region=' + region_key
@@ -3576,7 +3508,7 @@ class CIS_Report:
             print("Error in __identity_read_tag_defaults " + str(e.args))
             self.__errors.append({'id' : '__identity_read_tag_defaults', 'error' : str(e)})
     ##########################################################################
-    # Get Service Connectors
+    # Get Service Connectors Indira
     ##########################################################################
     def __sch_read_service_connectors(self):
 
@@ -3584,12 +3516,8 @@ class CIS_Report:
             # looping through regions
             for region_key, region_values in self.__regions.items():
                 # Collecting Service Connectors from each compartment
-                service_connectors_data = oci.pagination.list_call_get_all_results(
-                    region_values['search_client'].search_resources,
-                    search_details=oci.resource_search.models.StructuredSearchDetails(
-                        query="query ServiceConnector resources return allAdditionalFields where compartmentId != '" + self.__managed_paas_compartment_id + "'"),
-                    tenant_id=self.__tenancy.id
-                ).data
+                service_connectors_data = self.__search_resource_in_region("ServiceConnector", region_values)
+
 
                 # Getting Bucket Info
                 for connector in service_connectors_data:

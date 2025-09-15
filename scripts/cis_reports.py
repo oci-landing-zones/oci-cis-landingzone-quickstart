@@ -1849,7 +1849,7 @@ class CIS_Report:
 
                 return database_password
      ##########################################################################
-    # OCI Helper function to search for OCI resource type Indira
+    # OCI Helper function to search for OCI resource type 
     ##########################################################################
 
     def __search_resource_in_region(self, resource: str, region_values: dict):
@@ -1864,11 +1864,10 @@ class CIS_Report:
             region_values['search_client'].search_resources,
             search_details=search_details
         )
-
         return getattr(resp, "data", []) or []
 
     ##########################################################################
-    # Tenancy IAM Policies Indira
+    # Tenancy IAM Policies 
     ##########################################################################
     def __identity_read_tenancy_policies(self):
         try:
@@ -1958,7 +1957,7 @@ class CIS_Report:
                 "Error in __identity_read_availability_domains: " + str(e.args))
 
     ##########################################################################
-    # Get Objects Store Buckets Indira
+    # Get Objects Store Buckets 
     ##########################################################################
     def __os_read_buckets(self):
 
@@ -2024,7 +2023,7 @@ class CIS_Report:
             raise RuntimeError("Error in __os_read_buckets " + str(e.args))
 
     ############################################
-    # Load Block Volumes Indira
+    # Load Block Volumes 
     ############################################
     def __block_volume_read_block_volumes(self):
         try:
@@ -2078,7 +2077,7 @@ class CIS_Report:
             raise RuntimeError("Error in __block_volume_read_block_volumes " + str(e.args))
 
     ############################################
-    # Load Boot Volumes Indira
+    # Load Boot Volumes 
     ############################################
     def __boot_volume_read_boot_volumes(self):
         try:
@@ -2131,7 +2130,7 @@ class CIS_Report:
             raise RuntimeError("Error in __boot_volume_read_boot_volumes " + str(e.args))
 
     ############################################
-    # Load FSS Indira
+    # Load FSS 
     ############################################
     def __fss_read_fsss(self):
         try:
@@ -2188,7 +2187,7 @@ class CIS_Report:
             raise RuntimeError("Error in __fss_read_fsss " + str(e.args))
 
     ##########################################################################
-    # Network Security Groups Indira
+    # Network Security Groups 
     ##########################################################################
     def __network_read_network_security_groups_rules(self):
         self.__network_security_groups = []
@@ -2250,7 +2249,7 @@ class CIS_Report:
                 "Error in __network_read_network_security_groups_rules " + str(e.args))
 
     ##########################################################################
-    # Network Security Lists Indira
+    # Network Security Lists 
     ##########################################################################
     def __network_read_network_security_lists(self):
         # Looping Through Compartments Except Managed
@@ -2315,7 +2314,7 @@ class CIS_Report:
                 "Error in __network_read_network_security_lists " + str(e.args))
 
     ##########################################################################
-    # Network Subnets Lists Indira
+    # Network Subnets Lists 
     ##########################################################################
     def __network_read_network_subnets(self):
         try:
@@ -2389,7 +2388,7 @@ class CIS_Report:
                 "Error in __network_read_network_subnets " + str(e.args))
 
     ##########################################################################
-    # Network VCNs Lists Indira
+    # Network VCNs Lists 
     ##########################################################################
     def __network_read_network_vcns(self):
         try:
@@ -2414,7 +2413,7 @@ class CIS_Report:
                 "Error in __network_read_network_vcns " + str(e.args))
 
     ##########################################################################
-    # Network Capture Filters Dictionary Indira
+    # Network Capture Filters Dictionary 
     ##########################################################################
     def __network_read_network_capturefilters(self):
         try:
@@ -2438,7 +2437,7 @@ class CIS_Report:
                 "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
-    # Load DRG Attachments Indira
+    # Load DRG Attachments 
     ##########################################################################
     def __network_read_drg_attachments(self):
         count_of_drg_attachments = 0
@@ -2521,7 +2520,7 @@ class CIS_Report:
                 "Error in __network_read_drg_attachments " + str(e.args))
 
     ##########################################################################
-    # Load DRGs Indira
+    # Load DRGs 
     ##########################################################################
     def __network_read_drgs(self):
         try:
@@ -2602,7 +2601,7 @@ class CIS_Report:
                 "Error in __network_read_drgs " + str(e.args))
 
     ##########################################################################
-    # Load Network FastConnect Indira
+    # Load Network FastConnect 
     ##########################################################################
     def __network_read_fastonnects(self):
         try:
@@ -2714,7 +2713,7 @@ class CIS_Report:
                 "Error in __network_read_fastonnects " + str(e.args))
 
     ##########################################################################
-    # Load IP Sec Connections Indira
+    # Load IP Sec Connections 
     ##########################################################################
     def __network_read_ip_sec_connections(self):
         try:
@@ -2815,7 +2814,7 @@ class CIS_Report:
 
 
     ############################################
-    # Load Autonomous Databases Indira
+    # Load Autonomous Databases 
     ############################################
     def __adb_read_adbs(self):
         try:
@@ -2866,7 +2865,7 @@ class CIS_Report:
             self.__errors.append({'id' : '__adb_read_adbs', 'error' : str(e)})
 
     ############################################
-    # Load Oracle Integration Cloud Indira
+    # Load Oracle Integration Cloud 
     ############################################
     def __oic_read_oics(self):
         try:
@@ -2940,7 +2939,7 @@ class CIS_Report:
             raise RuntimeError("Error in __oic_read_oics " + str(e.args))
 
     ############################################
-    # Load Oracle Analytics Cloud Indira
+    # Load Oracle Analytics Cloud 
     ############################################
     def __oac_read_oacs(self):
         try:
@@ -3006,7 +3005,7 @@ class CIS_Report:
             raise RuntimeError("Error in __oac_read_oacs " + str(e.args))
 
     ##########################################################################
-    # Events Indira
+    # Events 
     ##########################################################################
     def __events_read_event_rules(self):
 
@@ -3038,7 +3037,7 @@ class CIS_Report:
             raise RuntimeError("Error in events_read_rules " + str(e.args))
 
     ##########################################################################
-    # Logging - Log Groups and Logs Indira
+    # Logging - Log Groups and Logs 
     ##########################################################################
     def __logging_read_log_groups_and_logs(self):
 
@@ -3198,7 +3197,7 @@ class CIS_Report:
                 "Error in __logging_read_log_groups_and_logs " + str(e.args))
 
     ##########################################################################
-    # Vault Keys Indira
+    # Vault Keys 
     ##########################################################################
     def __kms_read_keys(self):
         debug("__kms_read_keys: Initiating")
@@ -3440,7 +3439,7 @@ class CIS_Report:
                 raise RuntimeError("Error in __identity_read_tenancy_password_policy " + str(e.args))
 
     ##########################################################################
-    # Oracle Notifications Services for Subscriptions Indira
+    # Oracle Notifications Services for Subscriptions 
     ##########################################################################
     def __ons_read_subscriptions(self):
         debug("__ons_read_subscriptions: Starting: ")
@@ -3508,7 +3507,7 @@ class CIS_Report:
             print("Error in __identity_read_tag_defaults " + str(e.args))
             self.__errors.append({'id' : '__identity_read_tag_defaults', 'error' : str(e)})
     ##########################################################################
-    # Get Service Connectors Indira
+    # Get Service Connectors 
     ##########################################################################
     def __sch_read_service_connectors(self):
 

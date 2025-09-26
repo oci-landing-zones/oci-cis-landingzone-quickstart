@@ -630,16 +630,16 @@ class CIS_Report:
 
         # OBP Checks
         self.obp_foundations_checks = {
-            'Cost_Tracking_Budgets': {'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
-            'SIEM_Audit_Log_All_Comps': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
-            'SIEM_Audit_Incl_Sub_Comp': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
-            'SIEM_VCN_Flow_Logging': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'SIEM_Write_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'SIEM_Read_Bucket_Logs': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'Networking_Connectivity': {'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
-            'Cloud_Guard_Config': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
-            'Certificates_Near_Expiry': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
-            'Service_Limits': {'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
+            'SIEM_Audit_Log_All_Comps': {'Section': "SIEM Logging", "id": 0, 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp': {'Section': "SIEM Logging", "id": 0, 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_VCN_Flow_Logging': {'Section': "SIEM Logging", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Write_Bucket_Logs': {'Section': "SIEM Logging", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Read_Bucket_Logs': {'Section': "SIEM Logging", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'Networking_Connectivity': {'Section': "Advanced Networking", "id": 0, 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
+            'Cloud_Guard_Config': {'Section': "CSPM", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
+            'Certificates_Near_Expiry': {'Section': "Certificates", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
+            'Service_Limits': {'Section': "Governance", "id": 0, 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
+            'Cost_Tracking_Budgets': {'Section': "Governance", "id": 0, 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -4733,6 +4733,21 @@ class CIS_Report:
                     "findings": [],
                     "status": False
                 },
+                "ADB_MTLS" : {
+                    "drgs": [],
+                    "findings": [],
+                    "status": False
+                },
+                "ADB_DataSafe" : {
+                    "drgs": [],
+                    "findings": [],
+                    "status": False
+                },
+                "ADB_CMK" : {
+                    "drgs": [],
+                    "findings": [],
+                    "status": False
+                }
             }
     
     ##########################################################################
@@ -5244,6 +5259,36 @@ class CIS_Report:
                 self.obp_foundations_checks['Service_Limits']['Status'] = False
             elif self.obp_foundations_checks['Service_Limits']['OBP']:
                 self.obp_foundations_checks['Service_Limits']['Status'] = True
+    #######################################
+    # OBP ADB Checks
+    #######################################    
+    def __obp_check_adbs(self):
+        for adb in self.__autonomous_databases:
+            if not(adb['is_mtls_connection_required']):
+                self.__obp_regional_checks[adb['region']]['ADB_MTLS']['findings'].append(adb)
+                print("-MTLS-" * 10)
+                print(f"{adb['id']}")
+                print("bad")
+                print(adb['is_mtls_connection_required'])
+            if adb['kms_key_id'] == "ORACLE_MANAGED_KEY":
+                self.__obp_regional_checks[adb['region']]['ADB_CMK']['findings'].append(adb)
+                print("-KMS-" * 10)
+                print(f"{adb['id']}")
+                print("bad")
+                print(adb['kms_key_id'])
+            if not(adb['private_endpoint_ip']):
+                self.__obp_regional_checks[adb['region']]['ADB_Private_IP']['findings'].append(adb)
+                print("-Private-" * 10)
+                print(f"{adb['id']}")
+                print("bad")
+                print(adb['private_endpoint_ip'])
+            if adb['data_safe_status'] == "NOT_REGISTERED":
+                self.__obp_regional_checks[adb['region']]['ADB_DataSafe']['findings'].append(adb)
+                print("-Private-" * 10)
+                print(f"{adb['id']}")
+                print("bad")
+                print(adb['data_safe_status'])
+        
 
     ##########################################################################
     # Analyzes Tenancy Data for Oracle Best Practices Report
@@ -5257,7 +5302,8 @@ class CIS_Report:
         self.__obp_check_certificates()
         self.__obp_check_bucket_logs()
         self.__obp_check_subnet_logs()
-        self.__obp_check_close_service_limits()
+        # self.__obp_check_close_service_limits()
+        self.__obp_check_adbs()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation

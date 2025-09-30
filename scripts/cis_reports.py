@@ -1354,10 +1354,10 @@ class CIS_Report:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
                                                                           args={'attribute_sets' : ['default']})
                     for grp in groups_data:
-                        print("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
+                        debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
                         members = self.__identity_read_domains_group_members(domain_client=identity_domain['IdentityDomainClient'], group_ocid=grp.id)
-                        print("\t__identity_read_groups_and_membership: Number or members: " + str(len(members)))
+                        debug("\t__identity_read_groups_and_membership: Number or members: " + str(len(members)))
                         if members:
                             # For groups with members print one record per user per group
                             for member in members:

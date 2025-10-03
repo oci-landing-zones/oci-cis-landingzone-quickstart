@@ -4247,7 +4247,7 @@ class CIS_Report:
 
             login_over_45_days = None
             api_key_over_45_days = None
-            if user['lifecycle_state'] and user['can_use_console_password']: # and not(user['is_federated']) and user['can_use_console_password']:
+            if user['lifecycle_state'] and user['can_use_console_password'] and not(user['is_federated']): #and user['can_use_console_password']:
                 if user['last_successful_login_date']:
                     last_successful_login_date = user['last_successful_login_date'].split(".")[0]
                     if self.local_user_time_max_datetime > datetime.datetime.strptime(last_successful_login_date, self.__iso_time_format):

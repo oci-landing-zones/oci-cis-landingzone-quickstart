@@ -4765,16 +4765,25 @@ class CIS_Report:
         
     
     ##########################################################################
-    # OBP Budgets Check
+    # OBP Budgets Check 
     ##########################################################################
     def __obp_check_budget(self):
         if len(self.__budgets) > 0:
             for budget in self.__budgets:
-                if budget['alert_rule_count'] > 0 and budget['target_compartment_id'] == self.__tenancy.id:
-                    self.obp_foundations_checks['Cost_Tracking_Budgets']['Status'] = True
-                    self.obp_foundations_checks['Cost_Tracking_Budgets']['OBP'].append(budget)
+                if (
+                    budget["alert_rule_count"] > 0
+                    and budget["target_compartment_id"] == self.__tenancy.id
+                ):
+                    for alert in budget["alerts"]:
+                        if alert.type == "FORECAST":
+                            self.obp_foundations_checks["Cost_Tracking_Budgets"]["Status"] = True
+                            self.obp_foundations_checks["Cost_Tracking_Budgets"]["OBP"].append(budget)
+                            break  
+                    else:  
+                        self.obp_foundations_checks["Cost_Tracking_Budgets"]["Findings"].append(budget)
                 else:
-                    self.obp_foundations_checks['Cost_Tracking_Budgets']['Findings'].append(budget)
+                    self.obp_foundations_checks["Cost_Tracking_Budgets"]["Findings"].append(budget)
+
     
     def __obp_check_audit_log_compartments(self):
         # Building a Hash Table of Parent Child Hierarchy for Audit

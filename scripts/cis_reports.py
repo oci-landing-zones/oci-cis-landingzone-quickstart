@@ -81,63 +81,63 @@ def show_version(verbose=False):
     else:
         print(script_updated)
 
-class CISMappings:
+class ComplianceMappings:
     mappings = {
-        {'IAM-1' : {'CISv8' : ['5.4', '6.7'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-2' : {'CISv8' : ['3.3'], 'CCCS Guard Rail' : ['1', '2', '3']}},
-        {'IAM-3' : {'CISv8' : ['3.3', '5.4'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-4' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-5' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-6' : {'CISv8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-7' : {'CISv8' : ['6.3', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']}},
-        {'IAM-8' : {'CISv8' : ['4.1', '4.4'], 'CCCS Guard Rail' : ['6', '7']}},
-        {'IAM-9' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']}},
-        {'IAM-10' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']}},
-        {'IAM-11' : {'CISv8' : ['5.4'], 'CCCS Guard Rail' : ['']}},
-        {'IAM-12' : {'CISv8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']}},
-        {'IAM-13' : {'CISv8' : ['5.1'], 'CCCS Guard Rail' : ['1', '2', '3']}},
-        {'IAM-14' : {'CISv8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']}},
-        {'IAM-15' : {'CISv8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']}},
-        {'IAM-16' : {'CISv8' : ['5.3'], 'CCCS Guard Rail' : ['2']}},
-        {'IAM-17' : {'CISv8' : ['5'], 'CCCS Guard Rail' : ['2']}},
-        {'NTW-1' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-2' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-3' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-4' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-5' : {'CISv8' : ['12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-6' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-7' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'NTW-8' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']}},
-        {'COM-1' : {'CISv8' : ['4.6'], 'CCCS Guard Rail' : ['']}},
-        {'COM-2' : {'CISv8' : ['4.1'], 'CCCS Guard Rail' : ['']}},
-        {'COM-3' : {'CISv8' : [''], 'CCCS Guard Rail' : ['']}},
-        {'LAM-1' : {'CISv8' : ['1.1'], 'CCCS Guard Rail' : ['']}},
-        {'LAM-2' : {'CISv8' : ['8.2', '8.11'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-3' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-4' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-5' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-6' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-7' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-8' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-9' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-10' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-11' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-12' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-13' : {'CISv8' : ['8.2', '8.5', '13.6'], 'CCCS Guard Rail' : ['']}},
-        {'LAM-14' : {'CISv8' : ['8.2', '8.5', '8.11'], 'CCCS Guard Rail' : ['1', '2', '3']}},
-        {'LAM-15' : {'CISv8' : ['8.2', '8.11'], 'CCCS Guard Rail' : ['']}},
-        {'LAM-16' : {'CISv8' : [], 'CCCS Guard Rail' : ['6', '7']}},
-        {'LAM-17' : {'CISv8' : ['8.2'], 'CCCS Guard Rail' : ['11']}},
-        {'LAM-18' : {'CISv8' : ['8.2'], 'CCCS Guard Rail' : ['11']}},
-        {'STO-1-1' : {'CISv8' : ['3.3'], 'CCCS Guard Rail' : ['']}},
-        {'STO-1-2' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : ['']}},
-        {'STO-1-3' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : ['']}},
-        {'STO-2-1' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : ['']}},
-        {'STO-2-2' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : ['']}},
-        {'STO-3-1' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : ['']}},
-        {'AM-1' : {'CISv8' : ['3.1'], 'CCCS Guard Rail' : ['2', '3', '8', '12']}},
-        {'AM-2' : {'CISv8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']}}
-}
+        'IAM-1' : {'CISv8' : ['5.4', '6.7'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-2' : {'CISv8' : ['3.3'], 'CCCS Guard Rail' : ['1','2', '3']},
+        'IAM-3' : {'CISv8' : ['3.3', '5.4'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-4' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-5' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-6' : {'CISv8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-7' : {'CISv8' : ['6.3', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']},
+        'IAM-8' : {'CISv8' : ['4.1', '4.4'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-9' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-10' : {'CISv8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-11' : {'CISv8' : ['5.4'], 'CCCS Guard Rail' : []},
+        'IAM-12' : {'CISv8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-13' : {'CISv8' : ['5.1'], 'CCCS Guard Rail' : ['1', '2', '3']},
+        'IAM-14' : {'CISv8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-15' : {'CISv8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-16' : {'CISv8' : ['5.3'], 'CCCS Guard Rail' : ['2']},
+        'IAM-17' : {'CISv8' : ['5'], 'CCCS Guard Rail' : ['2']},
+        'NTW-1' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-2' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-3' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-4' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-5' : {'CISv8' : ['12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-6' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-7' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3' ,'5', '7', '9']},
+        'NTW-8' : {'CISv8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'COM-1' : {'CISv8' : ['4.6'], 'CCCS Guard Rail' : []},
+        'COM-2' : {'CISv8' : ['4.1'], 'CCCS Guard Rail' : []},
+        'COM-3' : {'CISv8' : [''], 'CCCS Guard Rail' : []},
+        'LAM-1' : {'CISv8' : ['1.1'], 'CCCS Guard Rail' : []},
+        'LAM-2' : {'CISv8' : ['8.2', '8.11'], 'CCCS Guard Rail' : ['11']},
+        'LAM-3' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-4' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-5' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-6' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-7' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-8' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-9' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-10' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-11' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-12' : {'CISv8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-13' : {'CISv8' : ['8.2', '8.5', '13.6'], 'CCCS Guard Rail' : []},
+        'LAM-14' : {'CISv8' : ['8.2', '8.5', '8.11'], 'CCCS Guard Rail' : ['1', '2', '3']},
+        'LAM-15' : {'CISv8' : ['8.2', '8.11'], 'CCCS Guard Rail' : []},
+        'LAM-16' : {'CISv8' : [], 'CCCS Guard Rail' : ['6,7']},
+        'LAM-17' : {'CISv8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-18' : {'CISv8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
+        'STO-1-1' : {'CISv8' : ['3.3'], 'CCCS Guard Rail' : []},
+        'STO-1-2' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-1-3' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-2-1' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-2-2' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-3-1' : {'CISv8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'AM-1' : {'CISv8' : ['3.1'], 'CCCS Guard Rail' : ['2', '3', '8', '12']},
+        'AM-2' : {'CISv8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']}
+    }
 
 
 ##########################################################################
@@ -145,8 +145,6 @@ class CISMappings:
 ##########################################################################
 class CIS_Report:
 
-    # Compliance Mappings
-    cis_mappings = CISMappings()
     # Class variables
     _DAYS_OLD = 90
     __KMS_DAYS_OLD = 365
@@ -1128,13 +1126,30 @@ class CIS_Report:
         self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
-        self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
+        self.__oci_cert_uri = self.__oci_cloud_url + "/security/certificates/certificate/"
+
+        # Adding Mappings
+        self.__map_compliance_to_script()
 
 ##########################################################################
 # Build Compliance Mappings
 ##########################################################################
-    def map_compliance_to_script(self):
-        pass
+    def __map_compliance_to_script(self):
+        # Compliance Mappings
+        self.__compliance_mappings = ComplianceMappings()
+        current_mappings = self.__compliance_mappings.mappings
+        
+        # Name of the other compliance framework
+        self.__primary_framework_name  = list(current_mappings['IAM-1'].keys())[0]
+        self.__other_framework_name =  list(current_mappings['IAM-1'].keys())[1]
+    
+        for mapping in current_mappings:
+            for cis_recommendation in self.cis_foundations_benchmark_3_0:
+                if self.cis_foundations_benchmark_3_0[cis_recommendation]['id'] == mapping:
+                    for framework_name, framework_value in current_mappings[mapping].items():
+                        self.cis_foundations_benchmark_3_0[cis_recommendation][framework_name] = framework_value
+
+
 
 ##########################################################################
 # Create Client config
@@ -5419,8 +5434,8 @@ class CIS_Report:
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Compliance Percentage Per Recommendation": compliance_percentage,
                     "Title": recommendation['Title'],
-                    "CIS v8": recommendation['CISv8'],
-                    "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
+                    self.__primary_framework_name : recommendation[self.__primary_framework_name],
+                    self.__other_framework_name : recommendation[self.__other_framework_name],
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
                 }
@@ -5728,13 +5743,14 @@ class CIS_Report:
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
                     html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
-                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
                     html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    cis_v8 = str(row["CIS v8"]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{cis_v8}</td>')
-                    html_file.write(f'<td>{str(row["CCCS Guard Rail"])}</td>')
+                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    html_file.write(f'<td>{primary_framework}</td>')
+                    html_file.write(f'<td>{other_framework}</td>')
                     v = str(row['Filename'])
                     if v == ' ':
                         html_file.write('<td> </td>')
@@ -5797,13 +5813,14 @@ class CIS_Report:
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
                     html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
-                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
                     html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    cis_v8 = str(row["CIS v8"]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{cis_v8}</td>')
-                    html_file.write(f'<td>{str(row["CCCS Guard Rail"])}</td>')
+                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    html_file.write(f'<td>{primary_framework}</td>')
+                    html_file.write(f'<td>{other_framework}</td>')
                     v = str(row['Filename'])
                     if v == ' ':
                         html_file.write('<td> </td>')

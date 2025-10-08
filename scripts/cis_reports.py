@@ -81,6 +81,64 @@ def show_version(verbose=False):
     else:
         print(script_updated)
 
+class ComplianceMappings:
+    mappings = {
+        'IAM-1' : {'CIS v8' : ['5.4', '6.7'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-2' : {'CIS v8' : ['3.3'], 'CCCS Guard Rail' : ['1','2', '3']},
+        'IAM-3' : {'CIS v8' : ['3.3', '5.4'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-4' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-5' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-6' : {'CIS v8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-7' : {'CIS v8' : ['6.3', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']},
+        'IAM-8' : {'CIS v8' : ['4.1', '4.4'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-9' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-10' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-11' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : []},
+        'IAM-12' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-13' : {'CIS v8' : ['5.1'], 'CCCS Guard Rail' : ['1', '2', '3']},
+        'IAM-14' : {'CIS v8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']},
+        'IAM-15' : {'CIS v8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
+        'IAM-16' : {'CIS v8' : ['5.3'], 'CCCS Guard Rail' : ['2']},
+        'IAM-17' : {'CIS v8' : ['5'], 'CCCS Guard Rail' : ['2']},
+        'NTW-1' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-2' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-3' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-4' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-5' : {'CIS v8' : ['12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-6' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'NTW-7' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3' ,'5', '7', '9']},
+        'NTW-8' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+        'COM-1' : {'CIS v8' : ['4.6'], 'CCCS Guard Rail' : []},
+        'COM-2' : {'CIS v8' : ['4.1'], 'CCCS Guard Rail' : []},
+        'COM-3' : {'CIS v8' : [''], 'CCCS Guard Rail' : []},
+        'LAM-1' : {'CIS v8' : ['1.1'], 'CCCS Guard Rail' : []},
+        'LAM-2' : {'CIS v8' : ['8.2', '8.11'], 'CCCS Guard Rail' : ['11']},
+        'LAM-3' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-4' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-5' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-6' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-7' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-8' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-9' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-10' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-11' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-12' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-13' : {'CIS v8' : ['8.2', '8.5', '13.6'], 'CCCS Guard Rail' : []},
+        'LAM-14' : {'CIS v8' : ['8.2', '8.5', '8.11'], 'CCCS Guard Rail' : ['1', '2', '3']},
+        'LAM-15' : {'CIS v8' : ['8.2', '8.11'], 'CCCS Guard Rail' : []},
+        'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6,7']},
+        'LAM-17' : {'CIS v8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
+        'LAM-18' : {'CIS v8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
+        'STO-1-1' : {'CIS v8' : ['3.3'], 'CCCS Guard Rail' : []},
+        'STO-1-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-1-3' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-2-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-2-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'STO-3-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+        'AM-1' : {'CIS v8' : ['3.1'], 'CCCS Guard Rail' : ['2', '3', '8', '12']},
+        'AM-2' : {'CIS v8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']}
+    }
+
 
 ##########################################################################
 # CIS Reporting Class
@@ -132,66 +190,61 @@ class CIS_Report:
                  disable_api_keys=False):
 
         # CIS Foundation benchmark 3.0.0
-        self.cis_foundations_benchmark_3_0 = {
-            '1.1': {'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.7'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.2': {'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
-            '1.3': {'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3', '5.4'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.4': {'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1', '5.2'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.5': {'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1', '5.2'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.6': {'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.2'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.7': {'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.3', '6.5'], 'CCCS Guard Rail': '1,2,3,4', 'Remediation': []},
-            '1.8': {'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1', '4.4'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '1.9': {'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1', '5.2'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '1.10': {'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.1', '5.2'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '1.11': {'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure user IAM Database Passwords rotate within 90 days', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '1.12': {'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.4'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '1.13': {'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.1'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
-            '1.14': {'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['6.8'], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '1.15': {'section': 'Identity and Access Management', 'recommendation_#': '1.15', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['5.4', '6.8'], 'CCCS Guard Rail': '2,3', 'Remediation': []},
-            '1.16': {'section': 'Identity and Access Management', 'recommendation_#': '1.16', 'Title': 'Ensure OCI IAM credentials unused for 45 days or more are disabled', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5.3'], 'CCCS Guard Rail': '2', 'Remediation': []},
-            '1.17': {'section': 'Identity and Access Management', 'recommendation_#': '1.17', 'Title': 'Ensure there is only one active API Key for any single OCI IAM user.', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['5'], 'CCCS Guard Rail': '2', 'Remediation': []},
-
-            '2.1': {'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.2': {'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.3': {'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.4': {'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.5': {'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP within VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.6': {'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.7': {'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-            '2.8': {'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.4', '12.3'], 'CCCS Guard Rail': '2,3,5,7,9', 'Remediation': []},
-
-            '3.1': {'section': 'Compute', 'recommendation_#': '3.1', 'Title': 'Ensure Compute Instance Legacy Metadata service endpoint is disabled.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['4.6'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.2': {'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Secure Boot is enabled on Compute Instance.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['4.1'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '3.3': {'section': 'Compute', 'recommendation_#': '3.3', 'Title': 'Ensure In-transit Encryption is enabled on Compute Instance.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [''], 'CCCS Guard Rail': '', 'Remediation': []},
-
-            '4.1': {'section': 'Logging and Monitoring', 'recommendation_#': '4.1', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['1.1'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.2': {'section': 'Logging and Monitoring', 'recommendation_#': '4.2', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.3': {'section': 'Logging and Monitoring', 'recommendation_#': '4.3', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.4': {'section': 'Logging and Monitoring', 'recommendation_#': '4.4', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.5': {'section': 'Logging and Monitoring', 'recommendation_#': '4.5', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.6': {'section': 'Logging and Monitoring', 'recommendation_#': '4.6', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.7': {'section': 'Logging and Monitoring', 'recommendation_#': '4.7', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.8': {'section': 'Logging and Monitoring', 'recommendation_#': '4.8', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.9': {'section': 'Logging and Monitoring', 'recommendation_#': '4.9', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.10': {'section': 'Logging and Monitoring', 'recommendation_#': '4.10', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.11': {'section': 'Logging and Monitoring', 'recommendation_#': '4.11', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.12': {'section': 'Logging and Monitoring', 'recommendation_#': '4.12', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['4.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.13': {'section': 'Logging and Monitoring', 'recommendation_#': '4.13', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '13.6'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.14': {'section': 'Logging and Monitoring', 'recommendation_#': '4.14', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.5', '8.11'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []},
-            '4.15': {'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': False, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2', '8.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '4.16': {'section': 'Logging and Monitoring', 'recommendation_#': '4.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': [], 'CCCS Guard Rail': '6,7', 'Remediation': []},
-            '4.17': {'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-            '4.18': {'section': 'Logging and Monitoring', 'recommendation_#': '4.18', 'Title': 'Ensure a notification is configured for Local OCI User Authentication.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['8.2'], 'CCCS Guard Rail': '11', 'Remediation': []},
-
-            '5.1.1': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.3'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '5.1.2': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '5.1.3': {'section': 'Storage - Object Storage', 'recommendation_#': '5.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-            '5.2.1': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
-            '5.2.2': {'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': ''},
-            '5.3.1': {'section': 'Storage - File Storage Service', 'recommendation_#': '5.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'CISv8': ['3.11'], 'CCCS Guard Rail': '', 'Remediation': []},
-
-            '6.1': {'section': 'Asset Management', 'recommendation_#': '6.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.1'], 'CCCS Guard Rail': '2,3,8,12', 'Remediation': []},
-            '6.2': {'section': 'Asset Management', 'recommendation_#': '6.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'CISv8': ['3.12'], 'CCCS Guard Rail': '1,2,3', 'Remediation': []}
+        self.cis_foundations_benchmark_3_0 = { 
+            '1.1' : {'id': 'IAM-1', 'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.2' : {'id': 'IAM-2', 'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.3' : {'id': 'IAM-3', 'section': 'Identity and Access Management', 'recommendation_#': '1.3', 'Title': 'Ensure IAM administrators cannot update tenancy Administrators group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.4' : {'id': 'IAM-4', 'section': 'Identity and Access Management', 'recommendation_#': '1.4', 'Title': 'Ensure IAM password policy requires minimum length of 14 or greater', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.5' : {'id': 'IAM-5', 'section': 'Identity and Access Management', 'recommendation_#': '1.5', 'Title': 'Ensure IAM password policy expires passwords within 365 days', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.6' : {'id': 'IAM-6', 'section': 'Identity and Access Management', 'recommendation_#': '1.6', 'Title': 'Ensure IAM password policy prevents password reuse', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.7' : {'id': 'IAM-7', 'section': 'Identity and Access Management', 'recommendation_#': '1.7', 'Title': 'Ensure MFA is enabled for all users with a console password', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.8' : {'id': 'IAM-8', 'section': 'Identity and Access Management', 'recommendation_#': '1.8', 'Title': 'Ensure user API keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.9' : {'id': 'IAM-9', 'section': 'Identity and Access Management', 'recommendation_#': '1.9', 'Title': 'Ensure user customer secret keys rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.10' : {'id': 'IAM-10', 'section': 'Identity and Access Management', 'recommendation_#': '1.10', 'Title': 'Ensure user auth tokens rotate within 90 days or less', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.11' : {'id': 'IAM-11', 'section': 'Identity and Access Management', 'recommendation_#': '1.11', 'Title': 'Ensure user IAM Database Passwords rotate within 90 days', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.12' : {'id': 'IAM-12', 'section': 'Identity and Access Management', 'recommendation_#': '1.12', 'Title': 'Ensure API keys are not created for tenancy administrator users', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.13' : {'id': 'IAM-13', 'section': 'Identity and Access Management', 'recommendation_#': '1.13', 'Title': 'Ensure all OCI IAM user accounts have a valid and current email address', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.14' : {'id': 'IAM-14', 'section': 'Identity and Access Management', 'recommendation_#': '1.14', 'Title': 'Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.15' : {'id': 'IAM-15', 'section': 'Identity and Access Management', 'recommendation_#': '1.15', 'Title': 'Ensure storage service-level admins cannot delete resources they manage', 'Status': None, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.16' : {'id': 'IAM-16', 'section': 'Identity and Access Management', 'recommendation_#': '1.16', 'Title': 'Ensure OCI IAM credentials unused for 45 days or more are disabled', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '1.17' : {'id': 'IAM-17', 'section': 'Identity and Access Management', 'recommendation_#': '1.17', 'Title': 'Ensure there is only one active API Key for any single OCI IAM user.', 'Status': None, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.1' : {'id': 'NTW-1', 'section': 'Networking', 'recommendation_#': '2.1', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.2' : {'id': 'NTW-2', 'section': 'Networking', 'recommendation_#': '2.2', 'Title': 'Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.3' : {'id': 'NTW-3', 'section': 'Networking', 'recommendation_#': '2.3', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.4' : {'id': 'NTW-4', 'section': 'Networking', 'recommendation_#': '2.4', 'Title': 'Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.5' : {'id': 'NTW-5', 'section': 'Networking', 'recommendation_#': '2.5', 'Title': 'Ensure the default security list of every VCN restricts all traffic except ICMP within VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.6' : {'id': 'NTW-6', 'section': 'Networking', 'recommendation_#': '2.6', 'Title': 'Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.7' : {'id': 'NTW-7', 'section': 'Networking', 'recommendation_#': '2.7', 'Title': 'Ensure Oracle Analytics Cloud (OAC) access is restricted to allowed sources or deployed within a Virtual Cloud Network.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '2.8' : {'id': 'NTW-8', 'section': 'Networking', 'recommendation_#': '2.8', 'Title': 'Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '3.1' : {'id': 'COM-1', 'section': 'Compute', 'recommendation_#': '3.1', 'Title': 'Ensure Compute Instance Legacy Metadata service endpoint is disabled.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '3.2' : {'id': 'COM-2', 'section': 'Compute', 'recommendation_#': '3.2', 'Title': 'Ensure Secure Boot is enabled on Compute Instance.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '3.3' : {'id': 'COM-3', 'section': 'Compute', 'recommendation_#': '3.3', 'Title': 'Ensure In-transit Encryption is enabled on Compute Instance.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.1' : {'id': 'LAM-1', 'section': 'Logging and Monitoring', 'recommendation_#': '4.1', 'Title': 'Ensure default tags are used on resources.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.2' : {'id': 'LAM-2', 'section': 'Logging and Monitoring', 'recommendation_#': '4.2', 'Title': 'Create at least one notification topic and subscription to receive monitoring alerts.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.3' : {'id': 'LAM-3', 'section': 'Logging and Monitoring', 'recommendation_#': '4.3', 'Title': 'Ensure a notification is configured for Identity Provider changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.4' : {'id': 'LAM-4', 'section': 'Logging and Monitoring', 'recommendation_#': '4.4', 'Title': 'Ensure a notification is configured for IdP group mapping changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.5' : {'id': 'LAM-5', 'section': 'Logging and Monitoring', 'recommendation_#': '4.5', 'Title': 'Ensure a notification is configured for IAM group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.6' : {'id': 'LAM-6', 'section': 'Logging and Monitoring', 'recommendation_#': '4.6', 'Title': 'Ensure a notification is configured for IAM policy changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.7' : {'id': 'LAM-7', 'section': 'Logging and Monitoring', 'recommendation_#': '4.7', 'Title': 'Ensure a notification is configured for user changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.8' : {'id': 'LAM-8', 'section': 'Logging and Monitoring', 'recommendation_#': '4.8', 'Title': 'Ensure a notification is configured for VCN changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.9' : {'id': 'LAM-9', 'section': 'Logging and Monitoring', 'recommendation_#': '4.9', 'Title': 'Ensure a notification is configured for changes to route tables.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.10' : {'id': 'LAM-10', 'section': 'Logging and Monitoring', 'recommendation_#': '4.10', 'Title': 'Ensure a notification is configured for security list changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.11' : {'id': 'LAM-11', 'section': 'Logging and Monitoring', 'recommendation_#': '4.11', 'Title': 'Ensure a notification is configured for network security group changes.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.12' : {'id': 'LAM-12', 'section': 'Logging and Monitoring', 'recommendation_#': '4.12', 'Title': 'Ensure a notification is configured for changes to network gateways.', 'Status': False, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.13' : {'id': 'LAM-13', 'section': 'Logging and Monitoring', 'recommendation_#': '4.13', 'Title': 'Ensure VCN flow logging is enabled for all subnets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.14' : {'id': 'LAM-14', 'section': 'Logging and Monitoring', 'recommendation_#': '4.14', 'Title': 'Ensure Cloud Guard is enabled in the root compartment of the tenancy.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.15' : {'id': 'LAM-15', 'section': 'Logging and Monitoring', 'recommendation_#': '4.15', 'Title': 'Ensure a notification is configured for Oracle Cloud Guard problems detected.', 'Status': False, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.16' : {'id': 'LAM-16', 'section': 'Logging and Monitoring', 'recommendation_#': '4.16', 'Title': 'Ensure customer created Customer Managed Key (CMK) is rotated at least annually.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.17' : {'id': 'LAM-17', 'section': 'Logging and Monitoring', 'recommendation_#': '4.17', 'Title': 'Ensure write level Object Storage logging is enabled for all buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '4.18' : {'id': 'LAM-18', 'section': 'Logging and Monitoring', 'recommendation_#': '4.18', 'Title': 'Ensure a notification is configured for Local OCI User Authentication.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '5.1.1' : {'id': 'STO-1-1', 'section': 'Storage - Object Storage', 'recommendation_#': '5.1.1', 'Title': 'Ensure no Object Storage buckets are publicly visible.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '5.1.2' : {'id': 'STO-1-2', 'section': 'Storage - Object Storage', 'recommendation_#': '5.1.2', 'Title': 'Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK).', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '5.1.3' : {'id': 'STO-1-3', 'section': 'Storage - Object Storage', 'recommendation_#': '5.1.3', 'Title': 'Ensure Versioning is Enabled for Object Storage Buckets.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '5.2.1' : {'id': 'STO-2-1', 'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.1', 'Title': 'Ensure Block Volumes are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': []},
+            '5.2.2' : {'id': 'STO-2-2', 'section': 'Storage - Block Volumes', 'recommendation_#': '5.2.2', 'Title': 'Ensure Boot Volumes are encrypted with Customer Managed Key.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': []},
+            '5.3.1' : {'id': 'STO-3-1', 'section': 'Storage - File Storage Service', 'recommendation_#': '5.3.1', 'Title': 'Ensure File Storage Systems are encrypted with Customer Managed Keys.', 'Status': True, 'Level': 2, 'Total': [], 'Findings': [], 'Remediation': []},
+            '6.1' : {'id': 'AM-1', 'section': 'Asset Management', 'recommendation_#': '6.1', 'Title': 'Create at least one compartment in your tenancy to store cloud resources.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
+            '6.2' : {'id': 'AM-2', 'section': 'Asset Management', 'recommendation_#': '6.2', 'Title': 'Ensure no resources are created in the root compartment.', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []}
         }
 
         # Remediation Report
@@ -630,22 +683,21 @@ class CIS_Report:
 
         # OBP Checks
         self.obp_foundations_checks = {
-            'SIEM_Audit_Log_All_Comps': {'Section': "SIEM Logging", "id": "G1", 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
-            'SIEM_Audit_Incl_Sub_Comp': {'Section': "SIEM Logging", "id": "G2", 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
-            'SIEM_VCN_Flow_Logging': {'Section': "SIEM Logging", "id": "G3", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'SIEM_Write_Bucket_Logs': {'Section': "SIEM Logging", "id": "G4", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'SIEM_Read_Bucket_Logs': {'Section': "SIEM Logging", "id": "G5", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
-            'Networking_Connectivity': {'Section': "Advanced Networking", "id": "H1", 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
-            'Cloud_Guard_Config': {'Section': "CSPM", "id": "I1", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
-            'Certificates_Near_Expiry': {'Section': "Certificates", "id": "J1", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
-            'Service_Limits': {'Section': "Governance", "id": "K1", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
-            'Cost_Tracking_Budgets': {'Section': "Governance", "id": "K2", 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
-            'ADB_MTLS': {'Section': "Autonoumous Database", "id": "L1", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_DataSafe': {'Section': "Autonoumous Database", "id": "L2", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_CMK': {'Section': "Autonoumous Database", "id": "L3", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Contacts': {'Section': "Autonoumous Database", "id": "L4", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Private_IP': {'Section': "Autonoumous Database", "id": "L5", 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-
+            'SIEM_Audit_Log_All_Comps': {'id': 'OBP-SIEM-1', 'section': "SIEM Logging", 'Title': 'All compartment audit logs sent to SIEM', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp': {'id': 'OBP-SIEM-2', 'section': "SIEM Logging", 'Title': 'Include all sub compartments', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_VCN_Flow_Logging': {'id': 'OBP-SIEM-3', 'section': "SIEM Logging", 'Title': 'VCN Flow logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Write_Bucket_Logs': {'id': 'OBP-SIEM-4', 'section': "SIEM Logging", 'Title': 'Bucket write logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'SIEM_Read_Bucket_Logs': {'id': 'OBP-SIEM-5', 'section': "SIEM Logging", 'Title': 'Bucket read logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'Networking_Connectivity': {'id': 'OBP-NTW-1', 'section': "Advanced Networking", 'Title': 'Scalable and secure topology in OCI', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
+            'Cloud_Guard_Config': {'id': 'OBP-CSP-1', 'section': "CSPM", 'Title': 'Cloud Guard enabled and configured', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
+            'Certificates_Near_Expiry': {'id': 'OBP-CRT-1', 'section': "Certificates", 'Title': 'Certificates to expire in 30 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
+            'Service_Limits': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Visibility into OCI Limits', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
+            'Cost_Tracking_Budgets': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
+            'ADB_MTLS': {'id': 'OBP-ADB-1', 'section': "Autonoumous Database", 'Title': 'ADB Databases enforce Mutual TLS authentication', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
+            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
+            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
+            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
+            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -1074,7 +1126,30 @@ class CIS_Report:
         self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
-        self.__oci_cert_uri = self.__oci_cloud_url + "security/certificates/certificate/"
+        self.__oci_cert_uri = self.__oci_cloud_url + "/security/certificates/certificate/"
+
+        # Adding Mappings
+        self.__map_compliance_to_script()
+
+##########################################################################
+# Build Compliance Mappings
+##########################################################################
+    def __map_compliance_to_script(self):
+        # Compliance Mappings
+        self.__compliance_mappings = ComplianceMappings()
+        current_mappings = self.__compliance_mappings.mappings
+        
+        # Name of the other compliance framework
+        self.__primary_framework_name  = list(current_mappings['IAM-1'].keys())[0]
+        self.__other_framework_name =  list(current_mappings['IAM-1'].keys())[1]
+    
+        for mapping in current_mappings:
+            for cis_recommendation in self.cis_foundations_benchmark_3_0:
+                if self.cis_foundations_benchmark_3_0[cis_recommendation]['id'] == mapping:
+                    for framework_name, framework_value in current_mappings[mapping].items():
+                        self.cis_foundations_benchmark_3_0[cis_recommendation][framework_name] = framework_value
+
+
 
 ##########################################################################
 # Create Client config
@@ -5368,8 +5443,8 @@ class CIS_Report:
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Compliance Percentage Per Recommendation": compliance_percentage,
                     "Title": recommendation['Title'],
-                    "CIS v8": recommendation['CISv8'],
-                    "CCCS Guard Rail": recommendation['CCCS Guard Rail'],
+                    self.__primary_framework_name : recommendation[self.__primary_framework_name],
+                    self.__other_framework_name : recommendation[self.__other_framework_name],
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
                 }
@@ -5677,13 +5752,14 @@ class CIS_Report:
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
                     html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
-                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
                     html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    cis_v8 = str(row["CIS v8"]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{cis_v8}</td>')
-                    html_file.write(f'<td>{str(row["CCCS Guard Rail"])}</td>')
+                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    html_file.write(f'<td>{primary_framework}</td>')
+                    html_file.write(f'<td>{other_framework}</td>')
                     v = str(row['Filename'])
                     if v == ' ':
                         html_file.write('<td> </td>')
@@ -5746,13 +5822,14 @@ class CIS_Report:
                     html_file.write('<tr><td><b>Remediation</b></td>')
                     html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
                     html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write('<td id="td_override" style="width: 15%;"><b>CIS v8</b></td>')
-                    html_file.write('<td id="td_override" style="width: 20%;"><b>CCCS Guard Rail</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
+                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
                     html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
                     html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    cis_v8 = str(row["CIS v8"]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{cis_v8}</td>')
-                    html_file.write(f'<td>{str(row["CCCS Guard Rail"])}</td>')
+                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
+                    html_file.write(f'<td>{primary_framework}</td>')
+                    html_file.write(f'<td>{other_framework}</td>')
                     v = str(row['Filename'])
                     if v == ' ':
                         html_file.write('<td> </td>')

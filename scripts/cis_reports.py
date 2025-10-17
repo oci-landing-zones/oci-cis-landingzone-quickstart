@@ -692,7 +692,8 @@ class CIS_Report:
             'Cloud_Guard_Config': {'id': 'OBP-CSP-1', 'section': "CSPM", 'Title': 'Cloud Guard enabled and configured', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
             'Certificates_Near_Expiry': {'id': 'OBP-CRT-1', 'section': "Certificates", 'Title': 'Certificates to expire in 30 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
             'Service_Limits': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Visibility into OCI Limits', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
-            'Cost_Tracking_Budgets': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
+            'Cost_Tracking_Budgets': {'id': 'OBP-GOV-2', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
+            'Quotas': {'id': 'OBP-GOV-3', 'section': "Governance", 'Title': 'Quota policies are used', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm"},
             'ADB_MTLS': {'id': 'OBP-ADB-1', 'section': "Autonoumous Database", 'Title': 'ADB Databases enforce Mutual TLS authentication', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
@@ -924,6 +925,9 @@ class CIS_Report:
         # For Budgets
         self.__budgets = []
 
+        # Quotas 
+        self.__quotas = []
+
         # For Service Connector
         self.__service_connectors = {}
 
@@ -938,7 +942,6 @@ class CIS_Report:
 
         # Certificates raw resources
         self.__raw_oci_certificates = []
-        # Setting list of regions to run in
 
         # Start print time info
         show_version(verbose=True)
@@ -1127,6 +1130,7 @@ class CIS_Report:
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
         self.__oci_instances_uri = self.__oci_cloud_url + "/compute/instances/"
         self.__oci_cert_uri = self.__oci_cloud_url + "/security/certificates/certificate/"
+        self.__oci_quota_uri = self.__oci_cloud_url + '/quotas/'
 
         # Adding Mappings
         self.__map_compliance_to_script()
@@ -3442,6 +3446,36 @@ class CIS_Report:
                 "Error in __budget_read_budgets " + str(e.args))
 
     ##########################################################################
+    # OCI Quotas
+    ##########################################################################
+    def __quota_read(self):
+        # QUotas are only in the home region
+        quota_data = self.__search_resource_in_region("quota", self.__regions[self.__home_region] )
+        debug("\t__quota_read: Recieved " + str(len(quota_data)) + " quotas " + str(self.__regions[self.__home_region]['region_name']))
+        try: 
+            for quota in quota_data:
+                deep_link = self.__oci_quota_uri + quota.identifier + '?region=' + self.__regions[self.__home_region]['region_name']                
+                record = {
+                    "id": quota.identifier,
+                    "deep_link": self.__generate_csv_hyperlink(deep_link, quota.identifier),
+                    "compartment_id": quota.compartment_id,
+                    "created_time": quota.time_created,
+                    "lifecycle_state": quota.lifecycle_state,
+                    "defined_tags": quota.defined_tags,
+                    "freeform_tags": quota.freeform_tags,
+                    "region": self.__regions[self.__home_region]['region_name']
+
+                }
+                self.__quotas.append(record)
+
+                print("\tProcessed " + str(len(self.__quotas)) + " Quotas")
+                return self.__quotas
+        except Exception as e:
+            raise RuntimeError(
+                "Error in __quota_read " + str(e.args))
+
+    
+    ##########################################################################
     # Cloud Guard Configuration
     ##########################################################################
     def __cloud_guard_read_cloud_guard_configuration(self):
@@ -4294,14 +4328,14 @@ class CIS_Report:
 
             login_over_45_days = None
             api_key_over_45_days = None
-            if user['lifecycle_state']: # and not(user['is_federated']) and user['can_use_console_password']:
-                debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
+            if user['lifecycle_state'] and user['can_use_console_password'] and not(user['is_federated']): #and user['can_use_console_password']:
                 if user['last_successful_login_date']:
                     last_successful_login_date = user['last_successful_login_date'].split(".")[0]
                     if self.local_user_time_max_datetime > datetime.datetime.strptime(last_successful_login_date, self.__iso_time_format):
                         login_over_45_days = True
                         debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['last_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                     else:
+                        debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['last_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                         login_over_45_days = False
                 else:
                     debug("__report_cis_analyze_tenancy_data CIS 1.16 No Last login")
@@ -4311,20 +4345,16 @@ class CIS_Report:
                 debug("__report_cis_analyze_tenancy_data CIS 1.16 INACTIVE USE")
                 login_over_45_days = False
 
-            if user['api_keys']:
-                debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
-                for api_key in user['api_keys']:
-                    if api_key['apikey_used_in_45_days']:
-                        api_key_over_45_days = True
-                    else: 
-                        debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key used in under 45 days")
-                        api_key_over_45_days = True
-            # else:
-            #     api_key_over_45_days = False
+            if user['api_keys'] and user['lifecycle_state']:
+                print("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
+                api_key_over_45_days = not(all(key.get('apikey_used_in_45_days', False) for key in user['api_keys']))
+            else:
+                api_key_over_45_days = False
 
-            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 User: {user['id']}")
-            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over Login Over 45: {login_over_45_days}')
-            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over API Key Over 45: {api_key_over_45_days}')
+            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 User: {user['name']}")
+            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Domain: {user['domain_deeplink']}")
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45: {login_over_45_days}')
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 API Key Over 45: {api_key_over_45_days}')
             if login_over_45_days or api_key_over_45_days:
                 finding = user.copy()
                 finding['login_over_45_days'] = login_over_45_days
@@ -4859,7 +4889,17 @@ class CIS_Report:
                 else:
                     self.obp_foundations_checks["Cost_Tracking_Budgets"]["Findings"].append(budget)
 
+    #######################################
+    # OBP Quotas Checks
+    #######################################    
+    def __obp_check_quotas(self):
+        if self.__quotas:
+            self.obp_foundations_checks['Quotas']['Status'] = True
+            self.obp_foundations_checks['Quotas']['OBP'] = self.__quotas
     
+    #######################################
+    # OBP Audit Logs to SIEM check
+    #######################################    
     def __obp_check_audit_log_compartments(self):
         # Building a Hash Table of Parent Child Hierarchy for Audit
         dict_of_compartments = {}
@@ -4993,7 +5033,10 @@ class CIS_Report:
                 exists_already = list(filter(lambda source: source['id'] == record['id'] and source['region'] == record['region'], self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP']))
                 if not exists_already:
                     self.obp_foundations_checks['SIEM_Audit_Log_All_Comps']['OBP'].append(record)
-
+    
+    #######################################
+    # OBP Cloud Guard Check
+    #######################################    
     def __obp_check_cloud_guard(self):
         #######################################
         # Cloud Guard Checks
@@ -5407,6 +5450,7 @@ class CIS_Report:
         self.__obp_check_subnet_logs()
         self.__obp_check_close_service_limits()
         self.__obp_check_adbs()
+        self.__obp_check_quotas()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation
@@ -5970,7 +6014,8 @@ class CIS_Report:
         if self.__obp_checks:
             obp_home_region_functions = [
                 self.__budget_read_budgets,
-                self.__cloud_guard_read_cloud_guard_targets
+                self.__cloud_guard_read_cloud_guard_targets,
+                self.__quota_read,
             ]
         else:
             obp_home_region_functions = []
@@ -6086,6 +6131,7 @@ class CIS_Report:
             "keys_and_vaults": self.__kms_keys,
             "ons_subscriptions": self.__subscriptions,
             "budgets": self.__budgets,
+            "quotas" : self.__quotas,
             "service_connectors": list(self.__service_connectors.values()),
             "network_fastconnects": list(itertools.chain.from_iterable(self.__network_fastconnects.values())),
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),

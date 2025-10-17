@@ -1,24 +1,55 @@
-#  August XX, 2025 Release Notes - 3.1.0
-1. [Script Updates](#3-1-0-script-updates)
-1. [Script Fixes](#3-0-1-script-fixes)
+# October 20 Release Notes - 3.1.0  
+1. [Autonomous Database OBP Checks](#3-1-0-obp-adb)
+1. [Governance OBP Checks](#3-1-0-obp-governance)
+1. [Enhancements and Updates](#3-1-0-updates)
+1. [Code Clean up](#3-1-0-code)
 
-## <a name="#3-1-0-script-updates">Fixes</a>
+<a name="#3-1-0-obp-adb">Autonomous Database OBP Checks</a>
+Added five Oracle Best Practice (OBP) checks for Autonmous Database Shared.  
+The checks include:
+- ADB Databases enforces Mutual TLS authentication 
+- ABD Databases in the tenancy are integrated with a security scanning tool
+- ADB Database data is encrypted with a customer managed key
+- ABD Databases have a contact listed
+- ADB Database are have private endpoints into a customer managed VCN
+
+<a name="#3-1-0-obp-governance">Governance OBP Checks</a>
+Added new OBP Governance checks and updates.
+New checks:
+- Checking for quota policies are use
+- Visibility into OCI Limits over 80% (due to timing must run with `--all-resources`)
+Updated checks:
+- Budget check now ensures there is alerting on unexpected spending
+
+<a name="#3-1-0-compliance-mappings">
+Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks).
+
+<a name="#3-1-0-updates">Enhancements and Updates</a> 
+
+Enhancements:
+- CIS 1.13 now excludes users with `is_federated` true to focus on local users
+- CIS check 2.8 outputs now include the region in findings
+- CIS compute checks 3.1 - 3.3 ignore `TERMINATED` instances
+- CIS check 2.8 corrected to evaluate each whitelisted IP value (properly detects 0.0.0.0/0)
+- Large Identity Domain groups (>10K members) no longer trigger list_group API failures
+- HTML diagrams now include N/A and per-level compliance
+- Added Identity Domain deeplink to checks 1.8 thru 1.11. 
+- Added time_created to 1.10 – 1.12 outputs
+
 Updates:
-- Improved deeplink handling in XLSX workbook.
-- Improved deeplink URLs.
-- HTML output
-  - Better handling of "not applicable" checks in dashboard diagrams and non-compliant table for non-migrated tenancies, i.e., not having OCI IAM domains.
-  - Dashboard diagrams use the page background.
-  - Header updated for Redwood style.
-- Fixed typo in Recommendation 4.1 remediation text.
-- Fixed a CSV issue with multiple newlines in a cell.
-- Check 2.8: Fixed duplicate entries when checking for multiple whitelisted IPs.
+- CIS remediation text for 2.5 updated to match CIS 3.0.0 guidance to clarify guidance
+- CIS check 4.4 event type updated to `com.oraclecloud.identitycontrolplane.addidpgroupmapping` and `com.oraclecloud.identitycontrolplane.removeidpgroupmapping`
+- CIS check 4.1 remediation corrected to `${iam.principal.name}` from `${iam.principal.names}`
+- Updated FAQ for 401 errors related to where the ‘OracleIdentityCloudService’ domain is not replicated to all regions
 
+<a name="#3-1-0-code">Code Cleanup and Managaility Updates</a>
+- Logic related to CIS recommendation checks is broken up into multiple methods related to the checks area
+- Logic related to OBP recommendation checks is broken up into multiple methods related to the checks area
+- Created a `__search_resource_in_region` method to reduce duplicate code
+- Created `__create_client` method to centralize client creation and to reduce duplicate code
+- Removed Network Topology logic and collection
+- Linting fixes
 
-## <a name="#3-0-0-script-updates">Fixes</a>
-Updates:
-- Including user's Identity Domain deeplink in CIS checks 1.8 - 1.11
-- Improved code readability of CIS checks by breaking it up into multiple functions.
 
 ## <a name="#3-0-0-script-updates">Fixes</a>
 

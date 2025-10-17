@@ -4328,14 +4328,14 @@ class CIS_Report:
 
             login_over_45_days = None
             api_key_over_45_days = None
-            if user['lifecycle_state']: # and not(user['is_federated']) and user['can_use_console_password']:
-                debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45 days is: {login_over_45_days}')
+            if user['lifecycle_state'] and user['can_use_console_password'] and not(user['is_federated']): #and user['can_use_console_password']:
                 if user['last_successful_login_date']:
                     last_successful_login_date = user['last_successful_login_date'].split(".")[0]
                     if self.local_user_time_max_datetime > datetime.datetime.strptime(last_successful_login_date, self.__iso_time_format):
                         login_over_45_days = True
                         debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['last_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                     else:
+                        debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Last login is {user['last_successful_login_date']} and max login is {self.local_user_time_max_datetime}")
                         login_over_45_days = False
                 else:
                     debug("__report_cis_analyze_tenancy_data CIS 1.16 No Last login")
@@ -4345,20 +4345,16 @@ class CIS_Report:
                 debug("__report_cis_analyze_tenancy_data CIS 1.16 INACTIVE USE")
                 login_over_45_days = False
 
-            if user['api_keys']:
-                debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
-                for api_key in user['api_keys']:
-                    if api_key['apikey_used_in_45_days']:
-                        api_key_over_45_days = True
-                    else: 
-                        debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key used in under 45 days")
-                        api_key_over_45_days = True
-            # else:
-            #     api_key_over_45_days = False
+            if user['api_keys'] and user['lifecycle_state']:
+                print("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
+                api_key_over_45_days = not(all(key.get('apikey_used_in_45_days', False) for key in user['api_keys']))
+            else:
+                api_key_over_45_days = False
 
-            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 User: {user['id']}")
-            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over Login Over 45: {login_over_45_days}')
-            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Over API Key Over 45: {api_key_over_45_days}')
+            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 User: {user['name']}")
+            debug(f"__report_cis_analyze_tenancy_data CIS 1.16 Domain: {user['domain_deeplink']}")
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 Login Over 45: {login_over_45_days}')
+            debug(f'__report_cis_analyze_tenancy_data CIS 1.16 API Key Over 45: {api_key_over_45_days}')
             if login_over_45_days or api_key_over_45_days:
                 finding = user.copy()
                 finding['login_over_45_days'] = login_over_45_days

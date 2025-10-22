@@ -149,6 +149,7 @@ The provisioning of resources will fail, If you have setup tags to be required a
 
 ## How to execute
 ### Via Resource Manager
+Start by creating a stack in the Home Region and leaving the "Home Region Deployment" box checked. This will create both global(Cloud guard, Budget and IAM Events) and regional resources(Network Events and Alarms) in the home region.  
 1. [![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
 *If you are logged into your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI.*
 1. Under **Working directory select the directory ending with *cis_oci_benchmark_logging_monitoring_workload*

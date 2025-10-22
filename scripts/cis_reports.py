@@ -1212,6 +1212,7 @@ class CIS_Report:
                 region_values['fss_client'] = self.__create_client(oci.file_storage.FileStorageClient, key="fss", proxy=proxy)
                 region_values['sch_client'] = self.__create_client(oci.sch.ServiceConnectorClient, key="sch", proxy=proxy)
                 region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
+                region_values['limits_client'] = self.__create_client(oci.limits.LimitsClient, key="limits_client", proxy=proxy)                
                 region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
 
             except Exception as e:
@@ -3943,15 +3944,19 @@ class CIS_Report:
                     record = {}
                     record['service_name'] = service_name
                     record['limit_name'] = limit_name
+                    record['used'] = None
                     record['total'] = None
+                    record['available'] = None
                     record['service_limit_availability'] = None
                     record['region'] = oci_region
-                    record = {**record, **oci.util.to_dict(oci_resource_availability)}
+                    # record = {**record, **oci.util.to_dict(oci_resource_availability)}
                     if oci_resource_availability.available:
                         total = oci_resource_availability.available + oci_resource_availability.used
                         service_limit_availability = oci_resource_availability.available / total
                         record['total'] = total
-                        record['service_limit_availability']  =  round(100 - (service_limit_availability*100), 1)
+                        record['used'] = oci_resource_availability.used
+                        record['available'] = oci_resource_availability.available
+                        record['service_limit_availability'] = float(100 - (service_limit_availability*100))
                     self.__service_limits.append(record)
 
                 except Exception as e:
@@ -6077,7 +6082,8 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__search_resources_all_resources_in_tenancy
+                self.__search_resources_all_resources_in_tenancy,
+                self.__service_limits_utilization
             ]
         else:
             all_resources = []

@@ -26,7 +26,6 @@ Updated checks:
 <a name="#3-1-0-compliance-mappings">Bring Your Own Compliance Mappings</a>
 Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks).
 
-
 <a name="#3-1-0-terraform">3-1-0-terraform</a>
 The Terraform code for enabling many of the Logging and Monitoring recommendations, as well as some Oracle Best Practices like Budgets, has been updated to support the Terraform OCI Modules and moved to a new location: [/terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/README.md).
 

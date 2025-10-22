@@ -38,14 +38,14 @@ module "policies_configuration" {
   providers              = { oci = oci.home }
   count                  = var.configure_cloud_guard ? 1 : 0
   tenancy_ocid           = var.tenancy_ocid
-  source                 = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=v0.2.1" //compartments?ref=v0.1.6
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.0"
   policies_configuration = local.policies_configuration
 }
 
 module "cloud_guard_configuration" {
   count                     = var.configure_cloud_guard ? 1 : 0
   providers                 = { oci = oci.home }
-  source                    = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//cloud-guard?ref=v0.1.4" //compartments?ref=v0.1.6
+  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=v0.2.2" //compartments?ref=v0.1.6
   cloud_guard_configuration = local.cloud_guard_configuration
   tenancy_ocid              = var.tenancy_ocid
 }

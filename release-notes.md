@@ -1,6 +1,8 @@
 # October 20 Release Notes - 3.1.0  
 1. [Autonomous Database OBP Checks](#3-1-0-obp-adb)
 1. [Governance OBP Checks](#3-1-0-obp-governance)
+1. [Bring Your Own Compliance Mappings](#3-1-0-compliance-mappings)
+1. [Terraform CIS Remediations](#3-1-0-terraform)
 1. [Enhancements and Updates](#3-1-0-updates)
 1. [Code Clean up](#3-1-0-code)
 
@@ -21,8 +23,12 @@ New checks:
 Updated checks:
 - Budget check now ensures there is alerting on unexpected spending
 
-<a name="#3-1-0-compliance-mappings">
+<a name="#3-1-0-compliance-mappings">Bring Your Own Compliance Mappings</a>
 Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks).
+
+
+<a name="#3-1-0-terraform">3-1-0-terraform</a>
+The Terraform code for enabling many of the Logging and Monitoring recommendations, as well as some Oracle Best Practices like Budgets, has been updated to support the Terraform OCI Modules and moved to a new location: [/terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/README.md).
 
 <a name="#3-1-0-updates">Enhancements and Updates</a> 
 

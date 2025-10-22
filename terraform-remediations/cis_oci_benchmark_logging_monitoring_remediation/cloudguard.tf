@@ -12,7 +12,9 @@ locals {
         statements : [
           "allow service cloudguard to manage cloudevents-rules in tenancy",
           "allow service cloudguard to read all-resources in tenancy", # Consider using Manage for All Remediations #
-          "allow service cloudguard to use network-security-groups in tenancy"
+          "allow service cloudguard to use network-security-groups in tenancy",
+          "allow service cloudguard to read data-safe-family in tenancy",
+          "allow service cloudguard to read autonomous-database-family in tenancy"
         ]
       }
     }

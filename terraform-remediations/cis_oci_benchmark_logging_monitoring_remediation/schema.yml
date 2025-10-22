@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS Landing Zone Lite "
+title: "Foundational OCI CIS Benchmark Remediation Stack"
 stackDescription: "This stack implements basic security controls in your OCI Tenancy"
 description: "This stack implements basic security controls in your OCI Tenancy"
 schemaVersion: 1.1.0
@@ -231,7 +231,7 @@ variables:
 outputs:
   release:
     type: string
-    title: CIS Landing Zone Lite
+    title: Foundational OCI CIS Benchmark Remediation Stack
 
   region:
     type: string

@@ -22,7 +22,7 @@ locals {
 
 module "budgets" {
   count                 = var.create_budget ? 1 : 0
-  source                = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance//budgets?ref=v0.1.2" //compartments?ref=v0.1.6
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-governance//budgets?ref=v0.1.5"
   tenancy_ocid          = var.tenancy_ocid
   budgets_configuration = local.budgets_configuration
 }

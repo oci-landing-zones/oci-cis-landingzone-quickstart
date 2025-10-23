@@ -62,13 +62,13 @@ locals {
 
 module "workload_events" {
   count                = var.enable_net_events ? 1 : 0
-  source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//events?ref=v0.1.5" //compartments?ref=v0.1.6
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=v0.2.3"
   events_configuration = local.events_configuration
 }
 
 module "workload_home_region_events" {
   count                = var.enable_iam_events ? 1 : 0
-  source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//events?ref=v0.1.5" //compartments?ref=v0.1.6
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=v0.2.3"
   providers            = { oci = oci.home }
   events_configuration = local.home_region_events_configuration
 }

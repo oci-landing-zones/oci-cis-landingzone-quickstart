@@ -33,6 +33,6 @@ locals {
 
 module "alarms_configuration" {
   count                = var.create_alarms_as_enabled ? 1 : 0
-  source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//alarms?ref=v0.1.5" //compartments?ref=v0.1.6
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//alarms?ref=v0.2.3"
   alarms_configuration = local.alarms_configuration
 }

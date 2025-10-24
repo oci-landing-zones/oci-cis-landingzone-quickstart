@@ -59,9 +59,6 @@ Updates:
 - Linting fixes
 
 
-## <a name="#3-0-0-script-updates">Fixes</a>
-
-
 #  July 16, 2025 Release Notes - 3.0.1
 1. [Compliance Percentage Field](#3-0-1-percentage)
 1. [Disable API Key Usage Check Flag](#3-0-1-disable-api-usage)

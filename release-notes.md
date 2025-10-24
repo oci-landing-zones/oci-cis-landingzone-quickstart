@@ -28,7 +28,7 @@ Created a unique identifier CIS recommendations and Oracle Best Practice checks.
 
 This provides functionality for issue: [164](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/164)
 
-## <a name="#3-1-0-terraform">3-1-0-terraform</a>
+## <a name="#3-1-0-terraform">Terraform CIS Remediations</a>
 The Terraform code for enabling many of the Logging and Monitoring recommendations, as well as some Oracle Best Practices like Budgets, has been updated to support the Terraform OCI Modules and moved to a new location: [/terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/README.md).
 
 ## <a name="#3-1-0-updates">Enhancements and Updates</a> 

@@ -42,8 +42,8 @@ except Exception:
     OUTPUT_DIAGRAMS = False
 
 RELEASE_VERSION = "3.1.0"
-PYTHON_SDK_VERSION = "2.152.1"
-UPDATED_DATE = "August XX, 2025"
+PYTHON_SDK_VERSION = "2.161.1"
+UPDATED_DATE = "October 24, 2025"
 
 
 ##########################################################################
@@ -75,8 +75,8 @@ def show_version(verbose=False):
         print_header(f'Running {script_version}')
         print(script_updated)
         print('Please use --help for more info')
-        print(f'\nTested    oci-python-sdk version: {PYTHON_SDK_VERSION}')
-        print(f'Installed oci-python-sdk version: {str(oci.__version__)}')
+        print(f'\nTested up to oci-python-sdk version: {PYTHON_SDK_VERSION}')
+        print(f'Installed    oci-python-sdk version: {str(oci.__version__)}')
         print(f'The command line arguments are: {str(sys.argv)}')
     else:
         print(script_updated)

@@ -19,7 +19,7 @@ The checks include:
 Added new OBP Governance checks and updates.
 New checks:
 - Checking for quota policies are use
-- Visibility into OCI Limits over 80% (due to timing must run with `--all-resources`)
+- Visibility into OCI Limits over 80% ( due to timing must run with `--all-resources` )
 Updated checks:
 - Budget check now ensures there is alerting on unexpected spending
 

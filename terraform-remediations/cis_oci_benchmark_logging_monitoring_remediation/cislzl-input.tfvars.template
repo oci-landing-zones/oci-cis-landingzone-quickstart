@@ -1,0 +1,46 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+##### The uncommented variable assignments below are for REQUIRED variables that do NOT have a default value in variables.tf. They must be provided appropriate values.
+##### The commented variable assignments are for variables with a default value in variables.tf. For overriding them, uncomment the variable and provide an appropriate value.
+
+# ------------------------------------------------------
+# ----- Environment
+# ------------------------------------------------------
+# tenancy_ocid         = "<tenancy_ocid>"
+# user_ocid            = "<user_ocid>"
+# fingerprint          = "<user_api_key_fingerprint>"
+# private_key_path     = "<path_to_user_private_key_file>"
+# private_key_password = ""
+# region               = "<tenancy_region>"   # e.g. us-phoenix-1
+# service_label        = "<a_label_to_prefix_resource_names_with>"
+# homeregion           = true
+
+# ------------------------------------------------------
+# ----- Events and Notifications
+# ------------------------------------------------------
+# enable_net_events                = false # Set to true if network events should be enabled.  
+# compartment_id_for_net_events    =  "<ocid>" # Compartment OCID where network events are created.
+# network_admin_email_endpoints    = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network event related notifications.
+# enable_iam_events                = false # Set to true if security events should be enabled.  
+# security_admin_email_endpoints   = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for all security related notifications.
+# compartment_id_for_iam_events    =  "<ocid>" # Compartment OCID where security events are created.
+# create_alarms_as_enabled         = false # Set to true if network alarms for VPN or FastConnect should be enabled for (Down) status.  
+# compartment_id_for_alarms.       =  "<ocid>" # Compartment OCID where network alarms are created.
+# alarms_admin_email_endpoints     = ["<email1>","<email2>","...","<emailn>"] # list of email addresses for all network alarm related notifications.
+
+# ------------------------------------------------------
+# ----- Cloud Guard
+# ------------------------------------------------------
+# configure_cloud_guard             = false # Set to true to enabled CloudGuard with cloned-receipes, detectors etc.  
+# cloud_guard_reporting_region      = null # if null, defaults to home region. 
+# compartment_id_for_cg_events      = "<ocid>" # Compartment OCID where CloudGuard events are created.
+# cloudguard_email_endpoints        = ["<email1>","<e-mail2>","...","<emailn>"] # List of email addresses for Cloud Guard related notifications.
+
+# ------------------------------------------------------
+# ----- Cost Management - Budget
+# ------------------------------------------------------
+# create_budget                = true # create a budget at the root or enclosing compartment level, depending on the value of "use_enclosing_compartment"
+# budget_alert_threshold       = 100 # percentage of budget amount
+# budget_amount                = 250 # monthly budget amount
+# budget_alert_email_endpoints = ["<email1>","<e-mail2>","...","<emailn>"] # list of email addresses for budget related alerts.

@@ -4,6 +4,7 @@
 - [What is the CIS Compliance Script?](#script)
 - [What is the cost of running the CIS Compliance Script?](#cost)
 - [What permissions are needed to run the CIS Compliance Script?](#script-access)
+- [How to remediate recommendations relating to Cloud Guard, Events, and Notifications?](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/)
 - [Why did the script may fail to run when executing from the local machine with message "** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort.**?](#oci_config_profile)
 - [ImportError: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.0.2k-fips  26 Jan 2017'.](#urllib3)
 - [Understanding CIS recommendation *Ensure storage service-level admins cannot delete resources they manage.*](#storage-admins)

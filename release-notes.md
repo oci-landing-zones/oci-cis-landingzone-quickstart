@@ -6,7 +6,7 @@
 1. [Enhancements and Updates](#3-1-0-updates)
 1. [Code Clean up](#3-1-0-code)
 
-<a name="#3-1-0-obp-adb">Autonomous Database OBP Checks</a>
+## <a name="#3-1-0-obp-adb">Autonomous Database OBP Checks</a>
 Added five Oracle Best Practice (OBP) checks for Autonmous Database Shared.  
 The checks include:
 - ADB Databases enforces Mutual TLS authentication 
@@ -15,7 +15,7 @@ The checks include:
 - ABD Databases have a contact listed
 - ADB Database are have private endpoints into a customer managed VCN
 
-<a name="#3-1-0-obp-governance">Governance OBP Checks</a>
+## <a name="#3-1-0-obp-governance">Governance OBP Checks</a>
 Added new OBP Governance checks and updates.
 New checks:
 - Checking for quota policies are use
@@ -23,16 +23,15 @@ New checks:
 Updated checks:
 - Budget check now ensures there is alerting on unexpected spending
 
-<a name="#3-1-0-compliance-mappings">Bring Your Own Compliance Mappings</a>
+## <a name="#3-1-0-compliance-mappings">Bring Your Own Compliance Mappings</a>
 Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks). 
 
 This provides functionality for issue: [164](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/164)
 
-<a name="#3-1-0-terraform">3-1-0-terraform</a>
+## <a name="#3-1-0-terraform">3-1-0-terraform</a>
 The Terraform code for enabling many of the Logging and Monitoring recommendations, as well as some Oracle Best Practices like Budgets, has been updated to support the Terraform OCI Modules and moved to a new location: [/terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/README.md).
 
-<a name="#3-1-0-updates">Enhancements and Updates</a> 
-
+## <a name="#3-1-0-updates">Enhancements and Updates</a> 
 Enhancements:
 - CIS 1.13 now excludes users with `is_federated` true to focus on local users. Closes issue: [180](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/180)
 - CIS check 2.8 outputs now include the region in findings
@@ -50,7 +49,7 @@ Updates:
 - CIS check 4.1 remediation corrected to `${iam.principal.name}` from `${iam.principal.names}`
 - Updated FAQ for 401 errors related to where the ‘OracleIdentityCloudService’ domain is not replicated to all regions
 
-<a name="#3-1-0-code">Code Cleanup and Managaility Updates</a>
+## <a name="#3-1-0-code">Code Cleanup and Managaility Updates</a>
 - Logic related to CIS recommendation checks is broken up into multiple methods related to the checks area
 - Logic related to OBP recommendation checks is broken up into multiple methods related to the checks area
 - Created a `__search_resource_in_region` method to reduce duplicate code

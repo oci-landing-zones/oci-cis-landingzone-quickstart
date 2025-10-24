@@ -1,4 +1,4 @@
-# October 20 Release Notes - 3.1.0  
+# October 24 Release Notes - 3.1.0  
 1. [Autonomous Database OBP Checks](#3-1-0-obp-adb)
 1. [Governance OBP Checks](#3-1-0-obp-governance)
 1. [Bring Your Own Compliance Mappings](#3-1-0-compliance-mappings)
@@ -24,7 +24,9 @@ Updated checks:
 - Budget check now ensures there is alerting on unexpected spending
 
 <a name="#3-1-0-compliance-mappings">Bring Your Own Compliance Mappings</a>
-Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks).
+Created a unique identifier CIS recommendations and Oracle Best Practice checks. This allowed for externalization of the CIS OCI Benchmark recommendation to CIS v8 and CCCS Guard Rails into a seperate class.  This new design allows for customers to more easily cross walk from the CIS v8 to other compliance frameworks that are available from CIS. Center for Internet Security's mappings can be found here: [https://www.cisecurity.org/controls/resources?crc=other-security-frameworks](https://www.cisecurity.org/controls/resources?crc=other-security-frameworks). 
+
+This provides functionality for issue: [164](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/164)
 
 <a name="#3-1-0-terraform">3-1-0-terraform</a>
 The Terraform code for enabling many of the Logging and Monitoring recommendations, as well as some Oracle Best Practices like Budgets, has been updated to support the Terraform OCI Modules and moved to a new location: [/terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/](./terraform-remediations/cis_oci_benchmark_logging_monitoring_remediation/README.md).
@@ -32,18 +34,19 @@ The Terraform code for enabling many of the Logging and Monitoring recommendatio
 <a name="#3-1-0-updates">Enhancements and Updates</a> 
 
 Enhancements:
-- CIS 1.13 now excludes users with `is_federated` true to focus on local users
+- CIS 1.13 now excludes users with `is_federated` true to focus on local users. Closes issue: [180](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/180)
 - CIS check 2.8 outputs now include the region in findings
-- CIS compute checks 3.1 - 3.3 ignore `TERMINATED` instances
+- CIS compute checks 3.1 - 3.3 ignore `TERMINATED` instances. Closes issue: [177](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/177)
 - CIS check 2.8 corrected to evaluate each whitelisted IP value (properly detects 0.0.0.0/0)
-- Large Identity Domain groups (>10K members) no longer trigger list_group API failures
+- Large Identity Domain groups (>10K members) no longer trigger list_group API failures. Closes issue: [179](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/179)
 - HTML diagrams now include N/A and per-level compliance
-- Added Identity Domain deeplink to checks 1.8 thru 1.11. 
+- Added Identity Domain deeplink to checks 1.8 thru 1.11. Closes issue: [172](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/172)
 - Added time_created to 1.10 – 1.12 outputs
+- Add URL's in consolidated XSLX report. Closes issue: [174](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/174)
 
 Updates:
 - CIS remediation text for 2.5 updated to match CIS 3.0.0 guidance to clarify guidance
-- CIS check 4.4 event type updated to `com.oraclecloud.identitycontrolplane.addidpgroupmapping` and `com.oraclecloud.identitycontrolplane.removeidpgroupmapping`
+- CIS check 4.4 event type updated to `com.oraclecloud.identitycontrolplane.addidpgroupmapping` and `com.oraclecloud.identitycontrolplane.removeidpgroupmapping`. Closes issue: [181](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/181)
 - CIS check 4.1 remediation corrected to `${iam.principal.name}` from `${iam.principal.names}`
 - Updated FAQ for 401 errors related to where the ‘OracleIdentityCloudService’ domain is not replicated to all regions
 

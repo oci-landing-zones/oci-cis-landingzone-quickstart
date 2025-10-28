@@ -1505,7 +1505,6 @@ class CIS_Report:
     # Identity Domains Helper function for pagination
     ##########################################################################
     def __identity_domains_get_all_results(self, func, args):
-                
         if "start_index" not in args:
             args['start_index'] = 1
         if "count" not in args:
@@ -1513,7 +1512,7 @@ class CIS_Report:
         if "filter" not in args:
             args["filter"] = ''
         if "attribute_sets" not in args:
-            args["attribute_sets"] = ['all']
+            args["attribute_sets"] = ['default']
 
         debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
 
@@ -3610,7 +3609,7 @@ class CIS_Report:
             return self.__subscriptions
 
         except Exception as e:
-            raise RuntimeError("Error in ons_read_subscription " + str(e.args))
+            print("Error in ons_read_subscription " + str(e.args))
 
     ##########################################################################
     # Identity Tag Default

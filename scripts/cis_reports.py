@@ -1491,7 +1491,7 @@ class CIS_Report:
         filter = f'groups.value eq "{group_ocid}"'
         try:
             members += self.__identity_domains_get_all_results(func=domain_client.list_users,
-                                                                        args={'filter' : filter})
+                                                                        args={'filter' : filter, 'attribute_sets' : ['default']})
             debug("__identity_read_domains_group_members: Collected total keys: " + str(len(members))) 
         
             return members
@@ -1512,7 +1512,7 @@ class CIS_Report:
         if "filter" not in args:
             args["filter"] = ''
         if "attribute_sets" not in args:
-            args["attribute_sets"] = ['default']
+            args["attribute_sets"] = ['all']
 
         debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
 
@@ -4350,7 +4350,7 @@ class CIS_Report:
                 login_over_45_days = False
 
             if user['api_keys'] and user['lifecycle_state']:
-                print("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
+                debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
                 api_key_over_45_days = not(all(key.get('apikey_used_in_45_days', False) for key in user['api_keys']))
             else:
                 api_key_over_45_days = False

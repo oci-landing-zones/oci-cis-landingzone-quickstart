@@ -1542,7 +1542,7 @@ class CIS_Report:
                 for identity_domain in self.__identity_domains:
                     try:
                         users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                            args={})
+                                                                            args={'attribute_sets':['default']})
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid

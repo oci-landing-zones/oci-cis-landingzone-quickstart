@@ -1491,7 +1491,7 @@ class CIS_Report:
         filter = f'groups.value eq "{group_ocid}"'
         try:
             members += self.__identity_domains_get_all_results(func=domain_client.list_users,
-                                                                        args={'filter' : filter})
+                                                                        args={'filter' : filter, 'attribute_sets' : ['default']})
             debug("__identity_read_domains_group_members: Collected total keys: " + str(len(members))) 
         
             return members
@@ -1505,7 +1505,6 @@ class CIS_Report:
     # Identity Domains Helper function for pagination
     ##########################################################################
     def __identity_domains_get_all_results(self, func, args):
-                
         if "start_index" not in args:
             args['start_index'] = 1
         if "count" not in args:
@@ -1543,7 +1542,7 @@ class CIS_Report:
                 for identity_domain in self.__identity_domains:
                     try:
                         users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                            args={})
+                                                                            args={'attribute_sets':['default']})
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
@@ -3610,7 +3609,7 @@ class CIS_Report:
             return self.__subscriptions
 
         except Exception as e:
-            raise RuntimeError("Error in ons_read_subscription " + str(e.args))
+            print("Error in ons_read_subscription " + str(e.args))
 
     ##########################################################################
     # Identity Tag Default
@@ -4351,7 +4350,7 @@ class CIS_Report:
                 login_over_45_days = False
 
             if user['api_keys'] and user['lifecycle_state']:
-                print("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
+                debug("__report_cis_analyze_tenancy_data CIS 1.16 API Key Check")
                 api_key_over_45_days = not(all(key.get('apikey_used_in_45_days', False) for key in user['api_keys']))
             else:
                 api_key_over_45_days = False

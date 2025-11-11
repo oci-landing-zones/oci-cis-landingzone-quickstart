@@ -1214,6 +1214,7 @@ class CIS_Report:
                 region_values['instance'] = self.__create_client(oci.core.ComputeClient, key="compute", proxy=proxy)
                 region_values['limits_client'] = self.__create_client(oci.limits.LimitsClient, key="limits_client", proxy=proxy)                
                 region_values['certificate_client'] = self.__create_client(oci.certificates_management.CertificatesManagementClient, key="cert_mgmt", proxy=proxy)
+                region_values['logging_search_client'] = self.__create_client(oci.loggingsearch.LogSearchClient, key="logging_search", proxy=proxy)
 
             except Exception as e:
                 debug("__create_regional_signers: error reading " + str(self.__config))

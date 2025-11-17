@@ -5415,7 +5415,7 @@ class CIS_Report:
                 self.obp_foundations_checks['ADB_MTLS']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_MTLS']['OBP'].append(adb)
-            if not adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
+            if adb['encryption_key'] and adb['encryption_key']['provider'] and not adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
                 self.obp_foundations_checks['ADB_CMK']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_CMK']['OBP'].append(adb)

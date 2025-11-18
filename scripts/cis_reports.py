@@ -1473,6 +1473,7 @@ class CIS_Report:
                     "id": group_id,
                     "name": group_data["name"],
                     "deep_link": group_data["deep_link"],
+                    "domain_deeplink": group_data["domain_deeplink"],
                     "description": group_data["description"],
                     "time_created": group_data["time_created"],
                     "user_id": member["user_id"] if member else None,

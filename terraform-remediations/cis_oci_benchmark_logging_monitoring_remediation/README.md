@@ -135,7 +135,7 @@ Consider what Distribution Lists or individuals should receive  emails related 
 
 **Review Cloud Guard configuration:**
 
-Review the current Cloud Guard configuration. If a target already exists at the root level, this wil cause an issue when running the Cloud Guard remediation. Evaluate if the current target can be removed and be created by the MAP Remediation.
+Review the current Cloud Guard configuration. If a target already exists at the root level, this wil cause an issue when running the Cloud Guard remediation. Evaluate if the current target can be removed and be created by this Remediation.
 
 - **Budget information:**
 
@@ -162,7 +162,7 @@ Start by creating a stack in the Home Region and leaving the "Home Region Deploy
 1. Click Apply
 
 ### Via Terraform CLI
-1. Enter required variables from input.auto.tfvars
+1. Enter required variables from cislzl-input.tfvars.template
 1. terraform init
 1. terraform plan
 1. terraforom apply

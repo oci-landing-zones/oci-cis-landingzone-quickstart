@@ -50,9 +50,11 @@ UPDATED_DATE = "October 24, 2025"
 # debug print
 ##########################################################################
 # DEBUG = False
-def debug(msg):
+def debug(msg):    
     if DEBUG:
-        print(msg)
+        log_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+        log_time_str = str(log_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
+        print(log_time_str+": "+msg)
 
 ##########################################################################
 # Print header centered

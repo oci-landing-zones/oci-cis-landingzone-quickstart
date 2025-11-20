@@ -157,7 +157,7 @@ class CIS_Report:
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
 
-    __oci_ocid_pattern = r'ocid1\.[a-z,0-9]*\.[a-z,0-9]*\.[a-z,0-9,-]*\.[a-z,0-9,\.]{20,}'
+    __oci_ocid_pattern = r'ocid1.[a-z0-9_]+.[a-z0-9]+.(?:[a-z0-9._-]+.|.)[a-z0-9]{20,}'
 
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
@@ -1543,7 +1543,8 @@ class CIS_Report:
             if self.__identity_domains_enabled:
                 for identity_domain in self.__identity_domains:
                     try:
-                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, args = {})
+                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
+                                                                            args={'attribute_sets':['default']})
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid

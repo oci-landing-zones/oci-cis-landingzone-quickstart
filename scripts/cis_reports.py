@@ -4645,6 +4645,8 @@ class CIS_Report:
         # ******* Iterating through Regional Checks adding findings
         for key, regions in self.__cis_regional_findings_data.items():
             non_compliant = [region for region, val in regions.items() if val is not True]
+            for region in regions:
+                self.cis_foundations_benchmark_3_0[key]['Total'].append({'region' : region})
             if not non_compliant:
                 self.cis_foundations_benchmark_3_0[key]['Status'] = True
             else:

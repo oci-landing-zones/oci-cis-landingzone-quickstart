@@ -283,7 +283,7 @@ The CIS Compliance Script loops through all regions used by the tenancy and all 
 
 In the sample output below, we see the tenancy is not compliant with several recommendations. Among those is item 1.7 where the output shows 33 users do not have MFA enabled for accessing OCI Console.
 
-![cis](images\regular-run.png)
+![cis](images/regular-run.png)
 
 For each non-compliant report item, a file with findings details is generated, as shown in the last part of the output:
 ```

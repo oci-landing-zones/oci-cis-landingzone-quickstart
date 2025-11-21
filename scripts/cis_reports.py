@@ -859,6 +859,7 @@ class CIS_Report:
         self.__raw_compartment = []
         self.__policies = []
         self.__users = []
+        self.__groups = {} # Indexed by GRP OCID
         self.__groups_to_users = []
         self.__tag_defaults = []
         self.__dynamic_groups = []
@@ -1336,7 +1337,7 @@ class CIS_Report:
             except Exception as e:
                 debug("__identity_read_domains: Exception collecting Identity Domains\n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
-
+        print("\tFound " + str(len(raw_identity_domains)) + " Identity Domains")                        
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting password policy for domain: " + domain.display_name)
             domain_dict = oci.util.to_dict(domain)
@@ -1372,62 +1373,41 @@ class CIS_Report:
         return 
     
     ##########################################################################
-    # Load Groups and Group membership
+    # Load Groups
     ##########################################################################
-    def __identity_read_groups_and_membership(self):
+    def __identity_read_groups(self):
         # Getting all Groups in the Tenancy
-        debug("processing __identity_read_groups_and_membership ")
+        debug("processing __identity_read_groups ")
         if self.__identity_domains_enabled:
-            debug("processing __identity_read_groups_and_membership for Identity Domains Enabled Tenancy")
+            debug("processing __identity_read_groups for Identity Domains Enabled Tenancy")
             for identity_domain in self.__identity_domains:
-                debug("processing __identity_read_groups_and_membership for Identity Domain: " + identity_domain['display_name'])
+                debug("processing __identity_read_groups for Identity Domain: " + identity_domain['display_name'])
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
                                                                           args={'attribute_sets' : ['default']})
+                    print(f"\tReading {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
                     for grp in groups_data:
-                        debug("\t__identity_read_groups_and_membership: reading group data " + str(grp.display_name))
+                        debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
-                        members = self.__identity_read_domains_group_members(domain_client=identity_domain['IdentityDomainClient'], group_ocid=grp.id)
-                        debug("\t__identity_read_groups_and_membership: Number or members: " + str(len(members)))
-                        if members:
-                            # For groups with members print one record per user per group
-                            for member in members:
-                                debug("\t__identity_read_groups_and_membership: reading members data in group" + str(grp.display_name))
-                                user_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + member.ocid
-                                group_record = {
-                                    "id": grp.id,
+                        group_record = {
                                     "name": grp.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
                                     "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
-                                    "user_id": member.ocid,
-                                    "user_id_link": self.__generate_csv_hyperlink(user_deep_link, member.name)
+                                    "members": []
                                 }
-                                # Adding a record per user to group
-                                self.__groups_to_users.append(group_record)
-                        else:
-                            debug("\t\t__identity_read_groups_and_membership: Adding group with no members " + str(grp.display_name))
-
-                            group_record = {
-                                "id": grp.ocid,
-                                "name": grp.display_name,
-                                "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
-                                "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
-                                "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
-                                "time_created" : self.get_date_iso_format(grp.meta.created),
-                                "user_id": "",
-                                "user_id_link": ""
-                            }
-                            # Adding a record per empty group
-                            self.__groups_to_users.append(group_record)
+                        # Adding one record per group with no membership info
+                        self.__groups[grp.ocid] = group_record
+                        
+                        
                 except Exception as e:
-                    self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
-                    print("__identity_read_groups_and_membership: error reading" + str(e))
+                    self.__errors.append({"id" : "__identity_read_groups", "error" : str(e)})
+                    print("__identity_read_groups: error reading" + str(e))
                     RuntimeError(
-                        "Error in __identity_read_groups_and_membership" + str(e.args))
-            return self.__groups_to_users
+                        "Error in __identity_read_groups" + str(e.args))
+            return self.__groups
 
         else:        
             try:
@@ -1479,11 +1459,37 @@ class CIS_Report:
                         self.__groups_to_users.append(group_record)
                 return self.__groups_to_users
             except Exception as e:
-                self.__errors.append({"id" : "__identity_read_groups_and_membership", "error" : str(e)})
-                debug("__identity_read_groups_and_membership: error reading" + str(e))
+                self.__errors.append({"id" : "__identity_read_groups", "error" : str(e)})
+                debug("__identity_read_groups: error reading" + str(e))
                 RuntimeError(
-                    "Error in __identity_read_groups_and_membership" + str(e.args))
-
+                    "Error in __identity_read_groups" + str(e.args))
+    
+    ##########################################################################
+    # Helper function to flatten Group membership records
+    ##########################################################################
+    def __identity_flatten_group_dict(self, v_dict):
+        debug("__identity_flatten_group_dict: the following dict will be flattened:" + str(v_dict))
+        flatten_group = []
+        try:
+            flatten_group = [
+                {
+                    "id": group_id,
+                    "name": group_data["name"],
+                    "deep_link": group_data["deep_link"],
+                    "domain_deeplink": group_data["domain_deeplink"],
+                    "description": group_data["description"],
+                    "time_created": group_data["time_created"],
+                    "user_id": member["user_id"] if member else None,
+                    "user_id_link": member["user_id_link"] if member else None
+                }
+                for group_id, group_data in v_dict.items()
+                for member in (group_data["members"] if group_data["members"] else [None])
+            ]
+            return flatten_group
+        except Exception as e:
+            self.__errors.append({"id" : "__identity_flatten_group_dict:", "error" : str(e)})
+            print(f"_identity_flatten_group_dict:\n \t{str(e)}")
+            return flatten_group
     
     ##########################################################################
     # Identity Domains Helper function for pagination
@@ -1544,8 +1550,8 @@ class CIS_Report:
             if self.__identity_domains_enabled:
                 for identity_domain in self.__identity_domains:
                     try:
-                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                            args={'attribute_sets':['default']})
+                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, args = {})
+                        print(f"\tReading {str(len(users_data))} users in Identity Domain: " + identity_domain['display_name'])
                         # Adding record to the users
                         for user in users_data:
                             deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
@@ -1574,10 +1580,18 @@ class CIS_Report:
                                 'last_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.last_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
                                 'groups': []
                             }
-                            # Adding Groups to the user
-                            for group in self.__groups_to_users:
-                                if user.ocid == group['user_id']:
-                                    record['groups'].append(group['name'])
+
+                            # Adding Groups to the user record and to the groups membership dict
+                            if user.groups:
+                                for usergroup in user.groups:
+                                    # Add to the user record
+                                    record['groups'].append(usergroup.display)
+
+                                    #Add to the groups membership dict
+                                    if self.__groups[usergroup.ocid]:
+                                        self.__groups[usergroup.ocid]['members'].append({"user_id":user.ocid,"user_id_link":self.__generate_csv_hyperlink(deep_link, user.user_name)})
+                            
+                                
                             if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
                                 debug("__identity_read_users: Collecting user API Key for user: " + str(user.user_name))
                                 record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
@@ -1598,7 +1612,7 @@ class CIS_Report:
                         raise RuntimeError(
                             "Error in __identity_read_users: " + str(e))
                 
-                print("\tProcessed " + str(len(self.__users)) + " Users")
+                print("\tProcessed a total of: " + str(len(self.__users)) + " Users")
                 return self.__users
 
             else:
@@ -1746,7 +1760,7 @@ class CIS_Report:
         ##########################################################################
         def run_logging_search_query_api_usage(search_query, api_key_used, start_date: datetime, end_date: datetime):
             if self.__disable_api_keys:
-                print("***Skipping Processing Audit Logs for API Key Usage...***")
+                #print("***Skipping Processing Audit Logs for API Key Usage...***")
                 return api_key_used
             else:
                 print("Processing Audit Logs for API Key Usage...")
@@ -2718,7 +2732,6 @@ class CIS_Report:
             for region_key, region_values in self.__regions.items():
                 # Looping through compartments in tenancy
                 fastconnects = self.__search_resource_in_region("VirtualCircuit", region_values)
-
 
                 compartments = set()
 
@@ -6005,7 +6018,7 @@ class CIS_Report:
         thread_identity_domains.start()
         thread_identity_domains.join()
 
-        thread_identity_groups = Thread(target=self.__identity_read_groups_and_membership)
+        thread_identity_groups = Thread(target=self.__identity_read_groups)
         thread_identity_groups.start()
         thread_identity_groups.join()
 
@@ -6118,7 +6131,7 @@ class CIS_Report:
         list_report_file_names = []
 
         raw_csv_files = {
-            "identity_groups_and_membership": self.__groups_to_users,
+            "identity_groups_and_membership": self.__identity_flatten_group_dict(self.__groups) if self.__identity_domains_enabled else self.__groups_to_users,
             "identity_domains": self.__identity_domains,
             "identity_users": self.__users,
             "identity_policies": self.__policies,

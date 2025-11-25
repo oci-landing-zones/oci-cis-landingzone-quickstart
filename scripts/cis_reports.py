@@ -1558,7 +1558,7 @@ class CIS_Report:
     def __identity_read_users_per_domain(self, identity_domain):
         try:
             users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                args={'attribute_sets':['default']})
+                                                                args={'count' : 500})
             print(f"\tReading {str(len(users_data))} users in: "+identity_domain['display_name'])
             # Adding record to the users
             for user in users_data:

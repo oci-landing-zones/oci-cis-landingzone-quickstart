@@ -1531,6 +1531,8 @@ class CIS_Report:
             args["count"] = 1000     
         if "filter" not in args:
             args["filter"] = ''
+        if "attributes" not in args:
+            args["attributes"] = ''
         if "attribute_sets" not in args:
             args["attribute_sets"] = ['all']
 
@@ -1539,16 +1541,19 @@ class CIS_Report:
         result = func(start_index=args['start_index'],
                     count=args['count'],
                     filter=args['filter'],
-                     attribute_sets=args['attribute_sets']).data
+                    attributes=args['attributes'],
+                    attribute_sets=args['attribute_sets']).data
         resources = result.resources
         while len(resources) < result.total_results:
             args["start_index"] = len(resources) + 1
             result = func(start_index=args['start_index'],
                     count=args['count'],
                     filter=args['filter'],
+                    attributes=args['attributes'],
                     attribute_sets=args['attribute_sets']).data
             for item in result.resources:
                 resources.append(item)
+            print("\tRead "+str(len(resources))+" of "+ str(result.total_results)+" resources")
 
         return resources
         
@@ -1558,7 +1563,7 @@ class CIS_Report:
     def __identity_read_users_per_domain(self, identity_domain):
         try:
             users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                args={'count' : 500})
+                                                                args={'attributes':'urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User:isFederatedUser,urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User, groups,urn:ietf:params:scim:schemas:oracle:idcs:extension:userCredentials:User, urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User:lastSuccessfulLoginDate','attribute_sets':['default'],'count' : 500})
             print(f"\tReading {str(len(users_data))} users in: "+identity_domain['display_name'])
             # Adding record to the users
             for user in users_data:

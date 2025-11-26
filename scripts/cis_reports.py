@@ -1561,11 +1561,14 @@ class CIS_Report:
     # Load users
     ##########################################################################
     def __identity_read_users_per_domain(self, identity_domain):
+        # Local scoped list to store users per domains
+        v_domain_users = []
         try:
             users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
                                                                 args={'attributes':'urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User:isFederatedUser,urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User, groups,urn:ietf:params:scim:schemas:oracle:idcs:extension:userCredentials:User, urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User:lastSuccessfulLoginDate','attribute_sets':['default'],'count' : 500})
-            print(f"\tReading {str(len(users_data))} users in: "+identity_domain['display_name'])
+            print(f"\tRead {str(len(users_data))} users in: "+identity_domain['display_name'])
             # Adding record to the users
+            
             for user in users_data:
                 deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
@@ -1609,8 +1612,9 @@ class CIS_Report:
                     record['auth_tokens'] = None
                     record['customer_secret_keys'] = None
                     record['database_passwords'] = None
-                self.__users.append(record)
-
+                v_domain_users.append(record)
+            self.__users.extend(v_domain_users)
+                
         except Exception as e:
             debug("__identity_read_users_per_domain: Identity Domains are : " + str(self.__identity_domains_enabled))
             self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
@@ -6043,7 +6047,7 @@ class CIS_Report:
         thread_identity_groups.join()
 
         print("\nProcessing Home Region resources...")
-
+        
         cis_home_region_functions = [
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,

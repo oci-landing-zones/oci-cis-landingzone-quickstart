@@ -1618,7 +1618,9 @@ class CIS_Report:
                     record['auth_tokens'] = None
                     record['customer_secret_keys'] = None
                     record['database_passwords'] = None
+                #Local list to store all users for this domains
                 v_domain_users.append(record)
+            # Concat the list of users from this domain to the global __users list
             self.__users.extend(v_domain_users)
                 
         except Exception as e:

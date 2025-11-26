@@ -1596,10 +1596,16 @@ class CIS_Report:
                     'last_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.last_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
                     'groups': []
                 }
-                # Adding Groups to the user
-                for group in self.__groups_to_users:
-                    if user.ocid == group['user_id']:
-                        record['groups'].append(group['name'])
+                # Adding Groups to the user record and to the groups membership dict.
+                if user.groups:
+                    for usergroup in user.groups:
+                        # Add to the user record
+                        record['groups'].append(usergroup.display)
+
+                        #Add to the groups membership dict
+                        if self.__groups[usergroup.ocid]:
+                            self.__groups[usergroup.ocid]['members'].append({"user_id":user.ocid,"user_id_link":self.__generate_csv_hyperlink(deep_link, user.user_name)})
+
                 if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
                     debug("__identity_read_users_per_domain: Collecting user API Key for user: " + str(user.user_name))
                     record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)

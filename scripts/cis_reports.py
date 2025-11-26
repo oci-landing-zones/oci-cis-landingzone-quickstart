@@ -1701,10 +1701,10 @@ class CIS_Report:
                     debug("__identity_read_users: Error is: " + str(e))
                     self.__errors.append({"id" : "__identity_read_users", "error" : str(e)})
                     raise RuntimeError(
-                        "Error in __identity_read_users: " + str(e))
+                        "Error in __identity_read_users, Non Identity Domain: " + str(e))
         except Exception as e:
             raise RuntimeError(
-                "Error in __identity_read_users: " + str(e.args))
+                "Error in __identity_read_users: " + str(e.args)+".")
 
     ##########################################################################
     # Load user api keys

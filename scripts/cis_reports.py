@@ -1603,7 +1603,7 @@ class CIS_Report:
                         record['groups'].append(usergroup.display)
 
                         #Add to the groups membership dict
-                        if self.__groups[usergroup.ocid]:
+                        if self.__groups.get(usergroup.ocid):
                             self.__groups[usergroup.ocid]['members'].append({"user_id":user.ocid,"user_id_link":self.__generate_csv_hyperlink(deep_link, user.user_name)})
 
                 if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:

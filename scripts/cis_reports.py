@@ -1579,7 +1579,7 @@ class CIS_Report:
                     'email': user.emails[0].value if user.emails else None,
                     'email_verified': user.emails[0].verified if user.emails else None,
                     'external_identifier': user.external_id,
-                    'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user,
+                    'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user else None,
                     'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
                     'lifecycle_state': user.active,
                     'time_created': user.meta.created,
@@ -1614,8 +1614,7 @@ class CIS_Report:
         except Exception as e:
             debug("__identity_read_users_per_domain: Identity Domains are : " + str(self.__identity_domains_enabled))
             self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
-            raise RuntimeError(
-                "Error in __identity_read_users_per_domain: " + str(e))
+            raise RuntimeError(f"Error in __identity_read_users_per_domain: Identity Domain: {identity_domain['display_name']}, User: {user.user_name}, Error: {str(e)}")
 
 
     def __identity_read_users(self):

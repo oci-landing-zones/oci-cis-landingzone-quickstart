@@ -1414,7 +1414,7 @@ class CIS_Report:
                         
                         
                 except Exception as e:
-                    self.__errors.append({"id" : "__identity_read_groups", "error" : str(e)})
+                    self.__errors.append({"id" : "__identity_read_groups", "error" : identity_domain['display_name']+" : "+str(e)})
                     print("__identity_read_groups: error reading" + str(e))
                     RuntimeError(
                         "Error in __identity_read_groups" + str(e.args))

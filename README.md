@@ -66,6 +66,8 @@ allow group Auditor-Group to read data-safe-family in tenancy
 allow group Auditor-Group to read vaults in tenancy
 allow group Auditor-Group to read keys in tenancy
 allow group Auditor-Group to read tag-namespaces in tenancy
+allow group Auditor-Group to read cloud-guard-targets in tenancy
+allow group Auditor-Group to read serviceconnectors in tenancy
 allow group Auditor-Group to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}
 ```
 

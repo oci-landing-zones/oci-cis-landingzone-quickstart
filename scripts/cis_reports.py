@@ -4657,7 +4657,7 @@ class CIS_Report:
         ### Testing ###
         # CIS Check 4.13 - VCN FlowLog enable
         # Generate list of subnets IDs
-        debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking CIS 4.13")
+        debug("__report_cis_analyze_tenancy_data: Flowlogs checking CIS 4.13")
         for subnet in self.__network_subnets:
             vcn_id = subnet['vcn_id']
             try:

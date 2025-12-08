@@ -1397,7 +1397,7 @@ class CIS_Report:
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
                                                                           args={'attribute_sets' : ['default']})
-                    print(f"\tReading {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
+                    print(f"\tRead {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
                     for grp in groups_data:
                         debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
@@ -1525,38 +1525,36 @@ class CIS_Report:
     # Identity Domains Helper function for pagination
     ##########################################################################
     def __identity_domains_get_all_results(self, func, args):
+                
         if "start_index" not in args:
             args['start_index'] = 1
         if "count" not in args:
-            args["count"] = 1000     
+            args["count"] = 500     
         if "filter" not in args:
             args["filter"] = ''
         if "attributes" not in args:
-            args["attributes"] = ''
+            args["attributes"] = ''        
         if "attribute_sets" not in args:
             args["attribute_sets"] = ['all']
 
         debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
+        resources = []
 
-        result = func(start_index=args['start_index'],
-                    count=args['count'],
-                    filter=args['filter'],
-                    attributes=args['attributes'],
-                    attribute_sets=args['attribute_sets']).data
-        resources = result.resources
-        while len(resources) < result.total_results:
-            args["start_index"] = len(resources) + 1
+        while True:
             result = func(start_index=args['start_index'],
                     count=args['count'],
                     filter=args['filter'],
-                    attributes=args['attributes'],
-                    attribute_sets=args['attribute_sets']).data
-            for item in result.resources:
-                resources.append(item)
-            print("\tRead "+str(len(resources))+" of "+ str(result.total_results)+" resources")
+                    sort_by = 'ocid',
+                    attributes = args['attributes'],
+                    attribute_sets = args['attribute_sets']).data
+            resources.extend(result.resources)
+            next_index = result.start_index + result.items_per_page
+            if next_index > result.total_results:
+                break
+            
+            args['start_index'] = next_index
 
-        return resources
-        
+        return resources        
     ##########################################################################
     # Load users
     ##########################################################################
@@ -1564,7 +1562,7 @@ class CIS_Report:
         
         try:
             users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
-                                                                args={'attributes':'urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User:isFederatedUser,urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User, groups,urn:ietf:params:scim:schemas:oracle:idcs:extension:userCredentials:User, urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User:lastSuccessfulLoginDate','attribute_sets':['default'],'count' : 300})
+                                                                args={'attributes':'urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User:isFederatedUser,urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User, groups,urn:ietf:params:scim:schemas:oracle:idcs:extension:userCredentials:User, urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User:lastSuccessfulLoginDate','attribute_sets':['default'],'count' : 400})
             # Local scoped list to store users per domains
             v_domain_users = []
             # Adding record to the users

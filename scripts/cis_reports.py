@@ -1318,6 +1318,35 @@ class CIS_Report:
     ##########################################################################
     # Load Identity Domains
     ##########################################################################
+    def __identity_read_domain_info(self, domain_data ):
+        domain_dict = oci.util.to_dict(domain_data)
+        try:
+            debug("__identity_read_domain_info: Getting Identity Domain Password Policy for: " +  domain_data.display_name)
+            idcs_url = domain_data.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
+            raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
+            raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
+            debug("__identity_read_domain_info: Recieved Identity Domain Password Policy for: " +  domain_data.display_name)
+            
+            # Creating Identity Domains Client and storing it
+            debug("__identity_read_domain_info: Creating Identity Domain Client for: " +  domain_data.display_name)
+            domain_dict['IdentityDomainClient'] = oci.identity_domains.IdentityDomainsClient(\
+                    config=self.__config, signer=self.__signer, service_endpoint=domain_data.url)
+            debug("__identity_read_domain_info: Created Identity Domain Client for: " +  domain_data.display_name)
+
+            pwd_policy_dict =  oci.util.to_dict(domain_dict['IdentityDomainClient'].get_password_policy(\
+                    password_policy_id=raw_pwd_policy_dict['ocid']).data)
+            
+            domain_dict['password_policy'] = pwd_policy_dict
+            domain_dict['errors'] = None 
+            self.__identity_domains.append(domain_dict)
+            debug("-" * 100)
+            debug(f"__identity_read_domain_info: Domain Dict is: {domain_dict}")
+
+        except Exception as e:
+            debug("Identity Domain Error is for domain " + domain_data.display_name + "\n" + str(e))
+            domain_dict['password_policy'] = None
+            domain_dict['errors'] = str(e)
+
     def __identity_read_domains(self):
         if not(self.__identity_domains_enabled):
             return 
@@ -1338,36 +1367,18 @@ class CIS_Report:
                 debug("__identity_read_domains: Exception collecting Identity Domains\n" + str(e))
                 # If this fails the tenancy likely doesn't have identity domains or the permissions are off
         print("\tFound " + str(len(raw_identity_domains)) + " Identity Domains")                        
+        
+        v_domain_reader_threads = []
         for domain in raw_identity_domains:
             debug("__identity_read_domains: Getting password policy for domain: " + domain.display_name)
-            domain_dict = oci.util.to_dict(domain)
-            try: 
-                debug("__identity_read_domains: Getting Identity Domain Password Policy for: " +  domain.display_name)
-                idcs_url = domain.url + "/admin/v1/PasswordPolicies/PasswordPolicy" 
-                raw_pwd_policy_resp = requests.get(url=idcs_url, auth=self.__signer)
-                raw_pwd_policy_dict = json.loads(raw_pwd_policy_resp.content)
-                debug("__identity_read_domains: Recieved Identity Domain Password Policy for: " +  domain.display_name)
-                
-                # Creating Identity Domains Client and storing it
-                debug("__identity_read_domains: Creating Identity Domain Client for: " +  domain.display_name)
-                domain_dict['IdentityDomainClient'] = oci.identity_domains.IdentityDomainsClient(\
-                     config=self.__config, signer=self.__signer, service_endpoint=domain.url)
-                debug("__identity_read_domains: Created Identity Domain Client for: " +  domain.display_name)
-
-                pwd_policy_dict =  oci.util.to_dict(domain_dict['IdentityDomainClient'].get_password_policy(\
-                        password_policy_id=raw_pwd_policy_dict['ocid']).data)
-                
-                domain_dict['password_policy'] = pwd_policy_dict
-                domain_dict['errors'] = None 
-                self.__identity_domains.append(domain_dict)
-                debug("-" * 100)
-                debug(f"__identity_read_domains: Domain Dict is: {domain_dict}")
-
-            except Exception as e:
-                debug("Identity Domains Error is for domain " + domain.display_name + "\n" + str(e))
-                domain_dict['password_policy'] = None
-                domain_dict['errors'] = str(e)
+            thread = Thread(target=self.__identity_read_domain_info, args=([domain]))
+            v_domain_reader_threads.append(thread)
             
+        for thread in v_domain_reader_threads:
+            thread.start()
+
+        for thread in v_domain_reader_threads:
+            thread.join()    
 
         print("\tProcessed " + str(len(self.__identity_domains)) + " Identity Domains")                        
         return 
@@ -1386,7 +1397,7 @@ class CIS_Report:
                 try:
                     groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
                                                                           args={'attribute_sets' : ['default']})
-                    print(f"\tReading {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
+                    print(f"\tRead {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
                     for grp in groups_data:
                         debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
@@ -1403,7 +1414,7 @@ class CIS_Report:
                         
                         
                 except Exception as e:
-                    self.__errors.append({"id" : "__identity_read_groups", "error" : str(e)})
+                    self.__errors.append({"id" : "__identity_read_groups", "error" : identity_domain['display_name']+" : "+str(e)})
                     print("__identity_read_groups: error reading" + str(e))
                     RuntimeError(
                         "Error in __identity_read_groups" + str(e.args))
@@ -1514,104 +1525,125 @@ class CIS_Report:
     # Identity Domains Helper function for pagination
     ##########################################################################
     def __identity_domains_get_all_results(self, func, args):
+                
         if "start_index" not in args:
             args['start_index'] = 1
         if "count" not in args:
-            args["count"] = 1000     
+            args["count"] = 500     
         if "filter" not in args:
             args["filter"] = ''
+        if "attributes" not in args:
+            args["attributes"] = ''        
         if "attribute_sets" not in args:
             args["attribute_sets"] = ['all']
 
         debug("__identity_domains_get_all_results: " + str(func.__name__) + " arguments are: " + str(args))
+        resources = []
 
-        result = func(start_index=args['start_index'],
-                    count=args['count'],
-                    filter=args['filter'],
-                     attribute_sets=args['attribute_sets']).data
-        resources = result.resources
-        while len(resources) < result.total_results:
-            args["start_index"] = len(resources) + 1
+        while True:
             result = func(start_index=args['start_index'],
                     count=args['count'],
                     filter=args['filter'],
-                    attribute_sets=args['attribute_sets']).data
-            for item in result.resources:
-                resources.append(item)
+                    sort_by = 'ocid',
+                    attributes = args['attributes'],
+                    attribute_sets = args['attribute_sets']).data
+            resources.extend(result.resources)
+            next_index = result.start_index + result.items_per_page
+            if next_index > result.total_results:
+                break
+            
+            args['start_index'] = next_index
 
-        return resources
-        
+        return resources        
     ##########################################################################
     # Load users
     ##########################################################################
+    def __identity_read_users_per_domain(self, identity_domain):
+        
+        try:
+            users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, 
+                                                                args={'attributes':'urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User:isFederatedUser,urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User, groups,urn:ietf:params:scim:schemas:oracle:idcs:extension:userCredentials:User, urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User:lastSuccessfulLoginDate','attribute_sets':['default'],'count' : 400})
+            # Local scoped list to store users per domains
+            v_domain_users = []
+            # Adding record to the users
+            
+            for user in users_data:
+                record = {}
+                deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
+                id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
+                record = {
+                    'id': user.ocid,
+                    'domain_deeplink' : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
+                    'name': user.user_name,
+                    'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
+                    'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
+                    'description': user.description,
+                    'email': user.emails[0].value if user.emails else None,
+                    'email_verified': user.emails[0].verified if user.emails else None,
+                    'external_identifier': user.external_id,
+                    'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user else None,
+                    'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
+                    'lifecycle_state': user.active,
+                    'time_created': user.meta.created,
+                    'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
+                    'last_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.last_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
+                    'groups': []
+                }
+                # Adding Groups to the user record and to the groups membership dict.
+                if user.groups:
+                    for usergroup in user.groups:
+                        # Add to the user record
+                        record['groups'].append(usergroup.display)
+
+                        #Add to the groups membership dict
+                        if self.__groups.get(usergroup.ocid):
+                            self.__groups[usergroup.ocid]['members'].append({"user_id":user.ocid,"user_id_link":self.__generate_csv_hyperlink(deep_link, user.user_name)})
+
+                if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
+                    debug("__identity_read_users_per_domain: Collecting user API Key for user: " + str(user.user_name))
+                    record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
+                    record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
+                    record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
+                    record['database_passwords'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
+                else:
+                    debug("__identity_read_users_per_domain: skipping user API Key collection for user: " + str(user.user_name))
+                    record['api_keys'] = None
+                    record['auth_tokens'] = None
+                    record['customer_secret_keys'] = None
+                    record['database_passwords'] = None
+                #Local list to store all users for this domains
+                v_domain_users.append(record)
+            # Concat the list of users from this domain to the global __users list
+            print(f"\tRead {str(len(users_data))} users in: "+identity_domain['display_name'])
+            self.__users.extend(v_domain_users)
+                
+        except Exception as e:
+            debug("__identity_read_users_per_domain: Identity Domains are : " + str(self.__identity_domains_enabled))
+            self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
+            raise RuntimeError(f"Error in __identity_read_users_per_domain: Identity Domain: {identity_domain['display_name']}, User: {user.user_name}, Error: {str(e)}")
+
+
     def __identity_read_users(self):
         debug(f'__identity_read_users: Getting User data for Identity Domains: {str(self.__identity_domains_enabled)}')
         try:
             if self.__identity_domains_enabled:
+                v_domain_user_reader_threads = []
                 for identity_domain in self.__identity_domains:
-                    try:
-                        users_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_users, args = {})
-                        print(f"\tReading {str(len(users_data))} users in Identity Domain: " + identity_domain['display_name'])
-                        # Adding record to the users
-                        for user in users_data:
-                            deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
-                            id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
-                            record = {
-                                'id': user.ocid,
-                                'domain_deeplink' : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
-                                'name': user.user_name,
-                                'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
-                                'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
-                                'description': user.description,
-                                'email': user.emails[0].value if user.emails else None,
-                                'email_verified': user.emails[0].verified if user.emails else None,
-                                'external_identifier': user.external_id,
-                                'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user,
-                                'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
-                                'lifecycle_state': user.active,
-                                'time_created': user.meta.created,
-                                'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_console_password': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_console_password if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_customer_secret_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_customer_secret_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_db_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_db_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_o_auth2_client_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_o_auth2_client_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'can_use_smtp_credentials': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_smtp_credentials if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
-                                'last_successful_login_date': self.get_date_iso_format(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user.last_successful_login_date) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_state_user else None,
-                                'groups': []
-                            }
+                    thread = Thread(target=self.__identity_read_users_per_domain, args=([identity_domain]))
+                    v_domain_user_reader_threads.append(thread)
+            
+                for thread in v_domain_user_reader_threads:
+                    thread.start()
 
-                            # Adding Groups to the user record and to the groups membership dict
-                            if user.groups:
-                                for usergroup in user.groups:
-                                    # Add to the user record
-                                    record['groups'].append(usergroup.display)
+                for thread in v_domain_user_reader_threads:
+                    thread.join()
 
-                                    #Add to the groups membership dict
-                                    if self.__groups[usergroup.ocid]:
-                                        self.__groups[usergroup.ocid]['members'].append({"user_id":user.ocid,"user_id_link":self.__generate_csv_hyperlink(deep_link, user.user_name)})
-                            
-                                
-                            if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_credentials_user:
-                                debug("__identity_read_users: Collecting user API Key for user: " + str(user.user_name))
-                                record['api_keys'] = self.__identity_read_user_api_key(user_ocid=user.ocid, identity_domain=identity_domain)
-                                record['auth_tokens'] = self.__identity_read_user_auth_token(user.ocid, identity_domain=identity_domain)
-                                record['customer_secret_keys'] = self.__identity_read_user_customer_secret_key(user.ocid, identity_domain=identity_domain)
-                                record['database_passwords'] = self.__identity_read_user_database_password(user.ocid,identity_domain=identity_domain)
-                            else:
-                                debug("__identity_read_users: skipping user API Key collection for user: " + str(user.user_name))
-                                record['api_keys'] = None
-                                record['auth_tokens'] = None
-                                record['customer_secret_keys'] = None
-                                record['database_passwords'] = None
-                            self.__users.append(record)
-
-                    except Exception as e:
-                        debug("__identity_read_users: Identity Domains are : " + str(self.__identity_domains_enabled))
-                        self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
-                        raise RuntimeError(
-                            "Error in __identity_read_users: " + str(e))
-                
                 print("\tProcessed a total of: " + str(len(self.__users)) + " Users")
                 return self.__users
 
@@ -1669,10 +1701,10 @@ class CIS_Report:
                     debug("__identity_read_users: Error is: " + str(e))
                     self.__errors.append({"id" : "__identity_read_users", "error" : str(e)})
                     raise RuntimeError(
-                        "Error in __identity_read_users: " + str(e))
+                        "Error in __identity_read_users, Non Identity Domain: " + str(e))
         except Exception as e:
             raise RuntimeError(
-                "Error in __identity_read_users: " + str(e.args))
+                "Error in __identity_read_users: " + str(e.args)+".")
 
     ##########################################################################
     # Load user api keys
@@ -6025,7 +6057,7 @@ class CIS_Report:
         thread_identity_groups.join()
 
         print("\nProcessing Home Region resources...")
-
+        
         cis_home_region_functions = [
             self.__identity_read_users,
             self.__identity_read_tenancy_password_policy,

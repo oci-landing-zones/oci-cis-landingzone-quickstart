@@ -4439,11 +4439,16 @@ class CIS_Report:
         # CIS 1.14 Check - Ensure Dynamic Groups are used for OCI instances, OCI Cloud Databases and OCI Function to access OCI resources
         # Iterating through all dynamic groups ensure there are some for fnfunc, instance or autonomous.  Using reverse logic so starts as a false
         for dynamic_group in self.__dynamic_groups:
-            if any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper()) for oci_resource in self.cis_iam_checks['1.14']['resources']):
-                self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
-            else:
-                self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(
-                    dynamic_group)
+            for oci_resource in self.cis_iam_checks['1.14']['resources']:
+                if dynamic_group['matching_rule'] and isinstance(dynamic_group['matching_rule'], list) and \
+                    any(oci_resource.upper() in str(dynamic_group['matching_rule'].upper())):
+                    self.__errors.append({"id" :dynamic_group['id'], "error" : f"This matching rule is a list: {dynamic_group['matching_rule']}" })
+                    self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
+                elif dynamic_group['matching_rule'] and isinstance(dynamic_group['matching_rule'], str) and \
+                   oci_resource.upper() in dynamic_group['matching_rule'].upper():
+                    self.cis_foundations_benchmark_3_0['1.14']['Status'] = True
+                else:
+                    self.cis_foundations_benchmark_3_0['1.14']['Findings'].append(dynamic_group)
         # Clearing finding
         if self.cis_foundations_benchmark_3_0['1.14']['Status']:
             self.cis_foundations_benchmark_3_0['1.14']['Findings'] = []

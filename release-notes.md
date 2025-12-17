@@ -1,3 +1,29 @@
+# December 17 Release Notes - 3.1.1
+1. [Identity Domain Performance Improvements](#3-1-1-identity-domains)
+1. [SIEM Remediation Terraform Scripts](#3-1-1-siem)
+1. [Updates and Fixes](#3-1-1-fixes)
+
+## <a name="#3-1-1-identity-domains">Identity Domain Performance Improvements</a>
+Parallelized __identity_read_users and __identity_read_groups_and_membership across Identity Domains to reduce runtime. Reduced calls to list_users by refactoring membership lookups and caching to lower execution time and 429 risk.
+
+## <a name="#3-1-1-siem">SIEM Remediation Terraform Scripts</a>
+Added Terraform code for SIEM remediation that can be used to set up SIEM integration from the OCI side. Configuration on the SIEM side is a separate task not covered by this Terraform code.
+
+## <a name="#3-1-1-fixes">Updates and Fixies</a>
+**Updates:**
+- Added region/status to recommendations CIS 4.3 - 4.18 for missing events. Closes [173](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/173).
+- Added UTC ISO‑8601 timestamps to debug output to aid traceability and support.
+
+**Fixes:**
+- Added missing regional signer for Log Search. Closes [184](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/184).
+- Fixed `AttributeError: 'NoneType'` object has no attribute `upper` error. Closes [189](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/189).
+
+**Documentation:**
+- Fix broken README link.
+- Remove “Default” from List Users output.
+- Correct typos in remediations: “selct” → “select”.
+- HTML item counter on exceptions.
+
 # October 24 Release Notes - 3.1.0  
 1. [Autonomous Database OBP Checks](#3-1-0-obp-adb)
 1. [Governance OBP Checks](#3-1-0-obp-governance)

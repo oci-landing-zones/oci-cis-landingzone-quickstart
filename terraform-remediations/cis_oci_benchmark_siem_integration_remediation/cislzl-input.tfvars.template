@@ -1,0 +1,29 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+##### The uncommented variable assignments below are for REQUIRED variables that do NOT have a default value in variables.tf. They must be provided appropriate values.
+##### The commented variable assignments are for variables with a default value in variables.tf. For overriding them, uncomment the variable and provide an appropriate value.
+
+# ------------------------------------------------------
+# ----- Environment
+# ------------------------------------------------------
+# tenancy_ocid         = "<tenancy_ocid>"
+# user_ocid            = "<user_ocid>"
+# fingerprint          = "<user_api_key_fingerprint>"
+# private_key_path     = "<path_to_user_private_key_file>"
+# private_key_password = ""
+# region               = "<tenancy_region>"   # e.g. us-phoenix-1
+# service_label        = "<a_label_to_prefix_resource_names_with>"
+# homeregion           = true
+
+# ------------------------------------------------------
+# ----- SIEM Integration
+# ------------------------------------------------------
+# integration_type                 = "Generic Stream-based/Splunk/Stellar Cyber"
+# compartment_id_for_stream        = "<ocid>"
+# compartment_id_for_service_connector_stream = "<ocid>"
+# create_iam_resources_stream      = true
+# name_for_stream                  = ""
+# name_for_service_connector_stream = ""
+
+

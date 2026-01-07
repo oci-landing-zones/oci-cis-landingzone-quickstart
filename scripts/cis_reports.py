@@ -6586,7 +6586,7 @@ def execute_report():
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
-                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp) and All resource to csv (--raw) flags.')
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with Service Limits checking (--obp) and enables the (--raw) flags.  All of these checks increase runtime.')
     parser.add_argument('--disable-api-usage-check', action='store_true', default=False,
                         help='Disables the checking of OCI API unused for 45 days or more.')
     parser.add_argument('--redact-output', action='store_true', default=False,

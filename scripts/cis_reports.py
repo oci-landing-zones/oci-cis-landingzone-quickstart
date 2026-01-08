@@ -1478,32 +1478,6 @@ class CIS_Report:
                 RuntimeError(
                     "Error in __identity_read_groups" + str(e.args))
     
-    ##########################################################################
-    # Helper function to flatten Group membership records
-    ##########################################################################
-    def __identity_flatten_group_dict(self, v_dict):
-        debug("__identity_flatten_group_dict: the following dict will be flattened:" + str(v_dict))
-        flatten_group = []
-        try:
-            flatten_group = [
-                {
-                    "id": group_id,
-                    "name": group_data["name"],
-                    "deep_link": group_data["deep_link"],
-                    "domain_deeplink": group_data["domain_deeplink"],
-                    "description": group_data["description"],
-                    "time_created": group_data["time_created"],
-                    "user_id": member["user_id"] if member else None,
-                    "user_id_link": member["user_id_link"] if member else None
-                }
-                for group_id, group_data in v_dict.items()
-                for member in (group_data["members"] if group_data["members"] else [None])
-            ]
-            return flatten_group
-        except Exception as e:
-            self.__errors.append({"id" : "__identity_flatten_group_dict:", "error" : str(e)})
-            print(f"_identity_flatten_group_dict:\n \t{str(e)}")
-            return flatten_group
     
     ##########################################################################
     # Identity Domains Helper function for pagination

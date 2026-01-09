@@ -1402,10 +1402,13 @@ class CIS_Report:
                         debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
                         grp_deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/groups/" + grp.id
                         group_record = {
+                                    "id" : grp.ocid,
                                     "name": grp.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
                                     "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
+                                    "domain_name" : identity_domain['display_name'],
+                                    "domain_id" : identity_domain['id'],
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
                                     "members": []
                                 }
@@ -1475,32 +1478,6 @@ class CIS_Report:
                 RuntimeError(
                     "Error in __identity_read_groups" + str(e.args))
     
-    ##########################################################################
-    # Helper function to flatten Group membership records
-    ##########################################################################
-    def __identity_flatten_group_dict(self, v_dict):
-        debug("__identity_flatten_group_dict: the following dict will be flattened:" + str(v_dict))
-        flatten_group = []
-        try:
-            flatten_group = [
-                {
-                    "id": group_id,
-                    "name": group_data["name"],
-                    "deep_link": group_data["deep_link"],
-                    "domain_deeplink": group_data["domain_deeplink"],
-                    "description": group_data["description"],
-                    "time_created": group_data["time_created"],
-                    "user_id": member["user_id"] if member else None,
-                    "user_id_link": member["user_id_link"] if member else None
-                }
-                for group_id, group_data in v_dict.items()
-                for member in (group_data["members"] if group_data["members"] else [None])
-            ]
-            return flatten_group
-        except Exception as e:
-            self.__errors.append({"id" : "__identity_flatten_group_dict:", "error" : str(e)})
-            print(f"_identity_flatten_group_dict:\n \t{str(e)}")
-            return flatten_group
     
     ##########################################################################
     # Identity Domains Helper function for pagination
@@ -1569,6 +1546,7 @@ class CIS_Report:
             
             for user in users_data:
                 record = {}
+                print()
                 deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 record = {
@@ -1584,6 +1562,8 @@ class CIS_Report:
                     'is_federated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user.is_federated_user if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_user_user else None,
                     'is_mfa_activated': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user.mfa_status if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_mfa_user else None,
                     'lifecycle_state': user.active,
+                    'domain_name' : identity_domain['display_name'],
+                    'domain_id' : identity_domain['id'],
                     'time_created': user.meta.created,
                     'can_use_api_keys': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_api_keys if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
                     'can_use_auth_tokens': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user.can_use_auth_tokens if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_capabilities_user else None,
@@ -1671,6 +1651,8 @@ class CIS_Report:
                             'is_federated': True if user.identity_provider_id is not None else False, 
                             'is_mfa_activated': user.is_mfa_activated,
                             'lifecycle_state': True if user.lifecycle_state == 'ACTIVE' else False,
+                            'domain_name' : "",
+                            'domain_id' : "",
                             'time_created': user.time_created.strftime(self.__iso_time_format),
                             'can_use_api_keys': user.capabilities.can_use_api_keys,
                             'can_use_auth_tokens': user.capabilities.can_use_auth_tokens,
@@ -2069,6 +2051,8 @@ class CIS_Report:
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
                         record['domain_deeplink'] = self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name'])
+                        record['domain_name'] = identity_domain['display_name'][0] if isinstance(identity_domain['display_name'],tuple) else identity_domain['display_name']
+                        record['domain_id'] = identity_domain['id'][0] if isinstance(identity_domain['id'],tuple) else identity_domain['id']
                         self.__dynamic_groups.append(record)
 
             else:
@@ -2082,6 +2066,8 @@ class CIS_Report:
                     record = oci.util.to_dict(dynamic_group)
                     record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.name)
                     record['domain_deeplink'] = None 
+                    record['domain_name'] = None,
+                    record['domain_id'] = None,
                     self.__dynamic_groups.append(record)
 
             print("\tProcessed " + str(len(self.__dynamic_groups)) + " Dynamic Groups")
@@ -6173,9 +6159,8 @@ class CIS_Report:
 
         # List to store output reports if copying to object storage is required
         list_report_file_names = []
-
         raw_csv_files = {
-            "identity_groups_and_membership": self.__identity_flatten_group_dict(self.__groups) if self.__identity_domains_enabled else self.__groups_to_users,
+            "identity_groups_and_membership": list(self.__groups.values()) if self.__identity_domains_enabled else self.__groups_to_users,
             "identity_domains": self.__identity_domains,
             "identity_users": self.__users,
             "identity_policies": self.__policies,

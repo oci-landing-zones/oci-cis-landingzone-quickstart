@@ -351,7 +351,7 @@ class CIS_Report:
                 "Description": "All OCI IAM local user accounts have an email address field associated with the account. It is recommended to specify an email address that is valid and current.<br><br>If you have an email address in your user profile, you can use the Forgot Password link on the sign on page to have a temporary password sent to you.",
                 "Rationale": "Having a valid and current email address associated with an OCI IAM local user account allows you to tie the account to identity in your organization. It also allows that user to reset their password if it is forgotten or lost.",
                 "Impact": "",
-                "Remediation": "Update the current email address in the email text box on exch non compliant user.",
+                "Remediation": "Update the current email address in the email text box on each non compliant user.",
                 "Recommendation": "Add emails to users to allow them to use the 'Forgot Password' feature and uniquely identify the user. For service accounts it could be a mail alias.",
                 "Observation": "user(s) without an email."
             },

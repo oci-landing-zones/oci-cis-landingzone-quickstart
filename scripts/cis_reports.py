@@ -4185,7 +4185,7 @@ class CIS_Report:
 
 
                     if domain['password_policy']['min_length']:
-                        if domain['password_policy']['min_length'] > 14:
+                        if domain['password_policy']['min_length'] >= 14:
                             self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)

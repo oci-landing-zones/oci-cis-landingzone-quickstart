@@ -41,9 +41,9 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-RELEASE_VERSION = "3.1.1"
-PYTHON_SDK_VERSION = "2.162.0"
-UPDATED_DATE = "December 17, 2025"
+RELEASE_VERSION = "3.1.2"
+PYTHON_SDK_VERSION = "2.165.1"
+UPDATED_DATE = "January 21, 2025"
 
 
 ##########################################################################
@@ -1546,7 +1546,6 @@ class CIS_Report:
             
             for user in users_data:
                 record = {}
-                print()
                 deep_link = self.__oci_identity_domains_uri + identity_domain['id'] + "/users/" + user.ocid
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 record = {
@@ -4185,7 +4184,7 @@ class CIS_Report:
 
 
                     if domain['password_policy']['min_length']:
-                        if domain['password_policy']['min_length'] >= 14:
+                        if domain['password_policy']['min_length'] < 14:
                             self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)
                     else:
                         self.cis_foundations_benchmark_3_0['1.4']['Findings'].append(domain)

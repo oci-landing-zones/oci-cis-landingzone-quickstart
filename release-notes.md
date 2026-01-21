@@ -1,4 +1,4 @@
-# January 21, 2026 Release Notes - 3.1.2
+# January 22, 2026 Release Notes - 3.1.2
 1. [Updates and Fixes](#3-1-1-fixes)
 
 ## <a name="#3-1-2-updates">Fixes and Updates</a>

@@ -4631,7 +4631,7 @@ class CIS_Report:
         # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
         for event in self.__event_rules:
-            if event['lifecycle_state'] == "ACTIVE":
+            if event['lifecycle_state'] == "ACTIVE" and event['compartment_id'] == self.__tenancy.id:
                 # Convert Event Condition to dict
                 eventtype_jsonable_str = event['condition'].lower().replace("'", "\"")
                 try:

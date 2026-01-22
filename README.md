@@ -143,8 +143,8 @@ pip3 install xlsxwriter
   --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.
   --raw                                Outputs all resource data into CSV files.
   --obp                                Checks for OCI best practices.
-  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. This also enables OCI Best Practice Checks (--obp)
-                                       and All resource to csv (--raw) flags.
+  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with
+                                       Service Limits checking (--obp) and enables the (--raw) flags. All of these checks increase runtime.
   --disable-api-usage-check            Disables the checking of OCI API unused for 45 days or more.
   --redact-output                      Redacts OCIDs in output CSV and JSON files.
   --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
@@ -152,9 +152,16 @@ pip3 install xlsxwriter
   -dt                                  Use Delegation Token for Authentication in Cloud Shell.
   -st                                  Authenticate using Security Token.
   -v                                   Show the version of the script and exit.
+  --debug                              Enables debugging messages printed to screen.
 ```
 
 ## <a name="usage"></a>Usage Examples
+
+### Executing on a loca machine to check CIS and OCI Best Practices with raw data
+To run using python running a local machine in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
+```
+% python3 cis_reports.py --obp --raw
+```
 
 ### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
 To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.

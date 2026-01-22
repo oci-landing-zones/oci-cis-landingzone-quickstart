@@ -1,3 +1,14 @@
+# January 22, 2026 Release Notes - 3.1.2
+1. [Updates and Fixes](#3-1-1-fixes)
+
+## <a name="#3-1-2-updates">Fixes and Updates</a>
+Fixes:
+- Fixed CIS Recommendation 1.4 password length policy to `>`. Resolves issue [193](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/193).
+- Updated the help `-h` for the `--all-resources` flag to include information on the service limits check. Resolves issue [194](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/194).
+- Updated CIS Recommendations 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.11, 4.12, and 4.18 to ensure they are enabled in the root compartment. Resolves issue [187](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/187).
+Updates:
+- Added additional fields to `raw_data_identity_users.csv`,`raw_data_identity_groups_and_membership.csv`, and `raw_data_identity_dynamic_groups.csv`.
+
 # December 17 Release Notes - 3.1.1
 1. [Identity Domain Performance Improvements](#3-1-1-identity-domains)
 1. [SIEM Remediation Terraform Scripts](#3-1-1-siem)

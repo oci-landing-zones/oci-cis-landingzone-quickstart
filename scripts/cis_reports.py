@@ -856,7 +856,7 @@ class CIS_Report:
         # For IAM Checks
         self.__tenancy_password_policy = None
         self.__compartments = []
-        self.__raw_compartment = []
+        self.__raw_compartment = {}
         self.__policies = []
         self.__users = []
         self.__groups = {} # Indexed by GRP OCID
@@ -1279,9 +1279,10 @@ class CIS_Report:
                     "is_accessible": compartment.is_accessible,
                     "lifecycle_state": compartment.lifecycle_state,
                     "time_created": compartment.time_created.strftime(self.__iso_time_format),
+                    "statements_in_compartment" : 0,
                     "region": ""
                 }
-                self.__raw_compartment.append(record)
+                self.__raw_compartment[compartment.id] = record
                 self.cis_foundations_benchmark_3_0['6.1']['Total'].append(compartment)
 
             # Add root compartment which is not part of the list_compartments
@@ -1299,10 +1300,11 @@ class CIS_Report:
                 "is_accessible": "",
                 "lifecycle_state": "",
                 "time_created": "",
+                "statements_in_compartment" : 0,
                 "region": ""
 
             }
-            self.__raw_compartment.append(root_compartment)
+            self.__raw_compartment[self.__tenancy.id] = root_compartment
 
             self.__set_managed_paas_compartment()
 
@@ -2025,6 +2027,7 @@ class CIS_Report:
                     "statements": policy.additional_details['statements'],
                     "number_of_statements" : len(policy.additional_details['statements'])
                 }
+                self.__raw_compartment[policy.compartment_id]['statements_in_compartment'] += len(policy.additional_details['statements'])
                 self.__policies.append(record)
             print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")
             return self.__policies
@@ -5011,7 +5014,7 @@ class CIS_Report:
             # Compartment Logs that are missed in the region
             for compartment in region_values['Audit']['findings']:
                 try:
-                    finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment))[0]
+                    finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment.values()))[0]
                     record = {
                         "id": finding['id'],
                         "name": finding['name'],
@@ -5049,7 +5052,7 @@ class CIS_Report:
             # Compartment logs that are not missed in the region
             for compartment in region_values['Audit']['compartments']:
                 try:
-                    finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment))[0]
+                    finding = list(filter(lambda source: source['id'] == compartment, self.__raw_compartment.values()))[0]
                     record = {
                         "id": finding['id'],
                         "name": finding['name'],
@@ -6165,7 +6168,7 @@ class CIS_Report:
             "identity_policies": self.__policies,
             "identity_dynamic_groups": self.__dynamic_groups,
             "identity_tags": self.__tag_defaults,
-            "identity_compartments": self.__raw_compartment,
+            "identity_compartments": list(self.__raw_compartment.values()),
             "network_security_groups": self.__network_security_groups,
             "network_security_lists": self.__network_security_lists,
             "network_subnets": self.__network_subnets,

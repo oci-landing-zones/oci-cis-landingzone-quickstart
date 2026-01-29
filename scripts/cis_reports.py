@@ -2022,7 +2022,8 @@ class CIS_Report:
                     "compartment_id": policy.compartment_id,
                     "description": policy.additional_details['description'],
                     "lifecycle_state": policy.lifecycle_state,
-                    "statements": policy.additional_details['statements']
+                    "statements": policy.additional_details['statements'],
+                    "number_of_statements" : len(policy.additional_details['statements'])
                 }
                 self.__policies.append(record)
             print("\tProcessed " + str(len(self.__policies)) + " IAM Policies")
@@ -4960,7 +4961,6 @@ class CIS_Report:
                 except Exception:
                     dict_of_compartments[compartment.compartment_id] = []
                     dict_of_compartments[compartment.compartment_id].append(compartment.id)
-    
         # Collecting Service Connectors Logs related to compartments
         for sch_id, sch_values in self.__service_connectors.items():
             # Only Active SCH with a target that is configured

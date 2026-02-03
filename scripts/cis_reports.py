@@ -3593,13 +3593,16 @@ class CIS_Report:
     # Identity Password Policy
     ##########################################################################
     def __identity_read_tenancy_password_policy(self):
+        if self.__identity_domains_enabled:
+            self.__tenancy_password_policy = None
+        
+        print("\tProcessed Tenancy Password Policy...")
+
         try:
             self.__tenancy_password_policy = self.__regions[self.__home_region]['identity_client'].get_authentication_policy(
                 self.__tenancy.id
             ).data
 
-            print("\tProcessed Tenancy Password Policy...")
-            return self.__tenancy_password_policy
         except Exception as e:
             if "NotAuthorizedOrNotFound" in str(e):
                 self.__tenancy_password_policy = None
@@ -3607,6 +3610,7 @@ class CIS_Report:
                 self.__errors.append({"id" : self.__tenancy.id, "error" : "*** Access to password policies in this tenancy requires elevated permissions. ***"})
             else:
                 raise RuntimeError("Error in __identity_read_tenancy_password_policy " + str(e.args))
+        return self.__tenancy_password_policy
 
     ##########################################################################
     # Oracle Notifications Services for Subscriptions 

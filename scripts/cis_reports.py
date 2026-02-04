@@ -3595,6 +3595,7 @@ class CIS_Report:
     def __identity_read_tenancy_password_policy(self):
         if self.__identity_domains_enabled:
             self.__tenancy_password_policy = None
+            return self.__tenancy_password_policy 
         
         print("\tProcessed Tenancy Password Policy...")
 

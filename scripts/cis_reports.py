@@ -691,6 +691,7 @@ class CIS_Report:
             'SIEM_Write_Bucket_Logs': {'id': 'OBP-SIEM-4', 'section': "SIEM Logging", 'Title': 'Bucket write logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'id': 'OBP-SIEM-5', 'section': "SIEM Logging", 'Title': 'Bucket read logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'Networking_Connectivity': {'id': 'OBP-NTW-1', 'section': "Advanced Networking", 'Title': 'Scalable and secure topology in OCI', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
+            'Networking_DRG_Upgraded': {'id': 'OBP-NTW-2', 'section': "Advanced Networking", 'Title': 'Dynamic Route Gateway (DRG) upgraded to version 2', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm"},
             'Cloud_Guard_Config': {'id': 'OBP-CSP-1', 'section': "CSPM", 'Title': 'Cloud Guard enabled and configured', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
             'Certificates_Near_Expiry': {'id': 'OBP-CRT-1', 'section': "Certificates", 'Title': 'Certificates to expire in 30 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "TBD"},
             'Service_Limits': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Visibility into OCI Limits', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
@@ -2702,7 +2703,7 @@ class CIS_Report:
                                 "default_export_drg_route_distribution_id": drg.default_export_drg_route_distribution_id,
                                 "compartment_id": drg.compartment_id,
                                 "lifecycle_state": drg.lifecycle_state,
-                                "upgrade_status": upgrade_status,
+                                "upgrade_status": upgrade_status.upper(),
                                 "time_created": drg.time_created.strftime(self.__iso_time_format),
                                 "freeform_tags": drg.freeform_tags,
                                 "define_tags": drg.defined_tags,
@@ -4913,6 +4914,10 @@ class CIS_Report:
                     "drgs": [],
                     "findings": [],
                     "status": False
+                },
+                "DRG_upgraded" : {
+                    "obp": [],
+                    "findings": [],
                 }
             }
         
@@ -5167,6 +5172,7 @@ class CIS_Report:
 
             fast_connect_providers = set()
             customer_premises_equipment = set()
+            drg_upgrade_status = self.__network_drgs[drg_id]['upgrade_status']
 
             for attachment in drg_values:
                 if attachment['network_type'].upper() == 'VCN':
@@ -5198,6 +5204,7 @@ class CIS_Report:
                 record = {
                     "drg_id": drg_id,
                     "drg_display_name": self.__network_drgs[drg_id]['display_name'],
+                    "upgrade_status": drg_upgrade_status,
                     "region": self.__network_drgs[drg_id]['region'],
                     "number_of_connected_vcns": number_of_valid_connected_vcns,
                     "number_of_customer_premises_equipment": len(customer_premises_equipment),
@@ -5209,6 +5216,7 @@ class CIS_Report:
                 record = {
                     "drg_id": drg_id,
                     "drg_display_name": "Deleted with an active attachement",
+                    "upgrade_status" : None,
                     "region": attachment['region'],
                     "number_of_connected_vcns": 0,
                     "number_of_customer_premises_equipment": 0,
@@ -5236,15 +5244,28 @@ class CIS_Report:
             else:
                 self.__obp_regional_checks[record['region']]["Network_Connectivity"]["findings"].append(record)
 
+            if not drg_upgrade_status == "UPGRADED":
+                self.__obp_regional_checks[record['region']]["DRG_upgraded"]["findings"].append(record)
+            else: 
+                self.__obp_regional_checks[record['region']]["DRG_upgraded"]["obp"].append(record)
+
         # Consolidating Regional
 
-        for region_key, region_values in self.__obp_regional_checks.items():
+        for region_values in self.__obp_regional_checks.values():
             # I assume you are well connected in all regions if find one region that is not it fails
             if not region_values["Network_Connectivity"]["status"]:
                 self.obp_foundations_checks['Networking_Connectivity']['Status'] = False
-
+    
             self.obp_foundations_checks["Networking_Connectivity"]["Findings"] += region_values["Network_Connectivity"]["findings"]
             self.obp_foundations_checks["Networking_Connectivity"]["OBP"] += region_values["Network_Connectivity"]["drgs"]
+        
+            self.obp_foundations_checks['Networking_DRG_Upgraded']['Findings'] += self.__obp_regional_checks[record['region']]["DRG_upgraded"]["findings"]
+            self.obp_foundations_checks['Networking_DRG_Upgraded']['OBP'] += self.__obp_regional_checks[record['region']]["DRG_upgraded"]["obp"]    
+        
+        if self.obp_foundations_checks['Networking_DRG_Upgraded']['Findings']:
+            self.obp_foundations_checks['Networking_DRG_Upgraded']['Status'] = False
+        else:
+            self.obp_foundations_checks['Networking_DRG_Upgraded']['Status'] = False
 
     #######################################
     # OBP Certificate Expiry Check

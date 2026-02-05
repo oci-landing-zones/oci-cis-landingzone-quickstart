@@ -5217,6 +5217,8 @@ class CIS_Report:
                     "number_of_fastconnect_providers": 0,
                 }
                 print(f"This DRG: {drg_id} is deleted with an active attachement: {attachment['display_name']}")
+                self.__errors.append({"id" : str(drg_id), "error" : f"This DRG: {drg_id} is deleted with an active attachement: {attachment['display_name']}"})
+
 
             # Checking if the DRG and connected resourcs are aligned with best practices
             # One attached VCN, One VPN connection and one fast connect

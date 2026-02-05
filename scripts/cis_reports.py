@@ -1605,7 +1605,7 @@ class CIS_Report:
         except Exception as e:
             debug("__identity_read_users_per_domain: Identity Domains are : " + str(self.__identity_domains_enabled))
             self.__errors.append({'id' : "__identity_read_users", 'error' : str(e)})
-            raise RuntimeError(f"Error in __identity_read_users_per_domain: Identity Domain: {identity_domain['display_name']}, User: {user.user_name}, Error: {str(e)}")
+            raise RuntimeError(f"Error in __identity_read_users_per_domain: Identity Domain: {identity_domain['display_name']}, Error: {str(e)}")
 
 
     def __identity_read_users(self):

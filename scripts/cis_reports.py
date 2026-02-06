@@ -154,6 +154,9 @@ class CIS_Report:
     __days_to_expiry = 30
     __days_used = 45
 
+    # Global Service Limit threshold
+    __service_utilization_limit = 80.0
+
     # Time Format
     __iso_time_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -701,6 +704,8 @@ class CIS_Report:
             'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
+            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "find link"},
+            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statement counts are below.....', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -864,6 +869,7 @@ class CIS_Report:
         self.__tag_defaults = []
         self.__dynamic_groups = []
         self.__identity_domains = []
+        self.__compartment_hierarchy_info = []
 
         # For Networking checks
         self.__network_security_groups = []
@@ -5444,7 +5450,7 @@ class CIS_Report:
         if True:
             for limit in self.__service_limits:
                 # If the limit is greater than 80% we should note it for an OBP
-                if limit['service_limit_availability'] and limit['service_limit_availability'] >= 80.0:
+                if limit['service_limit_availability'] and limit['service_limit_availability'] >= self.__service_utilization_limit:
                     self.obp_foundations_checks['Service_Limits']['Findings'].append(limit)
                 else:
                     self.obp_foundations_checks['Service_Limits']['OBP'].append(limit)
@@ -5487,7 +5493,62 @@ class CIS_Report:
                 if self.obp_foundations_checks[key]['Findings']:
                     self.obp_foundations_checks[key]['Status'] = False
                 else:
-                    self.obp_foundations_checks[key]['Status'] = True                    
+                    self.obp_foundations_checks[key]['Status'] = True       
+
+    ##########################################################################
+    # OBP Check Aggregated Policy statements in all Compartment Chains
+    ##########################################################################
+    def __obp_check_policy_statements_in_comp_chains(self):
+        policy_stmt_limit = 500.0
+        parent_ids = {v.get("compartment_id") for v in self.__raw_compartment.values() if v.get("compartment_id") }
+        leaf_nodes = [cid for cid in self.__raw_compartment.keys() if cid not in parent_ids]
+
+        for leaf in leaf_nodes:
+            path = []
+            cid = leaf
+            total = 0
+            while cid is not None:
+                path.append(cid)
+                if cid == self.__tenancy.id:
+                    break
+                cid = self.__raw_compartment[cid]['compartment_id']
+            parts = [f"{self.__raw_compartment[x]['name']}({self.__raw_compartment[x]['statements_in_compartment']})" for x in reversed(path)]
+            total = sum(self.__raw_compartment[x]['statements_in_compartment'] for x in path)
+             
+            record = {
+                "total":total, 
+                "compartment_hierarchy": ' --> '.join(parts)
+                }
+            
+            #Check compartment hierarchy total statements against the statement threshold. 
+            policy_stmt_utilization_per_hierarchy = round((total*100.0)/policy_stmt_limit)
+            if policy_stmt_utilization_per_hierarchy >= self.__service_utilization_limit or total >= policy_stmt_limit:
+                self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['Findings'].append(record)
+            else:
+                self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['OBP'].append(record)
+            
+            if self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['Findings']:
+                self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['Status'] = False
+            elif self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['OBP']:
+                self.obp_foundations_checks['IAM_Stmt_Comp_Hierarchy_Count']['Status'] = True
+
+            self.__compartment_hierarchy_info.append(record)
+
+        #Check root compartment total statements against the statement threshold. 
+        policy_stmt_utilization_at_root = round((self.__raw_compartment[self.__tenancy.id]["statements_in_compartment"]*100.0)/policy_stmt_limit)
+        record = {"Statements_at_root":self.__raw_compartment[self.__tenancy.id]["statements_in_compartment"]}
+        if policy_stmt_utilization_at_root >= self.__service_utilization_limit or self.__raw_compartment[self.__tenancy.id]["statements_in_compartment"] >= policy_stmt_limit:
+            self.obp_foundations_checks['IAM_Stmt_Root_Count']['Findings'].append(record)
+        else:
+            self.obp_foundations_checks['IAM_Stmt_Root_Count']['OBP'].append(record)
+        
+        if self.obp_foundations_checks['IAM_Stmt_Root_Count']['Findings']:
+            self.obp_foundations_checks['IAM_Stmt_Root_Count']['Status'] = False
+        elif self.obp_foundations_checks['IAM_Stmt_Root_Count']['OBP']:
+            self.obp_foundations_checks['IAM_Stmt_Root_Count']['Status'] = True
+
+        
+         
 
     ##########################################################################
     # Analyzes Tenancy Data for Oracle Best Practices Report
@@ -5504,6 +5565,7 @@ class CIS_Report:
         self.__obp_check_close_service_limits()
         self.__obp_check_adbs()
         self.__obp_check_quotas()
+        self.__obp_check_policy_statements_in_comp_chains()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation
@@ -6196,7 +6258,8 @@ class CIS_Report:
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
             "instances": self.__Instance,
             "certificates" : self.__raw_oci_certificates,
-            "service_limits" : self.__service_limits
+            "service_limits" : self.__service_limits,
+            "compartment_hierarchy_policy_count" : self.__compartment_hierarchy_info
         }
         for key in raw_csv_files:
             rfn = self.__print_to_csv_file('raw_data', key, raw_csv_files[key])

@@ -15,4 +15,4 @@
    `pip3 install --upgrade --force-reinstall --user numpy`
 
 - The CIS Compliance Checker script is unexpectedly killed by the OS without any error messages.
-   * This could be due to low memory. If the tenancy has a very large number of Users, Groups and Group Membership this will result in higher memory usage by the script and could force the OS to terminate the process. If this is the case it is recommended to increase the memory to 32GB and retry.
+   * This could be due to low memory. If the tenancy has a very large number of Users, Groups and Group Memberships this will result in higher memory usage by the script and could force the OS to terminate the process. If this is the case it is recommended to increase the memory to 32GB and retry. Since Cloud Shell has a fixed memory amount it recommended to switch to a VM.

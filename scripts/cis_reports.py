@@ -5499,7 +5499,7 @@ class CIS_Report:
     # OBP Check Aggregated Policy statements in all Compartment Chains
     ##########################################################################
     def __obp_check_policy_statements_in_comp_chains(self):
-        policy_stmt_limit = 500.0
+        policy_stmt_limit = 500.0 #Should be returned by the Service Limit API
         parent_ids = {v.get("compartment_id") for v in self.__raw_compartment.values() if v.get("compartment_id") }
         leaf_nodes = [cid for cid in self.__raw_compartment.keys() if cid not in parent_ids]
 

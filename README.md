@@ -157,7 +157,7 @@ pip3 install xlsxwriter
 
 ## <a name="usage"></a>Usage Examples
 
-### Executing on a loca machine to check CIS and OCI Best Practices with raw data
+### Executing on a local machine to check CIS and OCI Best Practices with raw data
 To run using python running a local machine in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py --obp --raw

@@ -694,6 +694,7 @@ class CIS_Report:
             'Networking_DRG_Upgraded': {'id': 'OBP-NTW-2', 'section': "Advanced Networking", 'Title': 'Dynamic Route Gateway (DRG) upgraded to version 2', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm"},
             'Networking_Hub_Spoke': {'id': 'OBP-NTW-3', 'section': "Advanced Networking", 'Title': 'Hub and Spoke Network Architecture', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/hub-spoke-network/index.html"},
             'Networking_IPSec_connections': {'id': 'OBP-NTW-4', 'section': "Advanced Networking", 'Title': 'IPSec connections with two tunnels', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm"},
+            'Networking_IPSec_bgp': {'id': 'OBP-NTW-5', 'section': "Advanced Networking", 'Title': 'IPSec connections with BGP Routing', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm"},
             'Cloud_Guard_Config': {'id': 'OBP-CSP-1', 'section': "CSPM", 'Title': 'Cloud Guard enabled and configured', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://www.ateam-oracle.com/post/tuning-oracle-cloud-guard"},
             'Certificates_Near_Expiry': {'id': 'OBP-CRT-1', 'section': "Certificates", 'Title': 'Certificates to expire in 30 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm"},
             'Service_Limits': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Visibility into OCI Limits', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
@@ -2883,6 +2884,8 @@ class CIS_Report:
                             "tunnels": [],
                             "number_tunnels_up": 0,
                             "tunnels_up": True,  # It is true unless I find out otherwise
+                            "number_tunnels_bgp": 0,
+                            "tunnels_bgp": True, # It is true unless I find out otherwise 
                             "notes": ""
                         }
                         # Getting Tunnel Data
@@ -2918,6 +2921,10 @@ class CIS_Report:
                                     record['number_tunnels_up'] += 1
                                 else:
                                     record['tunnels_up'] = False
+                                if tunnel_record['routing'].upper() == "BGP":
+                                    record['number_tunnels_bgp'] += 1
+                                else:
+                                    record['tunnels_bgp'] = False
                                 record["tunnels"].append(tunnel_record)
                         except Exception:
                             print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.identifier)
@@ -5167,6 +5174,7 @@ class CIS_Report:
             number_of_valid_connected_vcns = 0
             number_of_valid_fast_connect_circuits = 0
             number_of_valid_site_to_site_connection = 0
+            number_of_valid_bgp_site_to_site_connection = 0
 
             fast_connect_providers = set()
             customer_premises_equipment = set()
@@ -5182,8 +5190,10 @@ class CIS_Report:
                     for ipsec_connection in self.__network_ipsec_connections[drg_id]:
                         if ipsec_connection['tunnels_up']:
                             # Good IP Sec Connection increment valid site to site and track CPEs
-                            customer_premises_equipment.add(ipsec_connection['cpe_id'])
                             number_of_valid_site_to_site_connection += 1
+                            customer_premises_equipment.add(ipsec_connection['cpe_id'])
+                        if ipsec_connection['tunnels_bgp']:
+                            number_of_valid_bgp_site_to_site_connection += 1
 
                 elif attachment['network_type'].upper() == 'VIRTUAL_CIRCUIT':
 
@@ -5207,6 +5217,7 @@ class CIS_Report:
                     "number_of_connected_vcns": number_of_valid_connected_vcns,
                     "number_of_customer_premises_equipment": len(customer_premises_equipment),
                     "number_of_connected_ipsec_connections": number_of_valid_site_to_site_connection,
+                    "number_of_valid_bgp_site_to_site_connection": number_of_valid_bgp_site_to_site_connection,
                     "number_of_fastconnects_cicruits": number_of_valid_fast_connect_circuits,
                     "number_of_fastconnect_providers": len(fast_connect_providers),
                 }
@@ -5219,6 +5230,7 @@ class CIS_Report:
                     "number_of_connected_vcns": 0,
                     "number_of_customer_premises_equipment": 0,
                     "number_of_connected_ipsec_connections": 0,
+                    "number_of_valid_bgp_site_to_site_connection": 0,
                     "number_of_fastconnects_cicruits": 0,
                     "number_of_fastconnect_providers": 0,
                 }
@@ -5259,31 +5271,27 @@ class CIS_Report:
                 self.obp_foundations_checks["Networking_IPSec_connections"]["Findings"].append(record)
             else: 
                 self.obp_foundations_checks["Networking_IPSec_connections"]["OBP"].append(record)
+          
+          # Checking if this DRG IPSec connection has two connetions
+            if not number_of_valid_bgp_site_to_site_connection >= 2:
+                self.obp_foundations_checks["Networking_IPSec_bgp"]["Findings"].append(record)
+            else: 
+                self.obp_foundations_checks["Networking_IPSec_bgp"]["OBP"].append(record)
+
 
         # Consolidating Regional
 
         for region_values in self.__obp_regional_checks.values():
             # I assume you are well connected in all regions if find one region that is not it fails
-            if not region_values["Network_Connectivity"]["status"]:
-                self.obp_foundations_checks['Network_Connectivity_Redudancy']['Status'] = False
-    
             self.obp_foundations_checks["Network_Connectivity_Redudancy"]["Findings"] += region_values["Network_Connectivity"]["findings"]
             self.obp_foundations_checks["Network_Connectivity_Redudancy"]["OBP"] += region_values["Network_Connectivity"]["drgs"]
         
-        if self.obp_foundations_checks['Networking_DRG_Upgraded']['Findings']:
-            self.obp_foundations_checks['Networking_DRG_Upgraded']['Status'] = False
-        else:
-            self.obp_foundations_checks['Networking_DRG_Upgraded']['Status'] = True
-
-        if self.obp_foundations_checks['Networking_Hub_Spoke']['Findings']:
-            self.obp_foundations_checks['Networking_Hub_Spoke']['Status'] = False
-        else:
-            self.obp_foundations_checks['Networking_Hub_Spoke']['Status'] = True         
-
-        if self.obp_foundations_checks['Networking_IPSec_connections']['Findings']:
-            self.obp_foundations_checks['Networking_IPSec_connections']['Status'] = False
-        else:
-            self.obp_foundations_checks['Networking_IPSec_connections']['Status'] = True     
+        for key in self.obp_foundations_checks.keys():
+            if key.startswith("Networking_"):
+                if self.obp_foundations_checks[key]['Findings']:
+                    self.obp_foundations_checks[key]['Status'] = False
+                else:
+                    self.obp_foundations_checks[key]['Status'] = True    
 
     #######################################
     # OBP Certificate Expiry Check

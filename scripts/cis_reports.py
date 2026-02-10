@@ -4141,6 +4141,7 @@ class CIS_Report:
         # Iterating through all policies
         for policy in self.__policies:
             if policy['name'].lower() not in ['tenant admin policy', 'psm-root-policy']:
+                insert_policy = None
                 for statement in policy['statements']:
                     for resource in self.cis_iam_checks['1.15']:
                         if "allow group".upper() in statement.upper() and "to manage ".upper() in statement.upper() and resource.upper() in statement.upper():
@@ -4157,11 +4158,13 @@ class CIS_Report:
                                     debug("__report_cis_analyze_tenancy_data CIS 1.15 storage admin policy is: " + str(policy['name']))
                                     pass
                                 else:
-                                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+                                    insert_policy = True
                                     debug("__report_cis_analyze_tenancy_data CIS 1.15 else policy is\n: " + str(policy['name']))
 
                             else:
-                                self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
+                                insert_policy = True
+                if insert_policy:
+                    self.cis_foundations_benchmark_3_0['1.15']['Findings'].append(policy)
 
         if self.cis_foundations_benchmark_3_0['1.15']['Findings']:
             self.cis_foundations_benchmark_3_0['1.15']['Status'] = False

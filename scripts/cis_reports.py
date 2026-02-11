@@ -3875,7 +3875,10 @@ class CIS_Report:
                             instance_data = region_values['instance'].get_instance(
                                 instance_id=instance['identifier']
                             ).data
-                            record = oci.util.to_dict(instance_data)
+                            full_record = oci.util.to_dict(instance_data)
+                            #Remove extended_metadata and metadata fields
+                            record = {k: v for k, v in full_record.items() if k not in ["metadata","extended_metadata"]}
+                            
                             record['deep_link'] = self.__generate_csv_hyperlink(deep_link, instance['display_name'])
                             record['error'] = ""
                             # self.__all_resources_json[region_key]['Instance'].append(record)

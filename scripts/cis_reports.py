@@ -3367,6 +3367,7 @@ class CIS_Report:
                         vault_details = region_values['vault_client'].get_vault(vault_id=vault).data
                         debug("\t__kms_read_keys: Succeeded getting Vault details for: " + str(vault_details))
                         vault_dict = oci.util.to_dict(vault_details)
+                        vault_dict['region'] = region_key
                         vault_dict['keys'] = []
                         self.__vaults[vault] = vault_dict
                         debug("\t__kms_read_keys: Building KMS Client: " + str(vault))
@@ -3401,6 +3402,8 @@ class CIS_Report:
                         deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
                         key_record = oci.util.to_dict(key)
                         key_record['region'] = region_key
+                        key_record['is_primary'] = self.__vaults[key.additional_details['vaultId']]['is_primary']
+                        key_record['is_vault_replicable'] = self.__vaults[key.additional_details['vaultId']]['is_vault_replicable']
                         key_record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key_record['display_name'])
                         try:
                             if self.__vaults[key.additional_details['vaultId']]['kms_client']:
@@ -3427,7 +3430,7 @@ class CIS_Report:
                     else:
                         debug("\t__kms_read_keys: Ignoring wrapping key: " + key.display_name)
 
-            print("\tProcessed " + str(len(self.__kms_keys)) + " Keys")
+            print(f"\tProcessed {str(len(self.__kms_keys))} Keys in {str(len(self.__vaults))} Vaults")
             return self.__vaults
         except Exception as e:
             raise RuntimeError(
@@ -6247,7 +6250,8 @@ class CIS_Report:
             "boot_volumes": self.__boot_volumes,
             "block_volumes": self.__block_volumes,
             "file_storage_system": self.__file_storage_system,
-            "keys_and_vaults": self.__kms_keys,
+            "kms_keys": self.__kms_keys,
+            "kms_vaults": list(self.__vaults.values()),
             "ons_subscriptions": self.__subscriptions,
             "budgets": self.__budgets,
             "quotas" : self.__quotas,

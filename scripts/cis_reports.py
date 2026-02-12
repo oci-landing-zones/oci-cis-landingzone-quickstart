@@ -3368,6 +3368,9 @@ class CIS_Report:
                         debug("\t__kms_read_keys: Succeeded getting Vault details for: " + str(vault_details))
                         vault_dict = oci.util.to_dict(vault_details)
                         vault_dict['region'] = region_key
+                        vault_deep_link = self.__oci_vault_uri + vault_dict['id'] + '?region=' + region_key
+                        vault_dict['deep_link'] = self.__generate_csv_hyperlink(name=vault_dict['display_name'],
+                                                                                url=vault_deep_link)
                         vault_dict['keys'] = []
                         self.__vaults[vault] = vault_dict
                         debug("\t__kms_read_keys: Building KMS Client: " + str(vault))
@@ -3402,8 +3405,8 @@ class CIS_Report:
                         deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
                         key_record = oci.util.to_dict(key)
                         key_record['region'] = region_key
-                        key_record['is_primary'] = self.__vaults[key.additional_details['vaultId']]['is_primary']
-                        key_record['is_vault_replicable'] = self.__vaults[key.additional_details['vaultId']]['is_vault_replicable']
+                        key_record['is_primary'] = self.__vaults[key.additional_details['vaultId']].get('is_primary')
+                        key_record['is_vault_replicable'] = self.__vaults[key.additional_details['vaultId']].get('is_vault_replicable')
                         key_record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key_record['display_name'])
                         try:
                             if self.__vaults[key.additional_details['vaultId']]['kms_client']:
@@ -4776,21 +4779,21 @@ class CIS_Report:
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
         for key in self.__kms_keys:
-
-            try:
-                if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-                if self.kms_key_time_max_datetime is None:
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-            except Exception:    
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-         
+            if key.get('is_primary'):
+                try:
+                    if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+                    if self.kms_key_time_max_datetime is None:
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+                except Exception:    
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+            
             # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_3_0['4.16']['Total'].append(key)
 

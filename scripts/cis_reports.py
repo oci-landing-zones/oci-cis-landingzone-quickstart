@@ -3377,6 +3377,10 @@ class CIS_Report:
                         vault_details = region_values['vault_client'].get_vault(vault_id=vault).data
                         debug("\t__kms_read_keys: Succeeded getting Vault details for: " + str(vault_details))
                         vault_dict = oci.util.to_dict(vault_details)
+                        vault_dict['region'] = region_key
+                        vault_deep_link = self.__oci_vault_uri + vault_dict['id'] + '?region=' + region_key
+                        vault_dict['deep_link'] = self.__generate_csv_hyperlink(name=vault_dict['display_name'],
+                                                                                url=vault_deep_link)
                         vault_dict['keys'] = []
                         self.__vaults[vault] = vault_dict
                         debug("\t__kms_read_keys: Building KMS Client: " + str(vault))
@@ -3410,6 +3414,9 @@ class CIS_Report:
                     if key.identifier != self.__vaults[key.additional_details['vaultId']]['wrapping_key_id']:
                         deep_link = self.__oci_vault_uri + key.additional_details['vaultId'] + "/vaults/" + key.identifier + '?region=' + region_key
                         key_record = oci.util.to_dict(key)
+                        key_record['region'] = region_key
+                        key_record['is_primary'] = self.__vaults[key.additional_details['vaultId']].get('is_primary')
+                        key_record['is_vault_replicable'] = self.__vaults[key.additional_details['vaultId']].get('is_vault_replicable')
                         key_record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key_record['display_name'])
                         try:
                             if self.__vaults[key.additional_details['vaultId']]['kms_client']:
@@ -3436,7 +3443,7 @@ class CIS_Report:
                     else:
                         debug("\t__kms_read_keys: Ignoring wrapping key: " + key.display_name)
 
-            print("\tProcessed " + str(len(self.__kms_keys)) + " Keys")
+            print(f"\tProcessed {str(len(self.__kms_keys))} Keys in {str(len(self.__vaults))} Vaults")
             return self.__vaults
         except Exception as e:
             raise RuntimeError(
@@ -4785,21 +4792,21 @@ class CIS_Report:
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
         for key in self.__kms_keys:
-
-            try:
-                if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-                if self.kms_key_time_max_datetime is None:
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-            except Exception:    
-                    self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
-                    self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
-                        key)
-         
+            if key.get('is_primary'):
+                try:
+                    if self.kms_key_time_max_datetime and self.kms_key_time_max_datetime >= datetime.datetime.strptime(key['currentKeyVersion_time_created'], self.__iso_time_format):
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+                    if self.kms_key_time_max_datetime is None:
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+                except Exception:    
+                        self.cis_foundations_benchmark_3_0['4.16']['Status'] = False
+                        self.cis_foundations_benchmark_3_0['4.16']['Findings'].append(
+                            key)
+            
             # CIS Check 4.16 Total - Adding Key to total
             self.cis_foundations_benchmark_3_0['4.16']['Total'].append(key)
 
@@ -6298,7 +6305,8 @@ class CIS_Report:
             "boot_volumes": self.__boot_volumes,
             "block_volumes": self.__block_volumes,
             "file_storage_system": self.__file_storage_system,
-            "keys_and_vaults": self.__kms_keys,
+            "kms_keys": self.__kms_keys,
+            "kms_vaults": list(self.__vaults.values()),
             "ons_subscriptions": self.__subscriptions,
             "budgets": self.__budgets,
             "quotas" : self.__quotas,

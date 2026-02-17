@@ -913,6 +913,7 @@ class CIS_Report:
 
         # Cloud Guard checks
         self.__cloud_guard_targets = {}
+        self.__cloud_guard_problems = []
 
         # For Storage Checks
         self.__buckets = []
@@ -1138,6 +1139,7 @@ class CIS_Report:
         self.__oci_vault_uri = self.__oci_cloud_url + "/security/kms/vaults/"
         self.__oci_budget_uri = self.__oci_cloud_url + "/usage/budgets/"
         self.__oci_cgtarget_uri = self.__oci_cloud_url + "/cloud-guard/targets/"
+        self.__oci_cgproblems_uri = self.__oci_cloud_url + "/cloud-guard/problems/"
         self.__oci_onssub_uri = self.__oci_cloud_url + "/notification/subscriptions/"
         self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
@@ -3968,6 +3970,34 @@ class CIS_Report:
 
         print("\tProcessed " + str(len(self.__raw_oci_certificates)) + " Certificates")
     
+    def __read_cloud_guard_problems(self):
+        """
+        Retrieves every Cloud Guard problem for the reporting region,
+        converts each OCI model to a plain ``dict`` (via ``oci.util.to_dict``)
+        and stores the result in ``self.__cloud_guard_problems``.
+        """
+        client = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client']
+
+        try:
+            response = oci.pagination.list_call_get_all_results(
+                client.list_problems,
+                compartment_id=self.__tenancy.id,
+                lifecycle_state='ACTIVE',
+                compartment_id_in_subtree=True,
+                access_level="ACCESSIBLE"
+            )
+            for problem in response.data:
+                record = oci.util.to_dict(problem)
+                deep_link = self.__oci_cgproblems_uri + record['id'] + "?region=" + record['region']
+                record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['resource_name']),
+                self.__cloud_guard_problems.append(record)
+        except Exception as e:
+            self.__errors.append({'id' : '__read_cloud_guard_problems', 'error' : str(e)})
+            debug("__read_cloud_guard_problems failed to process: " + str(e))
+
+        print("\tProcessed " + str(len(self.__cloud_guard_problems)) + " Cloud Guard Problems")
+
+    
     ##########################################################################
     # Query Services Limits
     ##########################################################################  
@@ -6185,6 +6215,7 @@ class CIS_Report:
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
+            self.__read_cloud_guard_problems
         ]
 
         # Budgets is global construct
@@ -6315,6 +6346,7 @@ class CIS_Report:
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
             "network_drgs": self.__raw_network_drgs,
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
+            "cloud_guard_problems" : self.__cloud_guard_problems,
             "regions": self.__raw_regions,
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
             "instances": self.__Instance,

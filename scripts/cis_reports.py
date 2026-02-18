@@ -1714,10 +1714,12 @@ class CIS_Report:
                 debug("__identity_read_user_api_key: Collected total keys: " + str(len(user_api_keys_data)))
 
                 for api_key in user_api_keys_data:
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/api-keys"
-                    record = oci.util.to_dict(api_key)
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
-                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    full_record = oci.util.to_dict(api_key)
+                    record = {k: v for k, v in full_record.items() if k in ["id","ocid","fingerprint"]}
+                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/api-keys"
+                    #record = oci.util.to_dict(api_key)
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
+                    record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     apikey_used_in_45_days = self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
                     record['apikey_used_in_45_days'] = apikey_used_in_45_days
                     api_keys.append(record)
@@ -1730,11 +1732,13 @@ class CIS_Report:
                 ).data
 
                 for api_key in user_api_keys_data:
-                    deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
-                    record = oci.util.to_dict(api_key)
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
+                    #deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
+                    full_record = oci.util.to_dict(api_key)
+                    record = {k: v for k, v in full_record.items() if k in ["id","ocid","fingerprint"]}
+                    #record = oci.util.to_dict(api_key)
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record['id'] = record['key_id']
-                    record['time_created'] = self.get_date_iso_format(record['time_created'])
+                    record['time_created'] = self.get_date_iso_format(full_record['time_created'])
                     apikey_used_in_45_days = self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
                     record['apikey_used_in_45_days'] = apikey_used_in_45_days
                     api_keys.append(record)
@@ -1860,7 +1864,7 @@ class CIS_Report:
 
 
     ##########################################################################
-    # Load user auth tokens
+    # Load user auth tokens metadata
     ##########################################################################
     def __identity_read_user_auth_token(self, user_ocid, identity_domain=None):
         auth_tokens = []
@@ -1872,10 +1876,11 @@ class CIS_Report:
                 debug("__identity_read_user_auth_token: Collected total keys: " + str(len(auth_tokens_data)))
 
                 for token in auth_tokens_data:
-                    record = oci.util.to_dict(token)
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
-                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    full_record = oci.util.to_dict(token)
+                    record = {k: v for k, v in full_record.items() if k in ["id","ocid","description"]}
+                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
+                    record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     auth_tokens.append(record)
 
             else:
@@ -1885,10 +1890,10 @@ class CIS_Report:
                 ).data
 
                 for token in auth_tokens_data:
-                    deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
+                    #deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
                     record = oci.util.to_dict(token)
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
                     auth_tokens.append(record)
 
             return auth_tokens
@@ -1901,7 +1906,7 @@ class CIS_Report:
                 "Error in identity_read_user_auth_token: " + str(e.args))
 
     ##########################################################################
-    # Load user customer secret key
+    # Load user customer secret keys metadata
     ##########################################################################
     def __identity_read_user_customer_secret_key(self, user_ocid, identity_domain=None):
         customer_secret_key = []
@@ -1913,11 +1918,12 @@ class CIS_Report:
                 debug("__identity_read_user_customer_secret_key: Collected total keys: " + str(len(customer_secret_key_data)))
 
                 for key in customer_secret_key_data:
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/secret-keys"
-                    record = oci.util.to_dict(key)
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
-                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
-                    record['time_expires'] = record['expires_on']
+                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/secret-keys"
+                    full_record = oci.util.to_dict(key)
+                    record = {k: v for k, v in full_record.items() if k in ["id","ocid","display_name"]}
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
+                    record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
+                    record['time_expires'] = full_record['expires_on']
                     customer_secret_key.append(record)
                 
                 return customer_secret_key
@@ -1930,8 +1936,8 @@ class CIS_Report:
 
                 for key in customer_secret_key_data:
                     record = oci.util.to_dict(key)
-                    deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
+                    #deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     record['time_expires'] = record['time_expires']
                     customer_secret_key.append(record)
@@ -1946,7 +1952,7 @@ class CIS_Report:
                 "Error in identity_read_user_customer_secret_key: " + str(e.args))
 
     ##########################################################################
-    # Load Database Passwords
+    # Load Database Passwords metadata
     ##########################################################################
     def __identity_read_user_database_password(self, user_ocid, identity_domain=None):
         database_password = []
@@ -1960,16 +1966,18 @@ class CIS_Report:
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
-                    deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
-                    record = oci.util.to_dict(password)
-                    record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name'])
-                    record['time_created'] = self.get_date_iso_format(record['meta']['created'])
+                    full_record = oci.util.to_dict(password)
+                    record = {k: v for k, v in full_record.items() if k in ["id","ocid","description"]}
+                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
+                    #record = oci.util.to_dict(password)
+                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name'])
+                    record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     database_password.append(record)
 
                 return database_password
 
             except Exception as e:
-                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
+                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database password metadata for User ID"})
                 debug("__identity_read_user_database_password: Failed to get database passwords for User ID: " + user_ocid)
                 debug("__identity_read_user_database_password: Error: " + str(e))
                 return database_password
@@ -1982,10 +1990,10 @@ class CIS_Report:
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
-                    deep_link = self.__oci_users_uri + user_ocid + "/db-password"
+                    #deep_link = self.__oci_users_uri + user_ocid + "/db-password"
                     record = oci.util.to_dict(password)
                     record['ocid'] = record['id']
-                    record['deep_link'] = deep_link
+                    #record['deep_link'] = deep_link
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     database_password.append(record)
 

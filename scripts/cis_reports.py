@@ -1746,7 +1746,7 @@ class CIS_Report:
             return api_keys
 
         except Exception as e:
-            self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID"})
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID. "+str(e)})
             debug("__identity_read_user_api_key: Failed to API Keys for User ID: " + user_ocid)
             debug("__identity_read_user_api_key: Error for API Keys: " + str(e))
             return api_keys

@@ -1716,9 +1716,6 @@ class CIS_Report:
                 for api_key in user_api_keys_data:
                     full_record = oci.util.to_dict(api_key)
                     record = {k: v for k, v in full_record.items() if k in ["id","ocid","fingerprint"]}
-                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/api-keys"
-                    #record = oci.util.to_dict(api_key)
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
                     record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     apikey_used_in_45_days = self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
                     record['apikey_used_in_45_days'] = apikey_used_in_45_days
@@ -1732,12 +1729,9 @@ class CIS_Report:
                 ).data
 
                 for api_key in user_api_keys_data:
-                    #deep_link = self.__oci_users_uri + user_ocid + "/api-keys"
                     full_record = oci.util.to_dict(api_key)
                     record = {k: v for k, v in full_record.items() if k in ["id","ocid","fingerprint"]}
-                    #record = oci.util.to_dict(api_key)
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, api_key.fingerprint)
-                    record['id'] = record['key_id']
+                    record['id'] = full_record['key_id']
                     record['time_created'] = self.get_date_iso_format(full_record['time_created'])
                     apikey_used_in_45_days = self.__identity_check_logging_for_api_activity(user_ocid=user_ocid, api_key=api_key.fingerprint)
                     record['apikey_used_in_45_days'] = apikey_used_in_45_days
@@ -1746,8 +1740,8 @@ class CIS_Report:
             return api_keys
 
         except Exception as e:
-            self.__errors.append({"id" : user_ocid, "error" : "Failed to API Keys for User ID. "+str(e)})
-            debug("__identity_read_user_api_key: Failed to API Keys for User ID: " + user_ocid)
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to read API Keys for User ID. "})
+            debug("__identity_read_user_api_key: Failed to read API Keys for User ID: " + user_ocid)
             debug("__identity_read_user_api_key: Error for API Keys: " + str(e))
             return api_keys
             raise RuntimeError(

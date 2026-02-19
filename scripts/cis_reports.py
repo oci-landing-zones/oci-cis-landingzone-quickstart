@@ -1740,7 +1740,7 @@ class CIS_Report:
             return api_keys
 
         except Exception as e:
-            self.__errors.append({"id" : user_ocid, "error" : "Failed to read API Keys for User ID. "})
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to read API Keys metadata for User ID. "})
             debug("__identity_read_user_api_key: Failed to read API Keys for User ID: " + user_ocid)
             debug("__identity_read_user_api_key: Error for API Keys: " + str(e))
             return api_keys
@@ -1872,8 +1872,6 @@ class CIS_Report:
                 for token in auth_tokens_data:
                     full_record = oci.util.to_dict(token)
                     record = {k: v for k, v in full_record.items() if k in ["id","ocid","description"]}
-                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/auth-tokens"
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
                     record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     auth_tokens.append(record)
 
@@ -1884,16 +1882,14 @@ class CIS_Report:
                 ).data
 
                 for token in auth_tokens_data:
-                    #deep_link = self.__oci_users_uri + user_ocid + "/swift-credentials"
                     record = oci.util.to_dict(token)
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, token.description)
                     auth_tokens.append(record)
 
             return auth_tokens
 
         except Exception as e:
-            self.__errors.append({"id" : user_ocid, "error" : "Failed to auth tokens for User ID"})
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to read auth token metadata for User ID"})
             debug("__identity_read_user_auth_token: Failed to auth tokens for User ID: " + user_ocid)
             return auth_tokens
             raise RuntimeError(
@@ -1912,10 +1908,8 @@ class CIS_Report:
                 debug("__identity_read_user_customer_secret_key: Collected total keys: " + str(len(customer_secret_key_data)))
 
                 for key in customer_secret_key_data:
-                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/secret-keys"
                     full_record = oci.util.to_dict(key)
                     record = {k: v for k, v in full_record.items() if k in ["id","ocid","display_name"]}
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
                     record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     record['time_expires'] = full_record['expires_on']
                     customer_secret_key.append(record)
@@ -1930,8 +1924,6 @@ class CIS_Report:
 
                 for key in customer_secret_key_data:
                     record = oci.util.to_dict(key)
-                    #deep_link = self.__oci_users_uri + user_ocid + "/secret-keys"
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, key.display_name)
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     record['time_expires'] = record['time_expires']
                     customer_secret_key.append(record)
@@ -1939,7 +1931,7 @@ class CIS_Report:
                 return customer_secret_key
 
         except Exception as e:
-            self.__errors.append({"id" : user_ocid, "error" : "Failed to customer secrets for User ID"})
+            self.__errors.append({"id" : user_ocid, "error" : "Failed to read customer secrets metadata for User ID"})
             debug("__identity_read_user_customer_secret_key: Failed to customer secrets for User ID: " + user_ocid)
             return customer_secret_key
             raise RuntimeError(
@@ -1962,16 +1954,13 @@ class CIS_Report:
                     debug("__identity_read_user_database_password: Got Password")
                     full_record = oci.util.to_dict(password)
                     record = {k: v for k, v in full_record.items() if k in ["id","ocid","description"]}
-                    #deep_link = self.__oci_users_uri + "/domains/" + identity_domain['id'] + "/users/" + user_ocid + "/db-passwords"
-                    #record = oci.util.to_dict(password)
-                    #record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['name'])
                     record['time_created'] = self.get_date_iso_format(full_record['meta']['created'])
                     database_password.append(record)
 
                 return database_password
 
             except Exception as e:
-                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database password metadata for User ID"})
+                self.__errors.append({"id" : user_ocid, "error" : "Failed to read database password metadata for User ID"})
                 debug("__identity_read_user_database_password: Failed to get database passwords for User ID: " + user_ocid)
                 debug("__identity_read_user_database_password: Error: " + str(e))
                 return database_password
@@ -1984,17 +1973,15 @@ class CIS_Report:
 
                 for password in raw_database_password:
                     debug("__identity_read_user_database_password: Got Password")
-                    #deep_link = self.__oci_users_uri + user_ocid + "/db-password"
                     record = oci.util.to_dict(password)
                     record['ocid'] = record['id']
-                    #record['deep_link'] = deep_link
                     record['time_created'] = self.get_date_iso_format(record['time_created'])
                     database_password.append(record)
 
                 return database_password
 
             except Exception as e:
-                self.__errors.append({"id" : user_ocid, "error" : "Failed to get database passwords for User ID"})
+                self.__errors.append({"id" : user_ocid, "error" : "Failed to read database passwords metadata for User ID"})
                 debug("__identity_read_user_database_password: Failed to get database passwords for User ID: " + user_ocid)
                 debug("__identity_read_user_database_password: Error: " + str(e))
 

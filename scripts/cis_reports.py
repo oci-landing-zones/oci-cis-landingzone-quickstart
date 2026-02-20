@@ -699,6 +699,7 @@ class CIS_Report:
             'Networking_IPSec_connections': {'id': 'OBP-NTW-4', 'section': "Advanced Networking", 'Title': 'IPSec connections with two tunnels', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm"},
             'Networking_IPSec_bgp': {'id': 'OBP-NTW-5', 'section': "Advanced Networking", 'Title': 'IPSec connections with BGP Routing', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm"},
             'Cloud_Guard_Config': {'id': 'OBP-CSP-1', 'section': "CSPM", 'Title': 'Cloud Guard enabled and configured', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-customize.htm"},
+            'Cloud_Guard_Problems': {'id': 'OBP-CSP-2', 'section': "CSPM", 'Title': 'Cloud Guard problems with Risk Level Critical or High', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-problems.htm"},
             'Certificates_Near_Expiry': {'id': 'OBP-CRT-1', 'section': "Certificates", 'Title': 'Certificates to expire in 30 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm"},
             'Service_Limits': {'id': 'OBP-GOV-1', 'section': "Governance", 'Title': 'Visibility into OCI Limits', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E"},
             'Cost_Tracking_Budgets': {'id': 'OBP-GOV-2', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
@@ -913,6 +914,7 @@ class CIS_Report:
 
         # Cloud Guard checks
         self.__cloud_guard_targets = {}
+        self.__cloud_guard_problems = []
 
         # For Storage Checks
         self.__buckets = []
@@ -1138,6 +1140,7 @@ class CIS_Report:
         self.__oci_vault_uri = self.__oci_cloud_url + "/security/kms/vaults/"
         self.__oci_budget_uri = self.__oci_cloud_url + "/usage/budgets/"
         self.__oci_cgtarget_uri = self.__oci_cloud_url + "/cloud-guard/targets/"
+        self.__oci_cgproblems_uri = self.__oci_cloud_url + "/cloud-guard/problems/"
         self.__oci_onssub_uri = self.__oci_cloud_url + "/notification/subscriptions/"
         self.__oci_serviceconnector_uri = self.__oci_cloud_url + "/connector-hub/service-connectors/"
         self.__oci_fastconnect_uri = self.__oci_cloud_url + "/networking/fast-connect/virtual-circuit/"
@@ -3523,6 +3526,36 @@ class CIS_Report:
             raise RuntimeError(
                 "Error in __quota_read " + str(e.args))
 
+    ##########################################################################
+    # Cloud Guard Problems
+    ##########################################################################
+    def __read_cloud_guard_problems(self):
+        """
+        Retrieves every Cloud Guard problem for the reporting region,
+        converts each OCI model to a plain ``dict`` (via ``oci.util.to_dict``)
+        and stores the result in ``self.__cloud_guard_problems``.
+        """
+        cg_client = self.__regions[self.__cloud_guard_config.reporting_region]['cloud_guard_client']
+
+        try:
+            response = oci.pagination.list_call_get_all_results(
+                cg_client.list_problems,
+                compartment_id=self.__tenancy.id,
+                lifecycle_state='ACTIVE',
+                compartment_id_in_subtree=True,
+                access_level="ACCESSIBLE"
+            )
+            for problem in response.data:
+                record = oci.util.to_dict(problem)
+                deep_link = self.__oci_cgproblems_uri + record['id'] + "?region=" + record['region']
+                record['deep_link'] = self.__generate_csv_hyperlink(deep_link, record['resource_name']),
+                self.__cloud_guard_problems.append(record)
+        except Exception as e:
+            self.__errors.append({'id' : '__read_cloud_guard_problems', 'error' : str(e)})
+            debug("__read_cloud_guard_problems failed to process: " + str(e))
+
+        print("\tProcessed " + str(len(self.__cloud_guard_problems)) + " Cloud Guard Problems")
+
     
     ##########################################################################
     # Cloud Guard Configuration
@@ -5132,7 +5165,6 @@ class CIS_Report:
         try:
             # Cloud Guard Target attached to the root compartment with activity, config, and threat detector plus a responder
             if self.__cloud_guard_targets[self.__tenancy.id]:
-
                 cloud_guard_record['target_at_root'] = True
 
                 if self.__cloud_guard_targets[self.__tenancy.id]:
@@ -5170,7 +5202,7 @@ class CIS_Report:
             pass
 
         all_cloud_guard_checks = True
-        for key, value in cloud_guard_record.items():
+        for value in cloud_guard_record.values():
             if not (value):
                 all_cloud_guard_checks = False
 
@@ -5180,6 +5212,20 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['Cloud_Guard_Config']['Findings'].append(cloud_guard_record)
 
+        for problem in self.__cloud_guard_problems:
+            if problem['risk_level'] in ['HIGH','CRITICAL']:
+                self.obp_foundations_checks['Cloud_Guard_Problems']['Findings'].append(problem)
+            else:
+                self.obp_foundations_checks['Cloud_Guard_Problems']['OBP'].append(problem)
+
+        for key in self.obp_foundations_checks.keys():
+            if key.startswith("Cloud_Guard_"):
+                if self.obp_foundations_checks[key]['Findings']:
+                    self.obp_foundations_checks[key]['Status'] = False
+                else:
+                    self.obp_foundations_checks[key]['Status'] = True    
+
+      
     #######################################
     # OBP Networking Checks
     #######################################
@@ -6179,6 +6225,7 @@ class CIS_Report:
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
+            self.__read_cloud_guard_problems
         ]
 
         # Budgets is global construct
@@ -6309,6 +6356,7 @@ class CIS_Report:
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
             "network_drgs": self.__raw_network_drgs,
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
+            "cloud_guard_problems" : self.__cloud_guard_problems,
             "regions": self.__raw_regions,
             "network_drg_attachments": list(itertools.chain.from_iterable(self.__network_drg_attachments.values())),
             "instances": self.__Instance,

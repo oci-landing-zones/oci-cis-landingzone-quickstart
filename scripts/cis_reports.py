@@ -3316,29 +3316,6 @@ class CIS_Report:
                                     print(e)
                                     print("*" * 80)
 
-                                # if log.configuration.source.service == 'flowlogs':
-                                #     self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
-
-                                # elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                #     # Only write logs
-                                #     self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
-
-                                # elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                #     # Only read logs
-                                #     self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
-
-                                # elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                #     self.__load_balancer_error_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                #     self.__load_balancer_access_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                #     self.__api_gateway_access_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                #     self.__api_gateway_error_logs.append(
-                                #         log.configuration.source.resource)
                             except Exception as e:
                                 self.__errors.append({"id" : log.id, "error" : str(e)})
                             # Append Log to log List

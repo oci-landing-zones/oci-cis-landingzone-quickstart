@@ -162,6 +162,8 @@ class CIS_Report:
 
     __oci_ocid_pattern = r'ocid1.[a-z0-9_]+.[a-z0-9]+.(?:[a-z0-9._-]+.|.)[a-z0-9]{20,}'
 
+    __simple_email = r'[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}'
+
     # Start print time info
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     start_time_str = str(start_datetime.strftime(__iso_time_format))
@@ -5890,6 +5892,8 @@ class CIS_Report:
                     for key in item.keys():
                         str_item = str(item[key])
                         items_to_redact = re.findall(self.__oci_ocid_pattern, str_item)
+                        emails_to_redact = re.findall(self.__simple_email, str_item)
+                        items_to_redact += emails_to_redact                        
                         for redact_me in items_to_redact:
                             str_item = str_item.replace(redact_me, hashlib.sha256(str.encode(redact_me)).hexdigest())
 
@@ -6440,6 +6444,8 @@ class CIS_Report:
                     for key in item.keys():
                         str_item = str(item[key])
                         items_to_redact = re.findall(self.__oci_ocid_pattern, str_item)
+                        emails_to_redact = re.findall(self.__simple_email, str_item)
+                        items_to_redact += emails_to_redact
                         for redact_me in items_to_redact:
                             str_item = str_item.replace(redact_me, hashlib.sha256(str.encode(redact_me)).hexdigest())
 
@@ -6491,6 +6497,8 @@ class CIS_Report:
             # If this flag is set all OCIDs are Hashed to redact them
             if self.__redact_output:
                 items_to_redact = re.findall(self.__oci_ocid_pattern,json_object)
+                emails_to_redact = re.findall(self.__simple_email, json_object)
+                items_to_redact += emails_to_redact
                 for redact_me in items_to_redact:
                     json_object = json_object.replace(redact_me,hashlib.sha256(str.encode(redact_me)).hexdigest() )
 

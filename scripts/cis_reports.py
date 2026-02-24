@@ -693,6 +693,7 @@ class CIS_Report:
             'SIEM_VCN_Flow_Logging': {'id': 'OBP-SIEM-3', 'section': "SIEM Logging", 'Title': 'VCN Flow logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Write_Bucket_Logs': {'id': 'OBP-SIEM-4', 'section': "SIEM Logging", 'Title': 'Bucket write logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'id': 'OBP-SIEM-5', 'section': "SIEM Logging", 'Title': 'Bucket read logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'Log_Retention': {'id': 'LAM-19', 'section': "Logging", 'Title': 'Retain Audit Logs for 90 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm"},
             'Networking_Redudancy': {'id': 'OBP-NTW-1', 'section': "Advanced Networking", 'Title': 'Scalable and secure topology in OCI', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
             'Networking_DRG_Upgraded': {'id': 'OBP-NTW-2', 'section': "Advanced Networking", 'Title': 'Dynamic Route Gateway (DRG) upgraded to version 2', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm"},
             'Networking_Hub_Spoke': {'id': 'OBP-NTW-3', 'section': "Advanced Networking", 'Title': 'Hub and Spoke Network Architecture', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/hub-spoke-network/index.html"},
@@ -5479,6 +5480,23 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
     
+    #######################################
+    # OBP Subnet and Bucket Log Checks
+    #######################################
+    def __obp_check_log_retention(self):
+        for log_group in self.__logging_list:
+            for log in log_group['logs']:
+                if log.get('retention_duration') < 90:
+                    self.obp_foundations_checks['Log_Retention']['Findings'].append(log)
+                else:
+                    self.obp_foundations_checks['Log_Retention']['OBP'].append(log)
+        
+        if self.obp_foundations_checks['Log_Retention']['Findings']:
+            self.obp_foundations_checks['Log_Retention']['Status'] = False
+        elif self.obp_foundations_checks['Log_Retention']['OBP']:
+            self.obp_foundations_checks['Log_Retention']['Status'] = True
+
+
 
     #######################################
     # OBP Service Limit Check
@@ -5599,6 +5617,7 @@ class CIS_Report:
         self.__obp_check_certificates()
         self.__obp_check_bucket_logs()
         self.__obp_check_subnet_logs()
+        self.__obp_check_log_retention()
         self.__obp_check_close_service_limits()
         self.__obp_check_adbs()
         self.__obp_check_quotas()

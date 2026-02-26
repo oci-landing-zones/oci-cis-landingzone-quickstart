@@ -5486,17 +5486,20 @@ class CIS_Report:
     def __obp_check_log_retention(self):
         for log_group in self.__logging_list:
             for log in log_group['logs']:
+                required_keys = ['id', 'display_name', 'deep_link', 'compartment_id', 'is_enabled', 
+                                 'lifecycle_state', 'log_group_id', 'log_type', 'retention_duration', 
+                                 'time_created', 'time_last_modified', 'defined_tags', 'freeform_tags', 'region']
+                record = {key: log[key] for key in required_keys if key in log}
+
                 if log.get('retention_duration') < 90:
-                    self.obp_foundations_checks['Log_Retention']['Findings'].append(log)
+                    self.obp_foundations_checks['Log_Retention']['Findings'].append(record)
                 else:
-                    self.obp_foundations_checks['Log_Retention']['OBP'].append(log)
+                    self.obp_foundations_checks['Log_Retention']['OBP'].append(record)
         
         if self.obp_foundations_checks['Log_Retention']['Findings']:
             self.obp_foundations_checks['Log_Retention']['Status'] = False
         elif self.obp_foundations_checks['Log_Retention']['OBP']:
             self.obp_foundations_checks['Log_Retention']['Status'] = True
-
-
 
     #######################################
     # OBP Service Limit Check

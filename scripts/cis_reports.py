@@ -6169,15 +6169,12 @@ class CIS_Report:
             record = {
                 "Recommendation": str(key),
                 "ID" : recommendation['id'],
-                "Title": recommendation['section'],
+                "Section": recommendation['section'],
                 "Compliant": compliant,
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Title": recommendation['Title'],
                 "Documentation": recommendation['Documentation']
-            
-                # 'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-
             }
             obp_summary_report.append(record)
 

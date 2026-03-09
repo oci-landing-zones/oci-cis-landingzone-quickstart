@@ -42,8 +42,8 @@ except Exception:
     OUTPUT_DIAGRAMS = False
 
 RELEASE_VERSION = "3.2.0"
-PYTHON_SDK_VERSION = "2.165.1"
-UPDATED_DATE = "March XX, 2026"
+PYTHON_SDK_VERSION = "2.165.x"
+UPDATED_DATE = "March 15, 2026"
 
 
 ##########################################################################
@@ -695,6 +695,7 @@ class CIS_Report:
             'SIEM_VCN_Flow_Logging': {'id': 'OBP-SIEM-3', 'section': "SIEM Logging", 'Title': 'VCN Flow logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Write_Bucket_Logs': {'id': 'OBP-SIEM-4', 'section': "SIEM Logging", 'Title': 'Bucket write logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'id': 'OBP-SIEM-5', 'section': "SIEM Logging", 'Title': 'Bucket read logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
+            'Log_Retention': {'id': 'LAM-19', 'section': "Logging", 'Title': 'Retain Audit Logs for 90 days', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm"},
             'Networking_Redudancy': {'id': 'OBP-NTW-1', 'section': "Advanced Networking", 'Title': 'Scalable and secure topology in OCI', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm"},
             'Networking_DRG_Upgraded': {'id': 'OBP-NTW-2', 'section': "Advanced Networking", 'Title': 'Dynamic Route Gateway (DRG) upgraded to version 2', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm"},
             'Networking_Hub_Spoke': {'id': 'OBP-NTW-3', 'section': "Advanced Networking", 'Title': 'Hub and Spoke Network Architecture', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/hub-spoke-network/index.html"},
@@ -3310,29 +3311,6 @@ class CIS_Report:
                                     print(e)
                                     print("*" * 80)
 
-                                # if log.configuration.source.service == 'flowlogs':
-                                #     self.__subnet_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id}
-
-                                # elif log.configuration.source.service == 'objectstorage' and 'write' in log.configuration.source.category:
-                                #     # Only write logs
-                                #     self.__write_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
-
-                                # elif log.configuration.source.service == 'objectstorage' and 'read' in log.configuration.source.category:
-                                #     # Only read logs
-                                #     self.__read_bucket_logs[log.configuration.source.resource] = {"log_group_id": log.log_group_id, "log_id": log.id, "region": region_key}
-
-                                # elif log.configuration.source.service == 'loadbalancer' and 'error' in log.configuration.source.category:
-                                #     self.__load_balancer_error_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'loadbalancer' and 'access' in log.configuration.source.category:
-                                #     self.__load_balancer_access_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'apigateway' and 'access' in log.configuration.source.category:
-                                #     self.__api_gateway_access_logs.append(
-                                #         log.configuration.source.resource)
-                                # elif log.configuration.source.service == 'apigateway' and 'error' in log.configuration.source.category:
-                                #     self.__api_gateway_error_logs.append(
-                                #         log.configuration.source.resource)
                             except Exception as e:
                                 self.__errors.append({"id" : log.id, "error" : str(e)})
                             # Append Log to log List
@@ -5544,6 +5522,26 @@ class CIS_Report:
         else:
             self.obp_foundations_checks['SIEM_Read_Bucket_Logs']['Status'] = True
     
+    #######################################
+    # OBP Subnet and Bucket Log Checks
+    #######################################
+    def __obp_check_log_retention(self):
+        for log_group in self.__logging_list:
+            for log in log_group['logs']:
+                required_keys = ['id', 'display_name', 'deep_link', 'compartment_id', 'is_enabled', 
+                                 'lifecycle_state', 'log_group_id', 'log_type', 'retention_duration', 
+                                 'time_created', 'time_last_modified', 'defined_tags', 'freeform_tags', 'region']
+                record = {key: log[key] for key in required_keys if key in log}
+
+                if log.get('retention_duration') < 90:
+                    self.obp_foundations_checks['Log_Retention']['Findings'].append(record)
+                else:
+                    self.obp_foundations_checks['Log_Retention']['OBP'].append(record)
+        
+        if self.obp_foundations_checks['Log_Retention']['Findings']:
+            self.obp_foundations_checks['Log_Retention']['Status'] = False
+        elif self.obp_foundations_checks['Log_Retention']['OBP']:
+            self.obp_foundations_checks['Log_Retention']['Status'] = True
 
     #######################################
     # OBP Service Limit Check
@@ -5664,6 +5662,7 @@ class CIS_Report:
         self.__obp_check_certificates()
         self.__obp_check_bucket_logs()
         self.__obp_check_subnet_logs()
+        self.__obp_check_log_retention()
         self.__obp_check_close_service_limits()
         self.__obp_check_adbs()
         self.__obp_check_quotas()

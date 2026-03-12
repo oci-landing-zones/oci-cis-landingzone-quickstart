@@ -1,3 +1,28 @@
+# March 16, 2026 Release Notes - 3.2.0
+1. [New Features](#3-2-0-features)
+1. [OBP Features](#3-2-0-obp-features)
+1. [Fixes and Updates](#3-2-0-fixes)
+
+## <a name="#3-2-0-features">New Features</a>
+- Optimized Cloud Guard target fetching to reduce per-compartment iteration and improve runtime efficiency.
+- Added output cleanup for compute instance files by removing metadata and extended metadata fields.
+- Added output cleanup for user-related files by reducing persisted credential fields to required attributes only.
+- Updated README guidance for memory usage considerations when running at scale.
+
+## <a name="#3-2-0-obp-features">OBP Features</a>
+- Seperated Networking OBP checks to be easier to use.
+- Added OBP check for IPSec connection tunnel routing status to validate `BGP` routing (not `STATIC` or `POLICY`).
+- Added OBP policy evaluation across compartment hierarchy.
+- Added OBP check to identify critical Cloud Guard problems for operational follow-up.
+- Added OBP check to validate Logging retention is at least 90 days.
+
+## <a name="#3-2-0-fixes">Fixes and Updates</a>
+Fixes:
+- Fixed CIS check 1.15 summary calculations to prevent negative compliance values caused by duplicate failing policy statement records. Related external issue: [178](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/178).
+- Fixed `local variable 'user' referenced before assignment` error in identity domain user processing exception handling.
+- Fixed tenancy password policy collection logic to run only when Identity Domains are not enabled.
+- Fixed OBP title rendering in the summary report.
+
 # January 22, 2026 Release Notes - 3.1.2
 1. [Updates and Fixes](#3-1-1-fixes)
 

@@ -2051,7 +2051,8 @@ class CIS_Report:
             if self.__identity_domains_enabled:
                 for identity_domain in self.__identity_domains:
                     dynamic_groups_data =  self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_dynamic_resource_groups,
-                                                                             args={})
+                                                                             args={'attributes' : 'ocid,displayName,description,compartmentOcid,domainOcid,'
+                                                                             'tenancyOcid,matchingRule,idcsCreatedBy,idcsLastModifiedBy,meta,urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags'})
                     id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))

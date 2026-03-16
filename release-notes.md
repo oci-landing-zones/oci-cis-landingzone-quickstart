@@ -22,6 +22,7 @@ Fixes:
 - Fixed `local variable 'user' referenced before assignment` error in identity domain user processing exception handling.
 - Fixed tenancy password policy collection logic to run only when Identity Domains are not enabled.
 - Fixed OBP title rendering in the summary report.
+- Fixed Identity Domain dynamic group retrieval by explicitly requesting required attributes so `matchingRule` is returned after API behavior changed.
 
 # January 22, 2026 Release Notes - 3.1.2
 1. [Updates and Fixes](#3-1-1-fixes)

@@ -714,6 +714,7 @@ class CIS_Report:
             'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm"},     
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -5542,6 +5543,44 @@ class CIS_Report:
             self.obp_foundations_checks['Log_Retention']['Status'] = False
         elif self.obp_foundations_checks['Log_Retention']['OBP']:
             self.obp_foundations_checks['Log_Retention']['Status'] = True
+    
+    #######################################
+    # OBP Account Lockout Duration 5 or more
+    #######################################
+    def __obp_check_iam_account_lockout(self):
+        for domain in self.__identity_domains:
+            required_keys = ['id', 'display_name', 'url', 'errors']
+            record = {key: domain[key] for key in required_keys if key in domain}
+            pwd_policy = domain.get('password_policy') or {}
+            record['max_incorrect_attempts'] = pwd_policy.get('max_incorrect_attempts')
+            record['lockout_duration'] = pwd_policy.get('lockout_duration')
+            try:
+                record['automatic_account_unlock_enabled'] = (
+                    record['lockout_duration'] is not None and int(record['lockout_duration']) > 0
+                )
+            except Exception:
+                record['automatic_account_unlock_enabled'] = None
+            try:
+                # blank/None = compliant (OBP)
+                # 0 = compliant (OBP)
+                # >= 5 = non-compliant (Findings)
+                # <5 = compliant (OBP)
+                if record['max_incorrect_attempts'] is None or str(record['max_incorrect_attempts']).strip() == "":
+                    max_incorrect_attempts_compliant = True
+                else:
+                    max_incorrect_attempts_compliant = (int(record['max_incorrect_attempts']) < 5)
+            except Exception:
+                max_incorrect_attempts_compliant = False
+            automatic_unlock_compliant = (record.get('automatic_account_unlock_enabled') is True)
+            if max_incorrect_attempts_compliant and automatic_unlock_compliant:
+                self.obp_foundations_checks['IAM_Account_Lockout']['OBP'].append(record)
+            else:
+                self.obp_foundations_checks['IAM_Account_Lockout']['Findings'].append(record)
+        if self.obp_foundations_checks['IAM_Account_Lockout']['Findings']:
+            self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = False
+        elif self.obp_foundations_checks['IAM_Account_Lockout']['OBP']:
+            self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = True
+    
 
     #######################################
     # OBP Service Limit Check
@@ -5667,6 +5706,7 @@ class CIS_Report:
         self.__obp_check_adbs()
         self.__obp_check_quotas()
         self.__obp_check_policy_statements_in_comp_chains()
+        self.__obp_check_iam_account_lockout() 
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation

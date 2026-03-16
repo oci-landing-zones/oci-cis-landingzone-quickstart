@@ -714,7 +714,7 @@ class CIS_Report:
             'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
             'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm"},     
+            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -5561,21 +5561,21 @@ class CIS_Report:
             except Exception:
                 record['automatic_account_unlock_enabled'] = None
             try:
-                # blank/None = compliant (OBP)
-                # 0 = compliant (OBP)
-                # >= 5 = non-compliant (Findings)
-                # <5 = compliant (OBP)
+                # Missing/invalid max_incorrect_attempts is non-compliant.
+                # Require lockout to trigger at 5 failed attempts or fewer.
                 if record['max_incorrect_attempts'] is None or str(record['max_incorrect_attempts']).strip() == "":
-                    max_incorrect_attempts_compliant = True
+                    max_incorrect_attempts_compliant = False
                 else:
-                    max_incorrect_attempts_compliant = (int(record['max_incorrect_attempts']) < 5)
+                    max_incorrect_attempts_compliant = (int(record['max_incorrect_attempts']) <= 5)
             except Exception:
                 max_incorrect_attempts_compliant = False
-            automatic_unlock_compliant = (record.get('automatic_account_unlock_enabled') is True)
-            if max_incorrect_attempts_compliant and automatic_unlock_compliant:
+            # automatic_account_unlock_enabled is captured for visibility only and
+            # is not used as a compliance gate unless policy requires it.
+            if max_incorrect_attempts_compliant:
                 self.obp_foundations_checks['IAM_Account_Lockout']['OBP'].append(record)
             else:
                 self.obp_foundations_checks['IAM_Account_Lockout']['Findings'].append(record)
+        
         if self.obp_foundations_checks['IAM_Account_Lockout']['Findings']:
             self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = False
         elif self.obp_foundations_checks['IAM_Account_Lockout']['OBP']:

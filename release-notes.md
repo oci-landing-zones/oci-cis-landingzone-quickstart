@@ -24,6 +24,7 @@ Fixes:
 - Fixed tenancy password policy collection logic to run only when Identity Domains are not enabled.
 - Fixed OBP title rendering in the summary report.
 - Fixed Identity Domain dynamic group retrieval by explicitly requesting required attributes so `matchingRule` is returned after API behavior changed.
+- Fixed check logic that flagged Autonomous Database Dedicated as non-compliant; this check now applies only to Autonomous Database Serverless. Resolves issue [200](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/200).
 
 # January 22, 2026 Release Notes - 3.1.2
 1. [Updates and Fixes](#3-1-1-fixes)

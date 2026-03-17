@@ -15,6 +15,7 @@
 - Added OBP policy evaluation across compartment hierarchy.
 - Added OBP check to identify critical Cloud Guard problems for operational follow-up.
 - Added OBP check to validate Logging retention is at least 90 days.
+- Added OBP check to validate account lockout threshold is greater than or equal to 5.
 
 ## <a name="#3-2-0-fixes">Fixes and Updates</a>
 Fixes:

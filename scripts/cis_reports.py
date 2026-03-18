@@ -690,8 +690,8 @@ class CIS_Report:
 
         # OBP Checks
         self.obp_foundations_checks = {
-            'SIEM_Audit_Log_All_Comps': {'id': 'OBP-SIEM-1', 'section': "SIEM Logging", 'Title': 'All compartment audit logs sent to SIEM', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
-            'SIEM_Audit_Incl_Sub_Comp': {'id': 'OBP-SIEM-2', 'section': "SIEM Logging", 'Title': 'Include all sub compartments', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_Audit_Log_All_Comps': {'id': 'OBP-SIEM-1', 'section': "SIEM Logging", 'Title': 'All compartment audit logs sent to SIEM in all regions', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
+            'SIEM_Audit_Incl_Sub_Comp': {'id': 'OBP-SIEM-2', 'section': "SIEM Logging", 'Title': 'Include all sub-compartments flag checked at the tenancy root compartment', 'Status': True, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},  # Assuming True
             'SIEM_VCN_Flow_Logging': {'id': 'OBP-SIEM-3', 'section': "SIEM Logging", 'Title': 'VCN Flow logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Write_Bucket_Logs': {'id': 'OBP-SIEM-4', 'section': "SIEM Logging", 'Title': 'Bucket write logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},
             'SIEM_Read_Bucket_Logs': {'id': 'OBP-SIEM-5', 'section': "SIEM Logging", 'Title': 'Bucket read logs sent to SIEM', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html"},

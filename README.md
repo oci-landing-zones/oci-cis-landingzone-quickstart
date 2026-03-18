@@ -37,6 +37,38 @@ In addition to CIS checks it can be check for alignment to OCI Best Practices  b
 
 The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
 
+### <a name="OBPChecks"></a>Oracle Best Practice Checks
+
+| ID | Recommendation | Section | Title | Documentation |
+|---|---|---|---|---|
+| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub compartments flag checked at the tenancy root compartment | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-3 | SIEM_VCN_Flow_Logging | SIEM Logging | VCN Flow logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-4 | SIEM_Write_Bucket_Logs | SIEM Logging | Bucket write logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-5 | SIEM_Read_Bucket_Logs | SIEM Logging | Bucket read logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| LAM-19 | Log_Retention | Logging | Retain Audit Logs for 90 days | https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm |
+| OBP-NTW-1 | Networking_Redudancy | Advanced Networking | Scalable and secure topology in OCI | https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm |
+| OBP-NTW-2 | Networking_DRG_Upgraded | Advanced Networking | Dynamic Route Gateway (DRG) upgraded to version 2 | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm |
+| OBP-NTW-3 | Networking_Hub_Spoke | Advanced Networking | Hub and Spoke Network Architecture | https://docs.oracle.com/en/solutions/hub-spoke-network/index.html |
+| OBP-NTW-4 | Networking_IPSec_connections | Advanced Networking | IPSec connections with two tunnels | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-NTW-5 | Networking_IPSec_bgp | Advanced Networking | IPSec connections with BGP Routing | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-CSP-1 | Cloud_Guard_Config | CSPM | Cloud Guard enabled and configured | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-customize.htm |
+| OBP-CSP-2 | Cloud_Guard_Problems | CSPM | Cloud Guard problems with Risk Level Critical or High | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-problems.htm |
+| OBP-CRT-1 | Certificates_Near_Expiry | Certificates | Certificates to expire in 30 days | https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm |
+| OBP-GOV-1 | Service_Limits | Governance | Visibility into OCI Limits | https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E |
+| OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
+| OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
+| OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
+
+
+
 ## <a name="setup"></a>Setup 
 
 ### Required Permissions

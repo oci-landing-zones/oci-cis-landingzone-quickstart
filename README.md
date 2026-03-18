@@ -41,8 +41,8 @@ The script is located under the *scripts* folder in this repository. It outputs 
 
 | ID | Recommendation | Section | Title | Documentation |
 |---|---|---|---|---|
-| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub compartments flag checked at the tenancy root compartment | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub-compartments flag checked at the tenancy root compartment in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
 | OBP-SIEM-3 | SIEM_VCN_Flow_Logging | SIEM Logging | VCN Flow logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
 | OBP-SIEM-4 | SIEM_Write_Bucket_Logs | SIEM Logging | Bucket write logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
 | OBP-SIEM-5 | SIEM_Read_Bucket_Logs | SIEM Logging | Bucket read logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |

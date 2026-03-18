@@ -4602,10 +4602,16 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['2.7']['Total'] = self.__analytics_instances
 
         # CIS 2.8 Check - Ensure Oracle Autonomous Shared Databases (ADB) access is restricted to allowed sources or deployed within a VCN
-        # Iterating through ADB Checking for null NSGs, whitelisted ip or allowed IPs 0.0.0.0/0 
-        # Issue 295 fixed
+        # Control applies to Serverless only, so dedicated ADBs are excluded.
         for autonomous_database in self.__autonomous_databases:
-            if autonomous_database['lifecycle_state'] not in [ oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING, oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE ]:
+            if (
+                autonomous_database['lifecycle_state'] not in [
+                    oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATED,
+                    oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_TERMINATING,
+                    oci.database.models.AutonomousDatabaseSummary.LIFECYCLE_STATE_UNAVAILABLE,
+                ]
+                and not autonomous_database.get('is_dedicated', False)
+            ):
                 if not (autonomous_database['whitelisted_ips']) and not (autonomous_database['subnet_id']):
                     self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
                     self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
@@ -4615,7 +4621,6 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['2.8']['Status'] = False
                             self.cis_foundations_benchmark_3_0['2.8']['Findings'].append(autonomous_database)
 
-        # CIS Total 2.8 Adding - All ADBs to CIS Total
         self.cis_foundations_benchmark_3_0['2.8']['Total'] = self.__autonomous_databases
 
     def __cis_check_compute_instances(self):

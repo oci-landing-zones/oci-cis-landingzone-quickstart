@@ -37,6 +37,38 @@ In addition to CIS checks it can be check for alignment to OCI Best Practices  b
 
 The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
 
+### <a name="OBPChecks"></a>Oracle Best Practice Checks
+
+| ID | Recommendation | Section | Title | Documentation |
+|---|---|---|---|---|
+| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub-compartments flag checked at the tenancy root compartment in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-3 | SIEM_VCN_Flow_Logging | SIEM Logging | VCN Flow logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-4 | SIEM_Write_Bucket_Logs | SIEM Logging | Bucket write logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-5 | SIEM_Read_Bucket_Logs | SIEM Logging | Bucket read logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| LAM-19 | Log_Retention | Logging | Retain Audit Logs for 90 days | https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm |
+| OBP-NTW-1 | Networking_Redudancy | Advanced Networking | Scalable and secure topology in OCI | https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm |
+| OBP-NTW-2 | Networking_DRG_Upgraded | Advanced Networking | Dynamic Route Gateway (DRG) upgraded to version 2 | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm |
+| OBP-NTW-3 | Networking_Hub_Spoke | Advanced Networking | Hub and Spoke Network Architecture | https://docs.oracle.com/en/solutions/hub-spoke-network/index.html |
+| OBP-NTW-4 | Networking_IPSec_connections | Advanced Networking | IPSec connections with two tunnels | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-NTW-5 | Networking_IPSec_bgp | Advanced Networking | IPSec connections with BGP Routing | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-CSP-1 | Cloud_Guard_Config | CSPM | Cloud Guard enabled and configured | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-customize.htm |
+| OBP-CSP-2 | Cloud_Guard_Problems | CSPM | Cloud Guard problems with Risk Level Critical or High | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-problems.htm |
+| OBP-CRT-1 | Certificates_Near_Expiry | Certificates | Certificates to expire in 30 days | https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm |
+| OBP-GOV-1 | Service_Limits | Governance | Visibility into OCI Limits | https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E |
+| OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
+| OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
+| OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
+
+
+
 ## <a name="setup"></a>Setup 
 
 ### Required Permissions
@@ -157,7 +189,7 @@ pip3 install xlsxwriter
 
 ## <a name="usage"></a>Usage Examples
 
-### Executing on a loca machine to check CIS and OCI Best Practices with raw data
+### Executing on a local machine to check CIS and OCI Best Practices with raw data
 To run using python running a local machine in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py --obp --raw
@@ -299,34 +331,47 @@ For each non-compliant report item, a file with findings details is generated, a
 ##########################################################################################
 #                               Writing CIS reports to CSV                               #
 ##########################################################################################
-CSV: summary_report         --> tenancy1-2025-05-20_17-32-08/cis_summary_report.csv
-HTML: html_summary_report    --> tenancy1-2025-05-20_17-32-08/cis_html_summary_report.html
-CSV: Identity and Access Management_1.1 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-1.csv
-CSV: Identity and Access Management_1.5 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-5.csv
-CSV: Identity and Access Management_1.6 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-6.csv
-CSV: Identity and Access Management_1.7 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-7.csv
-CSV: Identity and Access Management_1.8 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-8.csv
-CSV: Identity and Access Management_1.9 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-9.csv
-CSV: Identity and Access Management_1.10 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-10.csv
-CSV: Identity and Access Management_1.11 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-11.csv
-CSV: Identity and Access Management_1.12 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-12.csv
-CSV: Identity and Access Management_1.13 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-13.csv
-CSV: Identity and Access Management_1.15 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-15.csv
-CSV: Identity and Access Management_1.16 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-16.csv
-CSV: Identity and Access Management_1.17 --> tenancy1-2025-05-20_17-32-08/cis_Identity_and_Access_Management_1-17.csv
-CSV: Networking_2.1         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-1.csv
-CSV: Networking_2.2         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-2.csv
-CSV: Networking_2.3         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-3.csv
-CSV: Networking_2.4         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-4.csv
-CSV: Networking_2.5         --> tenancy1-2025-05-20_17-32-08/cis_Networking_2-5.csv
-CSV: Compute_3.2            --> tenancy1-2025-05-20_17-32-08/cis_Compute_3-2.csv
-CSV: Logging and Monitoring_4.13 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-13.csv
-CSV: Logging and Monitoring_4.16 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-16.csv
-CSV: Logging and Monitoring_4.17 --> tenancy1-2025-05-20_17-32-08/cis_Logging_and_Monitoring_4-17.csv
-CSV: Storage - Object Storage_5.1.1 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-1.csv
-CSV: Storage - Object Storage_5.1.2 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-2.csv
-CSV: Storage - Object Storage_5.1.3 --> tenancy1-2025-05-20_17-32-08/cis_Storage_Object_Storage_5-1-3.csv
-CSV: Asset Management_6.2   --> tenancy1-2025-05-20_17-32-08/cis_Asset_Management_6-2.csv
+CSV: summary_report         --> tenancy1-2026-03-17_18-30-55/cis_summary_report.csv
+HTML: summary_report         --> tenancy1-2026-03-17_18-30-55/cis_summary_report.html
+CSV: Identity and Access Management_1.1 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-1.csv
+CSV: Identity and Access Management_1.2 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-2.csv
+CSV: Identity and Access Management_1.3 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-3.csv
+CSV: Identity and Access Management_1.4 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-4.csv
+CSV: Identity and Access Management_1.5 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-5.csv
+CSV: Identity and Access Management_1.6 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-6.csv
+CSV: Identity and Access Management_1.7 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-7.csv
+CSV: Identity and Access Management_1.8 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-8.csv
+CSV: Identity and Access Management_1.9 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-9.csv
+CSV: Identity and Access Management_1.10 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-10.csv
+CSV: Identity and Access Management_1.11 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-11.csv
+CSV: Identity and Access Management_1.12 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-12.csv
+CSV: Identity and Access Management_1.13 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-13.csv
+CSV: Identity and Access Management_1.15 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-15.csv
+CSV: Identity and Access Management_1.16 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-16.csv
+CSV: Identity and Access Management_1.17 --> tenancy1-2026-03-17_18-30-55/cis_Identity_and_Access_Management_1-17.csv
+CSV: Networking_2.1         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-1.csv
+CSV: Networking_2.2         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-2.csv
+CSV: Networking_2.3         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-3.csv
+CSV: Networking_2.4         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-4.csv
+CSV: Networking_2.5         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-5.csv
+CSV: Networking_2.6         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-6.csv
+CSV: Networking_2.7         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-7.csv
+CSV: Networking_2.8         --> tenancy1-2026-03-17_18-30-55/cis_Networking_2-8.csv
+CSV: Compute_3.1            --> tenancy1-2026-03-17_18-30-55/cis_Compute_3-1.csv
+CSV: Compute_3.2            --> tenancy1-2026-03-17_18-30-55/cis_Compute_3-2.csv
+CSV: Compute_3.3            --> tenancy1-2026-03-17_18-30-55/cis_Compute_3-3.csv
+CSV: Logging and Monitoring_4.2 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-2.csv
+CSV: Logging and Monitoring_4.4 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-4.csv
+CSV: Logging and Monitoring_4.13 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-13.csv
+CSV: Logging and Monitoring_4.16 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-16.csv
+CSV: Logging and Monitoring_4.17 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-17.csv
+CSV: Logging and Monitoring_4.18 --> tenancy1-2026-03-17_18-30-55/cis_Logging_and_Monitoring_4-18.csv
+CSV: Storage - Object Storage_5.1.1 --> tenancy1-2026-03-17_18-30-55/cis_Storage_Object_Storage_5-1-1.csv
+CSV: Storage - Object Storage_5.1.2 --> tenancy1-2026-03-17_18-30-55/cis_Storage_Object_Storage_5-1-2.csv
+CSV: Storage - Object Storage_5.1.3 --> tenancy1-2026-03-17_18-30-55/cis_Storage_Object_Storage_5-1-3.csv
+CSV: Storage - Block Volumes_5.2.2 --> tenancy1-2026-03-17_18-30-55/cis_Storage_Block_Volumes_5-2-2.csv
+CSV: Storage - File Storage Service_5.3.1 --> tenancy1-2026-03-17_18-30-55/cis_Storage_File_Storage_Service_5-3-1.csv
+CSV: Asset Management_6.2   --> tenancy1-2026-03-17_18-30-55/cis_Asset_Management_6-2.csv
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
 
@@ -352,22 +397,117 @@ In the sample output below:
 Using `--obp` will check for a tenancy's alignment to the available OCI Best Practices. 
 
 ```
-##########################################################################################
+#########################################################################################
 #                              OCI Best Practices Findings                               #
 ##########################################################################################
 Category                                Compliant       Findings        Best Practices
 ##########################################################################################
-Cost_Tracking_Budgets                   True            40              1
-SIEM_Audit_Log_All_Comps                True            0               1
-SIEM_Audit_Incl_Sub_Comp                True            0               1
-SIEM_VCN_Flow_Logging                   False           196             0
-SIEM_Write_Bucket_Logs                  False           45              0
-SIEM_Read_Bucket_Logs                   False           45              0
-Networking_Connectivity                 False           17              0
-Cloud_Guard_Config                      False           1               0
-Certificates_Near_Expiry                False           12              5
+SIEM_Audit_Log_All_Comps                Yes             0               2
+SIEM_Audit_Incl_Sub_Comp                Yes             0               1
+SIEM_VCN_Flow_Logging                   No              48              4
+SIEM_Write_Bucket_Logs                  No              49              2
+SIEM_Read_Bucket_Logs                   No              50              1
+Log_Retention                           No              58              2
+Networking_Redudancy                    No              4               0
+Networking_DRG_Upgraded                 Yes             0               4
+Networking_Hub_Spoke                    No              2               2
+Networking_IPSec_connections            No              4               0
+Networking_IPSec_bgp                    No              4               0
+Cloud_Guard_Config                      No              1               0
+Cloud_Guard_Problems                    No              234             329
+Certificates_Near_Expiry                No              1               0
+Service_Limits                          No              1               1555
+Cost_Tracking_Budgets                   No              2               0
+Quotas                                  Yes             0               1
+ADB_MTLS                                No              1               3
+ADB_DataSafe                            No              1               3
+ADB_CMK                                 No              1               3
+ADB_Contacts                            No              2               2
+ADB_Private_IP                          No              1               3
+IAM_Stmt_Root_Count                     Yes             0               1
+IAM_Stmt_Comp_Hierarchy_Count           No              4               44
 ```
+For each non-compliant report item, a file with findings details is generated, as shown in the last part of the output:
 
+```
+##########################################################################################
+#                      Writing Oracle Best Practices reports to CSV                      #
+##########################################################################################
+CSV: OBP_Summary            --> tenancy1-2026-03-17_18-30-55/obp_OBP_Summary.csv
+CSV: SIEM_VCN_Flow_Logging_Findings --> tenancy1-2026-03-17_18-30-55/obp_SIEM_VCN_Flow_Logging_Findings.csv
+CSV: SIEM_Write_Bucket_Logs_Findings --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Write_Bucket_Logs_Findings.csv
+CSV: SIEM_Read_Bucket_Logs_Findings --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Read_Bucket_Logs_Findings.csv
+CSV: Log_Retention_Findings --> tenancy1-2026-03-17_18-30-55/obp_Log_Retention_Findings.csv
+CSV: Networking_Redudancy_Findings --> tenancy1-2026-03-17_18-30-55/obp_Networking_Redudancy_Findings.csv
+CSV: Networking_Hub_Spoke_Findings --> tenancy1-2026-03-17_18-30-55/obp_Networking_Hub_Spoke_Findings.csv
+CSV: Networking_IPSec_connections_Findings --> tenancy1-2026-03-17_18-30-55/obp_Networking_IPSec_connections_Findings.csv
+CSV: Networking_IPSec_bgp_Findings --> tenancy1-2026-03-17_18-30-55/obp_Networking_IPSec_bgp_Findings.csv
+CSV: Cloud_Guard_Config_Findings --> tenancy1-2026-03-17_18-30-55/obp_Cloud_Guard_Config_Findings.csv
+CSV: Cloud_Guard_Problems_Findings --> tenancy1-2026-03-17_18-30-55/obp_Cloud_Guard_Problems_Findings.csv
+CSV: Certificates_Near_Expiry_Findings --> tenancy1-2026-03-17_18-30-55/obp_Certificates_Near_Expiry_Findings.csv
+CSV: Service_Limits_Findings --> tenancy1-2026-03-17_18-30-55/obp_Service_Limits_Findings.csv
+CSV: Cost_Tracking_Budgets_Findings --> tenancy1-2026-03-17_18-30-55/obp_Cost_Tracking_Budgets_Findings.csv
+CSV: ADB_MTLS_Findings      --> tenancy1-2026-03-17_18-30-55/obp_ADB_MTLS_Findings.csv
+CSV: ADB_DataSafe_Findings  --> tenancy1-2026-03-17_18-30-55/obp_ADB_DataSafe_Findings.csv
+CSV: ADB_CMK_Findings       --> tenancy1-2026-03-17_18-30-55/obp_ADB_CMK_Findings.csv
+CSV: ADB_Contacts_Findings  --> tenancy1-2026-03-17_18-30-55/obp_ADB_Contacts_Findings.csv
+CSV: ADB_Private_IP_Findings --> tenancy1-2026-03-17_18-30-55/obp_ADB_Private_IP_Findings.csv
+CSV: IAM_Stmt_Comp_Hierarchy_Count_Findings --> tenancy1-2026-03-17_18-30-55/obp_IAM_Stmt_Comp_Hierarchy_Count_Findings.csv
+CSV: SIEM_Audit_Log_All_Comps_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Audit_Log_All_Comps_Best_Practices.csv
+CSV: SIEM_Audit_Incl_Sub_Comp_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Audit_Incl_Sub_Comp_Best_Practices.csv
+CSV: SIEM_VCN_Flow_Logging_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_SIEM_VCN_Flow_Logging_Best_Practices.csv
+CSV: SIEM_Write_Bucket_Logs_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Write_Bucket_Logs_Best_Practices.csv
+CSV: SIEM_Read_Bucket_Logs_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_SIEM_Read_Bucket_Logs_Best_Practices.csv
+CSV: Log_Retention_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_Log_Retention_Best_Practices.csv
+CSV: Networking_DRG_Upgraded_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_Networking_DRG_Upgraded_Best_Practices.csv
+CSV: Networking_Hub_Spoke_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_Networking_Hub_Spoke_Best_Practices.csv
+CSV: Cloud_Guard_Problems_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_Cloud_Guard_Problems_Best_Practices.csv
+CSV: Service_Limits_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_Service_Limits_Best_Practices.csv
+CSV: Quotas_Best_Practices  --> tenancy1-2026-03-17_18-30-55/obp_Quotas_Best_Practices.csv
+CSV: ADB_MTLS_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_ADB_MTLS_Best_Practices.csv
+CSV: ADB_DataSafe_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_ADB_DataSafe_Best_Practices.csv
+CSV: ADB_CMK_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_ADB_CMK_Best_Practices.csv
+CSV: ADB_Contacts_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_ADB_Contacts_Best_Practices.csv
+CSV: ADB_Private_IP_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_ADB_Private_IP_Best_Practices.csv
+CSV: IAM_Stmt_Root_Count_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_IAM_Stmt_Root_Count_Best_Practices.csv
+CSV: IAM_Stmt_Comp_Hierarchy_Count_Best_Practices --> tenancy1-2026-03-17_18-30-55/obp_IAM_Stmt_Comp_Hierarchy_Count_Best_Practices.csv
+CSV: identity_groups_and_membership --> tenancy1-2026-03-17_18-30-55/raw_data_identity_groups_and_membership.csv
+CSV: identity_domains       --> tenancy1-2026-03-17_18-30-55/raw_data_identity_domains.csv
+CSV: identity_users         --> tenancy1-2026-03-17_18-30-55/raw_data_identity_users.csv
+CSV: identity_policies      --> tenancy1-2026-03-17_18-30-55/raw_data_identity_policies.csv
+CSV: identity_dynamic_groups --> tenancy1-2026-03-17_18-30-55/raw_data_identity_dynamic_groups.csv
+CSV: identity_tags          --> tenancy1-2026-03-17_18-30-55/raw_data_identity_tags.csv
+CSV: identity_compartments  --> tenancy1-2026-03-17_18-30-55/raw_data_identity_compartments.csv
+CSV: network_security_groups --> tenancy1-2026-03-17_18-30-55/raw_data_network_security_groups.csv
+CSV: network_security_lists --> tenancy1-2026-03-17_18-30-55/raw_data_network_security_lists.csv
+CSV: network_subnets        --> tenancy1-2026-03-17_18-30-55/raw_data_network_subnets.csv
+CSV: network_vcns           --> tenancy1-2026-03-17_18-30-55/raw_data_network_vcns.csv
+CSV: network_capture_filters --> tenancy1-2026-03-17_18-30-55/raw_data_network_capture_filters.csv
+CSV: autonomous_databases   --> tenancy1-2026-03-17_18-30-55/raw_data_autonomous_databases.csv
+CSV: analytics_instances    --> tenancy1-2026-03-17_18-30-55/raw_data_analytics_instances.csv
+CSV: integration_instances  --> tenancy1-2026-03-17_18-30-55/raw_data_integration_instances.csv
+CSV: event_rules            --> tenancy1-2026-03-17_18-30-55/raw_data_event_rules.csv
+CSV: log_groups_and_logs    --> tenancy1-2026-03-17_18-30-55/raw_data_log_groups_and_logs.csv
+CSV: object_storage_buckets --> tenancy1-2026-03-17_18-30-55/raw_data_object_storage_buckets.csv
+CSV: boot_volumes           --> tenancy1-2026-03-17_18-30-55/raw_data_boot_volumes.csv
+CSV: file_storage_system    --> tenancy1-2026-03-17_18-30-55/raw_data_file_storage_system.csv
+CSV: kms_keys               --> tenancy1-2026-03-17_18-30-55/raw_data_kms_keys.csv
+CSV: kms_vaults             --> tenancy1-2026-03-17_18-30-55/raw_data_kms_vaults.csv
+CSV: ons_subscriptions      --> tenancy1-2026-03-17_18-30-55/raw_data_ons_subscriptions.csv
+CSV: budgets                --> tenancy1-2026-03-17_18-30-55/raw_data_budgets.csv
+CSV: quotas                 --> tenancy1-2026-03-17_18-30-55/raw_data_quotas.csv
+CSV: service_connectors     --> tenancy1-2026-03-17_18-30-55/raw_data_service_connectors.csv
+CSV: network_drgs           --> tenancy1-2026-03-17_18-30-55/raw_data_network_drgs.csv
+CSV: cloud_guard_target     --> tenancy1-2026-03-17_18-30-55/raw_data_cloud_guard_target.csv
+CSV: cloud_guard_problems   --> tenancy1-2026-03-17_18-30-55/raw_data_cloud_guard_problems.csv
+CSV: regions                --> tenancy1-2026-03-17_18-30-55/raw_data_regions.csv
+CSV: network_drg_attachments --> tenancy1-2026-03-17_18-30-55/raw_data_network_drg_attachments.csv
+CSV: instances              --> tenancy1-2026-03-17_18-30-55/raw_data_instances.csv
+CSV: certificates           --> tenancy1-2026-03-17_18-30-55/raw_data_certificates.csv
+CSV: service_limits         --> tenancy1-2026-03-17_18-30-55/raw_data_service_limits.csv
+CSV: compartment_hierarchy_policy_count --> tenancy1-2026-03-17_18-30-55/raw_data_compartment_hierarchy_policy_count.csv
+JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resources.json
+```
 
 ## <a name="blogs"></a>Blogs
 - [Automate CIS Compliance Checking with OCI Functions and OCI Resource Scheduler](https://www.ateam-oracle.com/post/automate-cis-compliance-checking)

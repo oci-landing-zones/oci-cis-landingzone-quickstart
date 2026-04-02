@@ -21,6 +21,7 @@ import oci
 import json
 import os
 import csv
+csv.field_size_limit(sys.maxsize)
 import itertools
 from threading import Thread
 import hashlib
@@ -6766,6 +6767,56 @@ def set_parser_arguments():
 ##########################################################################
 # execute_report
 ##########################################################################
+def _build_worksheet_name(csv_path, report_prefix, seen_names):
+    """Return a workbook-safe worksheet name or None if the sheet should be skipped."""
+    base_name = os.path.basename(csv_path)
+    if report_prefix:
+        base_name = base_name.replace(report_prefix, "")
+
+    name = (base_name
+            .replace(".csv", "")
+            .replace("raw_data_", "raw_")
+            .replace("Findings", "fds")
+            .replace("Best_Practices", "OBP"))
+
+    if "raw_cloud_guard_target" in name:
+        return None
+
+    replacement_rules = (
+        ("Identity_and_Access_Management", "IAM"),
+        ("Storage_Object_Storage", "Object_Storage"),
+        ("raw_identity_groups_and_membership", "raw_iam_groups_and_membership"),
+        ("Cost_Tracking_Budgets_Best_Practices", "Budgets_Best_Practices"),
+        ("Cost_Tracking", "Cost"),
+        ("Storage_File_Storage_Service", "FSS"),
+        ("Networking_IPSec_connections", "Networking_IPSec"),
+        ("IAM_Stmt_Comp_Hierarchy_Count", "IAM_Stmt_Comp_Count"),
+        ("compartment_hierarchy_policy_count", "compartment_policy_cnt"),
+    )
+
+    for pattern, replacement in replacement_rules:
+        if pattern in name:
+            name = name.replace(pattern, replacement)
+            break
+
+    name = re.sub(r"_+", "_", name).strip("_") or "worksheet"
+
+    if len(name) > 31:
+        name = name.replace("_", "")
+    if len(name) > 31:
+        name = name[:28]
+
+    candidate = name
+    counter = 1
+    while candidate in seen_names or len(candidate) > 31:
+        suffix = f"_{counter}"
+        candidate = f"{name[:31 - len(suffix)]}{suffix}" if len(name) + len(suffix) > 31 else f"{name}{suffix}"
+        counter += 1
+
+    seen_names.add(candidate)
+    return candidate
+
+
 def execute_report():
 
     # Get Command Line Parser
@@ -6837,40 +6888,38 @@ def execute_report():
                     pass
             csvfiles = glob.glob(f'{csv_report_directory}/{report_prefix}*.csv')
             csvfiles.sort()
+            seen_worksheet_names = set()
             for csvfile in csvfiles:
-
-                worksheet_name = csvfile.split(os.path.sep)[-1].replace(report_prefix, "").replace(".csv", "").replace("raw_data_", "raw_").replace("Findings", "fds").replace("Best_Practices", "bps")
-
-                if "Identity_and_Access_Management" in worksheet_name:
-                    worksheet_name = worksheet_name.replace("Identity_and_Access_Management", "IAM")
-                elif "Storage_Object_Storage" in worksheet_name:
-                    worksheet_name = worksheet_name.replace("Storage_Object_Storage", "Object_Storage")
-                elif "raw_identity_groups_and_membership" in worksheet_name:
-                    worksheet_name = worksheet_name.replace("raw_identity", "raw_iam")
-                elif "Cost_Tracking_Budgets_Best_Practices" in worksheet_name:
-                    worksheet_name = worksheet_name.replace("Cost_Tracking_", "")
-                elif "Storage_File_Storage_Service" in worksheet_name:
-                    worksheet_name = worksheet_name.replace("Storage_File_Storage_Service", "FSS")
-                elif "raw_cloud_guard_target" in worksheet_name:
-                    # cloud guard targets are too large for a cell
+                worksheet_name = _build_worksheet_name(csvfile, report_prefix, seen_worksheet_names)
+                if not worksheet_name:
                     continue
-                elif len(worksheet_name) > 31:
-                    worksheet_name = worksheet_name.replace("_", "")
 
-                worksheet = workbook.add_worksheet(worksheet_name)
-                with open(csvfile, 'rt', encoding='unicode_escape') as f:
-                    reader = csv.reader(f)
-                    for r, row in enumerate(reader):
-                        for c, col in enumerate(row):
-                            # Format URL only if the column starts with "=HYPERLINK"
-                            if col.startswith("=HYPERLINK"):
-                                url_info = re.findall(r'"(.*?)"', col)
-                                if url_info and len(url_info[0]) < 2079:  # Excel Link limit
-                                    worksheet.write_url(r, c, url_info[0], string=url_info[1])
-                            else:
-                                worksheet.write(r, c, col)
-                worksheet.autofilter(0, 0, r - 1, c - 1)
-                worksheet.autofit()
+                try:
+                    worksheet = workbook.add_worksheet(worksheet_name)
+                    with open(csvfile, 'rt', encoding='unicode_escape') as f:
+                        reader = csv.reader(f)
+                        last_row = 0
+                        last_col = 0
+                        has_data = False
+                        for r, row in enumerate(reader):
+                            has_data = True
+                            last_row = r
+                            for c, col in enumerate(row):
+                                last_col = c
+                                # Format URL only if the column starts with "=HYPERLINK"
+                                if col.startswith("=HYPERLINK"):
+                                    url_info = re.findall(r'"(.*?)"', col)
+                                    if url_info and len(url_info[0]) < 2079:  # Excel Link limit
+                                        worksheet.write_url(r, c, url_info[0], string=url_info[1])
+                                else:
+                                    worksheet.write(r, c, col)
+                    if has_data:
+                        worksheet.autofilter(0, 0, last_row, last_col)
+                    worksheet.autofit()
+                except Exception as e:
+                    print(f"** Failed to output to Excel worksheet {worksheet_name} **")
+                    print(e)
+                    continue
 
             workbook.close()
         except Exception as e:

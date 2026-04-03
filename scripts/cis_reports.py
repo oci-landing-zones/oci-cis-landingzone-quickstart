@@ -936,7 +936,7 @@ class CIS_Report:
         self.__home_region = None
 
         # For ONS Subscriptions
-        self.__subscriptions = []
+        self.__subscriptions = {}
 
         # Results from Advanced search query
         self.__resources_in_root_compartment = []
@@ -3670,7 +3670,7 @@ class CIS_Report:
                         "region": region_key
 
                     }
-                    self.__subscriptions.append(record)
+                    self.__subscriptions[sub.identifier] = record
 
             print("\tProcessed " + str(len(self.__subscriptions)) + " Subscriptions")
             return self.__subscriptions
@@ -4671,10 +4671,22 @@ class CIS_Report:
 
 
         # CIS Check 4.2 Total - All Subscriptions to CIS Total
-        self.cis_foundations_benchmark_3_0['4.2']['Total'] = self.__subscriptions
+        self.cis_foundations_benchmark_3_0['4.2']['Total'] = list(self.__subscriptions.values())
 
         # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
+        def __event_with_topic_has_active_sub(event_actions):
+            for action in event_actions or []:
+                if action.get('actionType') == 'ONS' and action.get('topicId'):
+                    topic_id = action['topicId']
+                    if self.__subscriptions.get('topic_id') and self.__subscriptions['topic_id'].get('lifecycle_state'):
+                        # Python order of valuation is left to right mean
+                        return True
+                elif not action.get('actionType') == 'ONS':
+                    # None ONS based notifications are assumed to be ok
+                    return True
+            return False
+
         for event in self.__event_rules:
             if event['lifecycle_state'] == "ACTIVE" and event['compartment_id'] == self.__tenancy.id:
                 # Convert Event Condition to dict
@@ -4692,18 +4704,22 @@ class CIS_Report:
                         try:
                             # Checking if each region has the required events
                             if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
-                                self.__cis_regional_findings_data[key][event['region']] = True
-                            
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.__cis_regional_findings_data[key][event['region']] = True
+
                             # Cloud Guard Check is only required in the Cloud Guard Reporting Region
                             elif self.__cloud_guard_config and key == "4.15" and \
                                 event['region'] == self.__cloud_guard_config.reporting_region and \
                                 (all(x in eventtype_dict['eventtype'] for x in changes)):
-                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
-                            
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.cis_foundations_benchmark_3_0[key]['Status'] = True
+
                             # For Checks that are home region based checking those
                             elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
                                 key not in self.__cis_regional_checks and event['region'] == self.__home_region:
-                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.cis_foundations_benchmark_3_0[key]['Status'] = True
+
                         except Exception as e:
                             print(e)
                             print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
@@ -6400,7 +6416,7 @@ class CIS_Report:
             "file_storage_system": self.__file_storage_system,
             "kms_keys": self.__kms_keys,
             "kms_vaults": list(self.__vaults.values()),
-            "ons_subscriptions": self.__subscriptions,
+            "ons_subscriptions": list(self.__subscriptions.values()),
             "budgets": self.__budgets,
             "quotas" : self.__quotas,
             "service_connectors": list(self.__service_connectors.values()),

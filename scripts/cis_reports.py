@@ -21,7 +21,6 @@ import oci
 import json
 import os
 import csv
-csv.field_size_limit(sys.maxsize)
 import itertools
 from threading import Thread
 import hashlib
@@ -41,6 +40,8 @@ try:
     OUTPUT_DIAGRAMS = True
 except Exception:
     OUTPUT_DIAGRAMS = False
+
+csv.field_size_limit(sys.maxsize)
 
 RELEASE_VERSION = "3.2.0"
 PYTHON_SDK_VERSION = "2.165.x"

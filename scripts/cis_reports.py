@@ -3670,7 +3670,7 @@ class CIS_Report:
                         "region": region_key
 
                     }
-                    self.__subscriptions[sub.identifier] = record
+                    self.__subscriptions[sub.additional_details['topicId']] = record
 
             print("\tProcessed " + str(len(self.__subscriptions)) + " Subscriptions")
             return self.__subscriptions
@@ -4662,7 +4662,7 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['4.1']['Total'] = self.__tag_defaults
 
         # CIS Check 4.2 - Check for Active Notification and Subscription
-        for sub in self.__subscriptions:
+        for sub in self.__subscriptions.values():
             if sub['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_3_0['4.2']['Status'] = True
             else:
@@ -4679,8 +4679,12 @@ class CIS_Report:
             for action in event_actions or []:
                 if action.get('actionType') == 'ONS' and action.get('topicId'):
                     topic_id = action['topicId']
-                    if self.__subscriptions.get('topic_id') and self.__subscriptions['topic_id'].get('lifecycle_state'):
+                    print("*" * 80)
+                    print(self.__subscriptions[topic_id].get('lifecycle_state'))
+                    print("*" * 80)
+                    if self.__subscriptions.get(topic_id) and self.__subscriptions[topic_id].get('lifecycle_state') == 'ACTIVE':
                         # Python order of valuation is left to right mean
+                        print('Chicken Dinner')
                         return True
                 elif not action.get('actionType') == 'ONS':
                     # None ONS based notifications are assumed to be ok

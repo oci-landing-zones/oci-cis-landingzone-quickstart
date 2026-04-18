@@ -8,6 +8,7 @@
 - [Why did the script may fail to run when executing from the local machine with message "** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort.**?](#oci_config_profile)
 - [ImportError: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.0.2k-fips  26 Jan 2017'.](#urllib3)
 - [Understanding CIS recommendation *Ensure storage service-level admins cannot delete resources they manage.*](#storage-admins)
+- [Why does the script treat some Events rules as compliant even when the Notifications topic subscription is not active?](#event-rule-target-validation)
 - [Why are there no dashboard graphics in the HTML page?](#html-page)
 - [Why is the XLSX file not created?](#xlsx)
 
@@ -100,6 +101,11 @@ In the second example:
     `Allow group SYSADMINS_PROD to manage object-family in compartment PROD where request.permission!='OBJECT_DELETE'`
 
 The SYSADMIN_PROD group has access to [object-family](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/objectstoragepolicyreference.htm#Details_for_Object_Storage_Archive_Storage_and_Data_Transfer) which includes buckets and objects. This means they would be able to delete a bucket violating the intent of the rule.  Even though you can't delete a bucket with objects in it if you don't have permissions to the underlying objects you could delete an empty you created thus violating the intent.
+
+### <a name="event-rule-target-validation"></a>**Why does the script treat some Events rules as compliant even when the Notifications topic subscription is not active?**
+
+For CIS event-related checks, the script validates Oracle Notifications Service (ONS) targets when it can confirm that the referenced topic has an active subscription.
+Note: non-ONS targets are not validated by this check.
 
 ### <a name="html-page"></a>**Why are there no dashboard graphics in the HTML page?**
 

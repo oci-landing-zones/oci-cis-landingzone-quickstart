@@ -4694,8 +4694,7 @@ class CIS_Report:
         def __has_active_subscription_for_topic(topic_id: str) -> bool:
             """
             Return True if any subscription in self.__subscriptions has:
-            - subscription["topic_id"] == topic_id
-            - subscription["lifecycle_state"] == "ACTIVE"
+            - subscription["topic_id"] == topic_id and subscription["lifecycle_state"] == "ACTIVE"
             Otherwise return False.
             """
             if not topic_id:
@@ -4727,10 +4726,6 @@ class CIS_Report:
                         try:
                             # Checking if each region has the required events
                             if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
-                                print("-" * 80)
-                                print(key)
-                                topic_id = event.get('actions')
-                                print(event.get('actions'))
                                 if __event_with_topic_has_active_sub(event.get('actions')):
                                     self.__cis_regional_findings_data[key][event['region']] = True
 

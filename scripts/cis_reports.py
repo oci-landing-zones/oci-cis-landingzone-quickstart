@@ -936,7 +936,7 @@ class CIS_Report:
         self.__home_region = None
 
         # For ONS Subscriptions
-        self.__subscriptions = {}
+        self.__subscriptions = []
 
         # Results from Advanced search query
         self.__resources_in_root_compartment = []
@@ -3670,7 +3670,7 @@ class CIS_Report:
                         "region": region_key
 
                     }
-                    self.__subscriptions[sub.additional_details['topicId']] = record
+                    self.__subscriptions.append(record)
 
             print("\tProcessed " + str(len(self.__subscriptions)) + " Subscriptions")
             return self.__subscriptions
@@ -4662,7 +4662,7 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['4.1']['Total'] = self.__tag_defaults
 
         # CIS Check 4.2 - Check for Active Notification and Subscription
-        for sub in self.__subscriptions.values():
+        for sub in self.__subscriptions:
             if sub['lifecycle_state'] == 'ACTIVE':
                 self.cis_foundations_benchmark_3_0['4.2']['Status'] = True
             else:
@@ -4671,24 +4671,43 @@ class CIS_Report:
 
 
         # CIS Check 4.2 Total - All Subscriptions to CIS Total
-        self.cis_foundations_benchmark_3_0['4.2']['Total'] = list(self.__subscriptions.values())
+        self.cis_foundations_benchmark_3_0['4.2']['Total'] = self.__subscriptions
 
         # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
         def __event_with_topic_has_active_sub(event_actions):
+            """
+            Checks event actions
+            returns True if it finds either a non-ONS action or an ONS action whose topicId has at least one ACTIVE subscription.
+            Returns False when no qualifying action exists.
+            """
             for action in event_actions or []:
                 if action.get('actionType') == 'ONS' and action.get('topicId'):
-                    topic_id = action['topicId']
-                    print("*" * 80)
-                    print(self.__subscriptions[topic_id].get('lifecycle_state'))
-                    print("*" * 80)
-                    if self.__subscriptions.get(topic_id) and self.__subscriptions[topic_id].get('lifecycle_state') == 'ACTIVE':
-                        # Python order of valuation is left to right mean
-                        print('Chicken Dinner')
+                    topic_id = action.get('topicId')
+                    if topic_id and __has_active_subscription_for_topic(topic_id=topic_id):
+                        debug("*** Active Subscription found for event: " + event['display_name'] + " ***")
                         return True
                 elif not action.get('actionType') == 'ONS':
                     # None ONS based notifications are assumed to be ok
                     return True
+            return False
+        def __has_active_subscription_for_topic(topic_id: str) -> bool:
+            """
+            Return True if any subscription in self.__subscriptions has:
+            - subscription["topic_id"] == topic_id
+            - subscription["lifecycle_state"] == "ACTIVE"
+            Otherwise return False.
+            """
+            if not topic_id:
+                return False
+
+            for subscription in self.__subscriptions:
+                if (
+                    subscription.get("topic_id") == topic_id
+                    and subscription.get("lifecycle_state") == "ACTIVE"
+                ):
+                    return True
+
             return False
 
         for event in self.__event_rules:
@@ -4708,6 +4727,10 @@ class CIS_Report:
                         try:
                             # Checking if each region has the required events
                             if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
+                                print("-" * 80)
+                                print(key)
+                                topic_id = event.get('actions')
+                                print(event.get('actions'))
                                 if __event_with_topic_has_active_sub(event.get('actions')):
                                     self.__cis_regional_findings_data[key][event['region']] = True
 
@@ -6420,7 +6443,7 @@ class CIS_Report:
             "file_storage_system": self.__file_storage_system,
             "kms_keys": self.__kms_keys,
             "kms_vaults": list(self.__vaults.values()),
-            "ons_subscriptions": list(self.__subscriptions.values()),
+            "ons_subscriptions": self.__subscriptions,
             "budgets": self.__budgets,
             "quotas" : self.__quotas,
             "service_connectors": list(self.__service_connectors.values()),

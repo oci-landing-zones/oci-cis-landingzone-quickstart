@@ -45,7 +45,7 @@ csv.field_size_limit(sys.maxsize)
 
 RELEASE_VERSION = "3.2.0"
 PYTHON_SDK_VERSION = "2.165.x"
-UPDATED_DATE = "March 19, 2026"
+UPDATED_DATE = "April xx, 2026"
 
 
 ##########################################################################
@@ -4677,6 +4677,40 @@ class CIS_Report:
 
         # CIS Checks 4.3 - 4.12 and 4.15 and 4.18
         # Iterate through all event rules
+        def __event_with_topic_has_active_sub(event_actions):
+            """
+            Checks event actions
+            returns True if it finds either a non-ONS action or an ONS action whose topicId has at least one ACTIVE subscription.
+            Returns False when no qualifying action exists.
+            """
+            for action in event_actions or []:
+                if action.get('actionType') == 'ONS' and action.get('topicId'):
+                    topic_id = action.get('topicId')
+                    if topic_id and __has_active_subscription_for_topic(topic_id=topic_id):
+                        debug("*** Active Subscription found for event: " + event['display_name'] + " ***")
+                        return True
+                elif not action.get('actionType') == 'ONS':
+                    # None ONS based notifications are assumed to be ok
+                    return True
+            return False
+        def __has_active_subscription_for_topic(topic_id: str) -> bool:
+            """
+            Return True if any subscription in self.__subscriptions has:
+            - subscription["topic_id"] == topic_id and subscription["lifecycle_state"] == "ACTIVE"
+            Otherwise return False.
+            """
+            if not topic_id:
+                return False
+
+            for subscription in self.__subscriptions:
+                if (
+                    subscription.get("topic_id") == topic_id
+                    and subscription.get("lifecycle_state") == "ACTIVE"
+                ):
+                    return True
+
+            return False
+
         for event in self.__event_rules:
             if event['lifecycle_state'] == "ACTIVE" and event['compartment_id'] == self.__tenancy.id:
                 # Convert Event Condition to dict
@@ -4694,18 +4728,22 @@ class CIS_Report:
                         try:
                             # Checking if each region has the required events
                             if (all(x in eventtype_dict['eventtype'] for x in changes)) and key in self.__cis_regional_checks:
-                                self.__cis_regional_findings_data[key][event['region']] = True
-                            
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.__cis_regional_findings_data[key][event['region']] = True
+
                             # Cloud Guard Check is only required in the Cloud Guard Reporting Region
                             elif self.__cloud_guard_config and key == "4.15" and \
                                 event['region'] == self.__cloud_guard_config.reporting_region and \
                                 (all(x in eventtype_dict['eventtype'] for x in changes)):
-                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
-                            
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.cis_foundations_benchmark_3_0[key]['Status'] = True
+
                             # For Checks that are home region based checking those
                             elif (all(x in eventtype_dict['eventtype'] for x in changes)) and \
                                 key not in self.__cis_regional_checks and event['region'] == self.__home_region:
-                                self.cis_foundations_benchmark_3_0[key]['Status'] = True
+                                if __event_with_topic_has_active_sub(event.get('actions')):
+                                    self.cis_foundations_benchmark_3_0[key]['Status'] = True
+
                         except Exception as e:
                             print(e)
                             print("*** Invalid Event Data for event: " + event['display_name'] + " ***")

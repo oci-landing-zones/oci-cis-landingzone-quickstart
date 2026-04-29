@@ -6477,7 +6477,7 @@ class CIS_Report:
     ##########################################################################
     def __os_copy_report_to_object_storage(self, bucketname, filename):
         object_name = filename
-        # print(self.__os_namespace)
+        debug(f"__os_copy_report_to_object_storage: Writing to {filename} to namespace: {self.__os_namespace} bucket: {bucketname}")
         try:
             with open(filename, "rb") as f:
                 try:
@@ -6626,13 +6626,11 @@ class CIS_Report:
         if self.__output_raw_data:
             self.__report_generate_raw_data_output()
 
-        if self.__errors:
-            error_report = self.__print_to_csv_file("error", "report", self.__errors)
+        error_report_file_name = self.__print_to_csv_file("error", "report", self.__errors)
 
-        if self.__output_bucket:
-            if error_report:
-                self.__os_copy_report_to_object_storage(
-                    self.__output_bucket, error_report)
+        if error_report_file_name and self.__output_bucket:
+            self.__os_copy_report_to_object_storage(
+                self.__output_bucket, error_report_file_name)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))

@@ -43,9 +43,9 @@ except Exception:
 
 csv.field_size_limit(sys.maxsize)
 
-RELEASE_VERSION = "3.2.0"
-PYTHON_SDK_VERSION = "2.165.x"
-UPDATED_DATE = "April xx, 2026"
+RELEASE_VERSION = "3.2.1"
+PYTHON_SDK_VERSION = "2.173.0"
+UPDATED_DATE = "May 1, 2026"
 
 
 ##########################################################################

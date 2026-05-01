@@ -8,6 +8,8 @@
 - [Why did the script may fail to run when executing from the local machine with message "** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort.**?](#oci_config_profile)
 - [ImportError: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'OpenSSL 1.0.2k-fips  26 Jan 2017'.](#urllib3)
 - [Understanding CIS recommendation *Ensure storage service-level admins cannot delete resources they manage.*](#storage-admins)
+- [How does the CIS Compliance Script evaluate recommendation *1.14 Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources*?](#dynamic-group-recommendation-114)
+- [Why does the script treat some Events rules as compliant even when the Notifications topic subscription is not active?](#event-rule-target-validation)
 - [Why are there no dashboard graphics in the HTML page?](#html-page)
 - [Why is the XLSX file not created?](#xlsx)
 
@@ -100,6 +102,23 @@ In the second example:
     `Allow group SYSADMINS_PROD to manage object-family in compartment PROD where request.permission!='OBJECT_DELETE'`
 
 The SYSADMIN_PROD group has access to [object-family](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/objectstoragepolicyreference.htm#Details_for_Object_Storage_Archive_Storage_and_Data_Transfer) which includes buckets and objects. This means they would be able to delete a bucket violating the intent of the rule.  Even though you can't delete a bucket with objects in it if you don't have permissions to the underlying objects you could delete an empty you created thus violating the intent.
+
+### <a name="dynamic-group-recommendation-114"></a>**How does the CIS Compliance Script evaluate recommendation *1.14 Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources*?**
+
+Dynamic Groups can be scoped at different levels in OCI, so the script cannot reliably determine every instance, function, or Autonomous Database that should access another OCI service. Because of that, this recommendation is evaluated as an existence check rather than a complete workload-to-policy validation.
+
+The recommendation is considered compliant when at least one Dynamic Group has a matching rule that indicates OCI resource principals are being used, such as rules referencing `instance`, `fnfunc`, `autonomousdatabase`, or compartment-scoped rules using `resource.compartment.id`.
+
+The recommendation is considered non-compliant when no Dynamic Group with one of those matching rules is found.
+
+This means the check confirms that Dynamic Groups are being used as the preferred pattern instead of embedded API keys, but it does not prove that every OCI instance, OCI Function, or OCI Cloud Database in the tenancy is covered by a Dynamic Group. Customers should still review the matching rules and the attached IAM policies to verify that the intended workloads are included.
+
+The report shows all discovered Dynamic Groups in the total section. The pass or fail result is based on whether any qualifying matching rule is present, not on the total number of Dynamic Groups.
+
+### <a name="event-rule-target-validation"></a>**Why does the script treat some Events rules as compliant even when the Notifications topic subscription is not active?**
+
+For CIS event-related checks, the script validates Oracle Notifications Service (ONS) targets when it can confirm that the referenced topic has an active subscription.
+Note: non-ONS targets are not validated by this check.
 
 ### <a name="html-page"></a>**Why are there no dashboard graphics in the HTML page?**
 

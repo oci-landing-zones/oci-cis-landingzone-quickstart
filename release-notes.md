@@ -1,3 +1,15 @@
+# May 1, 2026 Release Notes - 3.2.1
+1. [Fixes and Updates](#3-2-1-fixes)
+
+## <a name="#3-2-1-fixes">Fixes and Updates</a>
+Updates:
+- Updated CIS event rule checks to validate that referenced Oracle Notifications topics have an active subscription before reporting compliance and documented the behavior in the FAQ. Closes issue [186](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/186).
+- Added FAQ guidance to clarify the success criteria for CIS recommendation 1.14 dynamic group evaluation. Closes issue [195](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/195).
+
+Fixes:
+- Fixed XLSX report generation for long worksheet names and larger CSV field sizes so reports created with `--raw`, `--obp`, and `--all-resources` generate successfully. Closes issue [202](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/202).
+- Fixed `UnboundLocalError` in `generate_reports` when a scan completes without collecting errors before writing reports to Object Storage. Closes issue [203](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/203).
+
 # March 19, 2026 Release Notes - 3.2.0
 1. [New Features](#3-2-0-features)
 1. [OBP Features](#3-2-0-obp-features)

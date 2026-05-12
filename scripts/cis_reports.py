@@ -5178,8 +5178,8 @@ class CIS_Report:
         cloud_guard_record = {
             "cloud_guard_endable": True if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root": False,
-            "targert_configuration_detector": False,
-            "targert_configuration_detector_customer_owned": False,
+            "target_configuration_detector": False,
+            "target_configuration_detector_customer_owned": False,
             "target_activity_detector": False,
             "target_activity_detector_customer_owned": False,
             "target_threat_detector": False,
@@ -5198,9 +5198,9 @@ class CIS_Report:
                     if self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
                         for recipe in self.__cloud_guard_targets[self.__tenancy.id]['target_detector_recipes']:
                             if recipe.detector.upper() == 'IAAS_CONFIGURATION_DETECTOR':
-                                cloud_guard_record['targert_configuration_detector'] = True
+                                cloud_guard_record['target_configuration_detector'] = True
                                 if recipe.owner.upper() == "CUSTOMER":
-                                    cloud_guard_record['targert_configuration_detector_customer_owned'] = True
+                                    cloud_guard_record['target_configuration_detector_customer_owned'] = True
 
                             elif recipe.detector.upper() == 'IAAS_ACTIVITY_DETECTOR':
                                 cloud_guard_record['target_activity_detector'] = True

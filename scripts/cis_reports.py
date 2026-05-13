@@ -5267,7 +5267,11 @@ class CIS_Report:
 
             fast_connect_providers = set()
             customer_premises_equipment = set()
-            drg_upgrade_status = self.__network_drgs[drg_id]['upgrade_status']
+            drg_record = self.__network_drgs.get(drg_id, {})
+            drg_upgrade_status = drg_record.get('upgrade_status')
+            if not drg_record:
+                debug("__obp_analyze_tenancy_data: Networking check: DRG ID not found " + str(drg_id))
+                self.__errors.append({"id" : str(drg_id), "error" : str("__obp_analyze_tenancy_data: Networking check: DRG ID not found")})
 
             for attachment in drg_values:
                 if attachment['network_type'].upper() == 'VCN':
@@ -5276,7 +5280,7 @@ class CIS_Report:
 
                 elif attachment['network_type'].upper() == 'IPSEC_TUNNEL':
                     # Checking if the IPSec Connection has both tunnels up
-                    for ipsec_connection in self.__network_ipsec_connections[drg_id]:
+                    for ipsec_connection in self.__network_ipsec_connections.get(drg_id, []):
                         if ipsec_connection['tunnels_up']:
                             # Good IP Sec Connection increment valid site to site and track CPEs
                             number_of_valid_site_to_site_connection += 1
@@ -5300,9 +5304,9 @@ class CIS_Report:
             try:
                 record = {
                     "drg_id": drg_id,
-                    "drg_display_name": self.__network_drgs[drg_id]['display_name'],
+                    "drg_display_name": drg_record.get('display_name', "Not Available"),
                     "upgrade_status": drg_upgrade_status,
-                    "region": self.__network_drgs[drg_id]['region'],
+                    "region": drg_record.get('region', drg_values[0]['region']),
                     "number_of_connected_vcns": number_of_valid_connected_vcns,
                     "number_of_customer_premises_equipment": len(customer_premises_equipment),
                     "number_of_connected_ipsec_connections": number_of_valid_site_to_site_connection,

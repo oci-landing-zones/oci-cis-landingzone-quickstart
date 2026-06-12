@@ -41,7 +41,7 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31 - 1)
 
 RELEASE_VERSION = "3.2.1"
 PYTHON_SDK_VERSION = "2.173.0"

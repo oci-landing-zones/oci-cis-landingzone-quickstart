@@ -5796,6 +5796,7 @@ class CIS_Report:
                     "Title": recommendation['Title'],
                     self.__primary_framework_name : recommendation[self.__primary_framework_name],
                     self.__other_framework_name : recommendation[self.__other_framework_name],
+                    "Regions": self.__regions_to_run_in,
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
                 }

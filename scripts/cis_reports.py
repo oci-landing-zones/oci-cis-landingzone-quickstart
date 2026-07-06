@@ -132,7 +132,7 @@ class ComplianceMappings:
     'LAM-15' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : []},
     'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6', '7']},
     'LAM-17' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : ['11']},
-    'LAM-18' : {'CIS v8' : ['8.10'], 'CCCS Guard Rail' : ['11']},
+    'LAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : ['11']},
     'STO-1-1' : {'CIS v8' : ['3.3', '11.3'], 'CCCS Guard Rail' : []},
     'STO-1-2' : {'CIS v8' : ['3.11', '11.3'], 'CCCS Guard Rail' : []},
     'STO-1-3' : {'CIS v8' : ['3.11', '11.3', '11.4'], 'CCCS Guard Rail' : []},
@@ -146,7 +146,7 @@ class ComplianceMappings:
     'OBP-SIEM-3' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : []},
     'OBP-SIEM-4' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
     'OBP-SIEM-5' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
-    'LAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'LAM-19' : {'CIS v8' : ['8.10'], 'CCCS Guard Rail' : []},
     'OBP-NTW-1' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
     'OBP-NTW-2' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
     'OBP-NTW-3' : {'CIS v8' : ['3.12', '4.2', '9.3', '12.2', '12.4', '12.5', '12.8', '13.3', '13.4', '13.8', '13.10', '16.8'], 'CCCS Guard Rail' : []},
@@ -1201,6 +1201,10 @@ class CIS_Report:
                 if self.cis_foundations_benchmark_3_0[cis_recommendation]['id'] == mapping:
                     for framework_name, framework_value in current_mappings[mapping].items():
                         self.cis_foundations_benchmark_3_0[cis_recommendation][framework_name] = framework_value
+            for obp_recommendation in self.obp_foundations_checks:
+                if self.obp_foundations_checks[obp_recommendation]['id'] == mapping:
+                    for framework_name, framework_value in current_mappings[mapping].items():
+                        self.obp_foundations_checks[obp_recommendation][framework_name] = framework_value
 
 
 
@@ -6291,6 +6295,8 @@ class CIS_Report:
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Title": recommendation['Title'],
+                self.__primary_framework_name : recommendation[self.__primary_framework_name],
+                self.__other_framework_name : recommendation[self.__other_framework_name],
                 "Documentation": recommendation['Documentation']
             }
             obp_summary_report.append(record)

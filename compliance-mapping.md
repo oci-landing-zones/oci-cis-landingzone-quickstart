@@ -4,7 +4,6 @@
 The CIS Controls are a general set of recommended practices for securing a wide range of systems and devices, whereas CIS Benchmarks are guidelines for hardening specific operating systems, middleware, software applications, and network devices. The current mapping provides a foundation for using the OCI Compliance Checker Script which is as supporting technical evidence for CIS Controls v8.1 alignment. The script is useful for validating point-in-time OCI configuration states. For safeguards that include governance, process, review cadence, ownership, exception handling, or operational validation requirements, the mapping should be supplemented with manual or procedural evidence to present a complete compliance position.
 
 ## Compliance Checker Script to CIS V8.1 Mapping
-
 | CIS Control | CIS Safeguard | Asset Type | Security Function | Title | OCI Services | Coverage | Explanation |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 1.1 | Devices | Identify | Establish and Maintain Detailed Enterprise Asset Inventory | OCI APIs, Tags | Partial | Provides supporting evidence for 'Establish and Maintain Detailed Enterprise Asset Inventory' using All Resources and LAM-1 - Ensure default tags are used on resources. |
@@ -75,7 +74,7 @@ The CIS Controls are a general set of recommended practices for securing a wide 
 | 8 | 8.7 | Data | Detect | Collect URL Request Audit Logs | Customer | Not Checked - Customer Responsibility |  |
 | 8 | 8.8 | Data | Detect | Collect Command-Line Audit Logs | OCI Audit | Full | Checks whether the mapped OCI configuration is present for 'Collect Command-Line Audit Logs' using OBP-SIEM-1 - All compartment audit logs sent to SIEM in all regions; OBP-SIEM-2 - Include all sub-compartments flag checked at the tenancy root compartment. This provides point-in-time technical evidence for the OCI resources inspected by the script. |
 | 8 | 8.9 | Data | Detect | Centralize Audit Logs | OCI Audit, OCI Logging, Service Connector Hub | Partial | Provides supporting evidence for 'Centralize Audit Logs' using LAM-13 - Ensure VCN flow logging is enabled for all subnets.; LAM-14 - Ensure Cloud Guard is enabled in the root compartment of the tenancy.; LAM-15 - Ensure a notification is configured for Oracle Cloud Guard problems detected.; LAM-17 - Ensure write level Object Storage logging is enabled for all buckets.; OBP-SIEM-1 - All compartment audit logs sent to SIEM in all regions; OBP-SIEM-2 - Include all sub-compartments flag checked at the tenancy root compartment; OBP-SIEM-3 - VCN Flow logs sent to SIEM; OBP-SIEM-4 - Bucket write logs sent to SIEM; OBP-SIEM-5 - Bucket read logs sent to SIEM.; OBP-CSP-1 - Cloud Guard enabled and configured; OBP-CSP-2 - Cloud Guard problems with Risk Level Critical or High; |
-| 8 | 8.10 | Data | Protect | Retain Audit Logs | OCI Logging | Partial | Provides supporting evidence for 'Retain Audit Logs' using LAM-18 - Ensure a notification is configured for Local OCI User Authentication. |
+| 8 | 8.10 | Data | Protect | Retain Audit Logs | OCI Logging | Full | Provides supporting evidence for 'Retain Audit Logs' using LAM-19 - Retain Audit Logs for 90 days. |
 | 8 | 8.11 | Data | Detect | Conduct Audit Log Reviews | Customer | Procedural Only |  |
 | 8 | 8.12 | Data | Detect | Collect Service Provider Logs | OCI Audit, OCI Logging, Service Connector Hub | Partial | Provides supporting evidence for 'Collect Service Provider Logs' using LAM-13 - Ensure VCN flow logging is enabled for all subnets.; LAM-14 - Ensure Cloud Guard is enabled in the root compartment of the tenancy.; LAM-15 - Ensure a notification is configured for Oracle Cloud Guard problems detected.; LAM-17 - Ensure write level Object Storage logging is enabled for all buckets.; OBP-SIEM-1 - All compartment audit logs sent to SIEM in all regions; OBP-SIEM-2 - Include all sub-compartments flag checked at the tenancy root compartment; OBP-SIEM-3 - VCN Flow logs sent to SIEM; OBP-SIEM-4 - Bucket write logs sent to SIEM; OBP-SIEM-5 - Bucket read logs sent to SIEM.; OBP-CSP-1 - Cloud Guard enabled and configured; OBP-CSP-2 - Cloud Guard problems with Risk Level Critical or High; |
 | 9 | 9.1 | Software | Protect | Ensure Use of Only Fully Supported Browsers and Email Clients | Customer | Not Checked - Customer Responsibility |  |
@@ -160,7 +159,6 @@ The CIS Controls are a general set of recommended practices for securing a wide 
 | 18 | 18.3 | Network | Protect | Remediate Penetration Test Findings | Customer | Procedural Only |  |
 | 18 | 18.4 | Network | Protect | Validate Security Measures | Customer | Procedural Only |  |
 | 18 | 18.5 | Network | Detect | Perform Periodic Internal Penetration Tests | Customer | Procedural Only |  |
-
 
 * Partial is limited to the OCI configuration or inventory elements the script can inspect at runtime; it does not validate process-level requirements, review cadence, completeness outside OCI, or operational effectiveness.
 

@@ -6278,6 +6278,7 @@ class CIS_Report:
     def __report_generate_obp_report(self):
 
         obp_summary_report = []
+        obp_report_files = []
         # Screen output for CIS Summary Report
         print_header("OCI Best Practices Findings")
         print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  " + "\tBest Practices")
@@ -6304,22 +6305,28 @@ class CIS_Report:
         print_header("Writing Oracle Best Practices reports to CSV")
 
         summary_report_file_name = self.__print_to_csv_file("obp", "OBP_Summary", obp_summary_report)
+        obp_report_files.append(summary_report_file_name)
 
-        if summary_report_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(
-                self.__output_bucket, summary_report_file_name)
+        if self.__report_summary_json:
+            summary_file_name = self.__print_to_json_file("obp", "summary_report", obp_summary_report)
+            obp_report_files.append(summary_file_name)
 
         # Printing Findings to CSV
         for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file("obp", key + "_Findings", value['Findings'])
+            obp_report_files.append(report_file_name)
 
         # Printing OBPs to CSV
         for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file("obp", key + "_Best_Practices", value['OBP'])
+            obp_report_files.append(report_file_name)
 
-            if report_file_name and self.__output_bucket:
-                self.__os_copy_report_to_object_storage(
-                    self.__output_bucket, report_file_name)
+        # Outputing to a bucket if I have one
+        if obp_report_files and self.__output_bucket:
+            for report_file in obp_report_files:
+                if report_file:
+                    self.__os_copy_report_to_object_storage(
+                        self.__output_bucket, report_file)
 
     ##########################################################################
     # Coordinates calls of all the read function required for analyzing tenancy

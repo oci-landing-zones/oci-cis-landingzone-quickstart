@@ -1,0 +1,1349 @@
+# Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "Oracle Cloud CIS Report"
+stackDescription: "Guided Oracle Cloud stack that creates an OCI Function to generate CIS Benchmark reports and save them to Object Storage."
+description: "Use this guided setup to create the function, private network, report bucket, logging, and optional schedule with Oracle-recommended defaults. Open Advanced OCI Controls only when you need to reuse existing resources or override defaults."
+schemaVersion: 1.1.0
+version: "0.0.4"
+locale: "en"
+
+variableGroups:
+  - title: "1. Oracle Cloud Location"
+    variables:
+      - "region"
+      - "deploy_compartment"
+      - "new_compartment_parent_ocid"
+      - "new_compartment_name"
+      - "existing_compartment_ocid"
+
+  - title: "2. OCI Registry Sign-In"
+    variables:
+      - "use_ocir_vault_credentials"
+      - "ocir_username_secret_ocid"
+      - "ocir_auth_token_secret_ocid"
+      - "ocir_vault_secret_compartment_ocid"
+      - "ocir_username"
+      - "ocir_password"
+
+  - title: "3. CIS Report"
+    variables:
+      - "regions_to_run_in"
+      - "report_level"
+      - "redact_output"
+      - "report_raw_data"
+
+  - title: "4. Schedule"
+    variables:
+      - "enable_resource_scheduler"
+      - "resource_scheduler_frequency"
+      - "resource_scheduler_interval"
+
+  - title: "5. HTML Report Notification"
+    variables:
+      - "enable_html_report_notifications"
+      - "notification_email"
+
+  - title: "6. Advanced OCI Controls"
+    variables:
+      - "show_advanced_options"
+      - "deploy_dyn_group_and_policy"
+      - "dynamic_group_name"
+      - "policy_name"
+      - "provide_short_policy_statements"
+      - "policy_statements_short"
+      - "policy_statements_full"
+      - "policy_compartment_ocid"
+      - "create_ocir_vault_deployment_policy"
+      - "ocir_vault_deployment_principal_type"
+      - "ocir_vault_deployment_principal_name"
+      - "ocir_vault_deployment_policy_name"
+      - "ocir_vault_deployment_policy_compartment_ocid"
+      - "deploy_infra_for_subnet"
+      - "existing_vcn_compartment_ocid"
+      - "existing_vcn_ocid"
+      - "existing_subnet_ocid"
+      - "new_vcn_compartment_ocid"
+      - "new_vcn_name"
+      - "new_vcn_cidr"
+      - "new_subnet_name"
+      - "new_subnet_cidr"
+      - "repository_name"
+      - "repository_compartment_ocid"
+      - "create_repository"
+      - "create_faas_ocir_pull_policy"
+      - "container_cli"
+      - "force_arm_application_shape"
+      - "application_shape"
+      - "container_platform"
+      - "function_working_dir"
+      - "enable_function_logging"
+      - "deploy_output_bucket"
+      - "output_bucket_name"
+      - "deploy_output_bucket_policy"
+      - "output_bucket_compartment_ocid"
+      - "html_notification_topic_name"
+      - "script_version"
+      - "report_summary_json"
+      - "report_obp"
+      - "report_all_resources"
+      - "function_parameters_json_string"
+      - "enable_post_deploy_invoke"
+      - "invoke_function"
+      - "invoke_function_fn_invoke_type"
+      - "invoke_function_body"
+      - "function_timeout_in_seconds"
+      - "detached_mode_timeout_in_seconds"
+      - "resource_scheduler_display_name"
+      - "resource_scheduler_description"
+      - "resource_scheduler_recurrence_type"
+      - "resource_scheduler_recurrence_details"
+      - "resource_scheduler_state"
+      - "resource_scheduler_start_time_mode"
+      - "resource_scheduler_start_year"
+      - "resource_scheduler_start_month"
+      - "resource_scheduler_start_day"
+      - "resource_scheduler_start_hour"
+      - "resource_scheduler_start_minute"
+      - "resource_scheduler_end_time_mode"
+      - "resource_scheduler_end_year"
+      - "resource_scheduler_end_month"
+      - "resource_scheduler_end_day"
+      - "resource_scheduler_end_hour"
+      - "resource_scheduler_end_minute"
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password"
+      - "fn_cli"
+      - "force_x86_application_shape"
+      - "experimental_options_note"
+
+variables:
+  region:
+    type: oci:identity:region:name
+    title: "Oracle Cloud region"
+    description: "Choose where Oracle Cloud will create the function, network, logs, and report bucket."
+    required: true
+
+  deploy_compartment:
+    type: boolean
+    title: "Create a dedicated compartment?"
+    description: "Recommended. A compartment is an OCI folder for keeping this report function and its resources together."
+    default: true
+    required: true
+
+  new_compartment_parent_ocid:
+    type: oci:identity:compartment:id
+    title: "Place the new compartment under"
+    description: "Choose the parent compartment where Oracle Cloud will create the dedicated report compartment."
+    required: true
+    visible: deploy_compartment
+
+  new_compartment_name:
+    type: string
+    title: "New compartment name"
+    description: "Use a friendly name such as oci-cis-report."
+    default: "oci-cis-report"
+    required: true
+    visible: deploy_compartment
+
+  existing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing compartment"
+    description: "Choose the compartment where the report function should be deployed."
+    required: true
+    visible:
+      eq:
+        - ${deploy_compartment}
+        - false
+
+  use_ocir_vault_credentials:
+    type: boolean
+    title: "Read OCI Registry credentials from Vault?"
+    description: "Recommended. Store the OCI Registry username and auth token in OCI Vault secrets and provide only the secret OCIDs to this stack."
+    default: true
+    required: false
+
+  ocir_username_secret_ocid:
+    type: string
+    title: "OCI Registry username secret OCID"
+    description: "Copy the Secret OCID from the username Secret details page. It must begin with ocid1.vaultsecret. Do not enter the Vault OCID or the encryption key OCID. The stack prefixes the tenancy namespace."
+    required: false
+    visible: use_ocir_vault_credentials
+
+  ocir_auth_token_secret_ocid:
+    type: string
+    title: "OCI Registry auth token secret OCID"
+    description: "Copy the Secret OCID from the auth-token Secret details page. It must begin with ocid1.vaultsecret. Do not enter the Vault OCID or the encryption key OCID. The secret value is fetched at image-login time and is not read through Terraform state."
+    required: false
+    visible: use_ocir_vault_credentials
+
+  ocir_vault_secret_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Vault secret compartment"
+    description: "Compartment containing both OCI Registry credential secrets. Leave blank if the secrets are in the function compartment. This is used for the minimal read secret-bundles policy."
+    required: false
+    visible: use_ocir_vault_credentials
+
+  ocir_username:
+    type: string
+    title: "OCI Registry username"
+    description: "Enter the OCI user that can push the function image to OCI Registry. For identity domains, use domain/user. Tenancy namespace is prepopulated by ORM."
+    required: false
+    visible:
+      eq:
+        - ${use_ocir_vault_credentials}
+        - false
+
+  ocir_password:
+    type: password
+    title: "OCI Registry auth token"
+    description: "Enter an auth token for the OCI Registry user. Do not enter a Console password."
+    required: false
+    visible:
+      eq:
+        - ${use_ocir_vault_credentials}
+        - false
+
+  regions_to_run_in:
+    type: string
+    title: "Regions to check"
+    description: "Leave blank to check all subscribed regions. To limit scope, enter region names separated by commas, such as us-ashburn-1,us-phoenix-1."
+    required: false
+
+  report_level:
+    type: enum
+    title: "CIS benchmark level"
+    description: "Level 1 is a practical starting point. Level 2 is stricter and is the default for deeper security reviews."
+    enum:
+      - 1
+      - 2
+    default: 2
+    required: false
+
+  deploy_output_bucket:
+    type: boolean
+    title: "Create a private report bucket?"
+    description: "Recommended. Oracle Cloud will create a private Object Storage bucket for the generated reports."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  output_bucket_name:
+    type: string
+    title: "Report bucket name"
+    description: "Leave blank to let the stack create a name. If you already have a bucket, enter its name here."
+    required: false
+    visible: show_advanced_options
+
+  output_bucket_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Report bucket compartment"
+    description: "Leave blank to use the same compartment as the function."
+    required: false
+    visible: show_advanced_options
+
+  redact_output:
+    type: boolean
+    title: "Hide OCIDs in report files?"
+    description: "Check this if reports will be shared outside the team that manages the tenancy."
+    default: false
+    required: false
+
+  report_raw_data:
+    type: boolean
+    title: "Include detailed CSV files?"
+    description: "Leave unchecked for a simpler report package. Check this when auditors need the raw resource details."
+    default: false
+    required: false
+
+  enable_resource_scheduler:
+    type: boolean
+    title: "Run this report on a schedule?"
+    description: "Check this to let Oracle Cloud run the CIS report automatically."
+    default: false
+    required: false
+
+  resource_scheduler_frequency:
+    type: enum
+    title: "How often should it run?"
+    description: "Weekly is a good starting point for most teams."
+    enum:
+      - "DAILY"
+      - "WEEKLY"
+      - "MONTHLY"
+    default: "WEEKLY"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_recurrence_type}
+          - "ICAL"
+
+  resource_scheduler_interval:
+    type: number
+    title: "Run every"
+    description: "Use 1 for every day, week, or month. Use 2 for every other day, week, or month."
+    minimum: 1
+    maximum: 12
+    default: 1
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_recurrence_type}
+          - "ICAL"
+
+  enable_html_report_notifications:
+    type: boolean
+    title: "Email a link when the summary report is created?"
+    description: "Check this to create a Notifications topic and email subscription. The function emails a 4-hour ObjectRead pre-authenticated link after it creates cis_summary_report.html."
+    default: false
+    required: false
+
+  notification_email:
+    type: string
+    title: "Notification email"
+    description: "Email address that receives generated HTML report details. The recipient must confirm the OCI Notifications subscription email."
+    required: true
+    visible: enable_html_report_notifications
+
+  show_advanced_options:
+    type: boolean
+    title: "Show advanced OCI controls?"
+    description: "Reveal settings for custom IAM, existing networks, image repository details, runtime overrides, and advanced scheduling."
+    default: false
+    required: false
+
+  deploy_dyn_group_and_policy:
+    type: boolean
+    title: "Let the stack create IAM permissions?"
+    description: "Leave checked unless the dynamic group and policy already exist."
+    default: true
+    required: true
+    visible: show_advanced_options
+
+  dynamic_group_name:
+    type: string
+    title: "Dynamic group name"
+    description: "Name for the dynamic group used by the report function."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+
+  policy_name:
+    type: string
+    title: "Policy name"
+    description: "Name for the policy that lets the function read tenancy metadata and write reports."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+
+  provide_short_policy_statements:
+    type: boolean
+    title: "Use simple policy entries?"
+    description: "Leave unchecked to use the included CIS policy statements."
+    default: false
+    required: true
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+
+  policy_statements_short:
+    type: text
+    multiline: true
+    title: "Simple policy entries"
+    description: "Optional comma-separated entries like read buckets or inspect all-resources."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+        - eq:
+          - ${provide_short_policy_statements}
+          - true
+
+  policy_statements_full:
+    type: text
+    multiline: true
+    title: "Full policy statements"
+    description: "Use the defaults unless your tenancy requires custom IAM statements."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+        - eq:
+          - ${provide_short_policy_statements}
+          - false
+
+  policy_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Policy compartment"
+    description: "Leave blank to create the policy in the tenancy."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_dyn_group_and_policy}
+          - true
+        - eq:
+          - ${provide_short_policy_statements}
+          - false
+
+  create_ocir_vault_deployment_policy:
+    type: boolean
+    title: "Create Vault credential read policy?"
+    description: "Advanced. Creates a narrow policy allowing the deployment principal to read only the two OCI Registry credential secret bundles. Use only when the applying principal can manage policies."
+    default: false
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${use_ocir_vault_credentials}
+          - true
+
+  ocir_vault_deployment_principal_type:
+    type: enum
+    title: "Vault policy principal type"
+    description: "Use group for local API-key or Cloud Shell deployments. Use dynamic-group for resource-principal deployment runners."
+    enum:
+      - "group"
+      - "dynamic-group"
+    default: "group"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${use_ocir_vault_credentials}
+          - true
+        - eq:
+          - ${create_ocir_vault_deployment_policy}
+          - true
+
+  ocir_vault_deployment_principal_name:
+    type: string
+    title: "Vault policy principal name"
+    description: "Name of the group or dynamic group that runs Terraform and the OCI CLI secret lookup."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${use_ocir_vault_credentials}
+          - true
+        - eq:
+          - ${create_ocir_vault_deployment_policy}
+          - true
+
+  ocir_vault_deployment_policy_name:
+    type: string
+    title: "Vault policy name"
+    description: "Name for the optional policy that grants deployment-time read access to the two OCI Registry credential secret bundles."
+    default: "ocir-vault-secret-bundle-read-policy"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${use_ocir_vault_credentials}
+          - true
+        - eq:
+          - ${create_ocir_vault_deployment_policy}
+          - true
+
+  ocir_vault_deployment_policy_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Vault policy compartment"
+    description: "Leave blank to create the optional policy in the Vault secret compartment. Use an ancestor compartment if your IAM model requires it."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${use_ocir_vault_credentials}
+          - true
+        - eq:
+          - ${create_ocir_vault_deployment_policy}
+          - true
+
+  deploy_infra_for_subnet:
+    type: boolean
+    title: "Create a private network automatically?"
+    description: "Recommended. The stack creates a VCN, private subnet, NAT gateway, service gateway, and routing for the function."
+    default: true
+    required: true
+    visible: show_advanced_options
+
+  existing_vcn_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing VCN compartment"
+    description: "Choose the compartment that contains your existing VCN."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - false
+
+  existing_vcn_ocid:
+    type: oci:core:vcn:id
+    dependsOn:
+      compartmentId: ${existing_vcn_compartment_ocid}
+    title: "Existing VCN"
+    description: "Choose the VCN that contains the subnet for the function."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - false
+
+  existing_subnet_ocid:
+    type: oci:core:subnet:id
+    dependsOn:
+      compartmentId: ${existing_vcn_compartment_ocid}
+      vcnId: ${existing_vcn_ocid}
+    title: "Existing private subnet"
+    description: "Choose a subnet that can reach OCI services and the internet."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - false
+
+  new_vcn_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Private network compartment"
+    description: "Leave blank to create the network in the function compartment."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - true
+
+  new_vcn_name:
+    type: string
+    title: "New VCN name"
+    description: "Name for the private network created by the stack."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - true
+
+  new_vcn_cidr:
+    type: string
+    title: "New VCN CIDR"
+    description: "CIDR block for the new VCN."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - true
+
+  new_subnet_name:
+    type: string
+    title: "New subnet name"
+    description: "Name for the private subnet created by the stack."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - true
+
+  new_subnet_cidr:
+    type: string
+    title: "New subnet CIDR"
+    description: "CIDR block for the new private subnet."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${deploy_infra_for_subnet}
+          - true
+
+  repository_name:
+    type: string
+    title: "Image repository prefix"
+    description: "Prefix for the OCI Registry repository that stores the function image."
+    required: true
+    visible: show_advanced_options
+
+  repository_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Image repository compartment"
+    description: "Leave blank to use the function compartment."
+    required: false
+    visible: show_advanced_options
+
+  create_repository:
+    type: boolean
+    title: "Create the image repository?"
+    description: "Leave checked unless the OCI Registry repository already exists."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  create_faas_ocir_pull_policy:
+    type: boolean
+    title: "Allow OCI Functions to pull the image?"
+    description: "Leave checked so OCI Functions can read the image from OCI Registry."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  container_cli:
+    type: string
+    title: "Container build command"
+    description: "Command used to build and push the function image, such as docker or podman."
+    default: "docker"
+    required: false
+    visible: show_advanced_options
+
+  force_arm_application_shape:
+    type: boolean
+    title: "Use Oracle-recommended ARM image?"
+    description: "Recommended. Leave checked to build a linux/arm64 image for the default OCI Functions ARM shape."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  application_shape:
+    type: enum
+    title: "Function compute shape"
+    description: "Choose the function architecture only if you are intentionally not using the ARM default."
+    enum:
+      - "GENERIC_ARM"
+      - "GENERIC_X86"
+    default: "GENERIC_ARM"
+    required: true
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${force_arm_application_shape}
+          - false
+
+  container_platform:
+    type: string
+    title: "Container platform"
+    description: "Container build platform, such as linux/arm64 or linux/amd64."
+    default: "linux/arm64"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${force_arm_application_shape}
+          - false
+
+  function_working_dir:
+    type: string
+    title: "Function source folder"
+    description: "Path to the folder that contains func.py, func.yaml, requirements.txt, and the Dockerfile."
+    required: true
+    visible: show_advanced_options
+
+  enable_function_logging:
+    type: boolean
+    title: "Create function logs?"
+    description: "Recommended. Logs help troubleshoot report generation."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  deploy_output_bucket_policy:
+    type: boolean
+    title: "Allow the function to write reports?"
+    description: "Leave checked so the function can write report files to the bucket."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  html_notification_topic_name:
+    type: string
+    title: "HTML notification topic name"
+    description: "Name for the Notifications topic used for HTML report emails."
+    default: "cis-report-html-notifications"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_html_report_notifications}
+          - true
+
+  script_version:
+    type: string
+    title: "CIS script version"
+    description: "Use latest for the current upstream script, bundled if you add cis_reports.py to the function source, or a release tag such as v3.0.1."
+    default: "latest"
+    required: false
+    visible: show_advanced_options
+
+  report_summary_json:
+    type: boolean
+    title: "Include summary JSON?"
+    description: "Leave checked to include a machine-readable summary file."
+    default: true
+    required: false
+    visible: show_advanced_options
+
+  report_obp:
+    type: boolean
+    title: "Generate OCI best-practice checks?"
+    description: "Experimental. This can increase runtime in larger tenancies."
+    default: false
+    required: false
+    visible: show_advanced_options
+
+  report_all_resources:
+    type: boolean
+    title: "Query all resources?"
+    description: "Experimental. This uses OCI Search and can increase runtime in larger tenancies."
+    default: false
+    required: false
+    visible: show_advanced_options
+
+  function_parameters_json_string:
+    type: string
+    title: "Runtime override JSON"
+    description: "Optional JSON object for advanced function settings. Leave blank for normal use."
+    required: false
+    visible: show_advanced_options
+
+  enable_post_deploy_invoke:
+    type: boolean
+    title: "Allow a test run during apply?"
+    description: "Leave unchecked for normal deployments. CIS scans can run longer than a Terraform apply should."
+    default: false
+    required: false
+    visible: show_advanced_options
+
+  invoke_function:
+    type: boolean
+    title: "Run a test after deployment?"
+    description: "Only use this for a deliberate test run after the function is created."
+    default: false
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_post_deploy_invoke}
+          - true
+
+  invoke_function_fn_invoke_type:
+    type: enum
+    title: "Test invocation mode"
+    description: "Detached is safer for longer report runs."
+    enum:
+      - "detached"
+      - "sync"
+    default: "detached"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_post_deploy_invoke}
+          - true
+        - eq:
+          - ${invoke_function}
+          - true
+
+  invoke_function_body:
+    type: string
+    title: "Test invocation payload"
+    description: "Optional JSON payload for the test run."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_post_deploy_invoke}
+          - true
+        - eq:
+          - ${invoke_function}
+          - true
+
+  function_timeout_in_seconds:
+    type: number
+    title: "Function timeout seconds"
+    description: "OCI Functions allows 30 to 300 seconds for normal invocations."
+    minimum: 30
+    maximum: 300
+    default: 300
+    required: false
+    visible: show_advanced_options
+
+  detached_mode_timeout_in_seconds:
+    type: number
+    title: "Detached timeout seconds"
+    description: "Timeout used for detached report generation."
+    default: 1800
+    required: false
+    visible: show_advanced_options
+
+  resource_scheduler_display_name:
+    type: string
+    title: "Schedule name"
+    description: "Friendly name for the Oracle Cloud schedule."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_description:
+    type: string
+    title: "Schedule description"
+    description: "Optional description for the schedule."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_recurrence_type:
+    type: enum
+    title: "Schedule expression type"
+    description: "Use ICAL for guided scheduling. Use CRON only when you need a cron expression."
+    enum:
+      - "ICAL"
+      - "CRON"
+    default: "ICAL"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_recurrence_details:
+    type: string
+    title: "Advanced schedule expression"
+    description: "Leave blank to use the guided schedule fields. For CRON schedules, enter the cron expression here."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_state:
+    type: enum
+    title: "Schedule state"
+    description: "Use ACTIVE to run on schedule or INACTIVE to create it paused."
+    enum:
+      - "ACTIVE"
+      - "INACTIVE"
+    default: "ACTIVE"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_start_time_mode:
+    type: enum
+    title: "Schedule start"
+    description: "Choose whether the schedule starts immediately or at a selected UTC date and time."
+    enum:
+      - "NO_EXPLICIT_START"
+      - "SELECTED_DATE_TIME"
+    default: "NO_EXPLICIT_START"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_start_year:
+    type: enum
+    title: "Start year"
+    enum: ["2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_start_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_start_month:
+    type: enum
+    title: "Start month"
+    enum: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_start_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_start_day:
+    type: enum
+    title: "Start day"
+    enum: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_start_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_start_hour:
+    type: enum
+    title: "Start hour UTC"
+    enum: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_start_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_start_minute:
+    type: enum
+    title: "Start minute UTC"
+    enum: ["00", "15", "30", "45"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_start_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_end_time_mode:
+    type: enum
+    title: "Schedule end"
+    description: "Choose whether the schedule keeps running or stops at a selected UTC date and time."
+    enum:
+      - "NO_EXPLICIT_END"
+      - "SELECTED_DATE_TIME"
+    default: "NO_EXPLICIT_END"
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+
+  resource_scheduler_end_year:
+    type: enum
+    title: "End year"
+    enum: ["2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_end_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_end_month:
+    type: enum
+    title: "End month"
+    enum: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_end_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_end_day:
+    type: enum
+    title: "End day"
+    enum: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_end_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_end_hour:
+    type: enum
+    title: "End hour UTC"
+    enum: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_end_time_mode}
+          - "SELECTED_DATE_TIME"
+
+  resource_scheduler_end_minute:
+    type: enum
+    title: "End minute UTC"
+    enum: ["00", "15", "30", "45", "59"]
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${show_advanced_options}
+          - true
+        - eq:
+          - ${enable_resource_scheduler}
+          - true
+        - eq:
+          - ${resource_scheduler_end_time_mode}
+          - "SELECTED_DATE_TIME"
+
+outputs:
+  functions_compartment_name:
+    type: string
+    title: "Compartment"
+
+  functions_compartment_id:
+    type: string
+    title: "Compartment OCID"
+
+  functions_dyn_group_name:
+    type: string
+    title: "Dynamic Group"
+
+  functions_dyn_group_id:
+    type: string
+    title: "Dynamic Group OCID"
+
+  functions_policy_name:
+    type: string
+    title: "Policy"
+
+  functions_policy_id:
+    type: string
+    title: "Policy OCID"
+
+  function_application_name:
+    type: string
+    title: "Function Application"
+
+  function_application_id:
+    type: string
+    title: "Function Application OCID"
+
+  function_name:
+    type: string
+    title: "Function"
+
+  function_id:
+    type: string
+    title: "Function OCID"
+
+  vcn_name:
+    type: string
+    title: "Private Network"
+
+  vcn_id:
+    type: string
+    title: "Private Network OCID"
+
+  private_subnet_name:
+    type: string
+    title: "Private Subnet"
+
+  private_subnet_id:
+    type: string
+    title: "Private Subnet OCID"
+
+  function_invoke_endpoint:
+    type: string
+    title: "Function Invoke Endpoint"
+
+  function_image:
+    type: string
+    title: "Function Image"
+
+  function_repository_name:
+    type: string
+    title: "OCI Registry Repository"
+
+  ocir_vault_secret_compartment_id:
+    type: string
+    title: "Vault Secret Compartment OCID"
+
+  ocir_vault_deployment_policy_statement:
+    type: string
+    title: "Vault Credential Read Policy"
+
+  ocir_vault_deployment_policy_id:
+    type: string
+    title: "Vault Credential Policy OCID"
+
+  output_bucket_name:
+    type: string
+    title: "Report Bucket"
+
+  output_bucket_compartment_id:
+    type: string
+    title: "Report Bucket Compartment OCID"
+
+  function_invocation_test_output:
+    type: string
+    title: "Test Run Output"
+
+  function_log_group_name:
+    type: string
+    title: "Log Group"
+
+  function_log_group_id:
+    type: string
+    title: "Log Group OCID"
+
+  function_log_name:
+    type: string
+    title: "Function Log"
+
+  function_log_id:
+    type: string
+    title: "Function Log OCID"
+
+  resource_scheduler_schedule_name:
+    type: string
+    title: "Schedule"
+
+  resource_scheduler_schedule_id:
+    type: string
+    title: "Schedule OCID"
+
+  resource_scheduler_schedule_next_run:
+    type: string
+    title: "Next Scheduled Run"
+
+  html_notification_topic_name:
+    type: string
+    title: "HTML Notification Topic"
+
+  html_notification_topic_id:
+    type: string
+    title: "HTML Notification Topic OCID"
+
+  html_notification_subscription_id:
+    type: string
+    title: "HTML Email Subscription OCID"
+
+outputGroups:
+  - title: "Created Oracle Cloud Resources"
+    outputs:
+      - ${functions_compartment_name}
+      - ${function_application_name}
+      - ${function_name}
+      - ${vcn_name}
+      - ${private_subnet_name}
+      - ${function_log_group_name}
+      - ${function_log_name}
+
+  - title: "Report Access"
+    outputs:
+      - ${output_bucket_name}
+      - ${output_bucket_compartment_id}
+      - ${function_invoke_endpoint}
+      - ${function_image}
+      - ${function_repository_name}
+
+  - title: "IAM Permissions"
+    outputs:
+      - ${functions_dyn_group_name}
+      - ${functions_policy_name}
+      - ${ocir_vault_deployment_policy_statement}
+      - ${ocir_vault_deployment_policy_id}
+      - ${ocir_vault_secret_compartment_id}
+      - ${functions_compartment_id}
+      - ${functions_dyn_group_id}
+      - ${functions_policy_id}
+
+  - title: "Schedule"
+    outputs:
+      - ${resource_scheduler_schedule_name}
+      - ${resource_scheduler_schedule_id}
+      - ${resource_scheduler_schedule_next_run}
+
+  - title: "HTML Report Notification"
+    outputs:
+      - ${html_notification_topic_name}
+      - ${html_notification_topic_id}
+      - ${html_notification_subscription_id}
+
+  - title: "Advanced Identifiers"
+    outputs:
+      - ${function_application_id}
+      - ${function_id}
+      - ${vcn_id}
+      - ${private_subnet_id}
+      - ${function_log_group_id}
+      - ${function_log_id}
+      - ${function_invocation_test_output}

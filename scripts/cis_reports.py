@@ -45,7 +45,7 @@ csv.field_size_limit(2**31 - 1)
 
 RELEASE_VERSION = "3.3.0"
 PYTHON_SDK_VERSION = "2.173.0"
-UPDATED_DATE = "May 1, 2026"
+UPDATED_DATE = "July 13, 2026"
 
 
 ##########################################################################

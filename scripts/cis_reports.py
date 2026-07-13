@@ -6300,6 +6300,7 @@ class CIS_Report:
                 "Title": recommendation['Title'],
                 self.__primary_framework_name : recommendation[self.__primary_framework_name],
                 self.__other_framework_name : recommendation[self.__other_framework_name],
+                "Regions": self.__regions_to_run_in,
                 "Documentation": recommendation['Documentation']
             }
             obp_summary_report.append(record)

@@ -41,11 +41,11 @@ try:
 except Exception:
     OUTPUT_DIAGRAMS = False
 
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2**31 - 1)
 
-RELEASE_VERSION = "3.2.1"
+RELEASE_VERSION = "3.3.0"
 PYTHON_SDK_VERSION = "2.173.0"
-UPDATED_DATE = "May 1, 2026"
+UPDATED_DATE = "July 13, 2026"
 
 
 ##########################################################################
@@ -87,61 +87,88 @@ def show_version(verbose=False):
 
 class ComplianceMappings:
     mappings = {
-        'IAM-1' : {'CIS v8' : ['5.4', '6.7'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-2' : {'CIS v8' : ['3.3'], 'CCCS Guard Rail' : ['1','2', '3']},
-        'IAM-3' : {'CIS v8' : ['3.3', '5.4'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-4' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-5' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-6' : {'CIS v8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-7' : {'CIS v8' : ['6.3', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']},
-        'IAM-8' : {'CIS v8' : ['4.1', '4.4'], 'CCCS Guard Rail' : ['6', '7']},
-        'IAM-9' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
-        'IAM-10' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
-        'IAM-11' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : []},
-        'IAM-12' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']},
-        'IAM-13' : {'CIS v8' : ['5.1'], 'CCCS Guard Rail' : ['1', '2', '3']},
-        'IAM-14' : {'CIS v8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']},
-        'IAM-15' : {'CIS v8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
-        'IAM-16' : {'CIS v8' : ['5.3'], 'CCCS Guard Rail' : ['2']},
-        'IAM-17' : {'CIS v8' : ['5'], 'CCCS Guard Rail' : ['2']},
-        'NTW-1' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-2' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-3' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-4' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-5' : {'CIS v8' : ['12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-6' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'NTW-7' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3' ,'5', '7', '9']},
-        'NTW-8' : {'CIS v8' : ['4.4', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-        'COM-1' : {'CIS v8' : ['4.6'], 'CCCS Guard Rail' : []},
-        'COM-2' : {'CIS v8' : ['4.1'], 'CCCS Guard Rail' : []},
-        'COM-3' : {'CIS v8' : [''], 'CCCS Guard Rail' : []},
-        'LAM-1' : {'CIS v8' : ['1.1'], 'CCCS Guard Rail' : []},
-        'LAM-2' : {'CIS v8' : ['8.2', '8.11'], 'CCCS Guard Rail' : ['11']},
-        'LAM-3' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-4' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-5' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-6' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-7' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-8' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-9' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-10' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-11' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-12' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-13' : {'CIS v8' : ['8.2', '8.5', '13.6'], 'CCCS Guard Rail' : []},
-        'LAM-14' : {'CIS v8' : ['8.2', '8.5', '8.11'], 'CCCS Guard Rail' : ['1', '2', '3']},
-        'LAM-15' : {'CIS v8' : ['8.2', '8.11'], 'CCCS Guard Rail' : []},
-        'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6,7']},
-        'LAM-17' : {'CIS v8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
-        'LAM-18' : {'CIS v8' : ['8.2'], 'CCCS Guard Rail' : ['11']},
-        'STO-1-1' : {'CIS v8' : ['3.3'], 'CCCS Guard Rail' : []},
-        'STO-1-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-        'STO-1-3' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-        'STO-2-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-        'STO-2-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-        'STO-3-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-        'AM-1' : {'CIS v8' : ['3.1'], 'CCCS Guard Rail' : ['2', '3', '8', '12']},
-        'AM-2' : {'CIS v8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']}
-    }
+    'IAM-1' : {'CIS v8' : ['3.12', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-2' : {'CIS v8' : ['3.3', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['1', '2', '3']},
+    'IAM-3' : {'CIS v8' : ['3.3', '4.7', '5.4'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-4' : {'CIS v8' : ['4.7', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-5' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-6' : {'CIS v8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-7' : {'CIS v8' : ['4.7', '5.2', '5.4', '6.3', '6.4', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']},
+    'IAM-8' : {'CIS v8' : ['4.7'], 'CCCS Guard Rail' : ['6', '7']},
+    'IAM-9' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+    'IAM-10' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
+    'IAM-11' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : []},
+    'IAM-12' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']},
+    'IAM-13' : {'CIS v8' : ['4.7', '5.1', '5.4'], 'CCCS Guard Rail' : ['1', '2', '3']},
+    'IAM-14' : {'CIS v8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']},
+    'IAM-15' : {'CIS v8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
+    'IAM-16' : {'CIS v8' : ['5.3'], 'CCCS Guard Rail' : ['2']},
+    'IAM-17' : {'CIS v8' : ['4.7', '5.4'], 'CCCS Guard Rail' : ['2']},
+    'NTW-1' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-2' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-3' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-4' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-5' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-6' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-7' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'NTW-8' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
+    'COM-1' : {'CIS v8' : ['4.8'], 'CCCS Guard Rail' : []},
+    'COM-2' : {'CIS v8' : ['4.1'], 'CCCS Guard Rail' : []},
+    'COM-3' : {'CIS v8' : ['3.10'], 'CCCS Guard Rail' : []},
+    'LAM-1' : {'CIS v8' : ['1.1', '3.1', '3.2', '3.3', '3.4'], 'CCCS Guard Rail' : []},
+    'LAM-2' : {'CIS v8' : ['13.1'], 'CCCS Guard Rail' : ['11']},
+    'LAM-3' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-4' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-5' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-6' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-7' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-8' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-9' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-10' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11']},
+    'LAM-11' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11']},
+    'LAM-12' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
+    'LAM-13' : {'CIS v8' : ['4.2', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : []},
+    'LAM-14' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : ['1', '2', '3']},
+    'LAM-15' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : []},
+    'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6', '7']},
+    'LAM-17' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : ['11']},
+    'LAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : ['11']},
+    'STO-1-1' : {'CIS v8' : ['3.3', '11.3'], 'CCCS Guard Rail' : []},
+    'STO-1-2' : {'CIS v8' : ['3.11', '11.3'], 'CCCS Guard Rail' : []},
+    'STO-1-3' : {'CIS v8' : ['3.11', '11.3', '11.4'], 'CCCS Guard Rail' : []},
+    'STO-2-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+    'STO-2-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+    'STO-3-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
+    'AM-1' : {'CIS v8' : ['3.1', '3.12'], 'CCCS Guard Rail' : ['2', '3', '8', '12']},
+    'AM-2' : {'CIS v8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']},
+    'OBP-SIEM-1' : {'CIS v8' : ['1.3', '3.14', '5.3', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
+    'OBP-SIEM-2' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
+    'OBP-SIEM-3' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : []},
+    'OBP-SIEM-4' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
+    'OBP-SIEM-5' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
+    'LAM-19' : {'CIS v8' : ['8.10'], 'CCCS Guard Rail' : []},
+    'OBP-NTW-1' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
+    'OBP-NTW-2' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
+    'OBP-NTW-3' : {'CIS v8' : ['3.12', '4.2', '9.3', '12.2', '12.4', '12.5', '12.8', '13.3', '13.4', '13.8', '13.10', '16.8'], 'CCCS Guard Rail' : []},
+    'OBP-NTW-4' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
+    'OBP-NTW-5' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
+    'OBP-CSP-1' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : []},
+    'OBP-CSP-2' : {'CIS v8' : ['8.2', '8.3', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
+    'OBP-CRT-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-GOV-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-GOV-2' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-GOV-3' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-ADB-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-ADB-2' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-ADB-3' : {'CIS v8' : ['3.10', '3.11'], 'CCCS Guard Rail' : []},
+    'OBP-ADB-4' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'OBP-ADB-5' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'IAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'IAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'IAM-20' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
+    'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : []},
+    'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : []}
+}
 
 
 ##########################################################################
@@ -1174,6 +1201,10 @@ class CIS_Report:
                 if self.cis_foundations_benchmark_3_0[cis_recommendation]['id'] == mapping:
                     for framework_name, framework_value in current_mappings[mapping].items():
                         self.cis_foundations_benchmark_3_0[cis_recommendation][framework_name] = framework_value
+            for obp_recommendation in self.obp_foundations_checks:
+                if self.obp_foundations_checks[obp_recommendation]['id'] == mapping:
+                    for framework_name, framework_value in current_mappings[mapping].items():
+                        self.obp_foundations_checks[obp_recommendation][framework_name] = framework_value
 
 
 
@@ -1574,7 +1605,8 @@ class CIS_Report:
                     'domain_deeplink' : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                     'name': user.user_name,
                     'deep_link': self.__generate_csv_hyperlink(deep_link, user.user_name),
-                    'defined_tags': user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags else None,
+                    'defined_tags': oci.util.to_dict(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags and user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.defined_tags else None,
+                    'freeform_tags': oci.util.to_dict(user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.freeform_tags) if user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags and user.urn_ietf_params_scim_schemas_oracle_idcs_extension_oci_tags.freeform_tags else None,
                     'description': user.description,
                     'email': user.emails[0].value if user.emails else None,
                     'email_verified': user.emails[0].verified if user.emails else None,
@@ -5267,7 +5299,11 @@ class CIS_Report:
 
             fast_connect_providers = set()
             customer_premises_equipment = set()
-            drg_upgrade_status = self.__network_drgs[drg_id]['upgrade_status']
+            drg_record = self.__network_drgs.get(drg_id, {})
+            drg_upgrade_status = drg_record.get('upgrade_status')
+            if not drg_record:
+                debug("__obp_analyze_tenancy_data: Networking check: DRG ID not found " + str(drg_id))
+                self.__errors.append({"id" : str(drg_id), "error" : str("__obp_analyze_tenancy_data: Networking check: DRG ID not found")})
 
             for attachment in drg_values:
                 if attachment['network_type'].upper() == 'VCN':
@@ -5276,7 +5312,7 @@ class CIS_Report:
 
                 elif attachment['network_type'].upper() == 'IPSEC_TUNNEL':
                     # Checking if the IPSec Connection has both tunnels up
-                    for ipsec_connection in self.__network_ipsec_connections[drg_id]:
+                    for ipsec_connection in self.__network_ipsec_connections.get(drg_id, []):
                         if ipsec_connection['tunnels_up']:
                             # Good IP Sec Connection increment valid site to site and track CPEs
                             number_of_valid_site_to_site_connection += 1
@@ -5300,9 +5336,9 @@ class CIS_Report:
             try:
                 record = {
                     "drg_id": drg_id,
-                    "drg_display_name": self.__network_drgs[drg_id]['display_name'],
+                    "drg_display_name": drg_record.get('display_name', "Not Available"),
                     "upgrade_status": drg_upgrade_status,
-                    "region": self.__network_drgs[drg_id]['region'],
+                    "region": drg_record.get('region', drg_values[0]['region']),
                     "number_of_connected_vcns": number_of_valid_connected_vcns,
                     "number_of_customer_premises_equipment": len(customer_premises_equipment),
                     "number_of_connected_ipsec_connections": number_of_valid_site_to_site_connection,
@@ -5791,6 +5827,7 @@ class CIS_Report:
                     "Title": recommendation['Title'],
                     self.__primary_framework_name : recommendation[self.__primary_framework_name],
                     self.__other_framework_name : recommendation[self.__other_framework_name],
+                    "Regions": self.__regions_to_run_in,
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
                 }
@@ -6243,6 +6280,7 @@ class CIS_Report:
     def __report_generate_obp_report(self):
 
         obp_summary_report = []
+        obp_report_files = []
         # Screen output for CIS Summary Report
         print_header("OCI Best Practices Findings")
         print('Category' + "\t\t\t\t" + "Compliant" + "\t" + "Findings  " + "\tBest Practices")
@@ -6260,6 +6298,9 @@ class CIS_Report:
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Title": recommendation['Title'],
+                self.__primary_framework_name : recommendation[self.__primary_framework_name],
+                self.__other_framework_name : recommendation[self.__other_framework_name],
+                "Regions": self.__regions_to_run_in,
                 "Documentation": recommendation['Documentation']
             }
             obp_summary_report.append(record)
@@ -6267,22 +6308,28 @@ class CIS_Report:
         print_header("Writing Oracle Best Practices reports to CSV")
 
         summary_report_file_name = self.__print_to_csv_file("obp", "OBP_Summary", obp_summary_report)
+        obp_report_files.append(summary_report_file_name)
 
-        if summary_report_file_name and self.__output_bucket:
-            self.__os_copy_report_to_object_storage(
-                self.__output_bucket, summary_report_file_name)
+        if self.__report_summary_json:
+            summary_file_name = self.__print_to_json_file("obp", "summary_report", obp_summary_report)
+            obp_report_files.append(summary_file_name)
 
         # Printing Findings to CSV
         for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file("obp", key + "_Findings", value['Findings'])
+            obp_report_files.append(report_file_name)
 
         # Printing OBPs to CSV
         for key, value in self.obp_foundations_checks.items():
             report_file_name = self.__print_to_csv_file("obp", key + "_Best_Practices", value['OBP'])
+            obp_report_files.append(report_file_name)
 
-            if report_file_name and self.__output_bucket:
-                self.__os_copy_report_to_object_storage(
-                    self.__output_bucket, report_file_name)
+        # Outputing to a bucket if I have one
+        if obp_report_files and self.__output_bucket:
+            for report_file in obp_report_files:
+                if report_file:
+                    self.__os_copy_report_to_object_storage(
+                        self.__output_bucket, report_file)
 
     ##########################################################################
     # Coordinates calls of all the read function required for analyzing tenancy

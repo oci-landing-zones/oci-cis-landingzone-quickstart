@@ -1,3 +1,26 @@
+# July 13, 2026 Release Notes - 3.3.0
+1. [CIS Controls v8.1 Mapping](#3-3-0-cis-v8-mapping)
+1. [OBP Reporting Improvements](#3-3-0-obp-reporting)
+1. [Fixes and Updates](#3-3-0-fixes)
+
+## <a name="#3-3-0-cis-v8-mapping">CIS Controls v8.1 Mapping</a>
+- Added the `compliance-mapping.md` documentation to map the OCI Compliance Checker to CIS Controls v8.1 and expanded the mappings to include the Oracle Best Practice (OBP) checks.
+
+## <a name="#3-3-0-obp-reporting">OBP Reporting Improvements</a>
+- Added framework mapping columns to the OBP summary output.
+- Added JSON output generation for the OBP summary report.
+
+## <a name="#3-3-0-fixes">Fixes and Updates</a>
+Updates:
+- Added the list of regions the tool ran against to summary reports.
+- Updated identity user record handling so that defined tags are serialized cleanly and freeform tags are included without breaking output rows. Related external issue: [207](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/207).
+- Updated the copyright year in the compliance checker script to 2026.
+
+Fixes:
+- Fixed an OBP networking failure for multicloud tenancies where the script attempted to fetch backend-managed DRG details and exited instead of continuing collection.
+- Fixed typos in OBP Cloud Guard output fields for target configuration detector values. Related external issue: [206](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/206).
+- Fixed `OverflowError: Python int too large to convert to C long` on some Windows environments by lowering the CSV field size limit to a supported value. Related external issue: [208](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/208).
+
 # May 1, 2026 Release Notes - 3.2.1
 1. [Fixes and Updates](#3-2-1-fixes)
 

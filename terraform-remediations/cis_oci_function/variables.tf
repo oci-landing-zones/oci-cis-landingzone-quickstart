@@ -115,42 +115,25 @@ variable "policy_compartment_ocid" {
   default     = null
 }
 
-variable "use_ocir_vault_credentials" {
-  description = "Read the OCI Registry username and auth token from OCI Vault secrets during the image login step. This avoids placing the credential values in Terraform variables or state."
-  type        = bool
-  default     = true
-}
-
-variable "ocir_username_secret_ocid" {
-  description = "OCI Vault Secret resource OCID containing the OCI Registry username value. It must begin with ocid1.vaultsecret; do not provide a Vault or encryption key OCID. Store the same username value you would otherwise enter in ocir_username; the stack prefixes the tenancy namespace."
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = trimspace(var.ocir_username_secret_ocid) == "" || can(regex("^ocid1\\.vaultsecret\\.", trimspace(var.ocir_username_secret_ocid)))
-    error_message = "ocir_username_secret_ocid must be an OCI Vault Secret resource OCID beginning with 'ocid1.vaultsecret.'. Do not provide an 'ocid1.vault.' Vault OCID or 'ocid1.key.' encryption key OCID."
-  }
-}
-
 variable "ocir_auth_token_secret_ocid" {
   description = "OCI Vault Secret resource OCID containing the OCI Registry auth token. It must begin with ocid1.vaultsecret; do not provide a Vault or encryption key OCID."
   type        = string
   default     = ""
 
   validation {
-    condition     = trimspace(var.ocir_auth_token_secret_ocid) == "" || can(regex("^ocid1\\.vaultsecret\\.", trimspace(var.ocir_auth_token_secret_ocid)))
+    condition     = trimspace(var.ocir_auth_token_secret_ocid) != "" && can(regex("^ocid1\\.vaultsecret\\.", trimspace(var.ocir_auth_token_secret_ocid)))
     error_message = "ocir_auth_token_secret_ocid must be an OCI Vault Secret resource OCID beginning with 'ocid1.vaultsecret.'. Do not provide an 'ocid1.vault.' Vault OCID or 'ocid1.key.' encryption key OCID."
   }
 }
 
 variable "ocir_vault_secret_compartment_ocid" {
-  description = "Compartment OCID containing the OCI Vault secrets for the OCI Registry username and auth token. Defaults to the function compartment and is used for the minimal secret-bundle read policy guidance."
+  description = "Compartment OCID containing the OCI Vault Secret for the OCI Registry auth token. Defaults to the function compartment and is used for the minimal secret-bundle read policy guidance."
   type        = string
   default     = null
 }
 
 variable "create_ocir_vault_deployment_policy" {
-  description = "Create a narrow IAM policy that allows the deployment principal to read only the OCI Registry Vault secret bundles. The applying principal must already be allowed to manage policies in the policy compartment."
+  description = "Create a narrow IAM policy that allows the deployment principal to read only the OCI Registry auth-token Secret bundle. The applying principal must already be allowed to manage policies in the policy compartment."
   type        = bool
   default     = false
 }
@@ -167,13 +150,13 @@ variable "ocir_vault_deployment_principal_type" {
 }
 
 variable "ocir_vault_deployment_principal_name" {
-  description = "Group or dynamic group name to grant read access to the OCI Registry Vault secret bundles when create_ocir_vault_deployment_policy is true."
+  description = "Group or dynamic group name to grant read access to the OCI Registry auth-token Secret bundle when create_ocir_vault_deployment_policy is true."
   type        = string
   default     = ""
 }
 
 variable "ocir_vault_deployment_policy_name" {
-  description = "Name of the optional policy that grants the deployment principal read access to the OCI Registry Vault secret bundles."
+  description = "Name of the optional policy that grants the deployment principal read access to the OCI Registry auth-token Secret bundle."
   type        = string
   default     = "ocir-vault-secret-bundle-read-policy"
 }
@@ -185,16 +168,14 @@ variable "ocir_vault_deployment_policy_compartment_ocid" {
 }
 
 variable "ocir_username" {
-  description = "OCI registry username. Used only when use_ocir_vault_credentials is false."
+  description = "OCI Registry username used to push the function image. The tenancy namespace is added automatically during login."
   type        = string
   default     = ""
-}
 
-variable "ocir_password" {
-  description = "OCI registry auth token. Used only when use_ocir_vault_credentials is false."
-  type        = string
-  default     = ""
-  sensitive   = true
+  validation {
+    condition     = trimspace(var.ocir_username) != ""
+    error_message = "ocir_username must not be empty."
+  }
 }
 
 variable "repository_name" {

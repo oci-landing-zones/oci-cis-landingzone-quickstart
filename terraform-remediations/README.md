@@ -1,18 +1,20 @@
 # OCI CIS Terraform Remediations
 
+![Landing Zone logo](../images/landing%20zone_300.png)
+
 This directory contains three independent Terraform remediation stacks for an OCI tenancy. They can be deployed separately: one exports audit logs to an external SIEM, one establishes CIS-aligned monitoring and governance controls, and one runs recurring CIS benchmark reports.
 
 | Directory | Purpose | Main OCI services |
 | --- | --- | --- |
-| `cis_oci_benchmark_siem_integration_remediation` | Delivers tenancy audit logs to a third-party SIEM through OCI Streaming. | Service Connector Hub, Streaming, IAM |
-| `cis_oci_benchmark_logging_monitoring_remediation` | Adds event notifications, connectivity alarms, Cloud Guard configuration, and forecast budgets. | Events, Notifications, Monitoring, Cloud Guard, Budgets |
-| `cis_oci_function` | Deploys a containerized OCI Function that generates CIS reports and saves them to Object Storage. | Functions, OCIR, Object Storage, Logging, Resource Scheduler |
+| [`cis_oci_benchmark_siem_integration_remediation`](./cis_oci_benchmark_siem_integration_remediation/README.md) | Delivers tenancy audit logs to a third-party SIEM through OCI Streaming. | Service Connector Hub, Streaming, IAM |
+| [`cis_oci_benchmark_logging_monitoring_remediation`](./cis_oci_benchmark_logging_monitoring_remediation/README.md) | Adds event notifications, connectivity alarms, Cloud Guard configuration, and forecast budgets. | Events, Notifications, Monitoring, Cloud Guard, Budgets |
+| [`cis_oci_function`](./cis_oci_function/README.md) | Deploys a containerized OCI Function that generates CIS reports and saves them to Object Storage. | Functions, OCIR, Object Storage, Logging, Resource Scheduler |
 
 ## 1. SIEM integration remediation
 
-This stack creates a stream pool and stream, then creates a Service Connector Hub connector that forwards audit logs from the current region to that stream. It supports **Splunk**, **Stellar Cyber**, and a **generic stream-based** receiver. The outputs provide the vendor documentation link and next-step configuration guidance.
+This stack creates a stream pool and stream, then creates a Service Connector Hub connector that forwards audit logs from the current region to that stream. It supports **Splunk**, **Stellar Cyber**, and a **generic stream-based** receiver. The outputs provide vendor documentation links and guidance for the next steps.
 
-When selected, the stack also creates the least-purpose IAM reader identity for the SIEM:
+When selected, the stack also creates a least-privilege IAM reader identity for the SIEM:
 
 - An OCI IAM group and `stream-pull` policy for API signing-key access, or
 - A dynamic group for instance-principal access.
@@ -37,7 +39,7 @@ This stack builds an ARM64 Python OCI Functions image, pushes it to a private OC
 
 Optional capabilities include:
 
-- Creation or reuse of a compartment, dynamic group, IAM policies, and private function network.
+- Creation or reuse of a compartment, a dynamic group, IAM policies, and a private function network.
 - Vault-backed OCIR credentials during image push.
 - OCI Functions invocation logs.
 - Scheduled execution through OCI Resource Scheduler.
@@ -50,7 +52,7 @@ By default, the function can download the latest upstream CIS script at runtime.
 - Provide OCI credentials and IAM permissions appropriate to the resources each selected stack creates. The SIEM and monitoring stacks use Terraform modules downloaded from public GitHub, so Terraform initialization needs outbound connectivity.
 - Deploy home-region resources once, then deploy regional resources separately for every OCI region in scope.
 - The function stack also requires a compatible container CLI (Docker or Podman); Vault-backed image login requires OCI CLI and Python 3 on the Terraform runner.
-- Configure email recipients, budget values, compartments, retention, and service-label naming before apply. The stacks do not supply organization-specific contacts or mandatory defined tags.
+- Configure email recipients, budget values, compartments, retention, and service-label naming before running `terraform apply`. The stacks do not supply organization-specific contacts or mandatory defined tags.
 - Treat SIEM stream endpoints, OCI credentials, Terraform state, and HTML-report pre-authenticated links as sensitive operational data.
 
 ## Recommended deployment order

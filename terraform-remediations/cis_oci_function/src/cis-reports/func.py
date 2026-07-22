@@ -173,6 +173,7 @@ def _json_value(value):
 
 
 def _find_object_storage_event(payload, depth=0):
+    """Find the first recognized Object Storage event in a nested payload."""
     if depth > 4:
         return None
 
@@ -223,6 +224,7 @@ def _is_summary_report_object(object_name):
 
 
 def _extract_html_event_details(event, cfg):
+    """Extract the bucket, object, namespace, region, and event metadata."""
     event_data = event.get("data") or {}
     additional_details = event_data.get("additionalDetails") or {}
 
@@ -346,6 +348,7 @@ def _wait_for_object_readable(object_storage_client, details, max_attempts=6):
 
 
 def _create_html_report_par(config, signer, details, expiration_hours):
+    """Confirm the report exists and create an ObjectRead pre-authenticated request."""
     client_config = dict(config)
     if details.get("region"):
         client_config["region"] = details["region"]
@@ -492,6 +495,7 @@ def _handle_html_report_event(config, signer, cfg, event):
 
 
 def _summary_report_object_candidates(report_directory):
+    """Return possible Object Storage names for the generated summary report."""
     report_path = Path(report_directory or "/tmp")
     candidates = []
 
@@ -582,10 +586,10 @@ def _publish_generated_html_report_notification(config, signer, cfg, bucket_name
 
 
 def handler(ctx, data: io.BytesIO = None):
-    # Start print time info
+    # Create a UTC timestamp for the report output directory.
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     report_datetime = str(start_datetime.strftime("%Y-%m-%d_%H-%M-%S"))
-    # Create the signer.
+    # Authenticate with OCI using the function resource principal.
     signer = oci.auth.signers.get_resource_principals_signer()
     config = {"region": signer.region, "tenancy": signer.tenancy_id}
     payload = _read_json_payload(data)
@@ -608,7 +612,7 @@ def handler(ctx, data: io.BytesIO = None):
             )
 
         bucket = cfg["output_bucket"]
-        region = cfg["regions_to_run_in"]
+        regions_to_run_in = cfg["regions_to_run_in"]
         obp = _parse_bool(cfg["obp"])
         raw_data = _parse_bool(cfg["raw_data"])
         report_level = _parse_report_level(cfg.get("report_level", 2))
@@ -621,7 +625,7 @@ def handler(ctx, data: io.BytesIO = None):
             "obp=%s, raw_data=%s, report_summary_json=%s, redact_output=%s, "
             "all_resources=%s, script_version=%s",
             bucket,
-            region,
+            regions_to_run_in,
             report_level,
             obp,
             raw_data,
@@ -646,7 +650,7 @@ def handler(ctx, data: io.BytesIO = None):
         report_prefix=None,
         report_summary_json=report_summary_json,
         print_to_screen="False",
-        regions_to_run_in=region,
+        regions_to_run_in=regions_to_run_in,
         raw_data=raw_data,
         obp=obp,
         redact_output=redact_output,
@@ -667,6 +671,7 @@ def handler(ctx, data: io.BytesIO = None):
 
 
 def _create_cis_report(cis_report_class, **kwargs):
+    """Instantiate the report class with only constructor arguments it supports."""
     signature = inspect.signature(cis_report_class.__init__)
     accepts_var_kwargs = any(
         parameter.kind == inspect.Parameter.VAR_KEYWORD

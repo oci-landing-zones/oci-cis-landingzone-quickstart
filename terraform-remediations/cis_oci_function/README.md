@@ -1,9 +1,11 @@
 # Introduction
 
-This Terraform configuration deploys an [OCI Function](https://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm) that runs the OCI CIS report script with resource-principal authentication and writes report output to Object Storage, covering the following aspects:
+![Landing Zone logo](../../images/landing%20zone_300.png)
 
-1. **IAM compartment, dynamic group and policy**: the configuration supports deploying a new compartment, dynamic group and policy, as well as deploying the function in an existing compartment with no dynamic group and policy. This enables the configuration to be executed for deploying functions in different regions leveraging the same IAM definitions. 
-2. **Networking**: the configuration supports deploying the required network infrastructure for the function, including a VCN, a private subnet, routing to Service Gateway and NAT Gateway and the corresponding security rules in a security list. Alternatively, it supports using an existing subnet for the Function. In this case, the subnet must be already satisfy the function connectivity requirements.
+This Terraform configuration deploys an [OCI Function](https://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm) that runs the CIS Compliance Script with resource-principal authentication and writes report output to Object Storage, covering the following aspects:
+
+1. **IAM compartment, dynamic group and policy**: the configuration supports creating a new compartment, dynamic group, and policy, as well as deploying the function in an existing compartment with no dynamic group or policy. This enables the configuration to deploy functions in different regions while leveraging the same IAM definitions.
+2. **Networking**: the configuration supports creating the required network infrastructure for the function, including a VCN with a private subnet, routing to a Service Gateway and NAT Gateway and the corresponding security rules in a security list. Alternatively, it supports using an existing subnet for the Function. In this case, the subnet must be already satisfy the function connectivity requirements.
 3. **Function image build and upload to OCI Registry**: the configuration creates the OCIR repository, builds the function image using the *fn* CLI, tags and pushes it to OCI Registry using the configured container CLI.
 4. **Function Application and Function resources**: the configuration deploys the function application and the function resources, linking the function resource to the function image in OCI Registry.
 5. **Report output**: the configuration can create a private Object Storage bucket and grants the function scoped object-write access.
@@ -20,7 +22,7 @@ The following permissions are required for the executing user (the user that dep
 
 1. For deploying the configuration with the IAM resources:
 
-    - Allow group \<group\> to read tenancies in tenancy
+    - Allow group \<group\> to inspect compartments in tenancy
     - Allow group \<group\> to manage dynamic-groups in tenancy
     - Allow group \<group\> to manage policies in tenancy
     - Allow group \<group\> to manage compartments in compartment \<function-parent-compartment\>
@@ -42,16 +44,16 @@ The following permissions are required for the executing user (the user that dep
     - Allow group \<group\> to manage cloudevents-rules in \<output-bucket-compartment\>
     - Allow group \<group\> to manage resource-schedule-family in tenancy
 
-5. When `use_ocir_vault_credentials` is true, the principal that runs Terraform and the OCI CLI secret lookup needs read access to the two OCI Registry credential secret bundles before the image login step runs. The minimal policy is:
+5. The principal that runs Terraform and the OCI CLI secret lookup needs read access to the OCI Registry auth-token Secret bundle before the image login step runs. The minimal policy is:
 
     ```text
-    Allow group <deployment-group> to read secret-bundles in compartment id <secret-compartment-ocid> where any {target.secret.id = '<username-secret-ocid>', target.secret.id = '<auth-token-secret-ocid>'}
+    Allow group <deployment-group> to read secret-bundles in compartment id <secret-compartment-ocid> where target.secret.id = '<auth-token-secret-ocid>'
     ```
 
     If the deployment runner uses a resource principal, use a dynamic group instead:
 
     ```text
-    Allow dynamic-group <deployment-dynamic-group> to read secret-bundles in compartment id <secret-compartment-ocid> where any {target.secret.id = '<username-secret-ocid>', target.secret.id = '<auth-token-secret-ocid>'}
+    Allow dynamic-group <deployment-dynamic-group> to read secret-bundles in compartment id <secret-compartment-ocid> where target.secret.id = '<auth-token-secret-ocid>'
     ```
 
     The stack can optionally create this policy with `create_ocir_vault_deployment_policy`, but the applying principal must already be able to manage policies in the chosen policy compartment. Otherwise, create this prerequisite policy before the first apply.
@@ -61,7 +63,7 @@ The following permissions are required for the executing user (the user that dep
     - Allow group \<group\> to use cloud-shell in tenancy
     - Allow group \<group\> to use cloud-shell-public-network in tenancy
 
-Or deploy, if you can, as an almighty administrator user.
+Or deploy as an administrator user with the required permissions.
 
 ## OCI Registry Service Account
 
@@ -69,23 +71,22 @@ Before executing this stack, identify or create the OCI user that will own the O
 
 ### Vault-backed credential prerequisites
 
-The recommended deployment path stores the OCI Registry username and auth token in OCI Vault/Secret Management before the first Terraform apply.
+The deployment path keeps the OCI Registry username as a Terraform string variable and stores the auth token in OCI Vault/Secret Management before the first Terraform apply.
 
-- Create two secrets in OCI Vault/Secret Management: one for the OCI Registry username and one for the OCI Registry auth token.
-- Copy the OCID from each Secret resource's details page. Both values must be different and begin with `ocid1.vaultsecret.`. An OCID beginning with `ocid1.vault.` identifies the Vault, while `ocid1.key.` identifies the encryption key; neither can be used with `oci secrets secret-bundle get`.
-- The username secret value must contain the same value you would otherwise enter as `ocir_username`. Do not include the tenancy namespace; the stack prefixes the Object Storage namespace when it logs in to OCI Registry.
+- Enter the OCI Registry username in `ocir_username`. For identity domains, use `domain/user`. Do not include the tenancy namespace; the stack prefixes the Object Storage namespace when it logs in to OCI Registry.
+- Create one Secret in OCI Vault/Secret Management for the OCI Registry auth token.
+- Copy the OCID from the auth-token Secret resource's details page. It must begin with `ocid1.vaultsecret.`. An OCID beginning with `ocid1.vault.` identifies the Vault, while `ocid1.key.` identifies the encryption key; neither can be used with `oci secrets secret-bundle get`.
 - The auth token secret value must be an OCI auth token generated for that same OCI user. Do not use the user's Console password.
-- Set `use_ocir_vault_credentials` to true, provide `ocir_username_secret_ocid` and `ocir_auth_token_secret_ocid`, and set `ocir_vault_secret_compartment_ocid` if the secrets are not in the function compartment.
-- The deployment environment must have `oci`, `python3`, and the configured OCI CLI authentication needed to call `oci secrets secret-bundle get` for both secret OCIDs.
+- Provide `ocir_auth_token_secret_ocid`, and set `ocir_vault_secret_compartment_ocid` if the Secret is not in the function compartment.
+- The deployment environment must have `oci`, `python3`, and the configured OCI CLI authentication needed to call `oci secrets secret-bundle get` for the auth-token Secret OCID.
 - The deployment principal must have the minimal `read secret-bundles` policy shown in the IAM Permissions section. This is separate from the function runtime dynamic group policy because the secret lookup happens during the image build and push step.
-- The secret OCIDs and the secret compartment OCID can appear in Terraform state. The secret payload values are fetched by `local-exec` and are not read through Terraform data sources or stored as Terraform output.
+- The auth-token Secret OCID and the Secret compartment OCID can appear in Terraform state. The secret payload is fetched by `local-exec` and is not read through Terraform data sources or stored as Terraform output.
 
-The OCI policy reference lists `secret-bundles` as the resource type used for `GetSecretBundle`, and the OCI CLI `secret-bundle get` command reads a secret bundle by secret OCID. See Oracle's [Vault, Key Management, and Secret Management policy reference](https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/keypolicyreference.htm) and [OCI CLI secret-bundle get documentation](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/secrets/secret-bundle/get.html).
+The OCI policy reference lists `secret-bundles` as the resource type used for `GetSecretBundle`, and the OCI CLI `secret-bundle get` command reads a Secret bundle by Secret OCID. See Oracle's [Vault, Key Management, and Secret Management policy reference](https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/keypolicyreference.htm) and [OCI CLI secret-bundle get documentation](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/secrets/secret-bundle/get.html).
 
-Before applying the stack, verify each OCID without printing the secret contents:
+Before applying the stack, verify the auth-token Secret OCID without printing the secret contents:
 
 ```bash
-oci secrets secret-bundle get --secret-id "<username-secret-ocid>" --query 'data."secret-id"' --raw-output
 oci secrets secret-bundle get --secret-id "<auth-token-secret-ocid>" --query 'data."secret-id"' --raw-output
 ```
 
@@ -93,7 +94,7 @@ Each command should return the same `ocid1.vaultsecret...` value that was suppli
 
 ### OCI Registry push permissions
 
-The OCI Registry user whose username and auth token are stored in Vault must have permission to push the function image to OCI Registry. At minimum, grant repository permissions for the target repository compartment, for example:
+The OCI Registry user identified by `ocir_username` and whose auth token is stored in Vault must have permission to push the function image to OCI Registry. At minimum, grant repository permissions for the target repository compartment, for example:
 
 ```text
 Allow group <ocir-service-account-group> to manage repos in compartment id <repository-compartment-ocid>
@@ -101,16 +102,14 @@ Allow group <ocir-service-account-group> to manage repos in compartment id <repo
 
 Use `manage repos in tenancy` only when a broader tenancy-wide repository grant is acceptable.
 
-Direct input with `ocir_username` and `ocir_password` is still supported by setting `use_ocir_vault_credentials` to false, but Vault-backed credentials are preferred when avoiding credential exposure in Terraform variables and state is required.
-
 ## Function Source Code
 
 The function source code must be available for the configuration, properly structured according to *fn* requirements. For instance, a Python *fn* function would be comprised of the following files:
 
-- **func.py**: the function source code in Python. It wraps the CIS report script for OCI Functions, parses function config safely, and returns JSON invocation status.
+- **func.py**: the function source code in Python. It wraps the CIS Compliance Script for OCI Functions, parses function config safely, and returns JSON invocation status.
 - **func.yaml**: minimum amount of information required to build and run the function, including the function name, version and entrypoint. The name and version attributes are used by the Terraform automation. In fact, the version attribute is the only value you change to trigger the function code (re)deployment into OCI Registry.
 - **requirements.txt**: defines the external packages and dependencies required by the function.
-- **cis_reports.py**: optional vendored OCI CIS report script used only when `script_version` is set to `bundled`. Otherwise the function downloads the selected script version at runtime.
+- **cis_reports.py**: optional vendored CIS Compliance Script used only when `script_version` is set to `bundled`. Otherwise the function downloads the selected script version at runtime.
 
 ## Environment
 
@@ -172,7 +171,7 @@ Following sections describe the available variables in the configuration:
 - **policy_name**: the policy name.
 - **provide_short_policy_statements**: if true and *policy_statements_short* is not empty, short statements are expanded in the function compartment. If short statements are empty, the stack falls back to the full CIS policy statements.
 - **policy_statements_short**: policy statements in "short" form, provided as a comma-separated list of *\<verb\> \<resource\>* pairs. The CIS report function uses tenancy-scoped full statements by default, so short statements are best reserved for custom, compartment-scoped deployments.
-- **policy_statements_full** policy statements in full format. Defaults to the tenancy read permissions needed by the CIS report script. Use the literal placeholder `${dynamic_group_name}` when you want Terraform to substitute the dynamic group created by this stack. Example:
+- **policy_statements_full** policy statements in full format. Defaults to the tenancy read permissions needed by the CIS Compliance Script. Use the literal placeholder `${dynamic_group_name}` when you want Terraform to substitute the dynamic group created by this stack. Example:
 ```
 allow dynamic-group <dynamic-group-name-either-created-or-being-created-in-stack> to inspect all-resources in tenancy
 allow dynamic-group <dynamic-group-name-either-created-or-being-created-in-stack> to read instances in tenancy
@@ -203,13 +202,12 @@ allow dynamic-group <dynamic-group-name-either-created-or-being-created-in-stack
 
 ## Function Image, Function Application and Function Resources
 
-- **use_ocir_vault_credentials**: when true, the image login step reads the OCI Registry username and auth token from OCI Vault secrets at apply time. This avoids reading secret payloads through Terraform data sources and avoids storing the credential values in Terraform state.
-- **ocir_username_secret_ocid** and **ocir_auth_token_secret_ocid**: Vault secret OCIDs for the OCI Registry username and auth token. The deployment principal must be able to read the secret bundle values.
-- **ocir_vault_secret_compartment_ocid**: compartment OCID that contains both OCI Registry credential secrets. Leave blank when the secrets are in the function compartment. This value is used for the minimal Vault read policy output and optional managed policy.
+- **ocir_username**: OCI Registry username used to push the function image. The tenancy namespace is added automatically during login.
+- **ocir_auth_token_secret_ocid**: OCI Vault Secret resource OCID containing the OCI Registry auth token. The deployment principal must be able to read this Secret bundle.
+- **ocir_vault_secret_compartment_ocid**: compartment OCID that contains the OCI Registry auth-token Secret. Leave blank when the Secret is in the function compartment. This value is used for the minimal Vault read policy output and optional managed policy.
 - **create_ocir_vault_deployment_policy**: advanced option to create the narrow deployment-time `read secret-bundles` policy from this stack. Use only when the applying principal can manage policies in the chosen policy compartment.
 - **ocir_vault_deployment_principal_type** and **ocir_vault_deployment_principal_name**: group or dynamic group that runs Terraform and the OCI CLI secret lookup when the optional Vault deployment policy is created.
 - **ocir_vault_deployment_policy_name** and **ocir_vault_deployment_policy_compartment_ocid**: optional policy name and placement for the stack-created Vault deployment policy. Leave the compartment blank to create the policy in the Vault secret compartment.
-- **ocir_username** and **ocir_password**: direct fallback values used only when *use_ocir_vault_credentials* is false. Direct input is convenient for local testing but is not recommended when avoiding credential exposure in state is required.
 - **repository_name**: the repository prefix in OCI Registry. The final image repository is `<repository_name>/<func.yaml name>`.
 - **repository_compartment_ocid**: compartment OCID for the OCIR repository. Defaults to the function compartment.
 - **create_repository**: if true, Terraform creates the OCIR repository before pushing the image.
@@ -236,10 +234,10 @@ These values appear in the Resource Manager **Function Runtime** section. They c
     - **Tip**: In tenancies subscribed to many regions, specify only the regions you need. This reduces total scan time and can help the function complete without timeout or resource issues.
 - **report_level**: CIS recommendation level, either `1` or `2`.
 - **report_raw_data**, **report_summary_json**, **redact_output**: runtime switches passed into the function config.
-- **script_version**: CIS report script version to run.
+- **script_version**: CIS Compliance Script version to run.
     - Default is `latest`, which runs the current upstream script from the main branch.
     - Use `bundled` only if you add `cis_reports.py` to the function source before building the image. If no bundled script is present, the function falls back to `latest`.
-    - Use a release tag, such as `v3.0.1`, to run a specific published version. These tags come from the [oci-cis-landingzone-quickstart](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/tree/v3.2.0/scripts) repository, where the CIS report script is maintained under the `scripts` directory.
+    - Use a release tag, such as `v3.0.1`, to run a specific published version. These tags come from the [oci-cis-landingzone-quickstart](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/tree/v3.2.0/scripts) repository, where the CIS Compliance Script is maintained under the `scripts` directory.
 - **experimental_options_note**: visible Resource Manager note that warns about the experimental runtime options.
 - **report_obp** and **report_all_resources**: experimental switches shown inside the Resource Manager **Function Runtime** section as **Generate OCI Best Practice Checks** and **Query All Resources**. Depending on tenancy size, these options can significantly increase runtime and may cause the function to timeout or fail because OCI Functions have a short execution life. You can try these options, but if the function fails or times out, rerun with one or both options unchecked.
 - **function_parameters_json_string**: optional JSON object for advanced overrides.
@@ -297,7 +295,7 @@ After apply, Resource Manager groups the stack outputs by area:
 
 # Known Issues
 
-1. For pushing the function image as a user not in the Default Identity Domain, include the identity domain in the OCI Registry username value, for example `<identity-domain>/<user-name>`. Use that same value in the username Vault secret when `use_ocir_vault_credentials` is true. Do not include the tenancy namespace in the secret value because this stack prefixes the namespace during `docker login`.
+1. For pushing the function image as a user not in the Default Identity Domain, include the identity domain in the OCI Registry username value, for example `<identity-domain>/<user-name>`. Enter that value in `ocir_username`. Do not include the tenancy namespace because this stack prefixes the namespace during `docker login`.
 
 2. if you receive the following error when deploying from Mac OS, ensure you have *docker-credential-helper* installed.
 ```

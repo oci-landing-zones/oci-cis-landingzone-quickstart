@@ -30,11 +30,11 @@ locals {
 
   dynamic_group_policy_statements = local.use_short_policy_statements ? [
     for p in local.short_policy_fragments : "Allow dynamic-group ${local.policy_dynamic_group_name} to ${p} in compartment ${data.oci_identity_compartment.this.name}"
-  ] : [
+    ] : [
     for p in split("\n", try(trimspace(var.policy_statements_full), "")) : replace(trimspace(p), "$${dynamic_group_name}", local.policy_dynamic_group_name) if trimspace(p) != ""
   ]
 
-  policy_compartment_override       = try(trimspace(var.policy_compartment_ocid), "")
+  policy_compartment_override = try(trimspace(var.policy_compartment_ocid), "")
   effective_policy_compartment_ocid = local.use_short_policy_statements ? local.function_compartment_ocid : (
     local.policy_compartment_override != "" ? local.policy_compartment_override : var.tenancy_ocid
   )
@@ -80,9 +80,9 @@ resource "oci_identity_policy" "this" {
 
 resource "oci_identity_policy" "ocir_vault_deployment" {
   provider       = oci.home
-  count          = var.create_ocir_vault_deployment_policy && local.ocir_credentials_from_vault ? 1 : 0
+  count          = var.create_ocir_vault_deployment_policy ? 1 : 0
   compartment_id = local.ocir_vault_deployment_policy_compartment_ocid
-  description    = "Allows the deployment principal to read the OCI Vault secret bundles used for OCI Registry login."
+  description    = "Allows the deployment principal to read the OCI Vault auth-token Secret bundle used for OCI Registry login."
   name           = var.ocir_vault_deployment_policy_name
   statements     = [local.ocir_vault_deployment_policy_statement]
 

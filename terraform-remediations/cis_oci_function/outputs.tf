@@ -97,18 +97,18 @@ output "function_repository_name" {
 }
 
 output "ocir_vault_secret_compartment_id" {
-  description = "The compartment OCID expected to contain the Vault secrets used for OCI Registry login."
-  value       = local.ocir_credentials_from_vault ? local.ocir_vault_secret_compartment_ocid : null
+  description = "The compartment OCID expected to contain the OCI Vault auth-token Secret used for OCI Registry login."
+  value       = local.ocir_vault_secret_compartment_ocid
 }
 
 output "ocir_vault_deployment_policy_statement" {
-  description = "Minimal pre-apply IAM policy statement needed by the deployment principal to read the OCI Registry Vault secret bundles."
-  value       = local.ocir_credentials_from_vault ? local.ocir_vault_deployment_policy_statement : null
+  description = "Minimal pre-apply IAM policy statement needed by the deployment principal to read the OCI Registry auth-token Secret bundle."
+  value       = local.ocir_vault_deployment_policy_statement
 }
 
 output "ocir_vault_deployment_policy_id" {
-  description = "The OCID of the optional policy granting deployment-time access to the OCI Registry Vault secret bundles."
-  value       = var.create_ocir_vault_deployment_policy && local.ocir_credentials_from_vault ? oci_identity_policy.ocir_vault_deployment[0].id : null
+  description = "The OCID of the optional policy granting deployment-time access to the OCI Registry auth-token Secret bundle."
+  value       = var.create_ocir_vault_deployment_policy ? oci_identity_policy.ocir_vault_deployment[0].id : null
 }
 
 output "output_bucket_name" {

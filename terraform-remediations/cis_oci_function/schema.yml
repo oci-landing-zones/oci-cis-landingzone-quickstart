@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "Oracle Cloud CIS Report"
-stackDescription: "Guided Oracle Cloud stack that creates an OCI Function to generate CIS Benchmark reports and save them to Object Storage."
+stackDescription: "Guided Oracle Cloud stack that creates an OCI Function to generate CIS benchmark reports and saves them to Object Storage."
 description: "Use this guided setup to create the function, private network, report bucket, logging, and optional schedule with Oracle-recommended defaults. Open Advanced OCI Controls only when you need to reuse existing resources or override defaults."
 schemaVersion: 1.1.0
 version: "0.0.4"
@@ -19,12 +19,9 @@ variableGroups:
 
   - title: "2. OCI Registry Sign-In"
     variables:
-      - "use_ocir_vault_credentials"
-      - "ocir_username_secret_ocid"
+      - "ocir_username"
       - "ocir_auth_token_secret_ocid"
       - "ocir_vault_secret_compartment_ocid"
-      - "ocir_username"
-      - "ocir_password"
 
   - title: "3. CIS Report"
     variables:
@@ -163,53 +160,23 @@ variables:
         - ${deploy_compartment}
         - false
 
-  use_ocir_vault_credentials:
-    type: boolean
-    title: "Read OCI Registry credentials from Vault?"
-    description: "Recommended. Store the OCI Registry username and auth token in OCI Vault secrets and provide only the secret OCIDs to this stack."
-    default: true
-    required: false
-
-  ocir_username_secret_ocid:
-    type: string
-    title: "OCI Registry username secret OCID"
-    description: "Copy the Secret OCID from the username Secret details page. It must begin with ocid1.vaultsecret. Do not enter the Vault OCID or the encryption key OCID. The stack prefixes the tenancy namespace."
-    required: false
-    visible: use_ocir_vault_credentials
-
   ocir_auth_token_secret_ocid:
     type: string
     title: "OCI Registry auth token secret OCID"
-    description: "Copy the Secret OCID from the auth-token Secret details page. It must begin with ocid1.vaultsecret. Do not enter the Vault OCID or the encryption key OCID. The secret value is fetched at image-login time and is not read through Terraform state."
-    required: false
-    visible: use_ocir_vault_credentials
+    description: "Required. Copy the Secret OCID from the details page for the auth-token Secret. It must begin with ocid1.vaultsecret. Do not enter the Vault OCID or the encryption key OCID. The secret value is fetched during the image login step and is not read through Terraform state."
+    required: true
 
   ocir_vault_secret_compartment_ocid:
     type: oci:identity:compartment:id
-    title: "Vault secret compartment"
-    description: "Compartment containing both OCI Registry credential secrets. Leave blank if the secrets are in the function compartment. This is used for the minimal read secret-bundles policy."
+    title: "Auth-token Secret compartment"
+    description: "Compartment containing the OCI Registry auth-token Secret. Leave blank if the Secret is in the function compartment. This is used for the minimal `read secret-bundles` policy."
     required: false
-    visible: use_ocir_vault_credentials
 
   ocir_username:
     type: string
     title: "OCI Registry username"
-    description: "Enter the OCI user that can push the function image to OCI Registry. For identity domains, use domain/user. Tenancy namespace is prepopulated by ORM."
-    required: false
-    visible:
-      eq:
-        - ${use_ocir_vault_credentials}
-        - false
-
-  ocir_password:
-    type: password
-    title: "OCI Registry auth token"
-    description: "Enter an auth token for the OCI Registry user. Do not enter a Console password."
-    required: false
-    visible:
-      eq:
-        - ${use_ocir_vault_credentials}
-        - false
+    description: "Required. Enter the OCI user that can push the function image to the OCI Registry. For identity domains, use domain/user. The tenancy namespace is added automatically during login."
+    required: true
 
   regions_to_run_in:
     type: string
@@ -309,7 +276,7 @@ variables:
   enable_html_report_notifications:
     type: boolean
     title: "Email a link when the summary report is created?"
-    description: "Check this to create a Notifications topic and email subscription. The function emails a 4-hour ObjectRead pre-authenticated link after it creates cis_summary_report.html."
+    description: "Check this to create a Notifications topic and email subscription. The function emails a 4-hour ObjectRead pre-authenticated link after creating cis_summary_report.html."
     default: false
     required: false
 
@@ -382,7 +349,7 @@ variables:
     type: text
     multiline: true
     title: "Simple policy entries"
-    description: "Optional comma-separated entries like read buckets or inspect all-resources."
+    description: "Optional comma-separated entries such as `read buckets` or `inspect all-resources`."
     required: false
     visible:
       and:
@@ -434,7 +401,7 @@ variables:
   create_ocir_vault_deployment_policy:
     type: boolean
     title: "Create Vault credential read policy?"
-    description: "Advanced. Creates a narrow policy allowing the deployment principal to read only the two OCI Registry credential secret bundles. Use only when the applying principal can manage policies."
+    description: "Advanced. Creates a narrow policy allowing the deployment principal to read only the OCI Registry auth-token Secret bundle. Use only when the applying principal can manage policies."
     default: false
     required: false
     visible:
@@ -442,14 +409,11 @@ variables:
         - eq:
           - ${show_advanced_options}
           - true
-        - eq:
-          - ${use_ocir_vault_credentials}
-          - true
 
   ocir_vault_deployment_principal_type:
     type: enum
     title: "Vault policy principal type"
-    description: "Use group for local API-key or Cloud Shell deployments. Use dynamic-group for resource-principal deployment runners."
+    description: "Use `group` for local API-key or Cloud Shell deployments. Use `dynamic-group` for resource-principal deployment runners."
     enum:
       - "group"
       - "dynamic-group"
@@ -459,9 +423,6 @@ variables:
       and:
         - eq:
           - ${show_advanced_options}
-          - true
-        - eq:
-          - ${use_ocir_vault_credentials}
           - true
         - eq:
           - ${create_ocir_vault_deployment_policy}
@@ -478,25 +439,19 @@ variables:
           - ${show_advanced_options}
           - true
         - eq:
-          - ${use_ocir_vault_credentials}
-          - true
-        - eq:
           - ${create_ocir_vault_deployment_policy}
           - true
 
   ocir_vault_deployment_policy_name:
     type: string
     title: "Vault policy name"
-    description: "Name for the optional policy that grants deployment-time read access to the two OCI Registry credential secret bundles."
+    description: "Name for the optional policy that grants deployment-time read access to the OCI Registry auth-token Secret bundle."
     default: "ocir-vault-secret-bundle-read-policy"
     required: false
     visible:
       and:
         - eq:
           - ${show_advanced_options}
-          - true
-        - eq:
-          - ${use_ocir_vault_credentials}
           - true
         - eq:
           - ${create_ocir_vault_deployment_policy}
@@ -511,9 +466,6 @@ variables:
       and:
         - eq:
           - ${show_advanced_options}
-          - true
-        - eq:
-          - ${use_ocir_vault_credentials}
           - true
         - eq:
           - ${create_ocir_vault_deployment_policy}
@@ -685,7 +637,7 @@ variables:
   force_arm_application_shape:
     type: boolean
     title: "Use Oracle-recommended ARM image?"
-    description: "Recommended. Leave checked to build a linux/arm64 image for the default OCI Functions ARM shape."
+    description: "Recommended. Leave checked to build a Linux/ARM64 image for the default OCI Functions ARM shape."
     default: true
     required: false
     visible: show_advanced_options
@@ -711,7 +663,7 @@ variables:
   container_platform:
     type: string
     title: "Container platform"
-    description: "Container build platform, such as linux/arm64 or linux/amd64."
+    description: "Container build platform, such as Linux/ARM64 or Linux/AMD64."
     default: "linux/arm64"
     required: false
     visible:
@@ -764,7 +716,7 @@ variables:
   script_version:
     type: string
     title: "CIS script version"
-    description: "Use latest for the current upstream script, bundled if you add cis_reports.py to the function source, or a release tag such as v3.0.1."
+    description: "Use `latest` for the current upstream script, `bundled` if you add cis_reports.py to the function source, or a release tag such as `v3.0.1`."
     default: "latest"
     required: false
     visible: show_advanced_options
@@ -803,7 +755,7 @@ variables:
   enable_post_deploy_invoke:
     type: boolean
     title: "Allow a test run during apply?"
-    description: "Leave unchecked for normal deployments. CIS scans can run longer than a Terraform apply should."
+    description: "Leave unchecked for normal deployments. CIS scans can take longer than a Terraform apply should run."
     default: false
     required: false
     visible: show_advanced_options
@@ -826,7 +778,7 @@ variables:
   invoke_function_fn_invoke_type:
     type: enum
     title: "Test invocation mode"
-    description: "Detached is safer for longer report runs."
+    description: "`detached` mode is safer for longer report runs."
     enum:
       - "detached"
       - "sync"

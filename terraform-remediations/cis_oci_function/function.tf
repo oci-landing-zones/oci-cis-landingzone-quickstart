@@ -44,27 +44,14 @@ resource "oci_functions_function" "this" {
 
 resource "terraform_data" "validate_ocir_credentials" {
   input = {
-    use_vault              = local.ocir_credentials_from_vault
-    username_secret_ocid   = trimspace(var.ocir_username_secret_ocid)
     auth_token_secret_ocid = trimspace(var.ocir_auth_token_secret_ocid)
     direct_username        = trimspace(var.ocir_username)
   }
 
   lifecycle {
     precondition {
-      condition = local.ocir_credentials_from_vault ? (
-        trimspace(var.ocir_username_secret_ocid) != "" && trimspace(var.ocir_auth_token_secret_ocid) != ""
-        ) : (
-        trimspace(var.ocir_username) != "" && trimspace(nonsensitive(var.ocir_password)) != ""
-      )
-      error_message = "Provide both ocir_username_secret_ocid and ocir_auth_token_secret_ocid when use_ocir_vault_credentials is true, or provide both ocir_username and ocir_password when it is false."
-    }
-
-    precondition {
-      condition = !local.ocir_credentials_from_vault || (
-        trimspace(var.ocir_username_secret_ocid) != trimspace(var.ocir_auth_token_secret_ocid)
-      )
-      error_message = "ocir_username_secret_ocid and ocir_auth_token_secret_ocid must identify two different OCI Vault Secret resources."
+      condition     = trimspace(var.ocir_username) != "" && trimspace(var.ocir_auth_token_secret_ocid) != ""
+      error_message = "Provide ocir_username and ocir_auth_token_secret_ocid."
     }
   }
 }
@@ -86,12 +73,9 @@ resource "null_resource" "deploy_function_image" {
   provisioner "local-exec" {
     command = local.ocir_login_command
     environment = {
-      OCIR_AUTH_TOKEN_SECRET_OCID  = trimspace(var.ocir_auth_token_secret_ocid)
-      OCIR_PASSWORD                = var.ocir_password
-      OCIR_TENANCY_NAMESPACE       = data.oci_objectstorage_namespace.namespace.namespace
-      OCIR_USERNAME                = var.ocir_username
-      OCIR_USERNAME_SECRET_OCID    = trimspace(var.ocir_username_secret_ocid)
-      OCIR_USE_VAULT_CREDENTIALS   = tostring(local.ocir_credentials_from_vault)
+      OCIR_AUTH_TOKEN_SECRET_OCID = trimspace(var.ocir_auth_token_secret_ocid)
+      OCIR_TENANCY_NAMESPACE      = data.oci_objectstorage_namespace.namespace.namespace
+      OCIR_USERNAME               = var.ocir_username
     }
   }
   provisioner "local-exec" {

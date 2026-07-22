@@ -19,24 +19,17 @@ module "fn_deploy" {
   policy_name        = "oci-cis-report-function-policy"
 
   # Function image
-  use_ocir_vault_credentials         = true
-  # Both values must be distinct Secret resource OCIDs beginning with
-  # ocid1.vaultsecret. Do not use an ocid1.vault or ocid1.key value.
-  ocir_username_secret_ocid          = "<OCID1.VAULTSECRET-FOR-REGISTRY-USERNAME>"
-  ocir_auth_token_secret_ocid        = "<OCID1.VAULTSECRET-FOR-REGISTRY-AUTH-TOKEN>"
-  ocir_vault_secret_compartment_ocid = "<COMPARTMENT-OCID-CONTAINING-REGISTRY-SECRETS>"
+  ocir_username                       = "<OCI-REGISTRY-USER-NAME>"
+  ocir_auth_token_secret_ocid         = "<OCID1.VAULTSECRET-FOR-REGISTRY-AUTH-TOKEN>"
+  # The Secret OCID must begin with ocid1.vaultsecret. Do not use an
+  # ocid1.vault or ocid1.key value.
+  ocir_vault_secret_compartment_ocid  = "<COMPARTMENT-OCID-CONTAINING-AUTH-TOKEN-SECRET>"
 
   # Optional: let an admin-created apply create the narrow deployment policy.
   # Otherwise create the README policy prerequisite before the first apply.
   # create_ocir_vault_deployment_policy  = true
   # ocir_vault_deployment_principal_type = "group"
   # ocir_vault_deployment_principal_name = "<DEPLOYMENT-GROUP-NAME>"
-
-  # Direct credentials are still supported for local testing, but they can expose
-  # secret values through Terraform inputs/state. Prefer the Vault OCIDs above.
-  # use_ocir_vault_credentials = false
-  # ocir_username              = "<OCI-REGISTRY-USER-NAME>"
-  # ocir_password              = "<OCI-REGISTRY-USER-TOKEN>"
 
   function_working_dir = "../src/cis-reports"
   repository_name      = "oci-cis-report"

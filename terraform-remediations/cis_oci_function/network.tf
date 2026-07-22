@@ -29,11 +29,11 @@ resource "oci_core_security_list" "this" {
     destination      = "all-${local.region_key}-services-in-oracle-services-network"
     destination_type = "SERVICE_CIDR_BLOCK"
   }
-  # egress_security_rules {
-  #   protocol         = "all"
-  #   destination      = "0.0.0.0/0"
-  #   destination_type = "CIDR_BLOCK"
-  # }
+  egress_security_rules {
+    protocol         = "all"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
+  }
 }
 
 resource "oci_core_nat_gateway" "this" {

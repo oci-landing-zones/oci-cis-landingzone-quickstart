@@ -28,6 +28,7 @@ CIS_REPORTS_REPO_RAW_URL = (
 
 
 def _parse_bool(value, default=False):
+    """Convert common string and boolean representations to a boolean."""
     if isinstance(value, bool):
         return value
     if value is None:
@@ -36,6 +37,7 @@ def _parse_bool(value, default=False):
 
 
 def _parse_report_level(value):
+    """Validate and return the supported CIS report level."""
     try:
         report_level = int(value)
     except (TypeError, ValueError) as exc:
@@ -47,11 +49,13 @@ def _parse_report_level(value):
 
 
 def _normalize_script_version(script_version):
+    """Return a non-empty CIS script version, defaulting to ``latest``."""
     normalized = str(script_version or "latest").strip()
     return normalized or "latest"
 
 
 def _script_url(script_version):
+    """Build the upstream URL for the requested CIS reports script version."""
     script_version = _normalize_script_version(script_version)
     if script_version.lower() in ("latest", "bundled"):
         ref_path = "refs/heads/main"
@@ -62,6 +66,7 @@ def _script_url(script_version):
 
 
 def _import_cis_reports_module(module_path):
+    """Load the CIS reports module from a local filesystem path."""
     logger.info("Loading CIS reports module from %s", module_path)
     spec = importlib.util.spec_from_file_location("cis_reports", module_path)
     if spec is None or spec.loader is None:
@@ -74,6 +79,7 @@ def _import_cis_reports_module(module_path):
 
 
 def _download_cis_reports(script_version):
+    """Download the requested CIS reports script to the function temporary directory."""
     url = _script_url(script_version)
     destination = Path("/tmp") / CIS_REPORTS_FILENAME
 
@@ -94,6 +100,7 @@ def _download_cis_reports(script_version):
 
 
 def _load_cis_report_class(script_version):
+    """Load and return ``CIS_Report`` from a bundled or downloaded script."""
     script_version = _normalize_script_version(script_version)
     local_paths = [
         Path.cwd() / CIS_REPORTS_FILENAME,
@@ -107,7 +114,7 @@ def _load_cis_report_class(script_version):
                 module = _import_cis_reports_module(local_path)
                 break
         else:
-            logger.warning("No bundled CIS reports script found; downloading latest instead")
+            logger.info("No bundled CIS reports script found; downloading latest instead")
             downloaded_path = _download_cis_reports("latest")
             module = _import_cis_reports_module(downloaded_path)
     else:
@@ -122,6 +129,7 @@ def _load_cis_report_class(script_version):
 
 
 def _read_json_payload(data):
+    """Read and decode a JSON function invocation payload when one is present."""
     if data is None:
         return None
 
@@ -154,6 +162,7 @@ OBJECT_STORAGE_HTML_EVENT_TYPES = {
 
 
 def _payload_summary(payload):
+    """Create a concise, non-sensitive description of an invocation payload."""
     if isinstance(payload, dict):
         keys = ",".join(sorted(str(key) for key in payload.keys())[:12])
         event_type = payload.get("eventType") or payload.get("type")
@@ -164,6 +173,7 @@ def _payload_summary(payload):
 
 
 def _json_value(value):
+    """Decode a JSON string value, leaving non-JSON values unchanged."""
     if isinstance(value, str):
         try:
             return json.loads(value)
@@ -201,6 +211,7 @@ def _find_object_storage_event(payload, depth=0):
 
 
 def _is_object_storage_event(payload):
+    """Return whether a payload is a supported Object Storage event."""
     if not isinstance(payload, dict):
         return False
 
@@ -209,16 +220,19 @@ def _is_object_storage_event(payload):
 
 
 def _object_name_from_resource_id(resource_id):
+    """Extract and URL-decode an Object Storage object name from a resource ID."""
     if not resource_id or "/o/" not in resource_id:
         return ""
     return unquote(resource_id.split("/o/", 1)[1])
 
 
 def _normalize_object_name(object_name):
+    """Normalize an Object Storage object name for comparisons and requests."""
     return unquote(str(object_name or "").strip())
 
 
 def _is_summary_report_object(object_name):
+    """Return whether an object name identifies the CIS HTML summary report."""
     normalized = _normalize_object_name(object_name).rstrip("/")
     return normalized.split("/")[-1] == CIS_SUMMARY_REPORT_FILENAME
 
@@ -256,10 +270,12 @@ def _extract_html_event_details(event, cfg):
 
 
 def _notification_title(details):
+    """Build the subject line for an HTML report notification."""
     return f"OCI CIS summary report ready: {details['object_name']}"
 
 
 def _format_compartment(details):
+    """Format compartment name and OCID for display in a notification."""
     compartment_id = details.get("compartment_id")
     compartment_name = details.get("compartment_name")
     if compartment_name and compartment_id:
@@ -268,12 +284,14 @@ def _format_compartment(details):
 
 
 def _format_utc(timestamp):
+    """Format a timestamp as a second-precision UTC ISO 8601 string."""
     if not timestamp:
         return "unknown"
     return timestamp.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _build_notification_body(details, par_link, expiration_hours, par_error=None):
+    """Build the plain-text email body for a generated HTML report."""
     sent_at = datetime.datetime.now(datetime.timezone.utc)
     expires_at = sent_at + datetime.timedelta(hours=expiration_hours)
     lines = [
@@ -309,12 +327,14 @@ def _build_notification_body(details, par_link, expiration_hours, par_error=None
 
 
 def _object_storage_endpoint(object_storage_client, region):
+    """Return the Object Storage endpoint for a client or region."""
     base_client = getattr(object_storage_client, "base_client", None)
     endpoint = getattr(base_client, "endpoint", None)
     return (endpoint or f"https://objectstorage.{region}.oraclecloud.com").rstrip("/")
 
 
 def _wait_for_object_readable(object_storage_client, details, max_attempts=6):
+    """Wait for an uploaded report object to become readable before using it."""
     for attempt in range(1, max_attempts + 1):
         try:
             object_storage_client.head_object(
@@ -405,6 +425,7 @@ def _create_html_report_par(config, signer, details, expiration_hours):
 
 
 def _publish_html_report_notification(config, signer, cfg, details, par_link, expiration_hours, par_error=None):
+    """Publish an HTML report notification, retrying with the default ONS endpoint."""
     topic_id = cfg.get("html_notification_topic_id")
     if not topic_id:
         raise RuntimeError("html_notification_topic_id is not configured")
@@ -435,6 +456,7 @@ def _publish_html_report_notification(config, signer, cfg, details, par_link, ex
 
 
 def _publish_diagnostic_notification(config, signer, cfg, title, body):
+    """Best-effort publish of a diagnostic notification to the configured ONS topic."""
     topic_id = cfg.get("html_notification_topic_id")
     if not topic_id:
         logger.warning("Unable to publish diagnostic notification because html_notification_topic_id is not configured")
@@ -457,6 +479,7 @@ def _publish_diagnostic_notification(config, signer, cfg, title, body):
 
 
 def _handle_html_report_event(config, signer, cfg, event):
+    """Create and publish a report notification for a supported storage event."""
     if not _parse_bool(cfg.get("html_notification_enabled")):
         logger.info("HTML report notification event received, but notifications are disabled")
         return {"notified": False, "reason": "notifications disabled"}
@@ -519,6 +542,7 @@ def _summary_report_object_candidates(report_directory):
 
 
 def _generated_html_report_details(config, signer, cfg, bucket_name, report_directory, event_time):
+    """Locate the uploaded HTML summary report and assemble its notification details."""
     namespace = cfg.get("html_notification_object_storage_namespace")
     region = cfg.get("html_notification_object_storage_region") or config.get("region")
     if not namespace:
@@ -555,6 +579,7 @@ def _generated_html_report_details(config, signer, cfg, bucket_name, report_dire
 
 
 def _publish_generated_html_report_notification(config, signer, cfg, bucket_name, report_directory):
+    """Publish a notification for the HTML summary report from the current CIS run."""
     if not _parse_bool(cfg.get("html_notification_enabled")):
         logger.info("HTML report notifications are disabled")
         return {"notified": False, "reason": "notifications disabled"}
@@ -586,6 +611,7 @@ def _publish_generated_html_report_notification(config, signer, cfg, bucket_name
 
 
 def handler(ctx, data: io.BytesIO = None):
+    """Run a CIS report or process a supported Object Storage event invocation."""
     # Create a UTC timestamp for the report output directory.
     start_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
     report_datetime = str(start_datetime.strftime("%Y-%m-%d_%H-%M-%S"))

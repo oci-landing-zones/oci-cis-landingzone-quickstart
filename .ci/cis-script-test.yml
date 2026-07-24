@@ -16,10 +16,12 @@ cis-compliance-script-flake-job:
     - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - scripts/cis_reports.py
+        - cis-oci-landing-zone/terraform-remediations/cis_oci_function/src/cis-reports/func.py
   script:
     - echo "  ----- BEGIN - Flake8 Check -----  "
     - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME 
     - flake8 scripts/cis_reports.py --ignore=E101,E111,E114,E115,E116,E117,E12,E13,E2,E3,E401,E5,E70,W1,W2,W3,W5 --show-source --statistics --count
+    - flake8 cis-oci-landing-zone/terraform-remediations/cis_oci_function/src/cis-reports/func.py --ignore=E101,E111,E114,E115,E116,E117,E12,E13,E2,E3,E401,E5,E70,W1,W2,W3,W5 --show-source --statistics --count
     - echo " ----- SUCCESS - Flake8 Check ----- "
 
 cis-compliance-script-setup-core:

@@ -10,14 +10,14 @@ import logging
 import datetime
 import sys
 import time
-from pathlib import Path
-from urllib.parse import unquote
-
+import pytz
+import requests
 import oci
 import oci.object_storage
 import oci.ons
-import pytz
-import requests
+
+from pathlib import Path
+from urllib.parse import unquote
 
 logger = logging.getLogger(__name__)
 

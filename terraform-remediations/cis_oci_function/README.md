@@ -41,7 +41,6 @@ The following permissions are required for the executing user (the user that dep
     - Allow group \<group\> to manage repos in tenancy
     - Allow group \<group\> to manage buckets in \<output-bucket-compartment\>
     - Allow group \<group\> to manage ons-family in \<function-compartment\>
-    - Allow group \<group\> to manage cloudevents-rules in \<output-bucket-compartment\>
     - Allow group \<group\> to manage resource-schedule-family in tenancy
 
 5. The principal that runs Terraform and the OCI CLI secret lookup needs read access to the OCI Registry auth-token Secret bundle before the image login step runs. The minimal policy is:
@@ -252,6 +251,8 @@ These values appear in the Resource Manager **Function Runtime** section. They c
 
 When this is enabled, the function first confirms the generated `cis_summary_report.html` exists in Object Storage, then creates an `ObjectRead` pre-authenticated request for that exact object. The PAR expires after 4 hours. The email contains the bucket name, object name, event time, compartment, namespace, region, the PAR link, the expiration time, and a note that the report must be manually retrieved from Object Storage if the link is not used within 4 hours of the email being sent. If PAR creation fails, the function still publishes the notification with the PAR error so delivery problems are visible in email and function logs.
 
+Notifications are published directly by the CIS function after report generation. This stack does not create an Object Storage event rule and does not enable Object Storage bucket events; no `cloudevents-rules` deployment permission is required for this notification feature.
+
 Terraform creates the Notifications topic and email subscription before creating the function resource. This means the first function execution after initial deployment can publish the report-ready email. OCI Notifications still requires the recipient to confirm the subscription email before messages are delivered to that inbox.
 
 ## Resource Scheduler
@@ -295,25 +296,19 @@ After apply, Resource Manager groups the stack outputs by area:
 
 # Known Issues
 
-1. For pushing the function image as a user not in the Default Identity Domain, include the identity domain in the OCI Registry username value, for example `<identity-domain>/<user-name>`. Enter that value in `ocir_username`. Do not include the tenancy namespace because this stack prefixes the namespace during `docker login`.
+1. **OCIR Username**For pushing the function image as a user not in the Default Identity Domain, include the identity domain in the OCI Registry username value, for example `<identity-domain>/<user-name>`. Enter that value in `ocir_username`. Do not include the tenancy namespace because this stack prefixes the namespace during `docker login`.
 
-2. if you receive the following error when deploying from Mac OS, ensure you have *docker-credential-helper* installed.
+2. **MAC OS** if you receive the following error when deploying from Mac OS, ensure you have *docker-credential-helper* installed.
 ```
 exit status 1. Output: Error │ saving credentials: error storing credentials - err: exec: "docker-credential-osxkeychain": executable file not found in │ $PATH, out: 
 ```
 
+3. **Firefox compatibility for emailed PAR links**: the notification contains a raw Object Storage PAR URL. The stack does not control the HTML report object's MIME type or `Content-Disposition` header; those are set by the upstream CIS script. There is no browser compatibility test or download fallback. The link can work in Safari or Chrome but fail in Firefox. If this happens, verify the exact URL in Firefox with `curl -I '<PAR-url>'` and compare the returned HTTP status and headers with a working browser. Oracle documents PARs as generic HTTP URLs for tools such as `curl` and `wget`, rather than guaranteeing browser-specific behavior. See [Oracle's PAR documentation](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/usingpreauthenticatedrequests.htm).
+
+4. **Notification failures do not fail the CIS invocation**: if locating the HTML report, creating the PAR, or publishing the email fails, the function records the exception in its logs and still returns success. A scheduled run can therefore appear successful even though no report email was delivered. Review the function logs when an expected notification is missing.
+
+5. **PARs accumulate**: each report run creates a new Object Storage PAR. Although each PAR expires after four hours, the stack does not delete expired PARs, so they remain in Object Storage until manually cleaned up.
+
 # About the Authors
 
 Marcus D'Andrea and Josh Hammer are members of the Field CISO team and are the authors and maintainers of this stack.
-
-# Related OCI Security Resources
-
-The following public repositories contain Terraform modules and supporting resources that help customers align OCI implementations with the CIS (Center for Internet Security) OCI Foundations Benchmark:
-- [OCI Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/)
-- [OCI Landing Zone for Service Providers](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities/tree/master/blueprints/multi-oe/saas/design)
-- [Identity & Access Management](https://github.com/oci-landing-zones/terraform-oci-modules-iam)
-- [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking)
-- [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
-- [Security](https://github.com/oci-landing-zones/terraform-oci-modules-security)
-- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
-- [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)

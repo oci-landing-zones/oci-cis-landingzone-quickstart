@@ -160,7 +160,6 @@ def _read_json_payload(data):
 
 OBJECT_STORAGE_HTML_EVENT_TYPES = {
     "com.oraclecloud.objectstorage.createobject",
-    "com.oraclecloud.objectstorage.updateobject",
 }
 
 

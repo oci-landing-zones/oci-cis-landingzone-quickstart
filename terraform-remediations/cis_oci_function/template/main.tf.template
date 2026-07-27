@@ -1,0 +1,207 @@
+# Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+module "fn_deploy" {
+  source               = "../"
+  tenancy_ocid         = "<TENANCY-OCID>"
+  user_ocid            = "<USER-OCID>"                # Ignored in OCI Cloud Shell.
+  fingerprint          = "<USER-FINGERPRINT>"         # Ignored in OCI Cloud Shell.
+  private_key_path     = "<PATH-TO-PRIVATE-KEY-FILE>" # Ignored in OCI Cloud Shell.
+  private_key_password = ""                           # Ignored in OCI Cloud Shell.
+  region               = "<REGION-NAME>"              # us-ashburn-1
+
+  # Compartment
+  new_compartment_parent_ocid = "<FUNCTION-COMPARTMENT-PARENT-OCID>"
+  new_compartment_name        = "oci-cis-report-function-cmp"
+
+  # Dynamic Group and Policy
+  dynamic_group_name = "oci-cis-report-function-dg"
+  policy_name        = "oci-cis-report-function-policy"
+
+  # Function image
+  ocir_username                       = "<OCI-REGISTRY-USER-NAME>"
+  ocir_auth_token_secret_ocid         = "<OCID1.VAULTSECRET-FOR-REGISTRY-AUTH-TOKEN>"
+  # The Secret OCID must begin with ocid1.vaultsecret. Do not use an
+  # ocid1.vault or ocid1.key value.
+  ocir_vault_secret_compartment_ocid  = "<COMPARTMENT-OCID-CONTAINING-AUTH-TOKEN-SECRET>"
+
+  # Optional: let an admin-created apply create the narrow deployment policy.
+  # Otherwise create the README policy prerequisite before the first apply.
+  # create_ocir_vault_deployment_policy  = true
+  # ocir_vault_deployment_principal_type = "group"
+  # ocir_vault_deployment_principal_name = "<DEPLOYMENT-GROUP-NAME>"
+
+  function_working_dir = "../src/cis-reports"
+  repository_name      = "oci-cis-report"
+  application_shape    = "GENERIC_ARM"
+  container_platform   = "linux/arm64"
+
+  # Networking
+  new_vcn_name    = "oci-cis-report-function-vcn"
+  new_subnet_name = "oci-cis-report-function-subnet"
+
+  # Runtime
+  deploy_output_bucket = true
+  output_bucket_name   = "oci-cis-report-results"
+  regions_to_run_in    = "" # empty scans all subscribed regions.
+  report_level         = 2
+  report_raw_data      = false
+  report_obp           = false
+  function_timeout_in_seconds = 300
+  invoke_function      = false
+
+  # HTML report notification
+  enable_html_report_notifications = false
+  notification_email               = "security-team@example.com"
+
+  # Resource Scheduler
+  enable_resource_scheduler             = true
+  resource_scheduler_display_name       = "oci-cis-report-weekly"
+  resource_scheduler_recurrence_type    = "ICAL"
+  resource_scheduler_frequency          = "WEEKLY"
+  resource_scheduler_interval           = 1
+  resource_scheduler_recurrence_details = "" # Advanced override; leave empty for guided ICAL.
+  resource_scheduler_state              = "ACTIVE"
+  resource_scheduler_start_time_mode    = "NO_EXPLICIT_START"
+  resource_scheduler_end_time_mode      = "NO_EXPLICIT_END"
+}
+
+output "functions_compartment_id" {
+  description = "The OCID of the functions compartment"
+  value       = module.fn_deploy.functions_compartment_id
+}
+
+output "functions_compartment_name" {
+  description = "The name of the function compartment"
+  value       = module.fn_deploy.functions_compartment_name
+}
+
+output "functions_dyn_group_name" {
+  description = "The name of the dynamic group for functions"
+  value       = module.fn_deploy.functions_dyn_group_name
+}
+
+output "functions_dyn_group_id" {
+  description = "The OCID of the dynamic group for functions"
+  value       = module.fn_deploy.functions_dyn_group_id
+}
+
+output "functions_policy_name" {
+  description = "The name of the function policy"
+  value       = module.fn_deploy.functions_policy_name
+}
+
+output "functions_policy_id" {
+  description = "The OCID of the function policy"
+  value       = module.fn_deploy.functions_policy_id
+}
+
+output "vcn_id" {
+  description = "The VCN OCID"
+  value       = module.fn_deploy.vcn_id
+}
+
+output "vcn_name" {
+  description = "The VCN name"
+  value       = module.fn_deploy.vcn_name
+}
+
+output "private_subnet_id" {
+  description = "The private subnet OCID"
+  value       = module.fn_deploy.private_subnet_id
+}
+
+output "private_subnet_name" {
+  description = "The private subnet name"
+  value       = module.fn_deploy.private_subnet_name
+}
+
+output "function_application_id" {
+  description = "The OCID of the newly created Function application"
+  value       = module.fn_deploy.function_application_id
+}
+
+output "function_application_name" {
+  description = "The name of the newly created Function application"
+  value       = module.fn_deploy.function_application_name
+}
+
+output "function_id" {
+  description = "The OCID of the newly created Function"
+  value       = module.fn_deploy.function_id
+}
+
+output "function_name" {
+  description = "The name of the newly created Function"
+  value       = module.fn_deploy.function_name
+}
+
+output "function_invoke_endpoint" {
+  description = "The base https invoke URL to set on a client in order to invoke a function. This URL will never change over the lifetime of the function and can be cached."
+  value       = module.fn_deploy.function_invoke_endpoint
+}
+
+output "function_image" {
+  description = "The OCIR image deployed by the function"
+  value       = module.fn_deploy.function_image
+}
+
+output "function_repository_name" {
+  description = "The OCIR repository name used by the function image"
+  value       = module.fn_deploy.function_repository_name
+}
+
+output "output_bucket_name" {
+  description = "The Object Storage bucket where CIS reports are written"
+  value       = module.fn_deploy.output_bucket_name
+}
+
+output "function_invocation_test_output" {
+  description = "Value of the function invocation test output"
+  value       = module.fn_deploy.function_invocation_test_output
+}
+
+output "function_log_group_id" {
+  description = "The OCID of the function log group"
+  value       = module.fn_deploy.function_log_group_id
+}
+
+output "function_log_group_name" {
+  description = "The name of the function log group"
+  value       = module.fn_deploy.function_log_group_name
+}
+
+output "function_log_id" {
+  description = "The OCID of the function log"
+  value       = module.fn_deploy.function_log_id
+}
+
+output "function_log_name" {
+  description = "The name of the function log"
+  value       = module.fn_deploy.function_log_name
+}
+
+output "resource_scheduler_schedule_id" {
+  description = "The OCID of the OCI Resource Scheduler schedule"
+  value       = module.fn_deploy.resource_scheduler_schedule_id
+}
+
+output "resource_scheduler_schedule_next_run" {
+  description = "The next run time for the OCI Resource Scheduler schedule"
+  value       = module.fn_deploy.resource_scheduler_schedule_next_run
+}
+
+output "html_notification_topic_name" {
+  description = "The Notifications topic used for generated cis_summary_report.html emails"
+  value       = module.fn_deploy.html_notification_topic_name
+}
+
+output "html_notification_topic_id" {
+  description = "The OCID of the Notifications topic used for generated cis_summary_report.html emails"
+  value       = module.fn_deploy.html_notification_topic_id
+}
+
+output "html_notification_subscription_id" {
+  description = "The OCID of the email subscription used for generated cis_summary_report.html emails"
+  value       = module.fn_deploy.html_notification_subscription_id
+}

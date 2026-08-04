@@ -80,6 +80,7 @@ usage() {
 
 test_internet_access() {
     error_code=0
+    printf "INFO: Checking Internet connection.\n"
     local _wg_=$(which curl | wc -c)
     if [ ${_wg_} -gt 0 ]; then
         curl ${FILE_REMOTE} -s -o /dev/null
@@ -90,6 +91,9 @@ test_internet_access() {
     fi
     if [ $error_code -gt 0 ]; then
         HAS_INTERNET_ACCESS=0
+        printf "WARNING: Internet connection is unavailable.\n"
+    else
+        printf "INFO: Internet connection is available.\n"
     fi
 }
 
@@ -100,14 +104,18 @@ debug() {
 }
 
 check_directories() {
+    printf "INFO: Checking for required script files.\n"
     if [ ! -e ${SCRIPT_DIR}/${CIS_SCRIPT_NAME} ]; then
         printf "ERROR: File '"${CIS_SCRIPT_NAME}"' missing!\n"
         exit 1
     fi
+    printf "INFO: Found required script file: %s.\n" "${CIS_SCRIPT_NAME}"
 }
 
 check_python_version() {
     _W_=$(which python3 | wc -c)
+    printf "INFO: Checking Python version. \n"
+
     if [ ${_W_} -le 0 ]; then
         printf "ERROR: Please install python3 first! Use a version higher than 3.9.\n"
         exit 1
@@ -118,14 +126,20 @@ check_python_version() {
         printf "ERROR: Please upgrade your Python verion higher than 3.9.\n"
         exit 1
     fi
+
+    printf "INFO: Found Python version: $PYTHON_VERSION. \n"
+
 }
 
 check_config_for_profile() {
     local _wc_=$(grep '\['"$1"'\]' $OCI_CONFIG_FILE)
+    printf "INFO: Checking for OCI Config. \n"
+
     if [ -z "${_wc_}" ]; then
         printf "ERROR: Profile name %s is not present in the OCI config file (%s)!\n" ${TENANCY} ${OCI_CONFIG_FILE}
         exit 1
     fi
+    printf "INFO: Found OCI Config: $OCI_CONFIG_FILE \n"
 }
 
 get_oci_config_value() {
@@ -149,6 +163,7 @@ get_oci_config_value() {
 
 check_jwt_expiry() {
     local jwt="$1"
+    printf "INFO: Checking Security Token expiry.\n"
 
     # Extract payload (2nd part)
     local payload="${jwt#*.}"
@@ -212,8 +227,10 @@ show_version_json() {
 }
 
 make_env() {
+    printf "INFO: Checking Python virtual environment.\n"
     if [ $HAS_INTERNET_ACCESS -eq 1 ]; then
         if [ ! -d ${PYTHON_ENV} ]; then
+            printf "INFO: Creating Python virtual environment.\n"
             ${CMD_PYTHON} -m venv ${PYTHON_ENV}
         fi
     fi
@@ -221,6 +238,7 @@ make_env() {
     if [ -d ${PYTHON_ENV} ]; then
         source ${PYTHON_ENV}/bin/activate
         CMD_PYTHON=$(which python3)
+        printf "INFO: Python virtual environment is ready.\n"
         if [ $HAS_INTERNET_ACCESS -eq 1 ]; then
             ${CMD_PYTHON} -m pip install pip --upgrade ${PIP_OPTS}
         else
@@ -241,16 +259,17 @@ make_env() {
     if [ $HAS_INTERNET_ACCESS -eq 1 ]; then
         printf "INFO: Checking for required libraries ...\n"
         if [ ! -e ${SCRIPT_DIR}/requirements.txt ]; then
-            echo >${SCRIPT_DIR}/requirements.txt <<EOF
-xlsxwriter>=3.2.9
-pytz>=2026.2
-openpyxl>=3.1.5
-pyyaml>=6.0.3
-oci==2.182.1
+            printf "INFO: Creating requirements file.\n"
+            if ! cat > "${SCRIPT_DIR}/requirements.txt" <<'EOF'
+# Required
+pytz
+oci
 requests
-matplotlib
-numpy
 EOF
+            then
+                printf "ERROR: Unable to create requirements file '%s'.\n" "${SCRIPT_DIR}/requirements.txt"
+                exit 1
+            fi
         fi
         ${CMD_PYTHON} -m pip install ${PIP_OPTS} -r ${SCRIPT_DIR}/requirements.txt
         if [ $? -gt 0 ]; then
@@ -263,6 +282,7 @@ EOF
 
 check_authentication() {
     if [ ! -z "${TENANCY}" -a -z "${CLOUD_SHELL_TOOL_SET}" -a "${INSTANCE_PRINCIPAL}" -eq 0 ]; then
+        printf "INFO: Checking authentication for OCI profile %s.\n" "${TENANCY}"
         local tname=$(get_oci_config_value ${TENANCY} tenancy)
         local security_token_file=$(get_oci_config_value ${TENANCY} security_token_file)
         if [ -z ${tname} ]; then
@@ -273,10 +293,14 @@ check_authentication() {
             check_jwt_expiry "${jwt}"
             CIS_AUTH_OPT="-st"
         fi
+        if [ ! -z "${tname}" ]; then
+            printf "INFO: OCI profile authentication configuration is ready.\n"
+        fi
     fi
 }
 
 check_env() {
+    printf "INFO: Checking Python virtual environment configuration.\n"
     local _WC_=$(${CMD_PYTHON} -m pip list | grep pytz | wc -c)
     if [ ${_WC_} -lt 1 ]; then
         printf "ERROR: ************************************************************************\n"
@@ -459,6 +483,7 @@ fi
 
 OUTPUT_DIR="${OUTPUT_DIR_PARENT}/${OUTPUT_DIR_NAME}"
 if [ ! -e ${OUTPUT_DIR} ]; then
+    printf "INFO: Creating output directory %s.\n" "${OUTPUT_DIR}"
     mkdir -p ${OUTPUT_DIR}
     show_version_json > ${OUTPUT_DIR}/script_versions.json
 fi
@@ -500,6 +525,7 @@ fi
 #
 
 if [ ${NO_SHASUM} -eq 0 ]; then
+    printf "INFO: Creating SHA-%s checksum files.\n" "${SHA_SIZE}"
     _cwd=$(pwd)
     cd ${OUTPUT_DIR}
     _files=$(ls)
@@ -516,9 +542,11 @@ if [ ${NO_SHASUM} -eq 0 ]; then
     printf 'for i in ${files}; do\n    ${CMD_SHASUM} -c ${i}\ndone\n' >>${VERIFY}
     chmod +x ${VERIFY}
     cd ${_cwd}
+    printf "INFO: SHA-%s checksum files are ready.\n" "${SHA_SIZE}"
 fi
 
 if [ ${NO_ZIP} -eq 0 ]; then
+    printf "INFO: Packaging results into a ZIP file.\n"
     DIR_PARENT_OUTPUT="$(dirname ${OUTPUT_DIR})"
     cd $DIR_PARENT_OUTPUT
     if [ ${ZIP_PROTECT} -eq 1 ]; then
@@ -539,6 +567,7 @@ if [ ${NO_ZIP} -eq 0 ]; then
         ${CMD_SHASUM} ${OPT_SHASUM} ${OUTPUT_DIR_NAME}.zip > ${OUTPUT_DIR_NAME}.zip.sha${SHA_SIZE}
     fi
 
+    printf "INFO: ZIP package is ready.\n"
     printf "\nINFO: All output can be found in the directory '%s'.\nINFO: Results are packaged as downloadable file '%s' at '%s'.\n" "${OUTPUT_DIR_NAME}" "${OUTPUT_DIR_NAME}.zip" "${OUTPUT_DIR_PARENT}"
     if [ ! -z "${CLOUD_SHELL_TOOL_SET}" ]; then
         printf "\nINFO: To download the ZIP file:\nINFO:  1. Copy the filename %s\nINFO:  2. Click on the settings icon of the Cloud Shell on the right\nINFO:  3. Select 'Download'\nINFO:  4. Paste the file name into the modal window and click on 'Download'\n\n" "${OUTPUT_DIR_NAME}.zip"

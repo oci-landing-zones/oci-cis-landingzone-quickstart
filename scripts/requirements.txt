@@ -1,0 +1,8 @@
+# Required 
+pytz
+oci
+requests
+#Optional
+xlsxwriter
+matplotlib
+numpy

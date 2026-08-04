@@ -16,3 +16,7 @@
 
 - The CIS Compliance Checker script is unexpectedly killed by the OS without any error messages.
    * This could be due to low memory. If the tenancy has a very large number of Users, Groups and Group Memberships this will result in higher memory usage by the script and could force the OS to terminate the process. If this is the case it is recommended to increase the memory to 32GB and retry. Since Cloud Shell has a fixed memory amount it is recommended to switch to a VM.
+
+- On MacOS a path with colons and forward slashes in it may appear differently in the Finder. To avoid confusion the script `standard.sh` uses `HH.MM.SS` instead of the common `HH:MM:SS` when you run it on MacOS.
+
+- Running the scripts in OCI Cloud Shell with the OCI service network configured works for the tenancy home region, only and may take longer (approx five times)

@@ -76,6 +76,10 @@ The script checks the following services based on different flags:
 - All Resources `--all-resources`
     - Network Topology
     - All Resources and additional attributes from Search Service
+- Service Limits `--service-limits`
+    - All resources and additional attributes from Search Service
+    - OCI service limit utilization
+    - OCI Best Practice checks and raw data output
 
 ### <a name="oci_config_profile"></a>**Why did the script may fail to run when executing from the local machine with message "** OCI_CONFIG_FILE and OCI_CONFIG_PROFILE env variables not found, abort.**"?
 - In this case, make sure to set OCI_CONFIG_HOME to the full path of .oci/config file. Optionally, OCI_CONFIG_PROFILE can be configured with a default profile to use from config.

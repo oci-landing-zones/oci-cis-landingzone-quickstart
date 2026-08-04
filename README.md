@@ -239,8 +239,9 @@ Advanced users can use the script `cis_report.py` directly. The next chapters ex
   --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.
   --raw                                Outputs all resource data into CSV files.
   --obp                                Checks for OCI best practices.
-  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with
-                                       Service Limits checking (--obp) and enables the (--raw) flags. All of these checks increase runtime.
+  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables the --obp and --raw flags. All
+                                       of these checks increase runtime.
+  --service-limits                     Checks OCI service limit utilization. It also enables the --all-resources, --obp, and --raw flags.
   --disable-api-usage-check            Disables the checking of OCI API unused for 45 days or more.
   --redact-output                      Redacts OCIDs in output CSV and JSON files.
   --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
@@ -270,6 +271,12 @@ To run using Cloud Shell in all regions and check for OCI Best Practices with ra
 ```
 % python3 cis_reports.py -dt --all-resources
 ``` 
+
+#### Executing service limit utilization checks
+To check OCI service limit utilization, run `--service-limits`. This also runs the Advanced Search query and enables OCI Best Practice and raw data output. For `standard.sh`, use `--cis '--service-limits'`.
+```
+% python3 cis_reports.py --service-limits
+```
 
 #### Executing on local machine with a specific OCI Config file
 To run on a local machine using a specific OCI Config file.
@@ -458,6 +465,8 @@ In the sample output below:
 ### <a name="OBPOutput"></a>**Output OCI Best Practice Summary Report**
 Using `--obp` will check for a tenancy's alignment to the available OCI Best Practices.  For `standard.sh` use `--cis '--obp'`.
 
+The `Service_Limits` OBP-GOV-1 result is collected only when using `--service-limits`, which also enables `--all-resources`, `--obp`, and `--raw`.
+
 ```
 #########################################################################################
 #                              OCI Best Practices Findings                               #
@@ -566,7 +575,7 @@ CSV: regions                --> tenancy1-2026-03-17_18-30-55/raw_data_regions.cs
 CSV: network_drg_attachments --> tenancy1-2026-03-17_18-30-55/raw_data_network_drg_attachments.csv
 CSV: instances              --> tenancy1-2026-03-17_18-30-55/raw_data_instances.csv
 CSV: certificates           --> tenancy1-2026-03-17_18-30-55/raw_data_certificates.csv
-CSV: service_limits         --> tenancy1-2026-03-17_18-30-55/raw_data_service_limits.csv
+CSV: service_limits         --> tenancy1-2026-03-17_18-30-55/raw_data_service_limits.csv (generated with --service-limits)
 CSV: compartment_hierarchy_policy_count --> tenancy1-2026-03-17_18-30-55/raw_data_compartment_hierarchy_policy_count.csv
 JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resources.json
 ```

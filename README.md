@@ -109,6 +109,28 @@ The script `standard.sh` makes the run as easy and smooth as possible. It includ
 
 It has been tested on **OCI Cloud Shell** with **Public network**, **OCI Cloud Shell** with **OCI Service network**, **Oracle Linux**, **MacOS 12** and higher.
 
+### Installation
+
+To download and run the scripts without cloning the repository:
+
+```bash
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
+chmod +x standard.sh
+```
+
+Optionally, download `requirements.txt`. When it is not present, `standard.sh` creates it before installing the required Python packages.
+
+```bash
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/requirements.txt
+```
+
+### Python Packages
+
+When Internet access is available, `standard.sh` creates a Python virtual environment and installs all packages listed in `scripts/requirements.txt`.
+
+The required packages are `pytz`, `oci`, and `requests`; they are needed to run the compliance checks. The `requirements.txt` file also includes the optional packages `xlsxwriter`, `matplotlib`, and `numpy`, which enable XLSX output and dashboard graphics.
+
 ### Arguments
 
 Standard.sh supports the following arguments:
@@ -122,16 +144,24 @@ Standard.sh supports the following arguments:
 -r|--region region_name            -- Run assess.sh on region region_name only.
 -t|--tenancy tenancy_configuration -- Specify a name of the tenancy (defaults to 'DEFAULT').
 --redact                           -- Redact sensitive information in output files.
-of the output directory.
 --zip-protect                      -- Encrypt ZIP file with a password of your choice.
 --no-checksum                      -- Do not create checksum files.
---no-zip                           -- Do not create a ZIP file for the contents. --cis options                      -- Run cis_report only and provide additional options.
-                                      For example, --cis '-h' shows available options.
-                                    The options -dt, -ip, -st, -t, -r are detected automatically and are not required.
+--no-zip                           -- Do not create a ZIP file for the contents of the output directory.
+--cis options                      -- Pass additional options to cis_reports.py.
 -v|--version                       -- Show the version numbers of the scripts used.
 --verbose                          -- Print more details.
 
 ```
+
+### Passing Options to `cis_reports.py`
+
+Use `--cis` to pass quoted options to `cis_reports.py`. For example, to skip the OCI API usage check:
+
+```bash
+./standard.sh --cis '--disable-api-usage-check'
+```
+
+For the complete list of available options, see [The script `cis_report.py`](#script_cis_report) and the [Usage Examples](#usage) sections. The `-dt`, `-ip`, `-st`, `-t`, and `-r` options are detected by `standard.sh` and do not need to be passed through `--cis`.
 
 ## <a name="script_cis_report"></a>The script `cis_report.py`
 

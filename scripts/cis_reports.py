@@ -6960,6 +6960,34 @@ def execute_report():
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:
+
+        def add_sheet(book, file, name):
+            try:
+                worksheet = book.add_worksheet(name)
+                with open(file, 'rt', encoding='unicode_escape') as f:
+                    reader = csv.reader(f)
+                    last_row = 0
+                    last_col = 0
+                    has_data = False
+                    for r, row in enumerate(reader):
+                        has_data = True
+                        last_row = r
+                        for c, col in enumerate(row):
+                            last_col = c
+                            # Format URL only if the column starts with "=HYPERLINK"
+                            if col.startswith("=HYPERLINK"):
+                                url_info = re.findall(r'"(.*?)"', col)
+                                if url_info and len(url_info[0]) < 2079:  # Excel Link limit
+                                    worksheet.write_url(r, c, url_info[0], string=url_info[1])
+                            else:
+                                worksheet.write(r, c, col)
+                if has_data:
+                    worksheet.autofilter(0, 0, last_row, last_col)
+                worksheet.autofit()
+            except Exception as e:
+                print(f"** Failed to output to Excel worksheet {worksheet_name} **")
+                print(e)
+        
         try:
             report_prefix = f'{cmd.report_prefix}_' if cmd.report_prefix else ''
             workbook = Workbook(f'{csv_report_directory}/{report_prefix}Consolidated_Report.xlsx', {'in_memory': True})
@@ -6970,40 +6998,39 @@ def execute_report():
                     worksheet.insert_image('L2', f'{csv_report_directory}/{report_prefix}cis_summary_compliance_by_focus_area.png')
                 except Exception:
                     pass
+
             csvfiles = glob.glob(f'{csv_report_directory}/{report_prefix}*.csv')
             csvfiles.sort()
             seen_worksheet_names = set()
+
+            cis_files = []
             for csvfile in csvfiles:
-                worksheet_name = _build_worksheet_name(csvfile, report_prefix, seen_worksheet_names)
+                if 'cis_summary_report.csv' in csvfile:
+                    cis_files.append(csvfile)
+                    break
+
+            for k, v in report.cis_foundations_benchmark_3_0.items():
+                for csvfile in csvfiles:
+                    km = f"_{k.replace('.', '-')}.csv"
+                    if km in csvfile:
+                        cis_files.append(csvfile)
+            
+            all_other_files = []
+            for csvfile in csvfiles:
+                if csvfile not in cis_files:
+                    all_other_files.append(csvfile)
+            
+            for cis_file in cis_files:
+                worksheet_name = _build_worksheet_name(cis_file, report_prefix, seen_worksheet_names)
                 if not worksheet_name:
                     continue
+                add_sheet(workbook, cis_file, worksheet_name)
 
-                try:
-                    worksheet = workbook.add_worksheet(worksheet_name)
-                    with open(csvfile, 'rt', encoding='unicode_escape') as f:
-                        reader = csv.reader(f)
-                        last_row = 0
-                        last_col = 0
-                        has_data = False
-                        for r, row in enumerate(reader):
-                            has_data = True
-                            last_row = r
-                            for c, col in enumerate(row):
-                                last_col = c
-                                # Format URL only if the column starts with "=HYPERLINK"
-                                if col.startswith("=HYPERLINK"):
-                                    url_info = re.findall(r'"(.*?)"', col)
-                                    if url_info and len(url_info[0]) < 2079:  # Excel Link limit
-                                        worksheet.write_url(r, c, url_info[0], string=url_info[1])
-                                else:
-                                    worksheet.write(r, c, col)
-                    if has_data:
-                        worksheet.autofilter(0, 0, last_row, last_col)
-                    worksheet.autofit()
-                except Exception as e:
-                    print(f"** Failed to output to Excel worksheet {worksheet_name} **")
-                    print(e)
+            for file_name in all_other_files:
+                worksheet_name = _build_worksheet_name(file_name, report_prefix, seen_worksheet_names)
+                if not worksheet_name:
                     continue
+                add_sheet(workbook, file_name, worksheet_name)
 
             workbook.close()
         except Exception as e:

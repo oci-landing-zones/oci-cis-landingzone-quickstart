@@ -568,7 +568,7 @@ if [ ${NO_ZIP} -eq 0 ]; then
     fi
 
     printf "INFO: ZIP package is ready.\n"
-    printf "\nINFO: All output can be found in the directory '%s'.\nINFO: Results are packaged as downloadable file '%s' at '%s'.\n" "${OUTPUT_DIR_NAME}" "${OUTPUT_DIR_NAME}.zip" "${OUTPUT_DIR_PARENT}"
+    printf "\nINFO: All output can be found in the directory '%s'.\nINFO: Results are packaged as downloadable file '%s'.\n" "${OUTPUT_DIR_PARENT}/${OUTPUT_DIR_NAME}" "${OUTPUT_DIR_PARENT}/${OUTPUT_DIR_NAME}.zip"
     if [ ! -z "${CLOUD_SHELL_TOOL_SET}" ]; then
         printf "\nINFO: To download the ZIP file:\nINFO:  1. Copy the filename %s\nINFO:  2. Click on the settings icon of the Cloud Shell on the right\nINFO:  3. Select 'Download'\nINFO:  4. Paste the file name into the modal window and click on 'Download'\n\n" "${OUTPUT_DIR_NAME}.zip"
     fi
@@ -576,4 +576,6 @@ if [ ${NO_ZIP} -eq 0 ]; then
         printf "\nWARNING: Your Cloud Shell seems to have the OCI services network configured.\n"
         printf "WARNING: With this setup the script can check your home region '"${OCI_REGION}"' only.\nWARNING: To check all your regions you need Internet access for your Cloud Shell!\n\n"
     fi
+else
+    printf "\nINFO: All output can be found in the directory '%s'.\n" "${OUTPUT_DIR_PARENT}/${OUTPUT_DIR_NAME}"
 fi

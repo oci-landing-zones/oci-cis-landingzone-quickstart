@@ -222,9 +222,9 @@ class CIS_Report:
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
-                 report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
-                 redact_output, oci_url=None, debug=False, all_resources=True,
-                 disable_api_keys=False):
+                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
+                  redact_output, oci_url=None, debug=False, all_resources=True,
+                  disable_api_keys=False, service_limits=False):
 
         # CIS Foundation benchmark 3.0.0
         self.cis_foundations_benchmark_3_0 = { 
@@ -1135,10 +1135,10 @@ class CIS_Report:
         # Determining if CSV report OCIDs will be redacted
         self.__redact_output = redact_output
 
-        # Determine if All resource from Search service should be queried
-        self.__all_resources = all_resources
-        if all_resources:
-            self.__all_resources = all_resources
+        # Service limit checks include all resource collection and its report output.
+        self.__service_limits_enabled = service_limits
+        self.__all_resources = all_resources or service_limits
+        if self.__all_resources:
             self.__obp_checks = True
             self.__output_raw_data = True
 
@@ -6291,11 +6291,15 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
 
         if self.__all_resources:
             all_resources = [
-                self.__search_resources_all_resources_in_tenancy,
-                self.__service_limits_utilization
+                self.__search_resources_all_resources_in_tenancy
             ]
         else:
             all_resources = []
+
+        if self.__service_limits_enabled:
+            service_limits = [self.__service_limits_utilization]
+        else:
+            service_limits = []
 
         def execute_function(func):
             func()
@@ -6303,7 +6307,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Submit each function to the executor
             futures = []
-            for func in cis_regional_functions + obp_functions + all_resources:
+            for func in cis_regional_functions + obp_functions + all_resources + service_limits:
                 futures.append(executor.submit(execute_function, func))
 
             # Wait for all functions to complete
@@ -6795,7 +6799,9 @@ def execute_report():
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
-                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with Service Limits checking (--obp) and enables the (--raw) flags.  All of these checks increase runtime.')
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables the --obp and --raw flags. All of these checks increase runtime.')
+    parser.add_argument('--service-limits', action='store_true', default=False,
+                        help='Checks OCI service limit utilization. It also enables the --all-resources, --obp, and --raw flags.')
     parser.add_argument('--disable-api-usage-check', action='store_true', default=False,
                         help='Disables the checking of OCI API unused for 45 days or more.')
     parser.add_argument('--redact-output', action='store_true', default=False,
@@ -6821,7 +6827,7 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:

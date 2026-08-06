@@ -1,3 +1,32 @@
+# August 7, 2026 Release Notes - 3.4.0
+1. [Shell Script Migration](#3-4-0-shell-script)
+1. [OCI Functions Deployment](#3-4-0-functions)
+1. [Oracle SaaS Compliance Mappings](#3-4-0-saas-mappings)
+1. [HTML Report Interface](#3-4-0-html-interface)
+1. [Service Limits Flag](#3-4-0-service-limits)
+1. [Fixes and Updates](#3-4-0-fixes)
+
+## <a name="#3-4-0-shell-script">Shell Script Migration</a>
+- Migrated the shell script into this repository so it can be maintained and released with the compliance checker.
+- Added hash validation when report files are written to help detect subsequent file changes.
+- Added output that records the script version, command-line parameters, and file hashes used for each run to improve troubleshooting and report traceability.
+
+## <a name="#3-4-0-functions">OCI Functions Deployment</a>
+- Added Terraform support for deploying the CIS Compliance Checker as an OCI Function. This includes the ability to run on a schedule and generate an email notification to Pre Authenticated Request (PAR) of the HTML report.
+
+## <a name="#3-4-0-saas-mappings">Oracle SaaS Compliance Mappings</a>
+- Extended **Compliance Mappings** with an **Oracle SaaS Benchmark** mapping category with some mapping added and more to come.
+
+## <a name="#3-4-0-html-interface">HTML Report Interface</a>
+- Enhanced the HTML report interface to provide a more user-friendly experience and Oracle Best Practice (OBP) check data in additon to the CIS OCI Benchmark checks.
+
+## <a name="#3-4-0-service-limits">Service Limits Flag</a>
+- Added a dedicated service-limits flag and removed service-limit checks from `--all-resources` execution.
+
+## <a name="#3-4-0-fixes">Fixes and Updates</a>
+Updates:
+- Sorted XLSX report worksheets by CIS recommendation number.
+
 # July 13, 2026 Release Notes - 3.3.0
 1. [CIS Controls v8.1 Mapping](#3-3-0-cis-v8-mapping)
 1. [OBP Reporting Improvements](#3-3-0-obp-reporting)

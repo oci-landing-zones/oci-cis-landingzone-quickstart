@@ -226,7 +226,7 @@ class CIS_Report:
                   redact_output, oci_url=None, debug=False, all_resources=True,
                   disable_api_keys=False, service_limits=False):
 
-        # CIS Foundation benchmark 3.0.0
+        # CIS Foundation benchmark 3.1.1
         self.cis_foundations_benchmark_3_0 = { 
             '1.1' : {'id': 'IAM-1', 'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
             '1.2' : {'id': 'IAM-2', 'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
@@ -5839,7 +5839,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
 
         # Screen output for CIS Summary Report
-        print_header("CIS Foundations Benchmark 3.0.0 Summary Report")
+        print_header("CIS Foundations Benchmark 3.1.1 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)

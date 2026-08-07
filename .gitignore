@@ -18,3 +18,4 @@ test/**
 **/scripts/**/*.json
 **/scripts/**/*.pkl
 **/scripts/**/*.png
+*.pyc

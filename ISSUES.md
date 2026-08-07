@@ -19,4 +19,4 @@
 
 - On MacOS a path with colons and forward slashes in it may appear differently in the Finder. To avoid confusion the script `standard.sh` uses `HH.MM.SS` instead of the common `HH:MM:SS` when you run it on MacOS.
 
-- Running the scripts in OCI Cloud Shell with the OCI service network configured works for the tenancy home region, only and may take longer (approx five times)
+- Running the scripts in OCI Cloud Shell with the 'OCI service network' configured works for the tenancy home region, only, and may take longer (approx five times longer).

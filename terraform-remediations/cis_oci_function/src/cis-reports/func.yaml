@@ -1,0 +1,9 @@
+schema_version: 20180708
+name: cis_reports
+version: 3.0.1
+runtime: python
+entrypoint: /python/bin/fdk /function/func.py handler
+memory: 2048
+timeout: 300
+config:
+  script_version: latest

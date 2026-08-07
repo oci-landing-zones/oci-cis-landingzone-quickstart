@@ -13,10 +13,14 @@
 ![Landing_Zone_Logo](images/landing%20zone_300.png)
 ## Table of Contents
 1. [Overview](#overview)
+1. [CIS v8.1 Framework Mapping Documentation](compliance-mapping.md)
+1. [Fast start](#fast_start)
 1. [Setup](#setup)
-1. [Arguments](#arguments)
+1. [The script standard.sh](#script_standard)
+1. [The script cis_report.py](#script_cis_report)
 1. [Usage Examples](#usage)
 1. [Output Examples](#output)
+1. [Oracle Best Pratcies](#OBPChecks)
 1. [Known Issues](ISSUES.md)
 1. [Frequently Asked Questions](FAQ.md)
 1. [Blogs](#blogs)
@@ -26,141 +30,202 @@
 
 ## <a name="overview"></a>Overview
 
-The CIS Compliance Script checks a tenancy's configuration against the CIS OCI Foundations Benchmark. The CIS Compliance Script has been awarded [CIS Security Software Certification](https://www.cisecurity.org/partner/oracle) for CIS Oracle Cloud Infrastructure Foundations Benchmark v3.0.0.
+For CIS Compliance Script checks for a tenancy's configuration against the CIS OCI Foundations Benchmark use one of the provided scripts.
 
-In addition to CIS checks it can be check for alignment to OCI Best Practices  by using the `--obp` flag.  These checks review the following OCI best practices in your tenancy:
+The CIS Compliance Script `cis_report.py` has been awarded [CIS Security Software Certification](https://www.cisecurity.org/partner/oracle) for CIS Oracle Cloud Infrastructure Foundations Benchmark v3.0.0.
+
+In addition to CIS checks they can check for alignment to OCI Best Practices (see [OCI Best Practice Summary Report](#OBPOutput)). These checks include reviews for the following OCI best practices in your tenancy:
 - Aggregation of OCI Audit compartment logs, Network Flow logs, and Object Storage logs are sent to Service Connector Hub in all regions
 - A Budget for cost track is created in your tenancy
 - Network connectivity to on-premises is redundant 
 - Cloud Guard is configured at the root compartment with detectors and responders 
 - Certificates close to expiration
 
-The script is located under the *scripts* folder in this repository. It outputs a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder(default location) with the region, tenancy name, and current day's date ex. ```<tenancy_name>-2022-12-02_13-50-30/```. 
-
-### <a name="OBPChecks"></a>Oracle Best Practice Checks
-
-| ID | Recommendation | Section | Title | Documentation |
-|---|---|---|---|---|
-| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub-compartments flag checked at the tenancy root compartment in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| OBP-SIEM-3 | SIEM_VCN_Flow_Logging | SIEM Logging | VCN Flow logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| OBP-SIEM-4 | SIEM_Write_Bucket_Logs | SIEM Logging | Bucket write logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| OBP-SIEM-5 | SIEM_Read_Bucket_Logs | SIEM Logging | Bucket read logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
-| LAM-19 | Log_Retention | Logging | Retain Audit Logs for 90 days | https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm |
-| OBP-NTW-1 | Networking_Redudancy | Advanced Networking | Scalable and secure topology in OCI | https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm |
-| OBP-NTW-2 | Networking_DRG_Upgraded | Advanced Networking | Dynamic Route Gateway (DRG) upgraded to version 2 | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm |
-| OBP-NTW-3 | Networking_Hub_Spoke | Advanced Networking | Hub and Spoke Network Architecture | https://docs.oracle.com/en/solutions/hub-spoke-network/index.html |
-| OBP-NTW-4 | Networking_IPSec_connections | Advanced Networking | IPSec connections with two tunnels | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
-| OBP-NTW-5 | Networking_IPSec_bgp | Advanced Networking | IPSec connections with BGP Routing | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
-| OBP-CSP-1 | Cloud_Guard_Config | CSPM | Cloud Guard enabled and configured | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-customize.htm |
-| OBP-CSP-2 | Cloud_Guard_Problems | CSPM | Cloud Guard problems with Risk Level Critical or High | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-problems.htm |
-| OBP-CRT-1 | Certificates_Near_Expiry | Certificates | Certificates to expire in 30 days | https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm |
-| OBP-GOV-1 | Service_Limits | Governance | Visibility into OCI Limits | https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E |
-| OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
-| OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
-| OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
-| IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
-| IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
-
-
+The scripts are located under the `scripts` folder in this repository. They output a summary report CSV as well individual CSV findings report for configuration issues that are discovered in a folder (default location) with the region, tenancy name, and current day's date, for example `<tenancy_name>-2022-12-02_13-50-30/`. 
 
 ## <a name="setup"></a>Setup 
 
 ### Required Permissions
 The **Auditors Group** that is created as part of the CIS Landing Zone Terraform has all the permissions required to run the compliance checking in the tenancy.  Below is the minimum OCI IAM Policy to grant a group the script in a tenancy.
 
-**Access to audit retention requires the user to be part of the Administrator group* - the only recommendation affected is CIS recommendation 3.1.
+**Access to audit retention requires the user to be part of the *Administrators* group** - the only recommendation affected is CIS recommendation 3.1.
+
+For tenancies **without [IAM Domains](https://docs.oracle.com/en-us/iaas/Content/Identity/getstarted/identity-domains.htm#identity_documentation__not-updated-identity-domains)** you must substitute  `'Default'/'Auditor-Group'` with `Auditor-Group`.
 
 ```
-allow group Auditor-Group to inspect all-resources in tenancy
-allow group Auditor-Group to read instances in tenancy
-allow group Auditor-Group to read load-balancers in tenancy
-allow group Auditor-Group to read buckets in tenancy
-allow group Auditor-Group to read nat-gateways in tenancy
-allow group Auditor-Group to read public-ips in tenancy
-allow group Auditor-Group to read file-family in tenancy
-allow group Auditor-Group to read instance-configurations in tenancy
-allow group Auditor-Group to read network-security-groups in tenancy
-allow group Auditor-Group to read capture-filters in tenancy
-allow group Auditor-Group to read resource-availability in tenancy
-allow group Auditor-Group to read audit-events in tenancy
-allow group Auditor-Group to read users in tenancy	
-allow group Auditor-Group to use cloud-shell in tenancy
-allow group Auditor-Group to read vss-family in tenancy
-allow group Auditor-Group to read usage-budgets in tenancy
-allow group Auditor-Group to read usage-reports in tenancy
-allow group Auditor-Group to read data-safe-family in tenancy
-allow group Auditor-Group to read vaults in tenancy
-allow group Auditor-Group to read keys in tenancy
-allow group Auditor-Group to read tag-namespaces in tenancy
-allow group Auditor-Group to read cloud-guard-targets in tenancy
-allow group Auditor-Group to read serviceconnectors in tenancy
-allow group Auditor-Group to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}
+allow group 'Default'/'Auditor-Group' to inspect all-resources in tenancy
+allow group 'Default'/'Auditor-Group' to read instances in tenancy
+allow group 'Default'/'Auditor-Group' to read load-balancers in tenancy
+allow group 'Default'/'Auditor-Group' to read buckets in tenancy
+allow group 'Default'/'Auditor-Group' to read nat-gateways in tenancy
+allow group 'Default'/'Auditor-Group' to read public-ips in tenancy
+allow group 'Default'/'Auditor-Group' to read file-family in tenancy
+allow group 'Default'/'Auditor-Group' to read instance-configurations in tenancy
+allow group 'Default'/'Auditor-Group' to read network-security-groups in tenancy
+allow group 'Default'/'Auditor-Group' to read capture-filters in tenancy
+allow group 'Default'/'Auditor-Group' to read resource-availability in tenancy
+allow group 'Default'/'Auditor-Group' to read audit-events in tenancy
+allow group 'Default'/'Auditor-Group' to read users in tenancy	
+allow group 'Default'/'Auditor-Group' to use cloud-shell in tenancy
+allow group 'Default'/'Auditor-Group' to read vss-family in tenancy
+allow group 'Default'/'Auditor-Group' to read usage-budgets in tenancy
+allow group 'Default'/'Auditor-Group' to read usage-reports in tenancy
+allow group 'Default'/'Auditor-Group' to read data-safe-family in tenancy
+allow group 'Default'/'Auditor-Group' to read vaults in tenancy
+allow group 'Default'/'Auditor-Group' to read keys in tenancy
+allow group 'Default'/'Auditor-Group' to read tag-namespaces in tenancy
+allow group 'Default'/'Auditor-Group' to read cloud-guard-targets in tenancy
+allow group 'Default'/'Auditor-Group' to read serviceconnectors in tenancy
+allow group 'Default'/'Auditor-Group' to use ons-family in tenancy where any {request.operation!=/Create*/, request.operation!=/Update*/, request.operation!=/Delete*/, request.operation!=/Change*/}
 ```
+
+## <a name="fast_start"></a>Fast Start
+
+1. Copy these commands:
+   ```
+   git clone https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart.git
+   cd oci-cis-landingzone-quickstart/scripts
+   chmod +x standard.sh
+   ./standard.sh
+   ```
+2. Hit &lt;Enter>
+3. Follow the instructions to get the results.
+
+## <a name="script_standard"></a>The script `standard.sh`
+
+The script `standard.sh` makes the run as easy and smooth as possible. It includes these features:
+
+- Does not affect your desktop whenever possible.
+- Automated check for Python runtime version.
+- Automated venv creation and activation.
+- Automated installation of required Python libraries.
+- Automated **OCI Cloud Shell** and tenancy name detection.
+- Automated Internet access detection.
+- Automated creation of timestamped output directory.
+- Calls `cis_reports.py`.
+- Automated checksum creation (including a verification script).
+- Automated output archive (ZIP file) creation.
+- Automated runtime protocol.
+- Supports encrypted archive (ZIP file).
+
+It has been tested on **OCI Cloud Shell** with **Public network**, **OCI Cloud Shell** with **OCI Service network**, **Oracle Linux**, **MacOS 12** and higher.
+
+### Installation
+
+To download and run the scripts without cloning the repository:
+
+```bash
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
+chmod +x standard.sh
+```
+
+Optionally, download `requirements.txt`. When it is not present, `standard.sh` creates it before installing the required Python packages.
+
+```bash
+wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/requirements.txt
+```
+
+### Python Packages
+
+When Internet access is available, `standard.sh` creates a Python virtual environment and installs all packages listed in `scripts/requirements.txt`.
+
+The required packages are `pytz`, `oci`, and `requests`; they are needed to run the compliance checks. The `requirements.txt` file also includes the optional packages `xlsxwriter`, `matplotlib`, and `numpy`, which enable XLSX output and dashboard graphics.
+
+### Arguments
+
+Standard.sh supports the following arguments:
+
+```
+-h                                 -- This message.
+-ip                                -- Use instance principal for authentication.
+-st                                -- Use OCI security token for authentication.
+-cf                                -- OCI config file (defaults to '$HOME/.oci/config')
+-o|--output-dir output_parent      -- Use the speficied directory as parent directory for output directoires.
+-r|--region region_name            -- Run assess.sh on region region_name only.
+-t|--tenancy tenancy_configuration -- Specify a name of the tenancy (defaults to 'DEFAULT').
+--redact                           -- Redact sensitive information in output files.
+--zip-protect                      -- Encrypt ZIP file with a password of your choice.
+--no-checksum                      -- Do not create checksum files.
+--no-zip                           -- Do not create a ZIP file for the contents of the output directory.
+--cis options                      -- Pass additional options to cis_reports.py.
+-v|--version                       -- Show the version numbers of the scripts used.
+--verbose                          -- Print more details.
+
+```
+
+### Passing Options to `cis_reports.py`
+
+Use `--cis` to pass quoted options to `cis_reports.py`. For example, to skip the OCI API usage check:
+
+```bash
+./standard.sh --cis '--disable-api-usage-check'
+```
+
+For the complete list of available options, see [The script `cis_report.py`](#script_cis_report) and the [Usage Examples](#usage) sections. The `-dt`, `-ip`, `-st`, `-t`, and `-r` options are detected by `standard.sh` and do not need to be passed through `--cis`.
+
+## <a name="script_cis_report"></a>The script `cis_report.py`
+
+Advanced users can use the script `cis_report.py` directly. The next chapters explain the details.
 
 ### Setup the script to run on a local machine
 1. [Setup and Prerequisites](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm)
 1. Ensure your OCI `config` file is in the `~/.oci/` directory
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
-```
-wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-```
+    ```
+    wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    ```
 1. Create a Python Virtual Environment with required modules
-```
-python3 -m venv python-venv
-source python-venv/bin/activate
-pip3 install oci
-pip3 install pytz
-pip3 install requests
-```
+    ```
+    python3 -m venv python-venv
+    source python-venv/bin/activate
+    pip3 install oci
+    pip3 install pytz
+    pip3 install requests
+    ```
 1. Libraries for Dashboard Graphics (optional)
-```
-pip3 install numpy
-pip3 install matplotlib
-```
+    ```
+    pip3 install numpy
+    pip3 install matplotlib
+    ```
 
 1. Libraries for XLSX Output (optional) 
-```
-pip3 install xlsxwriter
-```
+    ```
+    pip3 install xlsxwriter
+    ```
 
 ### Setup the script to run in a Cloud Shell Environment without a Python virtual environment
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
-```
-wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-```
+    ```
+    wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    ```
 
 ### Setup the script to run in a Cloud Shell Environment with a Python virtual environment
 1. Download cis_reports.py: [https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py](https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py)
-```
-wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-```
+    ```
+    wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    ```
 1. Create a Python Virtual Environment with required modules
-```
-python3 -m venv python-venv
-source python-venv/bin/activate
-pip3 install oci
-pip3 install pytz
-pip3 install requests
-```
+    ```
+    python3 -m venv python-venv
+    source python-venv/bin/activate
+    pip3 install oci
+    pip3 install pytz
+    pip3 install requests
+    ```
 1. Libraries for Dashboard Graphics (optional)
-```
-pip3 install numpy
-pip3 install matplotlib
-```
+    ```
+    pip3 install numpy
+    pip3 install matplotlib
+    ```
 
 1. Libraries for XLSX Output (optional) 
-```
-pip3 install xlsxwriter
-```
+    ```
+    pip3 install xlsxwriter
+    ```
 
 
-## <a name="arguments"></a>Arguments
+### <a name="arguments"></a>Arguments
 ```
   -h, --help                           show this help message and exit
   -c FILE_LOCATION                     OCI config file location.
@@ -175,8 +240,9 @@ pip3 install xlsxwriter
   --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.
   --raw                                Outputs all resource data into CSV files.
   --obp                                Checks for OCI best practices.
-  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with
-                                       Service Limits checking (--obp) and enables the (--raw) flags. All of these checks increase runtime.
+  --all-resources                      Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables the --obp and --raw flags. All
+                                       of these checks increase runtime.
+  --service-limits                     Checks OCI service limit utilization. It also enables the --all-resources, --obp, and --raw flags.
   --disable-api-usage-check            Disables the checking of OCI API unused for 45 days or more.
   --redact-output                      Redacts OCIDs in output CSV and JSON files.
   --deeplink-url-override OCI_URL      Replaces the base OCI URL (https://cloud.oracle.com) for deeplinks (i.e. https://oc10.cloud.oracle.com).
@@ -187,27 +253,33 @@ pip3 install xlsxwriter
   --debug                              Enables debugging messages printed to screen.
 ```
 
-## <a name="usage"></a>Usage Examples
+### <a name="usage"></a>Usage Examples
 
-### Executing on a local machine to check CIS and OCI Best Practices with raw data
+#### Executing on a local machine to check CIS and OCI Best Practices with raw data
 To run using python running a local machine in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py --obp --raw
 ```
 
-### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
+#### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
 To run using Cloud Shell in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py -dt --obp --raw
 ```
 
-### Executing in Cloud Shell to check CIS, OCI Best Practices with raw data, and get all resource via the Advanced Search Query service
+#### Executing in Cloud Shell to check CIS, OCI Best Practices with raw data, and get all resource via the Advanced Search Query service
 To run using Cloud Shell in all regions and check for OCI Best Practices with raw data, network topology and get all resource via the Advanced Search Query service
 ```
 % python3 cis_reports.py -dt --all-resources
 ``` 
 
-### Executing on local machine with a specific OCI Config file
+#### Executing service limit utilization checks
+To check OCI service limit utilization, run `--service-limits`. This also runs the Advanced Search query and enables OCI Best Practice and raw data output. For `standard.sh`, use `--cis '--service-limits'`.
+```
+% python3 cis_reports.py --service-limits
+```
+
+#### Executing on local machine with a specific OCI Config file
 To run on a local machine using a specific OCI Config file.
 ```
 % python3 cis_reports.py -c <file_location>
@@ -223,7 +295,7 @@ where ```<file_location>``` is the fully qualified path to an OCI client config 
 	key_file=/path_to_my_private_key_file.pem
 ```
 
-### Executing on local machine with a specific profile
+#### Executing on local machine with a specific profile
 To run on a local machine using a specific profile in the an OCI Config file.
 ```
 % python3 cis_reports.py -t <Profile_Name>
@@ -238,7 +310,7 @@ where ```<Profile_Name>``` is the profile name in OCI client config file (typica
   key_file=/path_to_my_private_key_file.pem
 ```
 
-### Executing on a local machine via Security Token (oci session authenticate)
+#### Executing on a local machine via Security Token (oci session authenticate)
 To run on a local machine using a Security Token without OCI Config file. For more information: [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clitoken.htm).
 
 Execute the oci command.
@@ -309,8 +381,6 @@ To run on a local machine with the default profile and output raw data as well a
 % python3 cis_reports.py --raw
 ``` 
 
-
-
 ## <a name="output"></a>Output Examples
 
 The CIS Compliance Script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
@@ -375,26 +445,28 @@ CSV: Asset Management_6.2   --> tenancy1-2026-03-17_18-30-55/cis_Asset_Managemen
 ```
 Back to our example, by looking at *cis_Identity and Access Management_1.7.csv* file, the output shows the 33 users who do not have MFA enabled for accessing OCI Console. The script only identifies compliance gaps. It does not remediate the findings. Administrator action is required to address this compliance gap.
 
-#### **Output Non-compliant Findings Only**
+### **Output Non-compliant Findings Only**
 
-Using `--print-to-screen False` will only print non-compliant findings to the screen. 
+Using `--print-to-screen False` will only print non-compliant findings to the screen. For `standard.sh` use `--cis '--print-to-screen False'`.
 
 In the sample output below:
 
 ![false](images\print-false.png)
 
 
-#### **Output Level 1 Findings Only**
+### **Output Level 1 Findings Only**
 
-Using `--level 1` will only print Level 1 findings. 
+Using `--level 1` will only print Level 1 findings.  For `standard.sh` use `--cis '--level 1'`.
 
 In the sample output below:
 
 ![level1](images\level1.png)
 
 
-#### **Output OCI Best Practice Summary Report**
-Using `--obp` will check for a tenancy's alignment to the available OCI Best Practices. 
+### <a name="OBPOutput"></a>**Output OCI Best Practice Summary Report**
+Using `--obp` will check for a tenancy's alignment to the available OCI Best Practices.  For `standard.sh` use `--cis '--obp'`.
+
+The `Service_Limits` OBP-GOV-1 result is collected only when using `--service-limits`, which also enables `--all-resources`, `--obp`, and `--raw`.
 
 ```
 #########################################################################################
@@ -504,10 +576,41 @@ CSV: regions                --> tenancy1-2026-03-17_18-30-55/raw_data_regions.cs
 CSV: network_drg_attachments --> tenancy1-2026-03-17_18-30-55/raw_data_network_drg_attachments.csv
 CSV: instances              --> tenancy1-2026-03-17_18-30-55/raw_data_instances.csv
 CSV: certificates           --> tenancy1-2026-03-17_18-30-55/raw_data_certificates.csv
-CSV: service_limits         --> tenancy1-2026-03-17_18-30-55/raw_data_service_limits.csv
+CSV: service_limits         --> tenancy1-2026-03-17_18-30-55/raw_data_service_limits.csv (generated with --service-limits)
 CSV: compartment_hierarchy_policy_count --> tenancy1-2026-03-17_18-30-55/raw_data_compartment_hierarchy_policy_count.csv
 JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resources.json
 ```
+
+## <a name="OBPChecks"></a>Oracle Best Practice Checks
+
+| ID | Recommendation | Section | Title | Documentation |
+|---|---|---|---|---|
+| OBP-SIEM-1 | SIEM_Audit_Log_All_Comps | SIEM Logging | All compartment audit logs sent to SIEM in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-2 | SIEM_Audit_Incl_Sub_Comp | SIEM Logging | Include all sub-compartments flag checked at the tenancy root compartment in all regions | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-3 | SIEM_VCN_Flow_Logging | SIEM Logging | VCN Flow logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-4 | SIEM_Write_Bucket_Logs | SIEM Logging | Bucket write logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| OBP-SIEM-5 | SIEM_Read_Bucket_Logs | SIEM Logging | Bucket read logs sent to SIEM | https://docs.oracle.com/en/solutions/oci-aggregate-logs-siem/index.html |
+| LAM-19 | Log_Retention | Logging | Retain Audit Logs for 90 days | https://docs.oracle.com/en-us/iaas/Content/Logging/Task/update-logging-log.htm |
+| OBP-NTW-1 | Networking_Redudancy | Advanced Networking | Scalable and secure topology in OCI | https://docs.oracle.com/en-us/iaas/Content/Network/Troubleshoot/drgredundancy.htm |
+| OBP-NTW-2 | Networking_DRG_Upgraded | Advanced Networking | Dynamic Route Gateway (DRG) upgraded to version 2 | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/drg-upgrade.htm |
+| OBP-NTW-3 | Networking_Hub_Spoke | Advanced Networking | Hub and Spoke Network Architecture | https://docs.oracle.com/en/solutions/hub-spoke-network/index.html |
+| OBP-NTW-4 | Networking_IPSec_connections | Advanced Networking | IPSec connections with two tunnels | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-NTW-5 | Networking_IPSec_bgp | Advanced Networking | IPSec connections with BGP Routing | https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/overviewIPsec.htm |
+| OBP-CSP-1 | Cloud_Guard_Config | CSPM | Cloud Guard enabled and configured | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-customize.htm |
+| OBP-CSP-2 | Cloud_Guard_Problems | CSPM | Cloud Guard problems with Risk Level Critical or High | https://docs.oracle.com/en-us/iaas/Content/cloud-guard/using/part-problems.htm |
+| OBP-CRT-1 | Certificates_Near_Expiry | Certificates | Certificates to expire in 30 days | https://docs.oracle.com/en-us/iaas/Content/certificates/renewing-certificate.htm |
+| OBP-GOV-1 | Service_Limits | Governance | Visibility into OCI Limits | https://docs.oracle.com/en/solutions/oci-best-practices/manage-your-service-limits1.html#GUID-457D23F7-98C4-4F74-9E1B-A8F3BCA60C6E |
+| OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
+| OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
+| OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
+| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
+
 
 ## <a name="blogs"></a>Blogs
 - [Automate CIS Compliance Checking with OCI Functions and OCI Resource Scheduler](https://www.ateam-oracle.com/post/automate-cis-compliance-checking)
@@ -522,8 +625,6 @@ JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resou
 - [OCI Landing Zone Security Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
 - [OCI Landing Zone Observability Modules](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
 - [OCI Landing Zones Secure Workload Modules](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
-
-
 
 ## Help
 

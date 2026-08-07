@@ -1,0 +1,4 @@
+**.tf
+**.tfstate**
+.terraform**
+**.out

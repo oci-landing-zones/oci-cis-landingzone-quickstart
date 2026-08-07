@@ -26,6 +26,7 @@ from threading import Thread
 import hashlib
 import re
 import requests
+import html
 
 try:
     from xlsxwriter.workbook import Workbook
@@ -43,9 +44,9 @@ except Exception:
 
 csv.field_size_limit(2**31 - 1)
 
-RELEASE_VERSION = "3.3.0"
-PYTHON_SDK_VERSION = "2.173.0"
-UPDATED_DATE = "July 13, 2026"
+RELEASE_VERSION = "3.4.0"
+PYTHON_SDK_VERSION = "2.184.0"
+UPDATED_DATE = "August 7, 2026"
 
 
 ##########################################################################
@@ -87,87 +88,87 @@ def show_version(verbose=False):
 
 class ComplianceMappings:
     mappings = {
-    'IAM-1' : {'CIS v8' : ['3.12', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-2' : {'CIS v8' : ['3.3', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['1', '2', '3']},
-    'IAM-3' : {'CIS v8' : ['3.3', '4.7', '5.4'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-4' : {'CIS v8' : ['4.7', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-5' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-6' : {'CIS v8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-7' : {'CIS v8' : ['4.7', '5.2', '5.4', '6.3', '6.4', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4']},
-    'IAM-8' : {'CIS v8' : ['4.7'], 'CCCS Guard Rail' : ['6', '7']},
-    'IAM-9' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
-    'IAM-10' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7']},
-    'IAM-11' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : []},
-    'IAM-12' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7']},
-    'IAM-13' : {'CIS v8' : ['4.7', '5.1', '5.4'], 'CCCS Guard Rail' : ['1', '2', '3']},
-    'IAM-14' : {'CIS v8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7']},
-    'IAM-15' : {'CIS v8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3']},
-    'IAM-16' : {'CIS v8' : ['5.3'], 'CCCS Guard Rail' : ['2']},
-    'IAM-17' : {'CIS v8' : ['4.7', '5.4'], 'CCCS Guard Rail' : ['2']},
-    'NTW-1' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-2' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-3' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-4' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-5' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-6' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-7' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'NTW-8' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9']},
-    'COM-1' : {'CIS v8' : ['4.8'], 'CCCS Guard Rail' : []},
-    'COM-2' : {'CIS v8' : ['4.1'], 'CCCS Guard Rail' : []},
-    'COM-3' : {'CIS v8' : ['3.10'], 'CCCS Guard Rail' : []},
-    'LAM-1' : {'CIS v8' : ['1.1', '3.1', '3.2', '3.3', '3.4'], 'CCCS Guard Rail' : []},
-    'LAM-2' : {'CIS v8' : ['13.1'], 'CCCS Guard Rail' : ['11']},
-    'LAM-3' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-4' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-5' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-6' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-7' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-8' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-9' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-10' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11']},
-    'LAM-11' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11']},
-    'LAM-12' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11']},
-    'LAM-13' : {'CIS v8' : ['4.2', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : []},
-    'LAM-14' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : ['1', '2', '3']},
-    'LAM-15' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : []},
-    'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6', '7']},
-    'LAM-17' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : ['11']},
-    'LAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : ['11']},
-    'STO-1-1' : {'CIS v8' : ['3.3', '11.3'], 'CCCS Guard Rail' : []},
-    'STO-1-2' : {'CIS v8' : ['3.11', '11.3'], 'CCCS Guard Rail' : []},
-    'STO-1-3' : {'CIS v8' : ['3.11', '11.3', '11.4'], 'CCCS Guard Rail' : []},
-    'STO-2-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-    'STO-2-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-    'STO-3-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : []},
-    'AM-1' : {'CIS v8' : ['3.1', '3.12'], 'CCCS Guard Rail' : ['2', '3', '8', '12']},
-    'AM-2' : {'CIS v8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3']},
-    'OBP-SIEM-1' : {'CIS v8' : ['1.3', '3.14', '5.3', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
-    'OBP-SIEM-2' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
-    'OBP-SIEM-3' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : []},
-    'OBP-SIEM-4' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
-    'OBP-SIEM-5' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : []},
-    'LAM-19' : {'CIS v8' : ['8.10'], 'CCCS Guard Rail' : []},
-    'OBP-NTW-1' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
-    'OBP-NTW-2' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
-    'OBP-NTW-3' : {'CIS v8' : ['3.12', '4.2', '9.3', '12.2', '12.4', '12.5', '12.8', '13.3', '13.4', '13.8', '13.10', '16.8'], 'CCCS Guard Rail' : []},
-    'OBP-NTW-4' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
-    'OBP-NTW-5' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : []},
-    'OBP-CSP-1' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : []},
-    'OBP-CSP-2' : {'CIS v8' : ['8.2', '8.3', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : []},
-    'OBP-CRT-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-GOV-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-GOV-2' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-GOV-3' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-ADB-1' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-ADB-2' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-ADB-3' : {'CIS v8' : ['3.10', '3.11'], 'CCCS Guard Rail' : []},
-    'OBP-ADB-4' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'OBP-ADB-5' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'IAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'IAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'IAM-20' : {'CIS v8' : [], 'CCCS Guard Rail' : []},
-    'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : []},
-    'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : []}
+    'IAM-1' : {'CIS v8' : ['3.12', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3'], 'Oracle SaaS v1' : []},
+    'IAM-2' : {'CIS v8' : ['3.3', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['1', '2', '3'], 'Oracle SaaS v1' : []},
+    'IAM-3' : {'CIS v8' : ['3.3', '4.7', '5.4'], 'CCCS Guard Rail' : ['2', '3'],  'Oracle SaaS v1' : []},
+    'IAM-4' : {'CIS v8' : ['4.7', '5.2'], 'CCCS Guard Rail' : ['2', '3'],  'Oracle SaaS v1' : []},
+    'IAM-5' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['2', '3'],  'Oracle SaaS v1' : []},
+    'IAM-6' : {'CIS v8' : ['5.2'], 'CCCS Guard Rail' : ['2', '3'],  'Oracle SaaS v1' : []},
+    'IAM-7' : {'CIS v8' : ['4.7', '5.2', '5.4', '6.3', '6.4', '6.5'], 'CCCS Guard Rail' : ['1', '2', '3', '4'],  'Oracle SaaS v1' : []},
+    'IAM-8' : {'CIS v8' : ['4.7'], 'CCCS Guard Rail' : ['6', '7'],  'Oracle SaaS v1' : []},
+    'IAM-9' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7'],  'Oracle SaaS v1' : []},
+    'IAM-10' : {'CIS v8' : ['4.1', '5.2'], 'CCCS Guard Rail' : ['6', '7'], 'Oracle SaaS v1' : []},
+    'IAM-11' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'IAM-12' : {'CIS v8' : ['5.4'], 'CCCS Guard Rail' : ['6', '7'], 'Oracle SaaS v1' : []},
+    'IAM-13' : {'CIS v8' : ['4.7', '5.1', '5.4'], 'CCCS Guard Rail' : ['1', '2', '3'], 'Oracle SaaS v1' : []},
+    'IAM-14' : {'CIS v8' : ['6.8'], 'CCCS Guard Rail' : ['6', '7'], 'Oracle SaaS v1' : []},
+    'IAM-15' : {'CIS v8' : ['5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3'], 'Oracle SaaS v1' : []},
+    'IAM-16' : {'CIS v8' : ['5.3'], 'CCCS Guard Rail' : ['2'], 'Oracle SaaS v1' : []},
+    'IAM-17' : {'CIS v8' : ['4.7', '5.4'], 'CCCS Guard Rail' : ['2'], 'Oracle SaaS v1' : []},
+    'NTW-1' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-2' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-3' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-4' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-5' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-6' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-7' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'NTW-8' : {'CIS v8' : ['4.2', '4.4', '12.2', '12.3'], 'CCCS Guard Rail' : ['2', '3', '5', '7', '9'],  'Oracle SaaS v1' : []},
+    'COM-1' : {'CIS v8' : ['4.8'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'COM-2' : {'CIS v8' : ['4.1'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'COM-3' : {'CIS v8' : ['3.10'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'LAM-1' : {'CIS v8' : ['1.1', '3.1', '3.2', '3.3', '3.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'LAM-2' : {'CIS v8' : ['13.1'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-3' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-4' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-5' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-6' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-7' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-8' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-9' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-10' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-11' : {'CIS v8' : ['4.2', '12.2', '12.3'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-12' : {'CIS v8' : ['4.2'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-13' : {'CIS v8' : ['4.2', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'LAM-14' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : ['1', '2', '3'],  'Oracle SaaS v1' : []},
+    'LAM-15' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'LAM-16' : {'CIS v8' : [], 'CCCS Guard Rail' : ['6', '7'],  'Oracle SaaS v1' : []},
+    'LAM-17' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'LAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : ['11'],  'Oracle SaaS v1' : []},
+    'STO-1-1' : {'CIS v8' : ['3.3', '11.3'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'STO-1-2' : {'CIS v8' : ['3.11', '11.3'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'STO-1-3' : {'CIS v8' : ['3.11', '11.3', '11.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'STO-2-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'STO-2-2' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'STO-3-1' : {'CIS v8' : ['3.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'AM-1' : {'CIS v8' : ['3.1', '3.12'], 'CCCS Guard Rail' : ['2', '3', '8', '12'],  'Oracle SaaS v1' : []},
+    'AM-2' : {'CIS v8' : ['3.12'], 'CCCS Guard Rail' : ['1', '2', '3'],  'Oracle SaaS v1' : []},
+    'OBP-SIEM-1' : {'CIS v8' : ['1.3', '3.14', '5.3', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : [], 'Oracle SaaS v1' : []},
+    'OBP-SIEM-2' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.8', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-SIEM-3' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.6'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-SIEM-4' : {'CIS v8' : ['1.3', '3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-SIEM-5' : {'CIS v8' : ['3.14', '8.2', '8.3', '8.5', '8.9', '8.12', '11.3', '13.1'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'LAM-19' : {'CIS v8' : ['8.10'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-NTW-1' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-NTW-2' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : [], 'Oracle SaaS v1' : []},
+    'OBP-NTW-3' : {'CIS v8' : ['3.12', '4.2', '9.3', '12.2', '12.4', '12.5', '12.8', '13.3', '13.4', '13.8', '13.10', '16.8'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-NTW-4' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-NTW-5' : {'CIS v8' : ['12.4'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-CSP-1' : {'CIS v8' : ['8.2', '8.3', '8.5', '8.9', '8.12', '13.1', '13.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-CSP-2' : {'CIS v8' : ['8.2', '8.3', '8.9', '8.12', '13.1'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-CRT-1' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-GOV-1' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-GOV-2' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-GOV-3' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-ADB-1' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-ADB-2' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-ADB-3' : {'CIS v8' : ['3.10', '3.11'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-ADB-4' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'OBP-ADB-5' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'IAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'IAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'IAM-20' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : ['1.1']},
+    'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
+    'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []}
 }
 
 
@@ -221,11 +222,11 @@ class CIS_Report:
     local_user_time_max_datetime = datetime.datetime.strptime(str_local_user_time_max_datetime, __iso_time_format)
 
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
-                 report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
-                 redact_output, oci_url=None, debug=False, all_resources=True,
-                 disable_api_keys=False):
+                  report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
+                  redact_output, oci_url=None, debug=False, all_resources=True,
+                  disable_api_keys=False, service_limits=False):
 
-        # CIS Foundation benchmark 3.0.0
+        # CIS Foundation benchmark 3.1.1
         self.cis_foundations_benchmark_3_0 = { 
             '1.1' : {'id': 'IAM-1', 'section': 'Identity and Access Management', 'recommendation_#': '1.1', 'Title': 'Ensure service level admins are created to manage resources of particular service', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
             '1.2' : {'id': 'IAM-2', 'section': 'Identity and Access Management', 'recommendation_#': '1.2', 'Title': 'Ensure permissions on all resources are given only to the tenancy administrator group', 'Status': True, 'Level': 1, 'Total': [], 'Findings': [], 'Remediation': []},
@@ -1134,10 +1135,10 @@ class CIS_Report:
         # Determining if CSV report OCIDs will be redacted
         self.__redact_output = redact_output
 
-        # Determine if All resource from Search service should be queried
-        self.__all_resources = all_resources
-        if all_resources:
-            self.__all_resources = all_resources
+        # Service limit checks include all resource collection and its report output.
+        self.__service_limits_enabled = service_limits
+        self.__all_resources = all_resources or service_limits
+        if self.__all_resources:
             self.__obp_checks = True
             self.__output_raw_data = True
 
@@ -5838,7 +5839,7 @@ class CIS_Report:
             # self.__print_to_csv_file("cis", recommendation['section'] + "_" + recommendation['recommendation_#'], recommendation['Findings'])
 
         # Screen output for CIS Summary Report
-        print_header("CIS Foundations Benchmark 3.0.0 Summary Report")
+        print_header("CIS Foundations Benchmark 3.1.1 Summary Report")
         print('Num' + "\t" + "Level " +
               "\t" "Compliant" + "\t" + "Findings " + "\t" + "Total  " + "\t\t" + 'Title')
         print('#' * 90)
@@ -5863,9 +5864,6 @@ class CIS_Report:
             summary_file_name = self.__print_to_json_file("cis", "summary_report", summary_report)
             summary_files.append(summary_file_name)
 
-        summary_file_name = self.__report_generate_html_summary_report("cis", "summary_report", summary_report)
-        summary_files.append(summary_file_name)
-
         if OUTPUT_DIAGRAMS:
             diagram_file_name = self.__generate_compliance_diagram("cis", "summary_compliance", summary_report)
             summary_files.append(diagram_file_name)
@@ -5884,6 +5882,8 @@ class CIS_Report:
                 if report_file_name and self.__output_bucket:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file_name)
+
+        return summary_report
 
     ##########################################################################
     # Generate summary diagrams
@@ -5990,287 +5990,142 @@ class CIS_Report:
         return cis_compliance_by_area_file
 
     ##########################################################################
-    # Generates an HTML report
+    # Generates the standalone CIS and OBP HTML summary report
     ##########################################################################
-    def __report_generate_html_summary_report(self, header, file_subject, data):
+    def __html_report_text(self, value):
+        text = re.sub(r'<br\s*/?>', '\n', str(value or ''), flags=re.IGNORECASE)
+        text = re.sub(r'</?pre[^>]*>', '\n', text, flags=re.IGNORECASE)
+        return html.unescape(re.sub(r'<[^>]+>', '', text)).strip()
 
+    def __html_report_value(self, value):
+        if isinstance(value, dict):
+            return {str(key): self.__html_report_value(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [self.__html_report_value(item) for item in value]
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        return str(value)
+
+    def __html_report_evidence(self, records, filename, label):
+        if not records:
+            return {
+                'filename': filename or label,
+                'local_href': filename or '',
+                'headers': [],
+                'rows': [],
+                'error': 'No embedded impacted-item data is available for this recommendation.'
+            }
+
+        normalized_records = [record if isinstance(record, dict) else {'value': record} for record in records]
+        headers = []
+        for record in normalized_records:
+            for key in record:
+                if key not in headers:
+                    headers.append(key)
+
+        return {
+            'filename': filename or label,
+            'local_href': filename or '',
+            'headers': headers,
+            'rows': [
+                [self.__html_report_value(record.get(header, '')) for header in headers]
+                for record in normalized_records
+            ],
+            'error': ''
+        }
+
+    def __report_generate_html_summary_report(self, header, file_subject, cis_data, obp_data=None):
         try:
-            # if no data
-            if len(data) == 0:
+            if not cis_data:
                 return None
 
-            # get the file name of the HTML
+            cis_records = []
+            for index, row in enumerate(cis_data):
+                recommendation = row['Recommendation #']
+                details = {
+                    key: self.__html_report_text(value)
+                    for key, value in self.cis_report_data.get(recommendation, {}).items()
+                    if self.__html_report_text(value)
+                }
+                filename = str(row.get('Filename', '')).strip()
+                record = dict(row)
+                record.update({
+                    'source': 'CIS',
+                    'recommendation': recommendation,
+                    'index': index,
+                    'control_details': details,
+                    'evidence': self.__html_report_evidence(
+                        self.cis_foundations_benchmark_3_0[recommendation]['Findings'],
+                        filename,
+                        'embedded CIS finding data'
+                    )
+                })
+                cis_records.append(record)
+
+            obp_records = []
+            for offset, row in enumerate(obp_data or []):
+                recommendation = self.obp_foundations_checks[row['Recommendation']]
+                findings = recommendation['Findings'] or recommendation['OBP']
+                evidence_kind = 'Findings' if recommendation['Findings'] else 'Best_Practices'
+                filename = f'{self.__report_prefix}obp_{row["Recommendation"]}_{evidence_kind}.csv'
+                obp_records.append({
+                    'Recommendation #': recommendation['id'],
+                    'Section': row['Section'],
+                    'Level': '',
+                    'Compliant': row['Compliant'],
+                    'Findings': row['Findings'],
+                    'Compliant Items': row['OBP'],
+                    'Total': '',
+                    'Compliance Percentage Per Recommendation': '',
+                    'Title': row['Title'],
+                    self.__primary_framework_name: row[self.__primary_framework_name],
+                    self.__other_framework_name: row[self.__other_framework_name],
+                    'Regions': row['Regions'],
+                    'Documentation': row['Documentation'],
+                    'source': 'OBP',
+                    'recommendation': recommendation['id'],
+                    'index': len(cis_records) + offset,
+                    'control_details': {},
+                    'evidence': self.__html_report_evidence(
+                        findings, filename, 'embedded OBP finding data')
+                })
+
+            payload = {
+                'findings': cis_records,
+                'obp_findings': obp_records,
+                'meta': {
+                    'tenancy': self.__tenancy.name,
+                    'generated': self.start_time_str.replace('T', ' ') + ' UTC',
+                    'version': RELEASE_VERSION,
+                    'updated': UPDATED_DATE
+                }
+            }
+            json_payload = json.dumps(payload, ensure_ascii=False)
+            json_payload = json_payload.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
             file_path = self.__get_output_file_path(header, file_subject, '.html')
 
-            # add report_datetimeto each dictionary
-            result = [dict(item, extract_date=self.start_time_str)
-                      for item in data]
-
-            # If this flag is set all OCIDs are Hashed to redact them
-            if self.__redact_output:
-                redacted_result = []
-                for item in result:
-                    record = {}
-                    for key in item.keys():
-                        str_item = str(item[key])
-                        items_to_redact = re.findall(self.__oci_ocid_pattern, str_item)
-                        emails_to_redact = re.findall(self.__simple_email, str_item)
-                        items_to_redact += emails_to_redact                        
-                        for redact_me in items_to_redact:
-                            str_item = str_item.replace(redact_me, hashlib.sha256(str.encode(redact_me)).hexdigest())
-
-                        record[key] = str_item
-
-                    redacted_result.append(record)
-                # Overriding result with redacted result
-                result = redacted_result
-
-            # generate fields
-            fields = ['Recommendation #', 'Compliant', 'Section', 'Details']
-
-            html_title = 'CIS OCI Foundations Benchmark 3.0.0 - Compliance Report'
-            with open(file_path, mode='w') as html_file:
-                # Creating table header
-                html_file.write('<html class="js history hashchange cssgradients rgba no-touch boxshadow ishttps retina w11ready" lang="en-US"><head>')
-                html_file.write(f'<title>{html_title}</title>')
-                html_file.write("""
-                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\">
-                <link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\" onerror=\"this.rel='stylesheet'\">
-                <link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
-                <link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\" as=\"style\" onload=\"this.rel='stylesheet';\" onerror=\"this.rel='stylesheet'\">
-                <noscript><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/ocom-v1-styles.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-base.css\" rel=\"stylesheet\"><link href=\"https://www.oracle.com/asset/web/css/redwood-styles.css\" rel=\"stylesheet\"></noscript>
-                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-base.js\" rel=\"preload\" as=\"script\">
-                <link href=\"https://www.oracle.com/asset/web/js/ocom-v1-lib.js\" rel=\"preload\" as=\"script\">
-                <script src=\"https://www.oracle.com/asset/web/js/jquery-min.js\" async onload=\"$('head link[data-reqjq][rel=preload]').each(function(){var a = document.createElement('script');a.async=false;a.src=$(this).attr('href');this.parentNode.insertBefore(a, this);});$(function(){$('script[data-reqjq][data-src]').each(function(){this.async=true;this.src=$(this).data('src');});});\"></script>
-                <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
-                <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-32.png\" sizes=\"32x32\">
-                <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-128.png\" sizes=\"128x128\">
-                <link rel=\"icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-192.png\" sizes=\"192x192\">
-                <link rel=\"apple-touch-icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-120.png\" sizes=\"120x120\">
-                <link rel=\"apple-touch-icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-152.png\" sizes=\"152x152\">
-                <link rel=\"apple-touch-icon\" href=\"https://www.oracle.com/asset/web/favicons/favicon-180.png\" sizes=\"180x180\">
-                <meta name=\"msapplication-TileColor\" content=\"#fcfbfa\"/><meta name=\"msapplication-square70x70logo\" content=\"favicon-128.png\"/>
-                <meta name=\"msapplication-square150x150logo\" content=\"favicon-270.png\"/><meta name=\"msapplication-TileImage\" content=\"favicon-270.png\"/>
-                <meta name=\"msapplication-config\" content=\"none\"/><meta name=\"referrer\" content=\"no-referrer-when-downgrade\"/></head>
-                <body class=\"f11 f11v6\"><div class=\"f11w1\">
-                <style>#u30{opacity:1 !important;filter:opacity(100%) !important;position:sticky;top:0} .u30v3{background:#3a3632;height:50px;overflow:hidden;border-top:5px solid #3a3632;border-bottom:5px solid #3a3632}
-                 #u30nav,#u30tools{visibility:hidden} .u30v3 #u30logo {width:121px;height: 44px;display: inline-flex;justify-content: flex-start;} #u30:not (.u30mobile)
-                 .u30-oicn-mobile,#u30.u30mobile .u30-oicn{display:none} #u30logo svg{height:auto;align-self:center}
-                 .u30brand{height:50px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:1344px;padding:0 48px;margin:0 auto}
-                 .u30brandw1{display:flex;flex-direction:row;color:#fff;text-decoration:none;align-items:center} @media (max-width:1024px){.u30brand{padding:0 24px}}
-                 #u30skip2,#u30skip2content{transform:translateY(-100%);position:fixed} .rtl #u30{direction:rtl} #td_override { background: #fff; border-bottom: 1px solid rgba(122,115,110,0.2) !important }</style>
-                <section id=\"u30\" class=\"u30 u30v3 pause\" role=\"banner\"><div class=\"u30w1 cwidth\" id=\"u30w1\"><div id=\"u30brand\" class=\"u30brand\"><div class=\"u30brandw1\"><a id=\"u30btitle\" href=\"https://www.oracle.com/\" aria-label=\"Home\"><div id=\"u30logo\"><svg class=\"u30-oicn-mobile\" xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"21\" viewBox=\"0 0 32 21\"><path fill=\"#C74634\" d=\"M9.9,20.1c-5.5,0-9.9-4.4-9.9-9.9c0-5.5,4.4-9.9,9.9-9.9h11.6c5.5,0,9.9,4.4,9.9,9.9c0,5.5-4.4,9.9-9.9,9.9H9.9 M21.2,16.6c3.6,0,6.4-2.9,6.4-6.4c0-3.6-2.9-6.4-6.4-6.4h-11c-3.6,0-6.4,2.9-6.4,6.4s2.9,6.4,6.4,6.4H21.2\"/></svg><svg class=\"u30-oicn\" xmlns=\"http://www.w3.org/2000/svg\"  width=\"231\" height=\"30\" viewBox=\"0 0 231 30\" preserveAspectRatio=\"xMinYMid\"><path fill=\"#C74634\" d=\"M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6\" transform=\"translate(-0.02 0)\" /></svg></div></a></div></div></div></section>
-                <section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">""")
-                html_file.write(f'<h2 id="table_top">{html_title.replace("-", "&ndash;")}</h2>')
-                html_file.write("""
-                </div></section>
-                <section class="cb132 cb132v0 cpad"><div style="height: 8px;background-image: url('data:image/png;base64,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');background-position: 0 50%; background-repeat: repeat-x"></div></section>
-                <section class="cb132 cb132v0 cpad"><div class="cb133 cwidth">
-                """)
-                html_file.write(f'<h4>Tenancy Name: {self.__tenancy.name}</h4>')
-                # Get the extract date
-                r = result[0]
-                extract_date = r['extract_date'].replace('T', ' ')
-                html_file.write(f'<h5>Extract Date: {extract_date} UTC</h5>')
-                html_file.write('</div></section>')
-                if OUTPUT_DIAGRAMS:
-                    # Include dashboard
-                    html_file.write(f'<section class="cb132 cb132v0"><div class="cb132w1 cwidth"><table><tr><td><img src="{self.__report_prefix}cis_summary_compliance.png" height="80%" width="80%"/></td>')
-                    html_file.write(f'<td><img src="{self.__report_prefix}cis_summary_compliance_by_focus_area.png" height="80%" width="80%"/></td></tr><tr><td colspan="2">&nbsp;</td></tr></table></div></section>')
-                # Navigation
-                html_file.write('<section class="rt01 rt01v0 rt01detached">')
-                html_file.write('<div class="rt01w1 cwidth">')
-                html_file.write('<ul class="rw-inpagetabs rw-tabinit" role="tablist">')
-                html_file.write('<li role="none" class="active"><a href="#compliant" aria-current="true" tabindex="0">Compliant</a></li>')
-                html_file.write('<li role="none"><a href="#noncompliant">Non-compliant</a></li>')
-                html_file.write('<li role="none"><a href="#details">Details</a></li>')
-                html_file.write('<li role="none"><a href="#resources">Resources</a></li>')
-                html_file.write('</ul></div></section>')
-                # Line
-                html_file.write('<section class="cb133 cb133v0" id="compliant">')
-                html_file.write('<div class="cb133w1 cwidth"><h4>Compliant Recommendations</h4></div>')
-                html_file.write('<div class="cb133w1 cwidth">')
-                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
-                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
-                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
-                html_file.write('<table class="otable-w2"><thead><tr>')
-                for th in fields:
-                    column_width = '63%'
-                    if th == 'extract_date':
-                        th = th.replace('_', ' ').title()
-                        continue
-                    elif th == 'Recommendation #':
-                        column_width = '15%'
-                    elif th == 'Compliant':
-                        column_width = '10%'
-                    elif th == 'Section':
-                        column_width = '12%'
-                    else:
-                        column_width = '63%'
-                    html_file.write(f'<th class="otable-col-head" style=" width:{column_width};">{th}</th>')
-                html_file.write('</tr></thead><tbody>')
-                # Creating the compliant HTML Table of the summary report
-                html_appendix = []
-                for row in result:
-                    compliant = row['Compliant']
-                    text_color = 'green'
-                    if compliant != 'Yes':
-                        continue
-                    # Print the row
-                    html_file.write("<tr>")
-                    v = row['Recommendation #']
-                    if compliant == 'No':
-                        html_file.write(f'<td><a href="#{v}">{v}</a></td>\n')
-                    else:
-                        html_file.write(f'<td>{v}</td>\n')
-                    total = row['Total']
-                    tmp = ''
-                    if total != ' ':
-                        tmp = f'<br><br><b>{str(total)}</b> item'
-                        if int(total) > 1:
-                            tmp += 's'
-                    html_file.write(f'<td><b style="color:{text_color};">{str(compliant)}</b>{tmp}</td>\n')
-                    html_file.write(f'<td>{str(row["Section"])}</td>\n')
-                    # Details
-                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
-                    html_file.write(f'<td colspan="3">{str(row["Title"])}</td></tr>')
-                    html_file.write('<tr><td><b>Remediation</b></td>')
-                    html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
-                    html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
-                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
-                    html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
-                    html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
-                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{primary_framework}</td>')
-                    html_file.write(f'<td>{other_framework}</td>')
-                    v = str(row['Filename'])
-                    if v == ' ':
-                        html_file.write('<td> </td>')
-                    else:
-                        html_file.write(f'<td><a href="{v}">{v}</a></td>')
-                    html_file.write('</tr></table></td>')
-                    html_file.write("</tr>")
-
-                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
-                # Line
-                html_file.write('<section class="cb133 cb133v0 cpad" id="noncompliant">')
-                html_file.write('<div class="cb133w1 cwidth"><h4>Non-compliant Recommendations</h4></div>')
-                html_file.write('<div class="cb133w1 cwidth">')
-                html_file.write('<section class="cb133 cb133v0"><div class="cb133w1 cwidth">')
-                html_file.write('<section class="cb133 cb133v0 cpad"><div class="cb133w1 cwidth">')
-                html_file.write('<div class="otable otable-scrolling"><div class="otable-w1">')
-                html_file.write('<table class="otable-w2"><thead><tr>')
-                for th in fields:
-                    column_width = '63%'
-                    if th == 'extract_date':
-                        th = th.replace('_', ' ').title()
-                        continue
-                    elif th == 'Recommendation #':
-                        column_width = '15%'
-                    elif th == 'Compliant':
-                        column_width = '10%'
-                    elif th == 'Section':
-                        column_width = '12%'
-                    else:
-                        column_width = '63%'
-                    html_file.write(f'<th class="otable-col-head" style=" width:{column_width};">{th}</th>')
-                html_file.write('</tr></thead><tbody>')
-                # Creating the non-compliant HTML Table of the summary report
-                html_appendix = []
-                for row in result:
-                    compliant = row['Compliant']
-                    if compliant != 'No':
-                        continue
-                    html_appendix.append(row['Recommendation #'])
-                    text_color = 'red'
-                    # Print the row
-                    html_file.write("<tr>")
-                    v = row['Recommendation #']
-                    if compliant == 'No':
-                        html_file.write(f'<td><a href="#{v}">{v}</a></td>\n')
-                    else:
-                        html_file.write(f'<td>{v}</td>\n')
-                    f = row['Findings']
-                    t = row['Total']
-                    tmp = ''
-                    if t != ' ':
-                        if f == ' ':
-                            f = t
-                        tmp = f'<br><br><b>{str(f)}</b> of <b>{str(t)}</b> item'
-                        if int(t) > 1:
-                            tmp += 's'
-                    html_file.write(f'<td><b style="color:{text_color};">{str(compliant)}</b>{tmp}</td>\n')
-                    html_file.write(f'<td>{str(row["Section"])}</td>\n')
-                    # Details
-                    html_file.write('<td><table><tr><td style="width:10%"><b>Title</b></td>')
-                    html_file.write(f'<td colspan="3">{str(row["Title"])}</td></tr>')
-                    html_file.write('<tr><td><b>Remediation</b></td>')
-                    html_file.write(f'<td colspan="3">{str(row["Remediation"])}</td></tr>')
-                    html_file.write('<tr><td><b>Level</b></td>')
-                    html_file.write(f'<td id="td_override" style="width: 15%;"><b>{self.__primary_framework_name}</b></td>')
-                    html_file.write(f'<td id="td_override" style="width: 20%;"><b>{self.__other_framework_name}</b></td>')
-                    html_file.write('<td id="td_override" style="width: 55%;"><b>File</b></td></tr>')
-                    html_file.write(f'<tr><td>{str(row["Level"])}</td>')
-                    primary_framework = str(row[self.__primary_framework_name]).replace("[", "").replace("]", "").replace("'", "")
-                    other_framework = str(row[self.__other_framework_name]).replace("[", "").replace("]", "").replace("'", "")
-                    html_file.write(f'<td>{primary_framework}</td>')
-                    html_file.write(f'<td>{other_framework}</td>')
-                    v = str(row['Filename'])
-                    if v == ' ':
-                        html_file.write('<td> </td>')
-                    else:
-                        html_file.write(f'<td style="word-break: break-all; overflow-wrap: break-word;"><a href="{v}">{v}</a></td>')
-                    html_file.write('</tr></table></td>')
-                    html_file.write("</tr>")
-
-                html_file.write("</tbody></table></div></div></section></div></section></div></section>\n")
-                html_file.write('<section class="cb132 cb132v0 cpad" id="details">')
-                html_file.write('<div class="cb133w1 cwidth"><h4>Details for non-compliant Recommendations</h4></div>')
-                html_file.write('<div class="cb132w1 cwidth">')
-                # Creating appendix for the report
-                for finding in html_appendix:
-                    fing = self.cis_foundations_benchmark_3_0[finding]
-                    html_file.write(f'<hr id="{finding}" /><h4>{finding} &ndash; {fing["Title"]}</h4>\n')
-                    for item_key, item_value in self.cis_report_data[finding].items():
-                        if item_value != "":
-                            html_file.write(f"<h5>{item_key.title()}</h5>")
-                            if item_key == 'Observation':
-                                if fing['Status'] is None:
-                                    pfx = '<b>Manually check for</b>'
-                                else:
-                                    num_findings = len(fing['Findings'])
-                                    num_total = len(fing['Total'])
-                                    if num_findings > 0 or num_total > 0:
-                                        pfx = f'<b>{str(num_findings)}</b> of <b>{str(num_total)}</b>'
-                                    else:
-                                        pfx = '<b>No</b>'
-                                html_file.write(f"<p>{pfx} {item_value}</p>\n")
-                            else:
-                                v = item_value.replace('<pre>', '<pre style="font-size: 1.4rem;">')
-                                html_file.write(f"<p>{v}</p>\n")
-                html_file.write("</div></section>\n")
-                # Closing HTML
-                report_year = str(self.start_datetime.strftime('%Y'))
-                html_file.write("""<div id="resources" class="u10 u10v6"><nav class="u10w1" aria-label="Main footer">
-                <div class="u10w2"><div class="u10w3" aria-labelledby="resourcesfor"><a class="u10btn" tabindex="-1" aria-labelledby="resourcesfor"></a>
-                <h4 class="u10ttl" id="resourcesfor">Resources</h4><ul>
-                <li><a target="_blank" href="https://www.cisecurity.org/benchmark/Oracle_Cloud">CIS OCI Foundation Benchmark</a></li>
-                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html">Deploy a secure landing zone that meets the CIS Foundations Benchmark for Oracle Cloud</a></li>
-                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/oci-security-checklist/index.html">Security checklist for Oracle Cloud Infrastructure</a></li>
-                <li><a target="_blank" href="https://docs.oracle.com/en-us/iaas/Content/Security/Concepts/security.htm">OCI Documentation – Securely configure your Oracle Cloud Infrastructure services and resources</a></li>
-                <li><a target="_blank" href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">Best practices framework for Oracle Cloud Infrastructure</a></li>
-                <li><a target="_blank" href="https://www.oracle.com/security/cloud-security/what-is-cspm/">Cloud Security Posture Management</a></li>
-                </ul></div></div><div class="u10w4"><hr></div></nav>
-                <div class="u10w11"><nav class="u10w5 u10w10" aria-label="Site info">""")
-                html_file.write(f'<ul class="u10-links"><li></li><li><a target="_blank" href="https://www.oracle.com/legal/copyright.html">© {report_year} Oracle</a></li></ul></nav></div></div></div></body></html>\n')
+            with open(file_path, mode='w', encoding='utf-8') as html_file:
+                html_file.write(r"""<!doctype html>
+<html lang="en-US"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OCI CIS Summary Report</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fcfbfa;color:#312d2a;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.cwidth{max-width:1344px;margin:0 auto;padding-left:48px;padding-right:48px}.report-bar{height:70px;padding:5px 0;background:#fff;border-top:1px solid #dedbd7;border-bottom:1px solid #dedbd7}.report-bar-frame{height:60px;max-width:1600px;margin:0 auto;background:#312d2a}.report-bar .cwidth{max-width:1348px;height:60px;padding-left:0;padding-right:0;display:flex;align-items:center}.oracle-wordmark{display:block;width:124px;height:18px;text-decoration:none}.oracle-wordmark svg{display:block;width:124px;height:auto}.report-title{background:#fff;border-bottom:1px solid rgba(122,115,110,.2);padding:30px 0 24px}h1{margin:0;font-size:28px;line-height:1.2}.subtitle{margin:8px 0 0;color:#5f5b57}.checker-version{margin:5px 0 0;color:#5f5b57;font-size:.9rem;font-weight:700}main{padding:28px 0 44px}.cards,.filters{display:flex;gap:12px;flex-wrap:wrap}.cards{margin-bottom:22px}button,select,input{font:inherit}.card{min-width:168px;padding:14px 18px;background:#fff;color:#312d2a;border:1px solid rgba(122,115,110,.32);border-radius:4px;text-align:left;cursor:pointer;transition:box-shadow .15s}.card:hover,.card:focus{box-shadow:0 2px 8px #0002}.card b{display:block;font-size:1.8rem;line-height:1.1;margin-top:4px}.status-yes{color:#257245}.status-no{color:#c74634}.status-na{color:#665f5a}.filters{padding:16px;background:#f5f4f2;border:1px solid rgba(122,115,110,.2);margin-bottom:14px}.filters select,.filters input{min-width:165px;padding:9px 10px;border:1px solid #7a736e;background:#fff;border-radius:2px}.filters input{flex:1;min-width:250px}.note{margin:0 0 12px;color:#5f5b57}.otable{background:#fff;border:1px solid rgba(122,115,110,.2)}.otable-w1{overflow:auto}.otable-w2{width:100%;min-width:1050px;border-collapse:collapse}.otable-w2 th{background:#3a3632;color:#fff;text-align:left;padding:12px}.otable-w2 td{padding:12px;border-bottom:1px solid rgba(122,115,110,.2);vertical-align:top}.otable-w2 tr:nth-child(even){background:#f5f4f2}.badge{display:inline-block;padding:2px 8px;background:#e8e5e2;border-radius:12px;font-size:.85rem;white-space:nowrap}.recommendation-title{display:block;margin-top:5px;font-weight:600;max-width:350px}details{max-width:420px}summary{cursor:pointer;color:#00688c;font-weight:700}details p{white-space:pre-wrap;margin:8px 0 0}a{color:#00688c}.doc-link{display:block;margin-top:8px}.impact-page{min-height:100vh;background:#f5f4f2}.impact-hero{background:#312d2a;color:#fff;border-bottom:5px solid #c74634}.impact-inner{max-width:1280px;margin:0 auto;padding-left:32px;padding-right:32px}.impact-hero .impact-inner{padding-top:20px;padding-bottom:27px}.impact-hero h1{margin:0;font-size:24px;line-height:1.25;color:#fff}.impact-hero p{margin:8px 0 0;color:#f4f2ef;font-size:15px;font-weight:600}.impact-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.impact-meta span,.impact-meta .impact-source-link{display:inline-block;padding:4px 10px;border:1px solid #8d8985;border-radius:14px;background:#595652;color:#fff;font-size:12px;font-weight:700}.impact-meta .impact-source-link{text-decoration:underline;text-underline-offset:2px}.impact-meta .impact-source-link:hover,.impact-meta .impact-source-link:focus{background:#6c6864}.impact-main{padding:24px 0 46px}.impact-filter{display:block;width:min(586px,100%);padding:10px 12px;border:2px solid #006fc9;border-radius:6px;background:#fff;color:#312d2a}.impact-list{display:grid;gap:16px;margin-top:18px}.impact-card{padding:18px;background:#fff;border:1px solid #d9d5d1;border-left:3px solid #c74634;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)}.impact-card-header{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid #e3e0dd}.impact-item-badge{display:inline-block;padding:4px 10px;border-radius:14px;background:#f1f0ef;color:#312d2a;font-size:12px;font-weight:700;white-space:nowrap}.impact-item-title{margin:0;color:#312d2a;font-size:18px;line-height:1.25}.impact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 28px;padding-top:17px}.impact-field{min-width:0}.impact-field-label{margin:0 0 4px;color:#66615d;font-size:12px;font-weight:800;letter-spacing:.02em;line-height:1.2}.impact-field-value{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.42}.impact-structured{grid-column:1/-1;max-width:none;margin:0;padding:10px 0 0;border-top:1px solid #e9e6e3}.impact-structured summary{color:#0067ad;font-weight:700}.impact-structured pre{margin:10px 0 0;padding:12px;background:#f5f4f2;border:1px solid #e3e0dd;border-radius:4px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}.impact-empty{margin:0;padding:20px;background:#fff;border:1px solid #d9d5d1;border-radius:8px;color:#5f5b57}footer{padding:22px 0;background:#3a3632;color:#fff;font-size:.9rem}footer a{color:#fff}@media(max-width:900px){.impact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:768px){.cwidth,.report-bar .cwidth{padding-left:24px;padding-right:24px}h1{font-size:24px}main{padding-top:18px}.impact-inner{padding-left:24px;padding-right:24px}.impact-grid{grid-template-columns:1fr;gap:16px}.impact-card{padding:16px}.impact-card-header{align-items:flex-start;flex-direction:column;gap:7px}}
+</style></head><body><div id="summaryView">
+<header class="report-bar"><div class="report-bar-frame"><div class="cwidth"><a class="oracle-wordmark" href="https://www.oracle.com/" aria-label="Oracle home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 30" role="img" aria-label="Oracle"><path fill="#C74634" d="M99.61 19.52h15.24l-8.05-13L92 30h-6.73l18-28.17a4.29 4.29 0 0 1 7-.05L128.32 30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93 5.23V.28h-5.72v26.88a2.76 2.76 0 0 0 .85 2 2.89 2.89 0 0 0 2.08.87h26l3.39-5.25h-26.6M75 20.38A10 10 0 0 0 75 .28H50V30h5.71V5.54h18.94a4.81 4.81 0 0 1 0 9.62H58.54L75.6 30h8.29L72.43 20.38H75M14.88 30h17.27a14.86 14.86 0 0 0 0-29.71H14.88a14.86 14.86 0 1 0 0 29.71m16.88-5.23H15.26a9.62 9.62 0 0 1 0-19.23h16.5a9.62 9.62 0 1 1 0 19.23M140.25 30h17.63l3.34-5.23h-20.58a9.62 9.62 0 1 1 0-19.23h16.75l3.38-5.25h-20.52a14.86 14.86 0 1 0 0 29.71m69.87-5.23a9.62 9.62 0 0 1-9.26-7h24.42l3.36-5.24h-27.64a9.61 9.61 0 0 1 9.26-7h16.76l3.35-5.25h-20.5a14.86 14.86 0 0 0 0 29.71h17.63l3.35-5.23z"/></svg></a></div></div></header>
+<section class="report-title"><div class="cwidth"><h1>OCI CIS Summary Report</h1><p class="subtitle" id="reportMeta"></p><p class="checker-version" id="checkerVersion"></p></div></section>
+<main><div class="cwidth"><div class="cards"><button class="card" onclick="filterStatus('')">All recommendations <b id="all"></b></button><button class="card status-no" onclick="filterStatus('No')">Non-compliant <b id="no"></b></button><button class="card status-yes" onclick="filterStatus('Yes')">Compliant <b id="yes"></b></button><button class="card" onclick="filterEvidence()">Evidence available <b id="evidence"></b></button></div><div class="filters" id="filters"><select id="section" onchange="render()"><option value="">All sections</option></select><select id="status" onchange="render()"><option value="">All statuses</option><option value="Yes">Compliant</option><option value="No">Non-compliant</option><option value="N/A">Not applicable</option></select><select id="impact" onchange="render()"><option value="">All impacted-item availability</option><option value="yes">Evidence available</option><option value="no">No evidence</option></select><input id="search" oninput="render()" placeholder="Search recommendation, title, remediation, or framework mapping"></div><p class="note" id="count"></p><div class="otable"><div class="otable-w1"><table class="otable-w2"><thead><tr><th>Recommendation</th><th>Section</th><th>Compliant</th><th>Finding / coverage</th><th>Remediation</th><th>Impacted items</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></main>
+<footer><div class="cwidth">CIS OCI Foundations Benchmark &bull; <a target="_blank" rel="noopener" href="https://www.cisecurity.org/benchmark/Oracle_Cloud">Benchmark resources</a> &bull; <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">OCI best practices guidance</a> &bull; <span id="copyright"></span></div></footer></div><section id="impactView" hidden></section>
+<script>const D=""")
+                html_file.write(json_payload)
+                html_file.write(r""",FRAMEWORKS=['CIS v8','CCCS Guard Rail'];const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));const records=()=>$('source')?.value==='OBP'?D.obp_findings:D.findings,display=value=>String(value??'').trim()||'—',evidenceFor=row=>row.evidence||{headers:[],rows:[],error:'No embedded impacted-item data is available for this recommendation.'},evidenceRows=row=>evidenceFor(row).rows||[];
+function populateSections(){const current=$('section').value,sections=[...new Set(records().map(row=>row.Section).filter(Boolean))].sort();$('section').innerHTML='<option value="">All sections</option>'+sections.map(section=>'<option value="'+esc(section)+'">'+esc(section)+'</option>').join('');if(sections.includes(current))$('section').value=current}function refreshCards(){const rows=records();$('all').textContent=rows.length;$('no').textContent=rows.filter(row=>row.Compliant==='No').length;$('yes').textContent=rows.filter(row=>row.Compliant==='Yes').length;$('evidence').textContent=rows.filter(row=>evidenceRows(row).length).length}function resetSource(){$('section').value='';$('status').value='';$('impact').value='';populateSections();refreshCards();render()}function filterStatus(status){$('status').value=status;render()}function filterEvidence(){$('impact').value='yes';render()}
+function remediation(row){const mappings=FRAMEWORKS.map(key=>row[key]&&row[key].length?key+': '+(Array.isArray(row[key])?row[key].join(', '):row[key]):'').filter(Boolean).join('\n');const details=Object.entries(row.control_details||{}).filter(([,value])=>String(value??'').trim()).map(([label,value])=>'<b>'+esc(label)+'</b>\n'+esc(value)).join('\n\n');const documentation=row.Documentation?'<a class="doc-link" href="'+esc(row.Documentation)+'" target="_blank" rel="noopener">Oracle documentation</a>':'';if(!row.Remediation&&!details&&!mappings&&!documentation)return '<span class="badge">Not provided</span>';return '<details><summary>Oracle remediation & validation</summary><p>'+(row.Remediation?'<b>Source remediation</b>\n'+esc(display(row.Remediation)):'')+(details?'\n\n<b>Control details</b>\n'+details:'')+(mappings?'\n\n<b>Framework mappings</b>\n'+esc(mappings):'')+'</p>'+documentation+'</details>'}function coverage(row){if(row.source==='OBP')return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+' verified item(s)';return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+(String(row.Total||'').trim()?' / '+esc(row.Total)+' compliant':'')+'<br>'+esc(display(row['Compliance Percentage Per Recommendation']))}
+function render(){const query=$('search').value.toLowerCase(),section=$('section').value,status=$('status').value,impact=$('impact').value,source=$('source')?.value||'CIS',rows=records().filter(row=>(!section||row.Section===section)&&(!status||row.Compliant===status)&&(!impact||(impact==='yes'?evidenceRows(row).length:!evidenceRows(row).length))&&(!query||JSON.stringify(row).toLowerCase().includes(query)));$('count').textContent=rows.length+' of '+records().length+' '+(source==='OBP'?'OBP':'CIS')+' recommendations shown';$('rows').innerHTML=rows.map(row=>{const statusClass=row.Compliant==='Yes'?'status-yes':row.Compliant==='No'?'status-no':'status-na',evidence=evidenceRows(row).length?'<button onclick="openEvidence('+row.index+')">Open '+evidenceRows(row).length+' row(s)</button>':'<span class="badge">None embedded</span>',level=String(row.Level||'').trim()?'<br><span class="badge">Level '+esc(row.Level)+'</span>':'';return '<tr><td><b>'+esc(row['Recommendation #'])+'</b>'+level+'<span class="recommendation-title">'+esc(row.Title)+'</span></td><td>'+esc(display(row.Section))+'</td><td class="'+statusClass+'"><b>'+esc(display(row.Compliant))+'</b></td><td>'+coverage(row)+'</td><td>'+remediation(row)+'</td><td>'+evidence+'</td></tr>'}).join('')}
+const summaryTitle=document.title;function evidenceItem(index){return [...D.findings,...D.obp_findings].find(row=>row.index===index)}function impactLabel(header){return String(header??'').replace(/[_-]+/g,' ').toUpperCase()}function structuredValue(value){if(value!==null&&typeof value==='object')return value;const text=String(value??'').trim();if(!(text.startsWith('{')||text.startsWith('[')))return null;try{return JSON.parse(text)}catch(error){return text}}function excelHyperlink(value){const match=String(value??'').match(/^=HYPERLINK\("([^"]+)","([^"]*)"\)$/i);return match&&/^https:\/\//i.test(match[1])?{href:match[1],label:match[2]||match[1]}:null}function impactTitle(headers,row,position){const normalized=headers.map(header=>String(header).toLowerCase().replace(/[^a-z0-9]/g,''));for(const name of ['displayname','name','resourcename','id']){const value=row[normalized.indexOf(name)];if(String(value??'').trim())return String(value)}return 'Impacted item '+(position+1)}function impactCard(headers,row,position){const title=impactTitle(headers,row,position),fields=headers.map((header,column)=>{const value=row[column]??'',structured=structuredValue(value),link=excelHyperlink(value);if(!String(value).trim())return '';if(link)return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value"><a href="'+esc(link.href)+'" target="_blank" rel="noopener">'+esc(link.label)+'</a></div></div>';if(structured!==null)return '<details class="impact-structured"><summary>'+esc(impactLabel(header))+'</summary><pre>'+esc(typeof structured==='string'?structured:JSON.stringify(structured,null,2))+'</pre></details>';return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value">'+esc(value)+'</div></div>'}).join('');return '<article class="impact-card"><div class="impact-card-header"><span class="impact-item-badge">Impacted item '+(position+1)+'</span><h2 class="impact-item-title">'+esc(title)+'</h2></div><div class="impact-grid">'+fields+'</div></article>'}
+function renderImpacted(index){const item=evidenceItem(index);if(!item){location.hash='';return}const evidence=evidenceFor(item),headers=evidence.headers||[],rows=evidence.rows||[];$('summaryView').hidden=true;const view=$('impactView');view.hidden=false;document.title=item.recommendation+' - Impacted items';view.innerHTML='<section class="impact-page"><header class="impact-hero"><div class="impact-inner"><h1>'+esc(item.recommendation)+' - Impacted items</h1><p>'+esc(display(item.Title))+'</p><div class="impact-meta"><span>'+rows.length+' extracted evidence row(s)</span>'+(evidence.local_href?'<a class="impact-source-link" href="'+esc(evidence.local_href)+'" target="_blank" rel="noopener">Source file: '+esc(evidence.filename)+'</a>':'<span>Source file: '+esc(evidence.filename)+'</span>')+'</div></div></header><main class="impact-main"><div class="impact-inner"><input class="impact-filter" id="impactFilter" type="search" autocomplete="off" aria-label="Filter impacted items" placeholder="Filter by name, OCID, region, state, or any value"><div class="impact-list" id="impactList"></div></div></main></section>';const filter=$('impactFilter'),list=$('impactList'),paint=()=>{const query=filter.value.trim().toLowerCase();if(evidence.error){list.innerHTML='<p class="impact-empty">'+esc(evidence.error)+'</p>';return}const cards=rows.map((row,position)=>({row,position,search:(headers.join(' ')+' '+row.join(' ')).toLowerCase()})).filter(entry=>!query||entry.search.includes(query));list.innerHTML=cards.length?cards.map(entry=>impactCard(headers,entry.row,entry.position)).join(''):'<p class="impact-empty">No impacted items match this filter.</p>'};filter.addEventListener('input',paint);paint();window.scrollTo(0,0)}function renderSummary(){$('impactView').hidden=true;$('impactView').innerHTML='';$('summaryView').hidden=false;document.title=summaryTitle}function applyRoute(){const match=location.hash.match(/^#impacted-(\d+)$/);if(match&&evidenceItem(Number(match[1]))){renderImpacted(Number(match[1]));return}renderSummary()}function openEvidence(index){const target=location.href.replace(/#.*/,'')+'#impacted-'+index,detailWindow=window.open(target,'_blank');if(detailWindow)detailWindow.opener=null;else location.href=target}function setup(){$('reportMeta').textContent='Tenancy: '+D.meta.tenancy+' • Generated: '+D.meta.generated;$('checkerVersion').textContent='CIS Checker Version: '+D.meta.version+' • Updated: '+D.meta.updated;$('copyright').textContent='© '+new Date().getFullYear()+' Oracle';if(D.obp_findings.length)$('filters').insertAdjacentHTML('afterbegin','<select id="source" onchange="resetSource()"><option value="CIS">CIS OCI Foundations</option><option value="OBP">Oracle Best Practices (OBP)</option></select>');populateSections();refreshCards();render()}window.addEventListener('hashchange',applyRoute);setup();applyRoute();</script></body></html>""")
 
             print(f"HTML: {file_subject.ljust(22)} --> {file_path}")
-            # Used by Upload
-
             return file_path
-
         except Exception as e:
             raise Exception("Error in report_generate_html_report: " + str(e.args))
 
@@ -6330,6 +6185,8 @@ class CIS_Report:
                 if report_file:
                     self.__os_copy_report_to_object_storage(
                         self.__output_bucket, report_file)
+
+        return obp_summary_report
 
     ##########################################################################
     # Coordinates calls of all the read function required for analyzing tenancy
@@ -6434,11 +6291,15 @@ class CIS_Report:
 
         if self.__all_resources:
             all_resources = [
-                self.__search_resources_all_resources_in_tenancy,
-                self.__service_limits_utilization
+                self.__search_resources_all_resources_in_tenancy
             ]
         else:
             all_resources = []
+
+        if self.__service_limits_enabled:
+            service_limits = [self.__service_limits_utilization]
+        else:
+            service_limits = []
 
         def execute_function(func):
             func()
@@ -6446,7 +6307,7 @@ class CIS_Report:
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Submit each function to the executor
             futures = []
-            for func in cis_regional_functions + obp_functions + all_resources:
+            for func in cis_regional_functions + obp_functions + all_resources + service_limits:
                 futures.append(executor.submit(execute_function, func))
 
             # Wait for all functions to complete
@@ -6663,12 +6524,20 @@ class CIS_Report:
         self.__report_cis_analyze_tenancy_data()
 
         # Generate CIS reports
-        self.__report_generate_cis_report(level)
+        cis_summary_report = self.__report_generate_cis_report(level)
+
+        obp_summary_report = []
 
         if self.__obp_checks:
             # Analyzing Data for OBP reports
             self.__obp_analyze_tenancy_data()
-            self.__report_generate_obp_report()
+            obp_summary_report = self.__report_generate_obp_report()
+
+        summary_html_file_name = self.__report_generate_html_summary_report(
+            "cis", "summary_report", cis_summary_report, obp_summary_report)
+        if summary_html_file_name and self.__output_bucket:
+            self.__os_copy_report_to_object_storage(
+                self.__output_bucket, summary_html_file_name)
 
         if self.__output_raw_data:
             self.__report_generate_raw_data_output()
@@ -6930,7 +6799,9 @@ def execute_report():
     parser.add_argument('--obp', action='store_true', default=False,
                         help='Checks for OCI best practices.')
     parser.add_argument('--all-resources', action='store_true', default=False,
-                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables OCI Best Practice Checks with Service Limits checking (--obp) and enables the (--raw) flags.  All of these checks increase runtime.')
+                        help='Uses Advanced Search Service to query all resources in the tenancy and outputs to a JSON. It also enables the --obp and --raw flags. All of these checks increase runtime.')
+    parser.add_argument('--service-limits', action='store_true', default=False,
+                        help='Checks OCI service limit utilization. It also enables the --all-resources, --obp, and --raw flags.')
     parser.add_argument('--disable-api-usage-check', action='store_true', default=False,
                         help='Disables the checking of OCI API unused for 45 days or more.')
     parser.add_argument('--redact-output', action='store_true', default=False,
@@ -6956,10 +6827,38 @@ def execute_report():
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:
+
+        def add_sheet(book, file, name):
+            try:
+                worksheet = book.add_worksheet(name)
+                with open(file, 'rt', encoding='unicode_escape') as f:
+                    reader = csv.reader(f)
+                    last_row = 0
+                    last_col = 0
+                    has_data = False
+                    for r, row in enumerate(reader):
+                        has_data = True
+                        last_row = r
+                        for c, col in enumerate(row):
+                            last_col = c
+                            # Format URL only if the column starts with "=HYPERLINK"
+                            if col.startswith("=HYPERLINK"):
+                                url_info = re.findall(r'"(.*?)"', col)
+                                if url_info and len(url_info[0]) < 2079:  # Excel Link limit
+                                    worksheet.write_url(r, c, url_info[0], string=url_info[1])
+                            else:
+                                worksheet.write(r, c, col)
+                if has_data:
+                    worksheet.autofilter(0, 0, last_row, last_col)
+                worksheet.autofit()
+            except Exception as e:
+                print(f"** Failed to output to Excel worksheet {worksheet_name} **")
+                print(e)
+        
         try:
             report_prefix = f'{cmd.report_prefix}_' if cmd.report_prefix else ''
             workbook = Workbook(f'{csv_report_directory}/{report_prefix}Consolidated_Report.xlsx', {'in_memory': True})
@@ -6970,40 +6869,39 @@ def execute_report():
                     worksheet.insert_image('L2', f'{csv_report_directory}/{report_prefix}cis_summary_compliance_by_focus_area.png')
                 except Exception:
                     pass
+
             csvfiles = glob.glob(f'{csv_report_directory}/{report_prefix}*.csv')
             csvfiles.sort()
             seen_worksheet_names = set()
+
+            cis_files = []
             for csvfile in csvfiles:
-                worksheet_name = _build_worksheet_name(csvfile, report_prefix, seen_worksheet_names)
+                if 'cis_summary_report.csv' in csvfile:
+                    cis_files.append(csvfile)
+                    break
+
+            for k, v in report.cis_foundations_benchmark_3_0.items():
+                for csvfile in csvfiles:
+                    km = f"_{k.replace('.', '-')}.csv"
+                    if km in csvfile:
+                        cis_files.append(csvfile)
+            
+            all_other_files = []
+            for csvfile in csvfiles:
+                if csvfile not in cis_files:
+                    all_other_files.append(csvfile)
+            
+            for cis_file in cis_files:
+                worksheet_name = _build_worksheet_name(cis_file, report_prefix, seen_worksheet_names)
                 if not worksheet_name:
                     continue
+                add_sheet(workbook, cis_file, worksheet_name)
 
-                try:
-                    worksheet = workbook.add_worksheet(worksheet_name)
-                    with open(csvfile, 'rt', encoding='unicode_escape') as f:
-                        reader = csv.reader(f)
-                        last_row = 0
-                        last_col = 0
-                        has_data = False
-                        for r, row in enumerate(reader):
-                            has_data = True
-                            last_row = r
-                            for c, col in enumerate(row):
-                                last_col = c
-                                # Format URL only if the column starts with "=HYPERLINK"
-                                if col.startswith("=HYPERLINK"):
-                                    url_info = re.findall(r'"(.*?)"', col)
-                                    if url_info and len(url_info[0]) < 2079:  # Excel Link limit
-                                        worksheet.write_url(r, c, url_info[0], string=url_info[1])
-                                else:
-                                    worksheet.write(r, c, col)
-                    if has_data:
-                        worksheet.autofilter(0, 0, last_row, last_col)
-                    worksheet.autofit()
-                except Exception as e:
-                    print(f"** Failed to output to Excel worksheet {worksheet_name} **")
-                    print(e)
+            for file_name in all_other_files:
+                worksheet_name = _build_worksheet_name(file_name, report_prefix, seen_worksheet_names)
+                if not worksheet_name:
                     continue
+                add_sheet(workbook, file_name, worksheet_name)
 
             workbook.close()
         except Exception as e:

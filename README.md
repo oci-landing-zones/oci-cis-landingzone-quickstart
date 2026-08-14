@@ -82,12 +82,13 @@ allow group 'Default'/'Auditor-Group' to use ons-family in tenancy where any {re
 ## <a name="fast_start"></a>Fast Start
 
 1. Copy these commands:
-   ```
+   ```bash
    git clone https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart.git
    cd oci-cis-landingzone-quickstart/scripts
    chmod +x standard.sh
    ./standard.sh
    ```
+
 2. Hit &lt;Enter>
 3. Follow the instructions to get the results.
 
@@ -115,8 +116,19 @@ It has been tested on **OCI Cloud Shell** with **Public network**, **OCI Cloud S
 To download and run the scripts without cloning the repository:
 
 ```bash
+mkdir cis_compliance_3.5.0
+cd cis_compliance_3.5.0
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
+chmod +x standard.sh
+```
+
+On MacOS use:
+```bash
+mkdir cis_compliance_3.4.0
+cd cis_compliance_3.4.0
+curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py --output cis_reports.py
+curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh --output standard.sh
 chmod +x standard.sh
 ```
 
@@ -124,6 +136,11 @@ Optionally, download `requirements.txt`. When it is not present, `standard.sh` c
 
 ```bash
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/requirements.txt
+```
+
+On MacOS use:
+```bash
+curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/requirements.txt --output requirements.txt
 ```
 
 ### Python Packages

@@ -329,9 +329,7 @@ cleanup() {
 SCRIPT_DIR=$(dirname $0)
 if [ ${SCRIPT_DIR} == "." ]; then
     SCRIPT_DIR=${PWD}
-    OUTPUT_DIR_PARENT="$(dirname ${SCRIPT_DIR})"
-else
-    OUTPUT_DIR_PARENT="$(dirname ${SCRIPT_DIR})"
+    OUTPUT_DIR_PARENT="${SCRIPT_DIR}"
 fi
 if [ "${OUTPUT_DIR_PARENT}" == "." ]; then
     OUTPUT_DIR_PARENT=${PWD}

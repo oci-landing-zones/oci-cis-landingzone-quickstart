@@ -116,8 +116,8 @@ It has been tested on **OCI Cloud Shell** with **Public network**, **OCI Cloud S
 To download and run the scripts without cloning the repository:
 
 ```bash
-mkdir cis_compliance_3.5.0
-cd cis_compliance_3.5.0
+mkdir cis_compliance_script
+cd cis_compliance_script
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
 chmod +x standard.sh
@@ -125,8 +125,8 @@ chmod +x standard.sh
 
 On MacOS use:
 ```bash
-mkdir cis_compliance_3.4.0
-cd cis_compliance_3.4.0
+mkdir cis_compliance_script
+cd cis_compliance_script
 curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py --output cis_reports.py
 curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh --output standard.sh
 chmod +x standard.sh

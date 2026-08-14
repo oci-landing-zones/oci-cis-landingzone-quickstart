@@ -83,20 +83,10 @@ allow group 'Default'/'Auditor-Group' to use ons-family in tenancy where any {re
 
 1. Copy these commands:
    ```bash
-   mkdir cis_compliance_3.4.0
-   cd cis_compliance_3.4.0
-   wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-   wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
+   git clone https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart.git
+   cd oci-cis-landingzone-quickstart/scripts
    chmod +x standard.sh
-   ```
-
-   On MacOS use:
-   ```bash
-   mkdir cis_compliance_3.4.0
-   cd cis_compliance_3.4.0
-   curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py --output cis_reports.py
-   curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh --output standard.sh
-   chmod +x standard.sh
+   ./standard.sh
    ```
 
 2. Hit &lt;Enter>

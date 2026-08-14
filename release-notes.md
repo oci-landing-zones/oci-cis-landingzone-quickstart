@@ -1,3 +1,13 @@
+# August 14, 2026 Release Notes - 3.4.1
+1. [Fixes and Updates](#3-4-1-fixes)
+
+## <a name="#3-4-1-fixes">Fixes and Updates</a>
+Updates:
+- Updated the README with repository cloning and platform-specific script download instructions.
+
+Fixes:
+- Fixed `standard.sh` to create output in the current script directory when run from that directory instead of using its parent directory.
+
 # August 7, 2026 Release Notes - 3.4.0
 1. [Shell Script Migration](#3-4-0-shell-script)
 1. [OCI Functions Deployment](#3-4-0-functions)

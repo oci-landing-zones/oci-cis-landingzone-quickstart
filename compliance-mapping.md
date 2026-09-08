@@ -6,7 +6,7 @@ The CIS Controls are a general set of recommended practices for securing a wide 
 ## Compliance Checker Script to CIS V8.1 Mapping
 | CIS Control | CIS Safeguard | Asset Type | Security Function | Title | OCI Services | Coverage | Explanation |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1.1 | Devices | Identify | Establish and Maintain Detailed Enterprise Asset Inventory | OCI APIs, Tags | Partial | Provides supporting evidence for 'Establish and Maintain Detailed Enterprise Asset Inventory' using All Resources and LAM-1 - Ensure default tags are used on resources. |
+| 1 | 1.1 | Devices | Identify | Establish and Maintain Detailed Enterprise Asset Inventory | OCI APIs, Tags | Partial | Provides supporting evidence for 'Establish and Maintain Detailed Enterprise Asset Inventory' using All Resources and LAM-1 - Ensure default tags are used on resources. See the All Resources limitation below; this evidence cannot by itself ensure a complete inventory. |
 | 1 | 1.2 | Devices | Respond | Address Unauthorized Assets | Customer | Procedural Only |  |
 | 1 | 1.3 | Devices | Detect | Utilize an Active Discovery Tool | OCI Audit, OCI Logging | Partial | Provides supporting evidence for 'Utilize an Active Discovery Tool' using OBP-SIEM-1 - All compartment audit logs sent to SIEM in all regions; OBP-SIEM-3 - VCN Flow logs sent to SIEM; OBP-SIEM-4 - Bucket write logs sent to SIEM. |
 | 1 | 1.4 | Devices | Identify | Use Dynamic Host Configuration Protocol (DHCP) Logging to Update Enterprise Asset Inventory | Customer | Procedural Only |  |
@@ -161,6 +161,8 @@ The CIS Controls are a general set of recommended practices for securing a wide 
 | 18 | 18.5 | Network | Detect | Perform Periodic Internal Penetration Tests | Customer | Procedural Only |  |
 
 * Partial is limited to the OCI configuration or inventory elements the script can inspect at runtime; it does not validate process-level requirements, review cadence, completeness outside OCI, or operational effectiveness.
+
+**All Resources limitation:** The `--all-resources` option uses OCI Search, which returns only the resource types supported by Search, not every possible OCI resource. Its output is supporting inventory evidence and cannot by itself ensure CIS Safeguard 1.1. Supplement it with service-specific inventory sources and procedural evidence as needed. See Oracle's [Search policy reference](https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/searchpolicyreference.htm).
 
 ## Resources
 ### CIS Resources

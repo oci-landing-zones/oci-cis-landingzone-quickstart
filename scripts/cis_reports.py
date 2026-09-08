@@ -742,8 +742,8 @@ class CIS_Report:
             'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm"},
             'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm"},
             'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm"},
-            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
         }
         #  CIS and OBP Regional Data
@@ -2086,7 +2086,6 @@ class CIS_Report:
             debug("processing __identity_read_dynamic_groups: Identity Doamins are enabled: " + str(self.__identity_domains_enabled))
             if self.__identity_domains_enabled:
                 for identity_domain in self.__identity_domains:
-                    print(identity_domain)
                     dynamic_groups_data =  self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_dynamic_resource_groups,
                                                                              args={'attributes' : 'ocid,displayName,description,compartmentOcid,domainOcid,'
                                                                              'tenancyOcid,matchingRule,idcsCreatedBy,idcsLastModifiedBy,meta,urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags'})
@@ -5637,6 +5636,9 @@ class CIS_Report:
             record = {key: domain[key] for key in required_keys if key in domain}
             pwd_policy = domain.get('password_policy') or {}
             record['max_incorrect_attempts'] = pwd_policy.get('max_incorrect_attempts')
+            record['policy_name'] = pwd_policy.get('name')
+            deeplink_url = self.__oci_identity_domains_uri + domain.get('id') + "/settings/password-policy-settings-details/PasswordPolicy"
+            record['deeplink'] = self.__generate_csv_hyperlink(url=deeplink_url, name=record['policy_name'])
             record['lockout_duration'] = pwd_policy.get('lockout_duration')
             try:
                 record['automatic_account_unlock_enabled'] = (

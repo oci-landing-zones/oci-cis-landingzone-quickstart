@@ -5209,7 +5209,7 @@ class CIS_Report:
         # Cloud Guard Checks
         #######################################
         cloud_guard_record = {
-            "cloud_guard_endable": True if self.__cloud_guard_config_status == 'ENABLED' else False,
+            "cloud_guard_enabled": True if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root": False,
             "target_configuration_detector": False,
             "target_configuration_detector_customer_owned": False,

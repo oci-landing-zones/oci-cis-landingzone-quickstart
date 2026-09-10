@@ -19,3 +19,4 @@ test/**
 **/scripts/**/*.pkl
 **/scripts/**/*.png
 *.pyc
+AGENTS.md

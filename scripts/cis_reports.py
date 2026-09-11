@@ -618,7 +618,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
                 "Remediation": "Enable the cloud guard by selecting the services in the menu and provide appropriate reporting region and other configurations.",
                 "Recommendation": "",
-                "Observation": "Cloud Guard has not been configured in the root compartment of the tenancy."
+                "Observation": "Cloud Guard is not fully configured in the root compartment of the tenancy."
             },
             "4.15": {
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard generates a Problem. It is recommended to setup an Event Rule and Notification that gets triggered when Oracle Cloud Guard Problems are created, dismissed or remediated. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
@@ -4869,12 +4869,42 @@ class CIS_Report:
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_3_0['4.13']['Total'] = self.__network_subnets
 
-        # CIS Check 4.14 - Cloud Guard enabled
+        # CIS Check 4.14 - Cloud Guard enabled and configured at the root target
         debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
-        if self.__cloud_guard_config_status == 'ENABLED':
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = True
-        else:
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = False
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        print(root_target)
+        detector_recipes = (
+            root_target.get('target_detector_recipes') or [] if root_target else []
+        )
+        responder_recipes = (
+            root_target.get('target_responder_recipes') or [] if root_target else []
+        )
+        detectors = {
+            getattr(recipe, 'detector', '').upper()
+            for recipe in detector_recipes
+        }
+        cloud_guard_record = {
+            'cloud_guard_enabled': self.__cloud_guard_config_status == 'ENABLED',
+            'target_at_root': root_target is not None,
+            'target_configuration_detector': 'IAAS_CONFIGURATION_DETECTOR' in detectors,
+            'target_activity_detector': 'IAAS_ACTIVITY_DETECTOR' in detectors,
+            'target_responder_recipes': bool(responder_recipes),
+            'target_id': root_target.get('id', '') if root_target else '',
+            'target_name': root_target.get('display_name', '') if root_target else '',
+        }
+        required_checks = (
+            'cloud_guard_enabled',
+            'target_at_root',
+            'target_configuration_detector',
+            'target_activity_detector',
+            'target_responder_recipes',
+        )
+        self.cis_foundations_benchmark_3_0['4.14']['Total'].append(cloud_guard_record)
+        self.cis_foundations_benchmark_3_0['4.14']['Status'] = all(
+            cloud_guard_record[check] for check in required_checks
+        )
+        if not self.cis_foundations_benchmark_3_0['4.14']['Status']:
+            self.cis_foundations_benchmark_3_0['4.14']['Findings'].append(cloud_guard_record)
 
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
@@ -6224,14 +6254,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
-            self.__read_cloud_guard_problems
+            self.__read_cloud_guard_problems,
+            self.__cloud_guard_read_cloud_guard_targets
         ]
 
         # Budgets is global construct
         if self.__obp_checks:
             obp_home_region_functions = [
                 self.__budget_read_budgets,
-                self.__cloud_guard_read_cloud_guard_targets,
                 self.__quota_read,
             ]
         else:

@@ -167,6 +167,7 @@ class ComplianceMappings:
     'IAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'IAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'IAM-20' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : ['1.1']},
+    'IAM-21' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []}
 }
@@ -744,7 +745,8 @@ class CIS_Report:
             'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm"},
             'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
+            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},
+            'IAM_Requestable_Groups': {'id': 'IAM-21', 'section': "Identity and Access Management", 'Title': 'Identity Domain groups are not requestable', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -1448,8 +1450,11 @@ class CIS_Report:
                 debug("processing __identity_read_groups for Identity Domain: " + identity_domain['display_name'])
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 try:
-                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
-                                                                          args={'attribute_sets' : ['default']})
+                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups,
+                                                                          args={
+                                                                              'attribute_sets' : ['default'],
+                                                                              'attributes': 'urn:ietf:params:scim:schemas:oracle:idcs:extension:requestable:Group:requestable'
+                                                                          })
                     print(f"\tRead {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
                     for grp in groups_data:
                         debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
@@ -1460,6 +1465,7 @@ class CIS_Report:
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
                                     "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
+                                    "requestable": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_requestable_group.requestable if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_requestable_group else None,
                                     "domain_name" : identity_domain['display_name'],
                                     "domain_id" : identity_domain['id'],
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
@@ -5666,6 +5672,25 @@ class CIS_Report:
             self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = False
         elif self.obp_foundations_checks['IAM_Account_Lockout']['OBP']:
             self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = True
+
+    #######################################
+    # OBP Identity Domain Non-Requestable Groups
+    #######################################
+    def __obp_check_iam_requestable(self):
+        if not self.__identity_domains_enabled:
+            return
+
+        check = self.obp_foundations_checks['IAM_Requestable_Groups']
+        for group in self.__groups.values():
+            if group.get('requestable') is True:
+                check['Findings'].append(group)
+            else:
+                check['OBP'].append(group)
+
+        if check['Findings']:
+            check['Status'] = False
+        elif check['OBP']:
+            check['Status'] = True
     
 
     #######################################
@@ -5792,7 +5817,8 @@ class CIS_Report:
         self.__obp_check_adbs()
         self.__obp_check_quotas()
         self.__obp_check_policy_statements_in_comp_chains()
-        self.__obp_check_iam_account_lockout() 
+        self.__obp_check_iam_account_lockout()
+        self.__obp_check_iam_requestable()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation

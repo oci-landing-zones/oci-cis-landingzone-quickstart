@@ -627,6 +627,7 @@ JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resou
 | IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate compartment level. | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
+| IAM-21 | IAM_Requestable_Groups | Identity and Access Management | Identity Domain groups are not requestable | https://docs.oracle.com/en-us/iaas/Content/Identity/groups/managinggroups.htm |
 
 
 ## <a name="blogs"></a>Blogs

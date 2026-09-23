@@ -620,13 +620,14 @@ JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resou
 | OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
 | OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
 | OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en-us/iaas/database-security/data-safe/using/register-autonomous-database.html |
+| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm |
+| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm |
+| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm |
+| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate compartment level. | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
+| IAM-21 | IAM_Requestable_Groups | Identity and Access Management | Identity Domain groups are not requestable | https://docs.oracle.com/en-us/iaas/Content/Identity/groups/managinggroups.htm |
 
 
 ## <a name="blogs"></a>Blogs

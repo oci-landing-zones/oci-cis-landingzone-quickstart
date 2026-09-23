@@ -44,9 +44,9 @@ except Exception:
 
 csv.field_size_limit(2**31 - 1)
 
-RELEASE_VERSION = "3.4.1"
-PYTHON_SDK_VERSION = "2.184.0"
-UPDATED_DATE = "August 14, 2026"
+RELEASE_VERSION = "3.4.2"
+PYTHON_SDK_VERSION = "2.185.2"
+UPDATED_DATE = "September 23, 2026"
 
 
 ##########################################################################
@@ -167,6 +167,7 @@ class ComplianceMappings:
     'IAM-18' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'IAM-19' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'IAM-20' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : ['1.1']},
+    'IAM-21' : {'CIS v8' : [], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []}
 }
@@ -738,13 +739,14 @@ class CIS_Report:
             'Cost_Tracking_Budgets': {'id': 'OBP-GOV-2', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
             'Quotas': {'id': 'OBP-GOV-3', 'section': "Governance", 'Title': 'Quota policies are used', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm"},
             'ADB_MTLS': {'id': 'OBP-ADB-1', 'section': "Autonoumous Database", 'Title': 'ADB Databases enforce Mutual TLS authentication', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
+            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/database-security/data-safe/using/register-autonomous-database.html"},
+            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm"},
+            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm"},
+            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm"},
+            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},
+            'IAM_Requestable_Groups': {'id': 'IAM-21', 'section': "Identity and Access Management", 'Title': 'OCI IAM Identity Domain groups are not requestable', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region
@@ -1448,8 +1450,11 @@ class CIS_Report:
                 debug("processing __identity_read_groups for Identity Domain: " + identity_domain['display_name'])
                 id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                 try:
-                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups, 
-                                                                          args={'attribute_sets' : ['default']})
+                    groups_data = self.__identity_domains_get_all_results(func=identity_domain['IdentityDomainClient'].list_groups,
+                                                                          args={
+                                                                              'attribute_sets' : ['default'],
+                                                                              'attributes': 'urn:ietf:params:scim:schemas:oracle:idcs:extension:requestable:Group:requestable'
+                                                                          })
                     print(f"\tRead {str(len(groups_data))} groups in Identity Domain: " + identity_domain['display_name'])
                     for grp in groups_data:
                         debug("\t__identity_read_groups: reading group data " + str(grp.display_name))
@@ -1460,6 +1465,7 @@ class CIS_Report:
                                     "deep_link": self.__generate_csv_hyperlink(grp_deep_link, grp.display_name),
                                     "domain_deeplink" : self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name']),
                                     "description": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group.description if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_group_group else None,
+                                    "requestable": grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_requestable_group.requestable if grp.urn_ietf_params_scim_schemas_oracle_idcs_extension_requestable_group else None,
                                     "domain_name" : identity_domain['display_name'],
                                     "domain_id" : identity_domain['id'],
                                     "time_created" : self.get_date_iso_format(grp.meta.created),
@@ -2092,7 +2098,7 @@ class CIS_Report:
                     id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
-                        deep_link = f"{self.__oci_identity_domains_uri}/domains/{identity_domain['id']}/dynamic-groups/{dynamic_group.id}"
+                        deep_link = f"{id_domain_deep_link}/dynamic-groups/{dynamic_group.ocid}"
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
                         record['domain_deeplink'] = self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name'])
@@ -5209,7 +5215,7 @@ class CIS_Report:
         # Cloud Guard Checks
         #######################################
         cloud_guard_record = {
-            "cloud_guard_endable": True if self.__cloud_guard_config_status == 'ENABLED' else False,
+            "cloud_guard_enabled": True if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root": False,
             "target_configuration_detector": False,
             "target_configuration_detector_customer_owned": False,
@@ -5636,6 +5642,9 @@ class CIS_Report:
             record = {key: domain[key] for key in required_keys if key in domain}
             pwd_policy = domain.get('password_policy') or {}
             record['max_incorrect_attempts'] = pwd_policy.get('max_incorrect_attempts')
+            record['policy_name'] = pwd_policy.get('name')
+            deeplink_url = self.__oci_identity_domains_uri + domain.get('id') + "/settings/password-policy-settings-details/PasswordPolicy"
+            record['deeplink'] = self.__generate_csv_hyperlink(url=deeplink_url, name=record['policy_name'])
             record['lockout_duration'] = pwd_policy.get('lockout_duration')
             try:
                 record['automatic_account_unlock_enabled'] = (
@@ -5663,6 +5672,25 @@ class CIS_Report:
             self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = False
         elif self.obp_foundations_checks['IAM_Account_Lockout']['OBP']:
             self.obp_foundations_checks['IAM_Account_Lockout']['Status'] = True
+
+    #######################################
+    # OBP Identity Domain Non-Requestable Groups
+    #######################################
+    def __obp_check_iam_requestable(self):
+        if not self.__identity_domains_enabled:
+            return
+
+        check = self.obp_foundations_checks['IAM_Requestable_Groups']
+        for group in self.__groups.values():
+            if group.get('requestable') is True:
+                check['Findings'].append(group)
+            else:
+                check['OBP'].append(group)
+
+        if check['Findings']:
+            check['Status'] = False
+        elif check['OBP']:
+            check['Status'] = True
     
 
     #######################################
@@ -5691,9 +5719,9 @@ class CIS_Report:
             else:
                 self.obp_foundations_checks['ADB_MTLS']['OBP'].append(adb)
             if adb['encryption_key'] and adb['encryption_key']['provider'] and not adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
-                self.obp_foundations_checks['ADB_CMK']['Findings'].append(adb)
-            else:
                 self.obp_foundations_checks['ADB_CMK']['OBP'].append(adb)
+            else:
+                self.obp_foundations_checks['ADB_CMK']['Findings'].append(adb)
 
             if not adb['private_endpoint_ip']:
                 self.obp_foundations_checks['ADB_Private_IP']['Findings'].append(adb)
@@ -5789,7 +5817,8 @@ class CIS_Report:
         self.__obp_check_adbs()
         self.__obp_check_quotas()
         self.__obp_check_policy_statements_in_comp_chains()
-        self.__obp_check_iam_account_lockout() 
+        self.__obp_check_iam_account_lockout()
+        self.__obp_check_iam_requestable()
 
     ##########################################################################
     # Orchestrates data collection and CIS report generation

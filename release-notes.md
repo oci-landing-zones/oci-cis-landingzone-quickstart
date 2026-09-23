@@ -1,3 +1,16 @@
+# September 23, 2026 Release Notes - 3.4.2
+1. [IAM Group Requestability Check](#3-4-2-iam-group-requestability)
+1. [Fixes and Updates](#3-4-2-fixes)
+
+## <a name="#3-4-2-iam-group-requestability">IAM Group Requestability Check</a>
+- Added a chec[k that verifies OCI IAM Identity Domain groups are not requestable.  This attribute allows users to request access to this group. For more information: \[https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm](https://docs.oracle.com/en-us/iaas/Content/Identity/groups/managinggroups.htm)
+
+## <a name="#3-4-2-fixes">Fixes and Updates</a>
+Updates:
+- Corrected the Cloud Guard output field name to `cloud_guard_enabled`.
+- Corrected the Autonomous Database customer-managed key check so databases using Oracle-managed keys are reported as findings and databases using customer-managed keys are reported as compliant. Related external issue: [214](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/214).
+- Improved OBP documentation and output by documenting OCI Search limitations, including password-policy names in account-lockout results, correcting dynamic-group deep links and the IAM-8 description, and updating Autonomous Database documentation links. Related external issue: [210](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/210).
+
 # August 14, 2026 Release Notes - 3.4.1
 1. [Fixes and Updates](#3-4-1-fixes)
 

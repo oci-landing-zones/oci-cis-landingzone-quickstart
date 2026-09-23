@@ -3,7 +3,7 @@
 1. [Fixes and Updates](#3-4-2-fixes)
 
 ## <a name="#3-4-2-iam-group-requestability">IAM Group Requestability Check</a>
-- Added a chec[k that verifies OCI IAM Identity Domain groups are not requestable.  This attribute allows users to request access to this group. For more information: \[https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm](https://docs.oracle.com/en-us/iaas/Content/Identity/groups/managinggroups.htm)
+- Added a chec[k that verifies OCI IAM Identity Domain groups are not requestable.  This attribute allows users to request access to this group. For more information: [https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm](https://docs.oracle.com/en-us/iaas/Content/Identity/groups/managinggroups.htm)
 
 ## <a name="#3-4-2-fixes">Fixes and Updates</a>
 Updates:

@@ -746,7 +746,7 @@ class CIS_Report:
             'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},
-            'IAM_Requestable_Groups': {'id': 'IAM-21', 'section': "Identity and Access Management", 'Title': 'Identity Domain groups are not requestable', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm"},
+            'IAM_Requestable_Groups': {'id': 'IAM-21', 'section': "Identity and Access Management", 'Title': 'OCI IAM Identity Domain groups are not requestable', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/groups/create-groups.htm"},
         }
         #  CIS and OBP Regional Data
         # 4.6 is not regional because OCI IAM Policies only exist in the home region

@@ -11,6 +11,7 @@
 **/vars_*.tfvars
 test/**
 *.csv
+*.sqlite
 *.xlsx
 *.html
 **/creds/**

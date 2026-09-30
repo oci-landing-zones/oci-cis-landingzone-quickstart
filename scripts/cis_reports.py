@@ -21,6 +21,7 @@ import oci
 import json
 import os
 import csv
+import sqlite3
 import itertools
 from threading import Thread
 import hashlib
@@ -85,6 +86,31 @@ def show_version(verbose=False):
         print(f'The command line arguments are: {str(sys.argv)}')
     else:
         print(script_updated)
+
+
+def export_csv_files_to_sqlite(csv_files, database_path):
+    try:
+        if os.path.exists(database_path):
+            os.remove(database_path)
+
+        with sqlite3.connect(database_path) as connection:
+            for csv_file in csv_files:
+                table_name = os.path.splitext(os.path.basename(csv_file))[0]
+                with open(csv_file, newline='') as file:
+                    reader = csv.DictReader(file)
+                    if not reader.fieldnames:
+                        continue
+
+                    columns = ['"' + column.replace('"', '""') + '"' for column in reader.fieldnames]
+                    quoted_table_name = '"' + table_name.replace('"', '""') + '"'
+                    connection.execute(f'CREATE TABLE {quoted_table_name} ({", ".join(column + " TEXT" for column in columns)})')
+                    placeholders = ', '.join('?' for _ in reader.fieldnames)
+                    connection.executemany(
+                        f'INSERT INTO {quoted_table_name} ({", ".join(columns)}) VALUES ({placeholders})',
+                        ([row.get(column, '') for column in reader.fieldnames] for row in reader))
+    except Exception as e:
+        raise Exception("Error exporting CSV files to SQLite: " + str(e.args))
+
 
 class ComplianceMappings:
     mappings = {
@@ -224,7 +250,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
                   report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
                   redact_output, oci_url=None, debug=False, all_resources=True,
-                  disable_api_keys=False, service_limits=False):
+                  disable_api_keys=False, service_limits=False, output_to_sqlite=False):
 
         # CIS Foundation benchmark 3.1.1
         self.cis_foundations_benchmark_3_0 = { 
@@ -1128,6 +1154,8 @@ class CIS_Report:
 
         # Determining if all raw data will be output
         self.__output_raw_data = raw_data
+        self.__output_to_sqlite = output_to_sqlite and raw_data
+        self.__generated_csv_files = []
 
         # Determining if OCI Best Practices will be checked and output
         self.__obp_checks = obp
@@ -6467,6 +6495,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
                     # print(row)
 
             print("CSV: " + file_subject.ljust(22) + " --> " + file_path)
+            self.__generated_csv_files.append(file_path)
             # Used by Upload
 
             return file_path
@@ -6547,6 +6576,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         if error_report_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, error_report_file_name)
+
+        if self.__output_to_sqlite:
+            database_path = os.path.join(self.__report_directory, 'raw_data.sqlite')
+            export_csv_files_to_sqlite(self.__generated_csv_files, database_path)
+            print("SQLite: " + 'raw_data'.ljust(22) + " --> " + database_path)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
@@ -6788,6 +6822,8 @@ def execute_report():
                         help='Set Output report prefix to allow unique files for better baseline comparison.')
     parser.add_argument('--report-summary-json', action='store_true', default=None, dest='report_summary_json',
                         help='Write summary report as JSON file, too.')
+    parser.add_argument('--output-to-sqlite', action='store_true', default=False, dest='output_to_sqlite',
+                        help='Write all generated CSV reports to raw_data.sqlite. Requires --raw.')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False).')
     parser.add_argument('--level', default=2, dest='level',
@@ -6824,10 +6860,13 @@ def execute_report():
         show_version()
         sys.exit()
 
+    if cmd.output_to_sqlite and not cmd.raw:
+        parser.error('--output-to-sqlite requires --raw.')
+
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits, output_to_sqlite=cmd.output_to_sqlite)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:

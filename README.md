@@ -398,6 +398,8 @@ To run on a local machine with the default profile and output raw data as well a
 % python3 cis_reports.py --raw
 ``` 
 
+Use `--obp --raw` to also export network-map data, including VCN and DRG route tables and rules, gateways, CPEs, IPSec tunnels, and BGP received and advertised routes.
+
 ## <a name="output"></a>Output Examples
 
 The CIS Compliance Script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:

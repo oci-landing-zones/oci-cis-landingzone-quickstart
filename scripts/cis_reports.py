@@ -4870,9 +4870,10 @@ class CIS_Report:
         self.cis_foundations_benchmark_3_0['4.13']['Total'] = self.__network_subnets
 
         # CIS Check 4.14 - Cloud Guard enabled and configured at the root target
-        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check: {self.__cloud_guard_config_status}")
         root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
-        print(root_target)
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check root target:\n{root_target}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
         detector_recipes = (
             root_target.get('target_detector_recipes') or [] if root_target else []
         )

@@ -618,7 +618,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
                 "Remediation": "Enable the cloud guard by selecting the services in the menu and provide appropriate reporting region and other configurations.",
                 "Recommendation": "",
-                "Observation": "Cloud Guard has not been configured in the root compartment of the tenancy."
+                "Observation": "Cloud Guard is not fully configured in the root compartment of the tenancy."
             },
             "4.15": {
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard generates a Problem. It is recommended to setup an Event Rule and Notification that gets triggered when Oracle Cloud Guard Problems are created, dismissed or remediated. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
@@ -738,12 +738,12 @@ class CIS_Report:
             'Cost_Tracking_Budgets': {'id': 'OBP-GOV-2', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
             'Quotas': {'id': 'OBP-GOV-3', 'section': "Governance", 'Title': 'Quota policies are used', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm"},
             'ADB_MTLS': {'id': 'OBP-ADB-1', 'section': "Autonoumous Database", 'Title': 'ADB Databases enforce Mutual TLS authentication', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/database-security/data-safe/using/register-autonomous-database.html"},
+            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm"},
+            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm"},
+            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm"},
+            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
         }
         #  CIS and OBP Regional Data
@@ -2092,7 +2092,7 @@ class CIS_Report:
                     id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
-                        deep_link = f"{self.__oci_identity_domains_uri}/domains/{identity_domain['id']}/dynamic-groups/{dynamic_group.id}"
+                        deep_link = f"{id_domain_deep_link}/dynamic-groups/{dynamic_group.ocid}"
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
                         record['domain_deeplink'] = self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name'])
@@ -4869,12 +4869,43 @@ class CIS_Report:
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_3_0['4.13']['Total'] = self.__network_subnets
 
-        # CIS Check 4.14 - Cloud Guard enabled
-        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
-        if self.__cloud_guard_config_status == 'ENABLED':
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = True
-        else:
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = False
+        # CIS Check 4.14 - Cloud Guard enabled and configured at the root target
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check: {self.__cloud_guard_config_status}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check root target:\n{root_target}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        detector_recipes = (
+            root_target.get('target_detector_recipes') or [] if root_target else []
+        )
+        responder_recipes = (
+            root_target.get('target_responder_recipes') or [] if root_target else []
+        )
+        detectors = {
+            getattr(recipe, 'detector', '').upper()
+            for recipe in detector_recipes
+        }
+        cloud_guard_record = {
+            'cloud_guard_enabled': self.__cloud_guard_config_status == 'ENABLED',
+            'target_at_root': root_target is not None,
+            'target_configuration_detector': 'IAAS_CONFIGURATION_DETECTOR' in detectors,
+            'target_activity_detector': 'IAAS_ACTIVITY_DETECTOR' in detectors,
+            'target_responder_recipes': bool(responder_recipes),
+            'target_id': root_target.get('id', '') if root_target else '',
+            'target_name': root_target.get('display_name', '') if root_target else '',
+        }
+        required_checks = (
+            'cloud_guard_enabled',
+            'target_at_root',
+            'target_configuration_detector',
+            'target_activity_detector',
+            'target_responder_recipes',
+        )
+        self.cis_foundations_benchmark_3_0['4.14']['Total'].append(cloud_guard_record)
+        self.cis_foundations_benchmark_3_0['4.14']['Status'] = all(
+            cloud_guard_record[check] for check in required_checks
+        )
+        if not self.cis_foundations_benchmark_3_0['4.14']['Status']:
+            self.cis_foundations_benchmark_3_0['4.14']['Findings'].append(cloud_guard_record)
 
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
@@ -5209,7 +5240,7 @@ class CIS_Report:
         # Cloud Guard Checks
         #######################################
         cloud_guard_record = {
-            "cloud_guard_endable": True if self.__cloud_guard_config_status == 'ENABLED' else False,
+            "cloud_guard_enabled": True if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root": False,
             "target_configuration_detector": False,
             "target_configuration_detector_customer_owned": False,
@@ -5636,6 +5667,9 @@ class CIS_Report:
             record = {key: domain[key] for key in required_keys if key in domain}
             pwd_policy = domain.get('password_policy') or {}
             record['max_incorrect_attempts'] = pwd_policy.get('max_incorrect_attempts')
+            record['policy_name'] = pwd_policy.get('name')
+            deeplink_url = self.__oci_identity_domains_uri + domain.get('id') + "/settings/password-policy-settings-details/PasswordPolicy"
+            record['deeplink'] = self.__generate_csv_hyperlink(url=deeplink_url, name=record['policy_name'])
             record['lockout_duration'] = pwd_policy.get('lockout_duration')
             try:
                 record['automatic_account_unlock_enabled'] = (
@@ -5690,7 +5724,7 @@ class CIS_Report:
                 self.obp_foundations_checks['ADB_MTLS']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_MTLS']['OBP'].append(adb)
-            if adb['encryption_key'] and adb['encryption_key']['provider'] and not adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
+            if not adb['encryption_key'] or not adb['encryption_key']['provider'] or adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
                 self.obp_foundations_checks['ADB_CMK']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_CMK']['OBP'].append(adb)
@@ -6221,14 +6255,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
-            self.__read_cloud_guard_problems
+            self.__read_cloud_guard_problems,
+            self.__cloud_guard_read_cloud_guard_targets
         ]
 
         # Budgets is global construct
         if self.__obp_checks:
             obp_home_region_functions = [
                 self.__budget_read_budgets,
-                self.__cloud_guard_read_cloud_guard_targets,
                 self.__quota_read,
             ]
         else:

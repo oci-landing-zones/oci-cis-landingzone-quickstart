@@ -644,7 +644,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
                 "Remediation": "Enable the cloud guard by selecting the services in the menu and provide appropriate reporting region and other configurations.",
                 "Recommendation": "",
-                "Observation": "Cloud Guard has not been configured in the root compartment of the tenancy."
+                "Observation": "Cloud Guard is not fully configured in the root compartment of the tenancy."
             },
             "4.15": {
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard generates a Problem. It is recommended to setup an Event Rule and Notification that gets triggered when Oracle Cloud Guard Problems are created, dismissed or remediated. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
@@ -764,12 +764,12 @@ class CIS_Report:
             'Cost_Tracking_Budgets': {'id': 'OBP-GOV-2', 'section': "Governance", 'Title': 'Alerting on unexpected spending', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview"},
             'Quotas': {'id': 'OBP-GOV-3', 'section': "Governance", 'Title': 'Quota policies are used', 'Status': False, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm"},
             'ADB_MTLS': {'id': 'OBP-ADB-1', 'section': "Autonoumous Database", 'Title': 'ADB Databases enforce Mutual TLS authentication', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5"},
-            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at appropriate ', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
-            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements Limit per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'ADB_DataSafe': {'id': 'OBP-ADB-2', 'section': "Autonoumous Database", 'Title': 'ABD Databases in the tenancy are integrated with a security scanning tool', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/database-security/data-safe/using/register-autonomous-database.html"},
+            'ADB_CMK': {'id': 'OBP-ADB-3', 'section': "Autonoumous Database", 'Title': 'ADB Database data is encrypted with a customer managed key', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm"},
+            'ADB_Contacts': {'id': 'OBP-ADB-4', 'section': "Autonoumous Database", 'Title': 'ABD Databases have a contact listed', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm"},
+            'ADB_Private_IP': {'id': 'OBP-ADB-5', 'section': "Autonoumous Database", 'Title': 'ADB Database are have private endpoints into a customer managed VCN', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm"},
+            'IAM_Stmt_Root_Count': {'id': 'IAM-18', 'section': "Identity and Access Management", 'Title': 'IAM Policies are created at the appropriate compartment level.', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
+            'IAM_Stmt_Comp_Hierarchy_Count': {'id': 'IAM-19', 'section': "Identity and Access Management", 'Title': 'IAM Policy Statements per Compartment Hierarchy', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm"},
             'IAM_Account_Lockout': {'id': 'IAM-20', 'section': "Identity and Access Management", 'Title': 'Account Lockout 5 or more', 'Status': None, 'Findings': [], 'OBP': [], "Documentation": "https://docs.oracle.com/en-us/iaas/Content/Identity/passwordpolicies/Managing-Password-Policies_set-password-policies-your-identity-domain.htm"},     
         }
         #  CIS and OBP Regional Data
@@ -950,6 +950,18 @@ class CIS_Report:
         self.__network_cpes = []
         self.__network_ipsec_connections = {}  # Indexed by DRG ID
         self.__network_drg_attachments = {}  # Indexed by DRG ID
+        self.__network_route_tables = []
+        self.__network_route_rules = []
+        self.__network_internet_gateways = []
+        self.__network_nat_gateways = []
+        self.__network_service_gateways = []
+        self.__network_local_peering_gateways = []
+        self.__network_remote_peering_connections = []
+        self.__network_drg_route_tables = []
+        self.__network_drg_route_rules = []
+        self.__network_ipsec_tunnels = []
+        self.__network_bgp_received_routes = []
+        self.__network_bgp_advertised_routes = []
 
         # For Autonomous Database Checks
         self.__autonomous_databases = []
@@ -2120,7 +2132,7 @@ class CIS_Report:
                     id_domain_deep_link = self.__oci_identity_domains_uri + identity_domain['id']
                     for dynamic_group in dynamic_groups_data:
                         debug("__identity_read_dynamic_groups: reading dynamic groups" + str(dynamic_group.display_name))
-                        deep_link = f"{self.__oci_identity_domains_uri}/domains/{identity_domain['id']}/dynamic-groups/{dynamic_group.id}"
+                        deep_link = f"{id_domain_deep_link}/dynamic-groups/{dynamic_group.ocid}"
                         record = oci.util.to_dict(dynamic_group)
                         record['deep_link'] = self.__generate_csv_hyperlink(deep_link, dynamic_group.display_name)
                         record['domain_deeplink'] = self.__generate_csv_hyperlink(id_domain_deep_link, identity_domain['display_name'])
@@ -2652,6 +2664,117 @@ class CIS_Report:
                 "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
+    # Load Network Map Resources
+    ##########################################################################
+    def __network_read_network_map_resources(self):
+        resource_types = {
+            "InternetGateway": self.__network_internet_gateways,
+            "NatGateway": self.__network_nat_gateways,
+            "ServiceGateway": self.__network_service_gateways,
+            "LocalPeeringGateway": self.__network_local_peering_gateways,
+            "RemotePeeringConnection": self.__network_remote_peering_connections,
+            "Cpe": self.__network_cpes,
+        }
+        try:
+            for region_key, region_values in self.__regions.items():
+                route_tables = self.__search_resource_in_region("RouteTable", region_values)
+                for route_table in route_tables:
+                    try:
+                        route_table_data = region_values['network_client'].get_route_table(route_table.identifier).data
+                        record = {
+                            "id": route_table_data.id,
+                            "display_name": route_table_data.display_name,
+                            "compartment_id": route_table_data.compartment_id,
+                            "vcn_id": route_table_data.vcn_id,
+                            "lifecycle_state": route_table_data.lifecycle_state,
+                            "time_created": self.get_date_iso_format(route_table_data.time_created),
+                            "freeform_tags": route_table_data.freeform_tags,
+                            "defined_tags": route_table_data.defined_tags,
+                            "region": region_key,
+                        }
+                        self.__network_route_tables.append(record)
+                        for rule in route_table_data.route_rules:
+                            self.__network_route_rules.append({
+                                "route_table_id": route_table_data.id,
+                                "vcn_id": route_table_data.vcn_id,
+                                "compartment_id": route_table_data.compartment_id,
+                                "destination": getattr(rule, 'destination', ''),
+                                "destination_type": getattr(rule, 'destination_type', ''),
+                                "network_entity_id": getattr(rule, 'network_entity_id', ''),
+                                "description": getattr(rule, 'description', ''),
+                                "route_type": getattr(rule, 'route_type', ''),
+                                "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                                "region": region_key,
+                            })
+                    except Exception as e:
+                        self.__errors.append({"id": route_table.identifier, "error": "Failed to read route table in " + region_key + ": " + str(e)})
+
+                for resource_type, records in resource_types.items():
+                    for resource in self.__search_resource_in_region(resource_type, region_values):
+                        details = getattr(resource, 'additional_details', {}) or {}
+                        records.append({
+                            "id": resource.identifier,
+                            "display_name": resource.display_name,
+                            "compartment_id": resource.compartment_id,
+                            "vcn_id": details.get('vcnId', ''),
+                            "ip_address": details.get('ipAddress', ''),
+                            "lifecycle_state": resource.lifecycle_state,
+                            "time_created": self.get_date_iso_format(resource.time_created),
+                            "freeform_tags": resource.freeform_tags,
+                            "defined_tags": resource.defined_tags,
+                            "additional_details": details,
+                            "region": region_key,
+                        })
+
+            print("\tProcessed " + str(len(self.__network_route_tables)) + " Route Tables")
+            return self.__network_route_tables
+        except Exception as e:
+            raise RuntimeError("Error in __network_read_network_map_resources " + str(e.args))
+
+    ##########################################################################
+    # Load DRG Route Tables and Rules
+    ##########################################################################
+    def __network_read_drg_route_tables(self, region_key, region_values, drg):
+        try:
+            drg_route_tables = oci.pagination.list_call_get_all_results(
+                region_values['network_client'].list_drg_route_tables,
+                drg_id=drg.id).data
+            for route_table in drg_route_tables:
+                self.__network_drg_route_tables.append({
+                    "id": route_table.id,
+                    "drg_id": drg.id,
+                    "display_name": route_table.display_name,
+                    "compartment_id": route_table.compartment_id,
+                    "is_ecmp_enabled": getattr(route_table, 'is_ecmp_enabled', ''),
+                    "lifecycle_state": route_table.lifecycle_state,
+                    "time_created": self.get_date_iso_format(route_table.time_created),
+                    "freeform_tags": route_table.freeform_tags,
+                    "defined_tags": route_table.defined_tags,
+                    "region": region_key,
+                })
+                try:
+                    rules = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_drg_route_rules,
+                        drg_route_table_id=route_table.id).data
+                    for rule in rules:
+                        self.__network_drg_route_rules.append({
+                            "id": getattr(rule, 'id', ''),
+                            "drg_id": drg.id,
+                            "drg_route_table_id": route_table.id,
+                            "destination": getattr(rule, 'destination', ''),
+                            "destination_type": getattr(rule, 'destination_type', ''),
+                            "next_hop_drg_attachment_id": getattr(rule, 'next_hop_drg_attachment_id', ''),
+                            "route_type": getattr(rule, 'route_type', ''),
+                            "route_provenance": getattr(rule, 'route_provenance', ''),
+                            "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                            "region": region_key,
+                        })
+                except Exception as e:
+                    self.__errors.append({"id": route_table.id, "error": "Failed to read DRG route rules in " + region_key + ": " + str(e)})
+        except Exception as e:
+            self.__errors.append({"id": drg.id, "error": "Failed to read DRG route tables in " + region_key + ": " + str(e)})
+
+    ##########################################################################
     # Load DRG Attachments 
     ##########################################################################
     def __network_read_drg_attachments(self):
@@ -2808,6 +2931,7 @@ class CIS_Report:
                         self.__raw_network_drgs.append(record)
                         # For Checks data
                         self.__network_drgs[drg.id] = record
+                        self.__network_read_drg_route_tables(region_key, region_values, drg)
 
             print("\tProcessed " + str(len(self.__network_drgs)) + " Dynamic Routing Gateways")
             return self.__network_drgs
@@ -2929,6 +3053,34 @@ class CIS_Report:
     ##########################################################################
     # Load IP Sec Connections 
     ##########################################################################
+    def __network_read_ipsec_bgp_routes(self, region_key, region_values, ip_sec, tunnel):
+        directions = (
+            ("CUSTOMER", self.__network_bgp_received_routes),
+            ("ORACLE", self.__network_bgp_advertised_routes),
+        )
+        for advertiser, records in directions:
+            try:
+                routes = oci.pagination.list_call_get_all_results(
+                    region_values['network_client'].list_ip_sec_connection_tunnel_routes,
+                    ipsc_id=ip_sec.identifier,
+                    tunnel_id=tunnel.id,
+                    advertiser=advertiser).data
+                for route in routes:
+                    records.append({
+                        "ipsec_connection_id": ip_sec.identifier,
+                        "tunnel_id": tunnel.id,
+                        "advertiser": advertiser,
+                        "route": getattr(route, 'route', ''),
+                        "as_path": getattr(route, 'as_path', ''),
+                        "next_hop": getattr(route, 'next_hop', ''),
+                        "origin_asn": getattr(route, 'origin_asn', ''),
+                        "is_overlapping": getattr(route, 'is_overlapping', ''),
+                        "route_details": oci.util.to_dict(route),
+                        "region": region_key,
+                    })
+            except Exception as e:
+                self.__errors.append({"id": tunnel.id, "error": "Failed to read " + advertiser.lower() + " BGP routes in " + region_key + ": " + str(e)})
+
     def __network_read_ip_sec_connections(self):
         try:
             for region_key, region_values in self.__regions.items():
@@ -2968,6 +3120,9 @@ class CIS_Report:
                                 deep_link = self.__oci_ipsec_uri + ip_sec.identifier + "/tunnels/" + tunnel.id + '?region=' + region_key
                                 tunnel_record = {
                                     "id": tunnel.id,
+                                    "ipsec_connection_id": ip_sec.identifier,
+                                    "cpe_id": ip_sec.additional_details['cpeId'],
+                                    "drg_id": ip_sec.additional_details['drgId'],
                                     "cpe_ip": tunnel.cpe_ip,
                                     "display_name": tunnel.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
@@ -2985,6 +3140,7 @@ class CIS_Report:
                                     "dpd_timeout_in_sec": tunnel.dpd_timeout_in_sec,
                                     "time_created": tunnel.time_created.strftime(self.__iso_time_format),
                                     "time_status_updated": str(tunnel.time_status_updated),
+                                    "region": region_key,
                                     "notes": ""
                                 }
                                 if tunnel_record['status'].upper() == "UP":
@@ -2996,6 +3152,9 @@ class CIS_Report:
                                 else:
                                     record['tunnels_bgp'] = False
                                 record["tunnels"].append(tunnel_record)
+                                self.__network_ipsec_tunnels.append(tunnel_record)
+                                if tunnel_record['routing'].upper() == "BGP":
+                                    self.__network_read_ipsec_bgp_routes(region_key, region_values, ip_sec, tunnel)
                         except Exception:
                             print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.identifier)
                             record['tunnels_up'] = False
@@ -3017,6 +3176,8 @@ class CIS_Report:
                             "tunnels": [],
                             "number_tunnels_up": 0,
                             "tunnels_up": False,
+                            "number_tunnels_bgp": 0,
+                            "tunnels_bgp": False,
                             "notes": ""
                         }
 
@@ -4897,12 +5058,43 @@ class CIS_Report:
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_3_0['4.13']['Total'] = self.__network_subnets
 
-        # CIS Check 4.14 - Cloud Guard enabled
-        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
-        if self.__cloud_guard_config_status == 'ENABLED':
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = True
-        else:
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = False
+        # CIS Check 4.14 - Cloud Guard enabled and configured at the root target
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check: {self.__cloud_guard_config_status}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check root target:\n{root_target}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        detector_recipes = (
+            root_target.get('target_detector_recipes') or [] if root_target else []
+        )
+        responder_recipes = (
+            root_target.get('target_responder_recipes') or [] if root_target else []
+        )
+        detectors = {
+            getattr(recipe, 'detector', '').upper()
+            for recipe in detector_recipes
+        }
+        cloud_guard_record = {
+            'cloud_guard_enabled': self.__cloud_guard_config_status == 'ENABLED',
+            'target_at_root': root_target is not None,
+            'target_configuration_detector': 'IAAS_CONFIGURATION_DETECTOR' in detectors,
+            'target_activity_detector': 'IAAS_ACTIVITY_DETECTOR' in detectors,
+            'target_responder_recipes': bool(responder_recipes),
+            'target_id': root_target.get('id', '') if root_target else '',
+            'target_name': root_target.get('display_name', '') if root_target else '',
+        }
+        required_checks = (
+            'cloud_guard_enabled',
+            'target_at_root',
+            'target_configuration_detector',
+            'target_activity_detector',
+            'target_responder_recipes',
+        )
+        self.cis_foundations_benchmark_3_0['4.14']['Total'].append(cloud_guard_record)
+        self.cis_foundations_benchmark_3_0['4.14']['Status'] = all(
+            cloud_guard_record[check] for check in required_checks
+        )
+        if not self.cis_foundations_benchmark_3_0['4.14']['Status']:
+            self.cis_foundations_benchmark_3_0['4.14']['Findings'].append(cloud_guard_record)
 
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
@@ -5237,7 +5429,7 @@ class CIS_Report:
         # Cloud Guard Checks
         #######################################
         cloud_guard_record = {
-            "cloud_guard_endable": True if self.__cloud_guard_config_status == 'ENABLED' else False,
+            "cloud_guard_enabled": True if self.__cloud_guard_config_status == 'ENABLED' else False,
             "target_at_root": False,
             "target_configuration_detector": False,
             "target_configuration_detector_customer_owned": False,
@@ -5664,6 +5856,9 @@ class CIS_Report:
             record = {key: domain[key] for key in required_keys if key in domain}
             pwd_policy = domain.get('password_policy') or {}
             record['max_incorrect_attempts'] = pwd_policy.get('max_incorrect_attempts')
+            record['policy_name'] = pwd_policy.get('name')
+            deeplink_url = self.__oci_identity_domains_uri + domain.get('id') + "/settings/password-policy-settings-details/PasswordPolicy"
+            record['deeplink'] = self.__generate_csv_hyperlink(url=deeplink_url, name=record['policy_name'])
             record['lockout_duration'] = pwd_policy.get('lockout_duration')
             try:
                 record['automatic_account_unlock_enabled'] = (
@@ -5718,7 +5913,7 @@ class CIS_Report:
                 self.obp_foundations_checks['ADB_MTLS']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_MTLS']['OBP'].append(adb)
-            if adb['encryption_key'] and adb['encryption_key']['provider'] and not adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
+            if not adb['encryption_key'] or not adb['encryption_key']['provider'] or adb['encryption_key']['provider'] == 'ORACLE_MANAGED':
                 self.obp_foundations_checks['ADB_CMK']['Findings'].append(adb)
             else:
                 self.obp_foundations_checks['ADB_CMK']['OBP'].append(adb)
@@ -6249,14 +6444,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
-            self.__read_cloud_guard_problems
+            self.__read_cloud_guard_problems,
+            self.__cloud_guard_read_cloud_guard_targets
         ]
 
         # Budgets is global construct
         if self.__obp_checks:
             obp_home_region_functions = [
                 self.__budget_read_budgets,
-                self.__cloud_guard_read_cloud_guard_targets,
                 self.__quota_read,
             ]
         else:
@@ -6305,6 +6500,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         # Oracle Best practice functions
         if self.__obp_checks:
             obp_functions = [
+                self.__network_read_network_map_resources,
                 self.__network_read_fastonnects,
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
@@ -6365,6 +6561,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_subnets": self.__network_subnets,
             "network_vcns": list(self.__network_vcns.values()),
             "network_capture_filters": list(self.__network_capturefilters.values()),
+            "network_route_tables": self.__network_route_tables,
+            "network_route_rules": self.__network_route_rules,
+            "network_internet_gateways": self.__network_internet_gateways,
+            "network_nat_gateways": self.__network_nat_gateways,
+            "network_service_gateways": self.__network_service_gateways,
+            "network_local_peering_gateways": self.__network_local_peering_gateways,
+            "network_remote_peering_connections": self.__network_remote_peering_connections,
+            "network_cpes": self.__network_cpes,
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,
             "integration_instances": self.__integration_instances,
@@ -6383,6 +6587,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_fastconnects": list(itertools.chain.from_iterable(self.__network_fastconnects.values())),
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
             "network_drgs": self.__raw_network_drgs,
+            "network_drg_route_tables": self.__network_drg_route_tables,
+            "network_drg_route_rules": self.__network_drg_route_rules,
+            "network_ipsec_tunnels": self.__network_ipsec_tunnels,
+            "network_bgp_received_routes": self.__network_bgp_received_routes,
+            "network_bgp_advertised_routes": self.__network_bgp_advertised_routes,
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
             "cloud_guard_problems" : self.__cloud_guard_problems,
             "regions": self.__raw_regions,

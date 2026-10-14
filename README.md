@@ -116,8 +116,8 @@ It has been tested on **OCI Cloud Shell** with **Public network**, **OCI Cloud S
 To download and run the scripts without cloning the repository:
 
 ```bash
-mkdir cis_compliance_3.5.0
-cd cis_compliance_3.5.0
+mkdir cis_compliance_script
+cd cis_compliance_script
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
 wget https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh
 chmod +x standard.sh
@@ -125,8 +125,8 @@ chmod +x standard.sh
 
 On MacOS use:
 ```bash
-mkdir cis_compliance_3.4.0
-cd cis_compliance_3.4.0
+mkdir cis_compliance_script
+cd cis_compliance_script
 curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py --output cis_reports.py
 curl https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/standard.sh --output standard.sh
 chmod +x standard.sh
@@ -405,6 +405,8 @@ To run on a local machine with the default profile and output raw data as well a
 % python3 cis_reports.py --raw
 ``` 
 
+Use `--obp --raw` to also export network-map data, including VCN and DRG route tables and rules, gateways, CPEs, IPSec tunnels, and BGP received and advertised routes.
+
 ## <a name="output"></a>Output Examples
 
 The CIS Compliance Script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:
@@ -627,11 +629,11 @@ JSON: all_resources          --> tenancy1-2026-03-17_18-30-55/raw_data_all_resou
 | OBP-GOV-2 | Cost_Tracking_Budgets | Governance | Alerting on unexpected spending | https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm#Budgets_Overview |
 | OBP-GOV-3 | Quotas | Governance | Quota policies are used | https://docs.oracle.com/en-us/iaas/Content/Quotas/Concepts/resourcequotas.htm |
 | OBP-ADB-1 | ADB_MTLS | Autonoumous Database | ADB Databases enforce Mutual TLS authentication | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/support-tls-mtls-authentication.html#GUID-3F3F1FA4-DD7D-4211-A1D3-A74ED35C0AF5 |
-| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate  | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
+| OBP-ADB-2 | ADB_DataSafe | Autonoumous Database | ABD Databases in the tenancy are integrated with a security scanning tool | https://docs.oracle.com/en-us/iaas/database-security/data-safe/using/register-autonomous-database.html |
+| OBP-ADB-3 | ADB_CMK | Autonoumous Database | ADB Database data is encrypted with a customer managed key | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingkeys.htm |
+| OBP-ADB-4 | ADB_Contacts | Autonoumous Database | ABD Databases have a contact listed | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbmanagingcontacts.htm |
+| OBP-ADB-5 | ADB_Private_IP | Autonoumous Database | ADB Database are have private endpoints into a customer managed VCN | https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/adbaccess.htm |
+| IAM-18 | IAM_Stmt_Root_Count | Identity and Access Management | IAM Policies are created at appropriate compartment level. | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-19 | IAM_Stmt_Comp_Hierarchy_Count | Identity and Access Management | IAM Policy Statements Limit per Compartment Hierarchy | https://docs.oracle.com/en-us/iaas/Content/Identity/policymgmt/policy-limits-compartment-hierarchy.htm |
 | IAM-20 | IAM_Account_Lockout | Identity and Access Management | Account Lockout 5 or more | https://docs.oracle.com/en-us/iaas/Content/Identity/accountrecovery/configuring-account-recovery.htm |
 

@@ -121,6 +121,8 @@ The report shows all discovered Dynamic Groups in the total section. The pass or
 
 ### <a name="event-rule-target-validation"></a>**Why does the script treat some Events rules as compliant even when the Notifications topic subscription is not active?**
 
+For failed regional event-rule checks, the findings include a reason and, when available, a candidate rule. The reason describes that candidate, not necessarily every rule. Non-ONS actions are accepted without validating their targets.
+
 For CIS event-related checks, the script validates Oracle Notifications Service (ONS) targets when it can confirm that the referenced topic has an active subscription.
 Note: non-ONS targets are not validated by this check.
 

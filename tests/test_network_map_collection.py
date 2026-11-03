@@ -76,8 +76,10 @@ class NetworkMapCollectionTests(unittest.TestCase):
         report = self.new_report()
         ip_sec = types.SimpleNamespace(identifier='ipsec-1')
         tunnel = types.SimpleNamespace(id='tunnel-1')
-        route = types.SimpleNamespace(route='10.0.0.0/16', as_path='65000', next_hop='169.254.0.1', origin_asn='65000', is_overlapping=False)
-        cis_reports.oci.util = types.SimpleNamespace(to_dict=lambda value: {'route': value.route})
+        route = types.SimpleNamespace(
+            prefix='10.0.0.0/16', age=60, is_best_path=True,
+            as_path=[65000], advertiser='CUSTOMER')
+        cis_reports.oci.util = types.SimpleNamespace(to_dict=lambda value: {'prefix': value.prefix})
         cis_reports.oci.pagination = types.SimpleNamespace(
             list_call_get_all_results=lambda *args, **kwargs: types.SimpleNamespace(data=[route]))
         client = types.SimpleNamespace(list_ip_sec_connection_tunnel_routes=lambda **kwargs: None)
@@ -87,6 +89,8 @@ class NetworkMapCollectionTests(unittest.TestCase):
 
         self.assertEqual(report._CIS_Report__network_bgp_received_routes[0]['advertiser'], 'CUSTOMER')
         self.assertEqual(report._CIS_Report__network_bgp_advertised_routes[0]['advertiser'], 'ORACLE')
+        self.assertEqual(report._CIS_Report__network_bgp_received_routes[0]['route'], '10.0.0.0/16')
+        self.assertEqual(report._CIS_Report__network_bgp_advertised_routes[0]['route'], '10.0.0.0/16')
 
     def test_collects_drg_route_tables_and_rules(self):
         report = self.new_report()

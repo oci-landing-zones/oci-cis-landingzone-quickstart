@@ -4686,6 +4686,57 @@ class CIS_Report:
         # CIS Total 3.3 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.3']['Total'] = self.__Instance
 
+    def __event_rule_failure_details(self, check, region):
+        """Explain one candidate without influencing the compliance decision."""
+        required = set(self.cis_monitoring_checks[check])
+        candidates = []
+        for event in self.__event_rules:
+            try:
+                condition = json.loads(event.get('condition', '').lower().replace("'", '"'))
+                types = condition.get('eventtype')
+                if not isinstance(types, list):
+                    continue
+                matching = required.intersection(types)
+                if not matching:
+                    continue
+                missing = sorted(required.difference(types))
+                same_region = event.get('region') == region
+                # Prefer a complete match in the required region, then the closest match.
+                rank = (same_region, not missing, len(matching))
+                candidates.append((rank, str(event.get('id') or event.get('display_name') or ''), event, missing))
+            except (AttributeError, TypeError, ValueError):
+                continue
+
+        if not candidates:
+            return {'region': region, 'reason': 'No matching event rule found.', 'event_rule': ''}
+
+        def candidate_sort_key(candidate):
+            (same_region, complete_match, matching_count), name, _, _ = candidate
+            # Prefer the same region, complete matches, and more matching types; break ties by name or ID.
+            return (not same_region, not complete_match, -matching_count, name)
+
+        candidates.sort(key=candidate_sort_key)
+        _, _, event, missing = candidates[0]
+        if missing:
+            reason = 'Candidate rule is missing event types: ' + ', '.join(missing)
+        elif event.get('region') != region:
+            reason = 'Candidate rule is in a different region: ' + str(event.get('region') or 'unknown')
+        elif event.get('lifecycle_state') != 'ACTIVE':
+            reason = 'Candidate rule is not active.'
+        elif event.get('compartment_id') != self.__tenancy.id:
+            reason = 'Candidate rule is not in the root compartment.'
+        else:
+            actions = event.get('actions') or []
+            if not actions:
+                reason = 'Candidate rule has no actions.'
+            elif not isinstance(actions, list) or any(not isinstance(action, dict) for action in actions):
+                reason = 'Candidate rule contains invalid action data.'
+            elif any(action.get('actionType') == 'ONS' and action.get('topicId') for action in actions):
+                reason = 'Candidate rule has no qualifying action; its ONS topic may lack an active subscription.'
+            else:
+                reason = 'Candidate rule has no qualifying action; its ONS action may be missing a topic ID.'
+        return {'region': region, 'reason': reason, 'event_rule': event.get('display_name') or ''}
+
     def __cis_check_tagging_and_monitoring(self):
         # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
@@ -4791,7 +4842,8 @@ class CIS_Report:
                 self.cis_foundations_benchmark_3_0[key]['Status'] = True
             else:
                 for region in non_compliant:
-                    self.cis_foundations_benchmark_3_0[key]['Findings'].append({'region' : region})
+                    self.cis_foundations_benchmark_3_0[key]['Findings'].append(
+                        self.__event_rule_failure_details(key, region))
         
         ### Testing ###
         # CIS Check 4.13 - VCN FlowLog enable
@@ -4832,7 +4884,7 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                elif self.__all_logs and 'flowlogs' in self.__all_logs and self.__all_logs['flowlogs'] and \
                 'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
                     
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in all")

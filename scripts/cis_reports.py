@@ -3070,7 +3070,7 @@ class CIS_Report:
                         "ipsec_connection_id": ip_sec.identifier,
                         "tunnel_id": tunnel.id,
                         "advertiser": advertiser,
-                        "route": getattr(route, 'route', ''),
+                        "route": getattr(route, 'prefix', ''),
                         "as_path": getattr(route, 'as_path', ''),
                         "next_hop": getattr(route, 'next_hop', ''),
                         "origin_asn": getattr(route, 'origin_asn', ''),

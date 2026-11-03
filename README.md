@@ -250,8 +250,9 @@ Advanced users can use the script `cis_report.py` directly. The next chapters ex
   -p PROXY                             Set Proxy (i.e. www-proxy-server.com:80).
   --output-to-bucket OUTPUT_BUCKET     Set Output bucket name (i.e. my-reporting-bucket).
   --report-directory REPORT_DIRECTORY  Set Output report directory by default it is the current date (i.e. reports-date).
-  --report-prefix REPORT_PREFIX        Set Output report prefix to allow unique files for better baseline comparison.
-  --report-summary-json                Write summary report as JSON file, too.
+   --report-prefix REPORT_PREFIX        Set Output report prefix to allow unique files for better baseline comparison.
+   --report-summary-json                Write summary report as JSON file, too.
+   --output-to-sqlite                   Write all generated CSV reports to raw_data.sqlite. Requires --raw.
   --print-to-screen PRINT_TO_SCREEN    Set to False if you want to see only non-compliant findings (i.e. False).
   --level LEVEL                        CIS Recommendation Level options are: 1 or 2. Set to 2 by default.
   --regions REGIONS                    Regions to run the compliance checks on, by default it will run in all regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1.
@@ -276,6 +277,12 @@ Advanced users can use the script `cis_report.py` directly. The next chapters ex
 To run using python running a local machine in all regions and check for OCI Best Practices with raw data of all resources output to CSV files and network topology.
 ```
 % python3 cis_reports.py --obp --raw
+```
+
+#### Writing raw CSV reports to SQLite
+To create `raw_data.sqlite` in the report directory, with one table for every non-empty CSV generated during the run, use `--output-to-sqlite` together with `--raw`.
+```
+% python3 cis_reports.py --raw --output-to-sqlite
 ```
 
 #### Executing in Cloud Shell to check CIS and OCI Best Practices with raw data
@@ -397,6 +404,8 @@ To run on a local machine with the default profile and output raw data as well a
 ```
 % python3 cis_reports.py --raw
 ``` 
+
+Use `--obp --raw` to also export network-map data, including VCN and DRG route tables and rules, gateways, CPEs, IPSec tunnels, and BGP received and advertised routes.
 
 ## <a name="output"></a>Output Examples
 

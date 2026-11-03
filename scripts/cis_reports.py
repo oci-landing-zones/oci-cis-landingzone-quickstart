@@ -21,6 +21,7 @@ import oci
 import json
 import os
 import csv
+import sqlite3
 import itertools
 from threading import Thread
 import hashlib
@@ -85,6 +86,31 @@ def show_version(verbose=False):
         print(f'The command line arguments are: {str(sys.argv)}')
     else:
         print(script_updated)
+
+
+def export_csv_files_to_sqlite(csv_files, database_path):
+    try:
+        if os.path.exists(database_path):
+            os.remove(database_path)
+
+        with sqlite3.connect(database_path) as connection:
+            for csv_file in csv_files:
+                table_name = os.path.splitext(os.path.basename(csv_file))[0]
+                with open(csv_file, newline='') as file:
+                    reader = csv.DictReader(file)
+                    if not reader.fieldnames:
+                        continue
+
+                    columns = ['"' + column.replace('"', '""') + '"' for column in reader.fieldnames]
+                    quoted_table_name = '"' + table_name.replace('"', '""') + '"'
+                    connection.execute(f'CREATE TABLE {quoted_table_name} ({", ".join(column + " TEXT" for column in columns)})')
+                    placeholders = ', '.join('?' for _ in reader.fieldnames)
+                    connection.executemany(
+                        f'INSERT INTO {quoted_table_name} ({", ".join(columns)}) VALUES ({placeholders})',
+                        ([row.get(column, '') for column in reader.fieldnames] for row in reader))
+    except Exception as e:
+        raise Exception("Error exporting CSV files to SQLite: " + str(e.args))
+
 
 class ComplianceMappings:
     mappings = {
@@ -224,7 +250,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
                   report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
                   redact_output, oci_url=None, debug=False, all_resources=True,
-                  disable_api_keys=False, service_limits=False):
+                  disable_api_keys=False, service_limits=False, output_to_sqlite=False):
 
         # CIS Foundation benchmark 3.1.1
         self.cis_foundations_benchmark_3_0 = { 
@@ -924,6 +950,18 @@ class CIS_Report:
         self.__network_cpes = []
         self.__network_ipsec_connections = {}  # Indexed by DRG ID
         self.__network_drg_attachments = {}  # Indexed by DRG ID
+        self.__network_route_tables = []
+        self.__network_route_rules = []
+        self.__network_internet_gateways = []
+        self.__network_nat_gateways = []
+        self.__network_service_gateways = []
+        self.__network_local_peering_gateways = []
+        self.__network_remote_peering_connections = []
+        self.__network_drg_route_tables = []
+        self.__network_drg_route_rules = []
+        self.__network_ipsec_tunnels = []
+        self.__network_bgp_received_routes = []
+        self.__network_bgp_advertised_routes = []
 
         # For Autonomous Database Checks
         self.__autonomous_databases = []
@@ -1128,6 +1166,8 @@ class CIS_Report:
 
         # Determining if all raw data will be output
         self.__output_raw_data = raw_data
+        self.__output_to_sqlite = output_to_sqlite and raw_data
+        self.__generated_csv_files = []
 
         # Determining if OCI Best Practices will be checked and output
         self.__obp_checks = obp
@@ -2624,6 +2664,117 @@ class CIS_Report:
                 "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
+    # Load Network Map Resources
+    ##########################################################################
+    def __network_read_network_map_resources(self):
+        resource_types = {
+            "InternetGateway": self.__network_internet_gateways,
+            "NatGateway": self.__network_nat_gateways,
+            "ServiceGateway": self.__network_service_gateways,
+            "LocalPeeringGateway": self.__network_local_peering_gateways,
+            "RemotePeeringConnection": self.__network_remote_peering_connections,
+            "Cpe": self.__network_cpes,
+        }
+        try:
+            for region_key, region_values in self.__regions.items():
+                route_tables = self.__search_resource_in_region("RouteTable", region_values)
+                for route_table in route_tables:
+                    try:
+                        route_table_data = region_values['network_client'].get_route_table(route_table.identifier).data
+                        record = {
+                            "id": route_table_data.id,
+                            "display_name": route_table_data.display_name,
+                            "compartment_id": route_table_data.compartment_id,
+                            "vcn_id": route_table_data.vcn_id,
+                            "lifecycle_state": route_table_data.lifecycle_state,
+                            "time_created": self.get_date_iso_format(route_table_data.time_created),
+                            "freeform_tags": route_table_data.freeform_tags,
+                            "defined_tags": route_table_data.defined_tags,
+                            "region": region_key,
+                        }
+                        self.__network_route_tables.append(record)
+                        for rule in route_table_data.route_rules:
+                            self.__network_route_rules.append({
+                                "route_table_id": route_table_data.id,
+                                "vcn_id": route_table_data.vcn_id,
+                                "compartment_id": route_table_data.compartment_id,
+                                "destination": getattr(rule, 'destination', ''),
+                                "destination_type": getattr(rule, 'destination_type', ''),
+                                "network_entity_id": getattr(rule, 'network_entity_id', ''),
+                                "description": getattr(rule, 'description', ''),
+                                "route_type": getattr(rule, 'route_type', ''),
+                                "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                                "region": region_key,
+                            })
+                    except Exception as e:
+                        self.__errors.append({"id": route_table.identifier, "error": "Failed to read route table in " + region_key + ": " + str(e)})
+
+                for resource_type, records in resource_types.items():
+                    for resource in self.__search_resource_in_region(resource_type, region_values):
+                        details = getattr(resource, 'additional_details', {}) or {}
+                        records.append({
+                            "id": resource.identifier,
+                            "display_name": resource.display_name,
+                            "compartment_id": resource.compartment_id,
+                            "vcn_id": details.get('vcnId', ''),
+                            "ip_address": details.get('ipAddress', ''),
+                            "lifecycle_state": resource.lifecycle_state,
+                            "time_created": self.get_date_iso_format(resource.time_created),
+                            "freeform_tags": resource.freeform_tags,
+                            "defined_tags": resource.defined_tags,
+                            "additional_details": details,
+                            "region": region_key,
+                        })
+
+            print("\tProcessed " + str(len(self.__network_route_tables)) + " Route Tables")
+            return self.__network_route_tables
+        except Exception as e:
+            raise RuntimeError("Error in __network_read_network_map_resources " + str(e.args))
+
+    ##########################################################################
+    # Load DRG Route Tables and Rules
+    ##########################################################################
+    def __network_read_drg_route_tables(self, region_key, region_values, drg):
+        try:
+            drg_route_tables = oci.pagination.list_call_get_all_results(
+                region_values['network_client'].list_drg_route_tables,
+                drg_id=drg.id).data
+            for route_table in drg_route_tables:
+                self.__network_drg_route_tables.append({
+                    "id": route_table.id,
+                    "drg_id": drg.id,
+                    "display_name": route_table.display_name,
+                    "compartment_id": route_table.compartment_id,
+                    "is_ecmp_enabled": getattr(route_table, 'is_ecmp_enabled', ''),
+                    "lifecycle_state": route_table.lifecycle_state,
+                    "time_created": self.get_date_iso_format(route_table.time_created),
+                    "freeform_tags": route_table.freeform_tags,
+                    "defined_tags": route_table.defined_tags,
+                    "region": region_key,
+                })
+                try:
+                    rules = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_drg_route_rules,
+                        drg_route_table_id=route_table.id).data
+                    for rule in rules:
+                        self.__network_drg_route_rules.append({
+                            "id": getattr(rule, 'id', ''),
+                            "drg_id": drg.id,
+                            "drg_route_table_id": route_table.id,
+                            "destination": getattr(rule, 'destination', ''),
+                            "destination_type": getattr(rule, 'destination_type', ''),
+                            "next_hop_drg_attachment_id": getattr(rule, 'next_hop_drg_attachment_id', ''),
+                            "route_type": getattr(rule, 'route_type', ''),
+                            "route_provenance": getattr(rule, 'route_provenance', ''),
+                            "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                            "region": region_key,
+                        })
+                except Exception as e:
+                    self.__errors.append({"id": route_table.id, "error": "Failed to read DRG route rules in " + region_key + ": " + str(e)})
+        except Exception as e:
+            self.__errors.append({"id": drg.id, "error": "Failed to read DRG route tables in " + region_key + ": " + str(e)})
+
+    ##########################################################################
     # Load DRG Attachments 
     ##########################################################################
     def __network_read_drg_attachments(self):
@@ -2780,6 +2931,7 @@ class CIS_Report:
                         self.__raw_network_drgs.append(record)
                         # For Checks data
                         self.__network_drgs[drg.id] = record
+                        self.__network_read_drg_route_tables(region_key, region_values, drg)
 
             print("\tProcessed " + str(len(self.__network_drgs)) + " Dynamic Routing Gateways")
             return self.__network_drgs
@@ -2901,6 +3053,34 @@ class CIS_Report:
     ##########################################################################
     # Load IP Sec Connections 
     ##########################################################################
+    def __network_read_ipsec_bgp_routes(self, region_key, region_values, ip_sec, tunnel):
+        directions = (
+            ("CUSTOMER", self.__network_bgp_received_routes),
+            ("ORACLE", self.__network_bgp_advertised_routes),
+        )
+        for advertiser, records in directions:
+            try:
+                routes = oci.pagination.list_call_get_all_results(
+                    region_values['network_client'].list_ip_sec_connection_tunnel_routes,
+                    ipsc_id=ip_sec.identifier,
+                    tunnel_id=tunnel.id,
+                    advertiser=advertiser).data
+                for route in routes:
+                    records.append({
+                        "ipsec_connection_id": ip_sec.identifier,
+                        "tunnel_id": tunnel.id,
+                        "advertiser": advertiser,
+                        "route": getattr(route, 'prefix', ''),
+                        "as_path": getattr(route, 'as_path', ''),
+                        "next_hop": getattr(route, 'next_hop', ''),
+                        "origin_asn": getattr(route, 'origin_asn', ''),
+                        "is_overlapping": getattr(route, 'is_overlapping', ''),
+                        "route_details": oci.util.to_dict(route),
+                        "region": region_key,
+                    })
+            except Exception as e:
+                self.__errors.append({"id": tunnel.id, "error": "Failed to read " + advertiser.lower() + " BGP routes in " + region_key + ": " + str(e)})
+
     def __network_read_ip_sec_connections(self):
         try:
             for region_key, region_values in self.__regions.items():
@@ -2940,6 +3120,9 @@ class CIS_Report:
                                 deep_link = self.__oci_ipsec_uri + ip_sec.identifier + "/tunnels/" + tunnel.id + '?region=' + region_key
                                 tunnel_record = {
                                     "id": tunnel.id,
+                                    "ipsec_connection_id": ip_sec.identifier,
+                                    "cpe_id": ip_sec.additional_details['cpeId'],
+                                    "drg_id": ip_sec.additional_details['drgId'],
                                     "cpe_ip": tunnel.cpe_ip,
                                     "display_name": tunnel.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
@@ -2957,6 +3140,7 @@ class CIS_Report:
                                     "dpd_timeout_in_sec": tunnel.dpd_timeout_in_sec,
                                     "time_created": tunnel.time_created.strftime(self.__iso_time_format),
                                     "time_status_updated": str(tunnel.time_status_updated),
+                                    "region": region_key,
                                     "notes": ""
                                 }
                                 if tunnel_record['status'].upper() == "UP":
@@ -2968,6 +3152,9 @@ class CIS_Report:
                                 else:
                                     record['tunnels_bgp'] = False
                                 record["tunnels"].append(tunnel_record)
+                                self.__network_ipsec_tunnels.append(tunnel_record)
+                                if tunnel_record['routing'].upper() == "BGP":
+                                    self.__network_read_ipsec_bgp_routes(region_key, region_values, ip_sec, tunnel)
                         except Exception:
                             print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.identifier)
                             record['tunnels_up'] = False
@@ -2989,6 +3176,8 @@ class CIS_Report:
                             "tunnels": [],
                             "number_tunnels_up": 0,
                             "tunnels_up": False,
+                            "number_tunnels_bgp": 0,
+                            "tunnels_bgp": False,
                             "notes": ""
                         }
 
@@ -6311,6 +6500,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         # Oracle Best practice functions
         if self.__obp_checks:
             obp_functions = [
+                self.__network_read_network_map_resources,
                 self.__network_read_fastonnects,
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
@@ -6371,6 +6561,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_subnets": self.__network_subnets,
             "network_vcns": list(self.__network_vcns.values()),
             "network_capture_filters": list(self.__network_capturefilters.values()),
+            "network_route_tables": self.__network_route_tables,
+            "network_route_rules": self.__network_route_rules,
+            "network_internet_gateways": self.__network_internet_gateways,
+            "network_nat_gateways": self.__network_nat_gateways,
+            "network_service_gateways": self.__network_service_gateways,
+            "network_local_peering_gateways": self.__network_local_peering_gateways,
+            "network_remote_peering_connections": self.__network_remote_peering_connections,
+            "network_cpes": self.__network_cpes,
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,
             "integration_instances": self.__integration_instances,
@@ -6389,6 +6587,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_fastconnects": list(itertools.chain.from_iterable(self.__network_fastconnects.values())),
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
             "network_drgs": self.__raw_network_drgs,
+            "network_drg_route_tables": self.__network_drg_route_tables,
+            "network_drg_route_rules": self.__network_drg_route_rules,
+            "network_ipsec_tunnels": self.__network_ipsec_tunnels,
+            "network_bgp_received_routes": self.__network_bgp_received_routes,
+            "network_bgp_advertised_routes": self.__network_bgp_advertised_routes,
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
             "cloud_guard_problems" : self.__cloud_guard_problems,
             "regions": self.__raw_regions,
@@ -6501,6 +6704,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
                     # print(row)
 
             print("CSV: " + file_subject.ljust(22) + " --> " + file_path)
+            self.__generated_csv_files.append(file_path)
             # Used by Upload
 
             return file_path
@@ -6581,6 +6785,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         if error_report_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, error_report_file_name)
+
+        if self.__output_to_sqlite:
+            database_path = os.path.join(self.__report_directory, 'raw_data.sqlite')
+            export_csv_files_to_sqlite(self.__generated_csv_files, database_path)
+            print("SQLite: " + 'raw_data'.ljust(22) + " --> " + database_path)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
@@ -6822,6 +7031,8 @@ def execute_report():
                         help='Set Output report prefix to allow unique files for better baseline comparison.')
     parser.add_argument('--report-summary-json', action='store_true', default=None, dest='report_summary_json',
                         help='Write summary report as JSON file, too.')
+    parser.add_argument('--output-to-sqlite', action='store_true', default=False, dest='output_to_sqlite',
+                        help='Write all generated CSV reports to raw_data.sqlite. Requires --raw.')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False).')
     parser.add_argument('--level', default=2, dest='level',
@@ -6858,10 +7069,13 @@ def execute_report():
         show_version()
         sys.exit()
 
+    if cmd.output_to_sqlite and not cmd.raw:
+        parser.error('--output-to-sqlite requires --raw.')
+
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits, output_to_sqlite=cmd.output_to_sqlite)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:

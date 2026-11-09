@@ -5027,9 +5027,8 @@ class CIS_Report:
             non_compliant = [region for region, val in regions.items() if val is not True]
             for region in regions:
                 self.cis_foundations_benchmark_3_0[key]['Total'].append({'region' : region})
-            if not non_compliant:
-                self.cis_foundations_benchmark_3_0[key]['Status'] = True
-            else:
+            self.cis_foundations_benchmark_3_0[key]['Status'] = not non_compliant
+            if non_compliant:
                 for region in non_compliant:
                     self.cis_foundations_benchmark_3_0[key]['Findings'].append(
                         self.__event_rule_failure_details(key, region))

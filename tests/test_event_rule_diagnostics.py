@@ -73,6 +73,28 @@ class EventRuleDiagnosticsTests(unittest.TestCase):
         finding = self.report.cis_foundations_benchmark_3_0['4.3']['Findings'][0]
         self.assertIn('event.update', finding['reason'])
 
+    def test_418_status_matches_regional_findings(self):
+        for passing_regions in ((), ('region-1',), ('region-1', 'region-2')):
+            with self.subTest(passing_regions=passing_regions):
+                self.setUp()
+                self.report._CIS_Report__cis_regional_checks = {'4.18'}
+                self.report._CIS_Report__cis_regional_findings_data = {
+                    '4.18': {'region-1': None, 'region-2': None}}
+                self.report.cis_monitoring_checks = {'4.18': ['event.create', 'event.update']}
+                self.report.cis_foundations_benchmark_3_0['4.18'] = {
+                    'Status': True, 'Total': [], 'Findings': []}
+                self.report._CIS_Report__event_rules = [
+                    self.rule(region=region, actions=[{'actionType': 'FAAS'}])
+                    for region in passing_regions]
+
+                self.report._CIS_Report__cis_check_tagging_and_monitoring()
+
+                result = self.report.cis_foundations_benchmark_3_0['4.18']
+                self.assertEqual(result['Status'], len(passing_regions) == 2)
+                self.assertEqual(len(result['Total']), 2)
+                self.assertEqual(len(result['Findings']), 2 - len(passing_regions))
+                self.assertEqual(len(result['Total']) - len(result['Findings']), len(passing_regions))
+
 
 if __name__ == '__main__':
     unittest.main()

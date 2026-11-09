@@ -5171,9 +5171,9 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names and need to make sure they have write level bucekt logs
-        if self.__all_logs and 'objectstorage' in self.__all_logs and\
-              'write' in self.__all_logs['objectstorage']:
-            
+        if not self.__buckets:
+            pass    # This keeps the default value (true) for self.cis_foundations_benchmark_3_0['4.17']['Status'] 
+        elif self.__all_logs and 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:    
             for bucket in self.__buckets:
                 if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                     self.cis_foundations_benchmark_3_0['4.17']['Status'] = False

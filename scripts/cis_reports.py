@@ -5022,6 +5022,15 @@ class CIS_Report:
                             print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
 
 
+        # Home-region monitoring checks need a total and a finding when no rule qualifies.
+        home_region_checks = set(self.cis_monitoring_checks) - self.__cis_regional_checks - {'4.15'}
+        for key in sorted(home_region_checks):
+            recommendation = self.cis_foundations_benchmark_3_0[key]
+            recommendation['Total'].append({'region': self.__home_region})
+            if not recommendation['Status']:
+                recommendation['Findings'].append(
+                    self.__event_rule_failure_details(key, self.__home_region))
+
         # ******* Iterating through Regional Checks adding findings
         for key, regions in self.__cis_regional_findings_data.items():
             non_compliant = [region for region, val in regions.items() if val is not True]

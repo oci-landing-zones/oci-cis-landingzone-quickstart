@@ -66,6 +66,34 @@ class EventRuleDiagnosticsTests(unittest.TestCase):
         self.assertEqual(len(result['Findings']), 1)
         self.assertEqual(result['Findings'][0]['region'], 'region-2')
 
+    def test_home_region_check_records_failure_and_success(self):
+        for active_subscription in (False, True):
+            with self.subTest(active_subscription=active_subscription):
+                self.setUp()
+                self.report._CIS_Report__cis_regional_findings_data = {}
+                self.report.cis_monitoring_checks = {
+                    '4.6': ['event.create', 'event.update'],
+                    '4.15': ['cloudguard.event']}
+                self.report.cis_foundations_benchmark_3_0.update({
+                    key: {'Status': False, 'Total': [], 'Findings': []}
+                    for key in ('4.6', '4.15')})
+                self.report._CIS_Report__event_rules = [self.rule()]
+                if active_subscription:
+                    self.report._CIS_Report__subscriptions = [
+                        {'topic_id': 'topic', 'lifecycle_state': 'ACTIVE'}]
+
+                self.report._CIS_Report__cis_check_tagging_and_monitoring()
+
+                result = self.report.cis_foundations_benchmark_3_0['4.6']
+                self.assertEqual(result['Status'], active_subscription)
+                self.assertEqual(result['Total'], [{'region': 'region-1'}])
+                self.assertEqual(len(result['Findings']), 0 if active_subscription else 1)
+                if not active_subscription:
+                    self.assertEqual(result['Findings'][0]['region'], 'region-1')
+                    self.assertIn('active subscription', result['Findings'][0]['reason'])
+                self.assertEqual(self.report.cis_foundations_benchmark_3_0['4.15']['Total'], [])
+                self.assertEqual(self.report.cis_foundations_benchmark_3_0['4.15']['Findings'], [])
+
     def test_partial_and_invalid_conditions_do_not_interrupt(self):
         self.report._CIS_Report__event_rules = [self.rule(condition='not json'),
             self.rule(id='partial', condition='{"eventType": ["event.create"]}')]

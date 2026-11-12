@@ -407,6 +407,12 @@ To run on a local machine with the default profile and output raw data as well a
 
 Use `--obp --raw` to also export network-map data, including VCN and DRG route tables and rules, gateways, CPEs, IPSec tunnels, and BGP received and advertised routes.
 
+### Customize framework mappings
+
+To customize framework mappings, edit `ComplianceMappings` in `scripts/cis_reports.py`. Set `MAPPING_NAMES` to the desired framework names in report order, then update every entry in `mappings` to contain exactly those names. Use an empty list when a recommendation has no controls for a framework. Dictionary key order within each entry does not matter.
+
+The script validates the table before generating reports and identifies missing or unexpected names. Framework mappings are included in CIS and OBP summary CSV files, optional JSON and XLSX reports, and the HTML report's **Framework mappings** column. These mappings provide supporting evidence; they do not establish compliance with an entire framework.
+
 ## <a name="output"></a>Output Examples
 
 The CIS Compliance Script loops through all regions used by the tenancy and all resource types referenced in the CIS OCI Foundations Benchmark and outputs a summary compliance report. Each report row corresponds to a recommendation in the OCI Foundations Benchmark and identifies if the tenancy is in compliance as well as the number of offending findings. The report summary columns read as:

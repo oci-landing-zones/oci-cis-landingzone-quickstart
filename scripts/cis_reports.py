@@ -96,7 +96,7 @@ def export_csv_files_to_sqlite(csv_files, database_path):
         with sqlite3.connect(database_path) as connection:
             for csv_file in csv_files:
                 table_name = os.path.splitext(os.path.basename(csv_file))[0]
-                with open(csv_file, newline='') as file:
+                with open(csv_file, newline='', encoding='utf-8') as file:
                     reader = csv.DictReader(file)
                     if not reader.fieldnames:
                         continue
@@ -113,6 +113,8 @@ def export_csv_files_to_sqlite(csv_files, database_path):
 
 
 class ComplianceMappings:
+    MAPPING_NAMES = ('CIS v8', 'CCCS Guard Rail', 'Oracle SaaS v1')
+
     mappings = {
     'IAM-1' : {'CIS v8' : ['3.12', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3'], 'Oracle SaaS v1' : []},
     'IAM-2' : {'CIS v8' : ['3.3', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['1', '2', '3'], 'Oracle SaaS v1' : []},
@@ -196,6 +198,34 @@ class ComplianceMappings:
     'all-resources' : {'CIS v8' : ['1.1', '1.5'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []},
     'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []}
 }
+
+    @classmethod
+    def get_mapping_names(cls):
+        """Validate the table and return the framework names in report order."""
+        if not cls.mappings:
+            return ()
+        names = tuple(cls.MAPPING_NAMES)
+        if len(names) != len(set(names)):
+            raise ValueError('Duplicate framework names in MAPPING_NAMES')
+
+        errors = []
+        expected = set(names)
+        for key, mappings in cls.mappings.items():
+            if not isinstance(mappings, dict):
+                errors.append(f"{key}: expected a dictionary of framework mappings")
+                continue
+            missing = expected - mappings.keys()
+            extra = mappings.keys() - expected
+            if missing:
+                errors.append(f"{key}: missing framework names {sorted(missing)}")
+            if extra:
+                errors.append(f"{key}: unexpected framework names {sorted(extra)}")
+            for name, values in mappings.items():
+                if not isinstance(values, list):
+                    errors.append(f"{key}: mapping for {name!r} must be a list")
+        if errors:
+            raise ValueError('Inconsistent compliance mappings:\n' + '\n'.join(errors))
+        return names
 
 
 ##########################################################################
@@ -1233,9 +1263,7 @@ class CIS_Report:
         self.__compliance_mappings = ComplianceMappings()
         current_mappings = self.__compliance_mappings.mappings
         
-        # Name of the other compliance framework
-        self.__primary_framework_name  = list(current_mappings['IAM-1'].keys())[0]
-        self.__other_framework_name =  list(current_mappings['IAM-1'].keys())[1]
+        self.__framework_names = ComplianceMappings.get_mapping_names()
     
         for mapping in current_mappings:
             for cis_recommendation in self.cis_foundations_benchmark_3_0:
@@ -6109,8 +6137,7 @@ class CIS_Report:
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Compliance Percentage Per Recommendation": compliance_percentage,
                     "Title": recommendation['Title'],
-                    self.__primary_framework_name : recommendation[self.__primary_framework_name],
-                    self.__other_framework_name : recommendation[self.__other_framework_name],
+                    **{name: recommendation.get(name, []) for name in self.__framework_names},
                     "Regions": self.__regions_to_run_in,
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
@@ -6361,8 +6388,7 @@ class CIS_Report:
                     'Total': '',
                     'Compliance Percentage Per Recommendation': '',
                     'Title': row['Title'],
-                    self.__primary_framework_name: row[self.__primary_framework_name],
-                    self.__other_framework_name: row[self.__other_framework_name],
+                    **{name: row[name] for name in self.__framework_names},
                     'Regions': row['Regions'],
                     'Documentation': row['Documentation'],
                     'source': 'OBP',
@@ -6374,6 +6400,7 @@ class CIS_Report:
                 })
 
             payload = {
+                'frameworks': self.__framework_names,
                 'findings': cis_records,
                 'obp_findings': obp_records,
                 'meta': {
@@ -6396,14 +6423,15 @@ class CIS_Report:
 </style></head><body><div id="summaryView">
 <header class="report-bar"><div class="report-bar-frame"><div class="cwidth"><a class="oracle-wordmark" href="https://www.oracle.com/" aria-label="Oracle home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 30" role="img" aria-label="Oracle"><path fill="#C74634" d="M99.61 19.52h15.24l-8.05-13L92 30h-6.73l18-28.17a4.29 4.29 0 0 1 7-.05L128.32 30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93 5.23V.28h-5.72v26.88a2.76 2.76 0 0 0 .85 2 2.89 2.89 0 0 0 2.08.87h26l3.39-5.25h-26.6M75 20.38A10 10 0 0 0 75 .28H50V30h5.71V5.54h18.94a4.81 4.81 0 0 1 0 9.62H58.54L75.6 30h8.29L72.43 20.38H75M14.88 30h17.27a14.86 14.86 0 0 0 0-29.71H14.88a14.86 14.86 0 1 0 0 29.71m16.88-5.23H15.26a9.62 9.62 0 0 1 0-19.23h16.5a9.62 9.62 0 1 1 0 19.23M140.25 30h17.63l3.34-5.23h-20.58a9.62 9.62 0 1 1 0-19.23h16.75l3.38-5.25h-20.52a14.86 14.86 0 1 0 0 29.71m69.87-5.23a9.62 9.62 0 0 1-9.26-7h24.42l3.36-5.24h-27.64a9.61 9.61 0 0 1 9.26-7h16.76l3.35-5.25h-20.5a14.86 14.86 0 0 0 0 29.71h17.63l3.35-5.23z"/></svg></a></div></div></header>
 <section class="report-title"><div class="cwidth"><h1>OCI CIS Summary Report</h1><p class="subtitle" id="reportMeta"></p><p class="checker-version" id="checkerVersion"></p></div></section>
-<main><div class="cwidth"><div class="cards"><button class="card" onclick="filterStatus('')">All recommendations <b id="all"></b></button><button class="card status-no" onclick="filterStatus('No')">Non-compliant <b id="no"></b></button><button class="card status-yes" onclick="filterStatus('Yes')">Compliant <b id="yes"></b></button><button class="card" onclick="filterEvidence()">Evidence available <b id="evidence"></b></button></div><div class="filters" id="filters"><select id="section" onchange="render()"><option value="">All sections</option></select><select id="status" onchange="render()"><option value="">All statuses</option><option value="Yes">Compliant</option><option value="No">Non-compliant</option><option value="N/A">Not applicable</option></select><select id="impact" onchange="render()"><option value="">All impacted-item availability</option><option value="yes">Evidence available</option><option value="no">No evidence</option></select><input id="search" oninput="render()" placeholder="Search recommendation, title, remediation, or framework mapping"></div><p class="note" id="count"></p><div class="otable"><div class="otable-w1"><table class="otable-w2"><thead><tr><th>Recommendation</th><th>Section</th><th>Compliant</th><th>Finding / coverage</th><th>Remediation</th><th>Impacted items</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></main>
+<main><div class="cwidth"><div class="cards"><button class="card" onclick="filterStatus('')">All recommendations <b id="all"></b></button><button class="card status-no" onclick="filterStatus('No')">Non-compliant <b id="no"></b></button><button class="card status-yes" onclick="filterStatus('Yes')">Compliant <b id="yes"></b></button><button class="card" onclick="filterEvidence()">Evidence available <b id="evidence"></b></button></div><div class="filters" id="filters"><select id="section" onchange="render()"><option value="">All sections</option></select><select id="status" onchange="render()"><option value="">All statuses</option><option value="Yes">Compliant</option><option value="No">Non-compliant</option><option value="N/A">Not applicable</option></select><select id="impact" onchange="render()"><option value="">All impacted-item availability</option><option value="yes">Evidence available</option><option value="no">No evidence</option></select><input id="search" oninput="render()" placeholder="Search recommendation, title, remediation, or framework mapping"></div><p class="note" id="count"></p><div class="otable"><div class="otable-w1"><table class="otable-w2"><thead><tr><th>Recommendation</th><th>Section</th><th>Compliant</th><th>Finding / coverage</th><th>Framework mappings</th><th>Remediation</th><th>Impacted items</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></main>
 <footer><div class="cwidth">CIS OCI Foundations Benchmark &bull; <a target="_blank" rel="noopener" href="https://www.cisecurity.org/benchmark/Oracle_Cloud">Benchmark resources</a> &bull; <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">OCI best practices guidance</a> &bull; <span id="copyright"></span></div></footer></div><section id="impactView" hidden></section>
 <script>const D=""")
                 html_file.write(json_payload)
-                html_file.write(r""",FRAMEWORKS=['CIS v8','CCCS Guard Rail'];const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));const records=()=>$('source')?.value==='OBP'?D.obp_findings:D.findings,display=value=>String(value??'').trim()||'—',evidenceFor=row=>row.evidence||{headers:[],rows:[],error:'No embedded impacted-item data is available for this recommendation.'},evidenceRows=row=>evidenceFor(row).rows||[];
+                html_file.write(r""",FRAMEWORKS=D.frameworks||[];const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));const records=()=>$('source')?.value==='OBP'?D.obp_findings:D.findings,display=value=>String(value??'').trim()||'—',evidenceFor=row=>row.evidence||{headers:[],rows:[],error:'No embedded impacted-item data is available for this recommendation.'},evidenceRows=row=>evidenceFor(row).rows||[];
 function populateSections(){const current=$('section').value,sections=[...new Set(records().map(row=>row.Section).filter(Boolean))].sort();$('section').innerHTML='<option value="">All sections</option>'+sections.map(section=>'<option value="'+esc(section)+'">'+esc(section)+'</option>').join('');if(sections.includes(current))$('section').value=current}function refreshCards(){const rows=records();$('all').textContent=rows.length;$('no').textContent=rows.filter(row=>row.Compliant==='No').length;$('yes').textContent=rows.filter(row=>row.Compliant==='Yes').length;$('evidence').textContent=rows.filter(row=>evidenceRows(row).length).length}function resetSource(){$('section').value='';$('status').value='';$('impact').value='';populateSections();refreshCards();render()}function filterStatus(status){$('status').value=status;render()}function filterEvidence(){$('impact').value='yes';render()}
-function remediation(row){const mappings=FRAMEWORKS.map(key=>row[key]&&row[key].length?key+': '+(Array.isArray(row[key])?row[key].join(', '):row[key]):'').filter(Boolean).join('\n');const details=Object.entries(row.control_details||{}).filter(([,value])=>String(value??'').trim()).map(([label,value])=>'<b>'+esc(label)+'</b>\n'+esc(value)).join('\n\n');const documentation=row.Documentation?'<a class="doc-link" href="'+esc(row.Documentation)+'" target="_blank" rel="noopener">Oracle documentation</a>':'';if(!row.Remediation&&!details&&!mappings&&!documentation)return '<span class="badge">Not provided</span>';return '<details><summary>Oracle remediation & validation</summary><p>'+(row.Remediation?'<b>Source remediation</b>\n'+esc(display(row.Remediation)):'')+(details?'\n\n<b>Control details</b>\n'+details:'')+(mappings?'\n\n<b>Framework mappings</b>\n'+esc(mappings):'')+'</p>'+documentation+'</details>'}function coverage(row){if(row.source==='OBP')return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+' verified item(s)';return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+(String(row.Total||'').trim()?' / '+esc(row.Total)+' compliant':'')+'<br>'+esc(display(row['Compliance Percentage Per Recommendation']))}
-function render(){const query=$('search').value.toLowerCase(),section=$('section').value,status=$('status').value,impact=$('impact').value,source=$('source')?.value||'CIS',rows=records().filter(row=>(!section||row.Section===section)&&(!status||row.Compliant===status)&&(!impact||(impact==='yes'?evidenceRows(row).length:!evidenceRows(row).length))&&(!query||JSON.stringify(row).toLowerCase().includes(query)));$('count').textContent=rows.length+' of '+records().length+' '+(source==='OBP'?'OBP':'CIS')+' recommendations shown';$('rows').innerHTML=rows.map(row=>{const statusClass=row.Compliant==='Yes'?'status-yes':row.Compliant==='No'?'status-no':'status-na',evidence=evidenceRows(row).length?'<button onclick="openEvidence('+row.index+')">Open '+evidenceRows(row).length+' row(s)</button>':'<span class="badge">None embedded</span>',level=String(row.Level||'').trim()?'<br><span class="badge">Level '+esc(row.Level)+'</span>':'';return '<tr><td><b>'+esc(row['Recommendation #'])+'</b>'+level+'<span class="recommendation-title">'+esc(row.Title)+'</span></td><td>'+esc(display(row.Section))+'</td><td class="'+statusClass+'"><b>'+esc(display(row.Compliant))+'</b></td><td>'+coverage(row)+'</td><td>'+remediation(row)+'</td><td>'+evidence+'</td></tr>'}).join('')}
+function frameworkMappings(row){const mappings=FRAMEWORKS.filter(name=>row[name]&&row[name].length).map(name=>'<div><b>'+esc(name)+':</b> '+esc(Array.isArray(row[name])?row[name].join(', '):row[name])+'</div>');return mappings.join('')||'<span class="badge">None</span>'}
+function remediation(row){const details=Object.entries(row.control_details||{}).filter(([,value])=>String(value??'').trim()).map(([label,value])=>'<b>'+esc(label)+'</b>\n'+esc(value)).join('\n\n');const documentation=row.Documentation?'<a class="doc-link" href="'+esc(row.Documentation)+'" target="_blank" rel="noopener">Oracle documentation</a>':'';if(!row.Remediation&&!details&&!documentation)return '<span class="badge">Not provided</span>';return '<details><summary>Oracle remediation & validation</summary><p>'+(row.Remediation?'<b>Source remediation</b>\n'+esc(display(row.Remediation)):'')+(details?'\n\n<b>Control details</b>\n'+details:'')+'</p>'+documentation+'</details>'}function coverage(row){if(row.source==='OBP')return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+' verified item(s)';return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+(String(row.Total||'').trim()?' / '+esc(row.Total)+' compliant':'')+'<br>'+esc(display(row['Compliance Percentage Per Recommendation']))}
+function render(){const query=$('search').value.toLowerCase(),section=$('section').value,status=$('status').value,impact=$('impact').value,source=$('source')?.value||'CIS',rows=records().filter(row=>(!section||row.Section===section)&&(!status||row.Compliant===status)&&(!impact||(impact==='yes'?evidenceRows(row).length:!evidenceRows(row).length))&&(!query||JSON.stringify(row).toLowerCase().includes(query)));$('count').textContent=rows.length+' of '+records().length+' '+(source==='OBP'?'OBP':'CIS')+' recommendations shown';$('rows').innerHTML=rows.map(row=>{const statusClass=row.Compliant==='Yes'?'status-yes':row.Compliant==='No'?'status-no':'status-na',evidence=evidenceRows(row).length?'<button onclick="openEvidence('+row.index+')">Open '+evidenceRows(row).length+' row(s)</button>':'<span class="badge">None embedded</span>',level=String(row.Level||'').trim()?'<br><span class="badge">Level '+esc(row.Level)+'</span>':'';return '<tr><td><b>'+esc(row['Recommendation #'])+'</b>'+level+'<span class="recommendation-title">'+esc(row.Title)+'</span></td><td>'+esc(display(row.Section))+'</td><td class="'+statusClass+'"><b>'+esc(display(row.Compliant))+'</b></td><td>'+coverage(row)+'</td><td>'+frameworkMappings(row)+'</td><td>'+remediation(row)+'</td><td>'+evidence+'</td></tr>'}).join('')}
 const summaryTitle=document.title;function evidenceItem(index){return [...D.findings,...D.obp_findings].find(row=>row.index===index)}function impactLabel(header){return String(header??'').replace(/[_-]+/g,' ').toUpperCase()}function structuredValue(value){if(value!==null&&typeof value==='object')return value;const text=String(value??'').trim();if(!(text.startsWith('{')||text.startsWith('[')))return null;try{return JSON.parse(text)}catch(error){return text}}function excelHyperlink(value){const match=String(value??'').match(/^=HYPERLINK\("([^"]+)","([^"]*)"\)$/i);return match&&/^https:\/\//i.test(match[1])?{href:match[1],label:match[2]||match[1]}:null}function impactTitle(headers,row,position){const normalized=headers.map(header=>String(header).toLowerCase().replace(/[^a-z0-9]/g,''));for(const name of ['displayname','name','resourcename','id']){const value=row[normalized.indexOf(name)];if(String(value??'').trim())return String(value)}return 'Impacted item '+(position+1)}function impactCard(headers,row,position){const title=impactTitle(headers,row,position),fields=headers.map((header,column)=>{const value=row[column]??'',structured=structuredValue(value),link=excelHyperlink(value);if(!String(value).trim())return '';if(link)return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value"><a href="'+esc(link.href)+'" target="_blank" rel="noopener">'+esc(link.label)+'</a></div></div>';if(structured!==null)return '<details class="impact-structured"><summary>'+esc(impactLabel(header))+'</summary><pre>'+esc(typeof structured==='string'?structured:JSON.stringify(structured,null,2))+'</pre></details>';return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value">'+esc(value)+'</div></div>'}).join('');return '<article class="impact-card"><div class="impact-card-header"><span class="impact-item-badge">Impacted item '+(position+1)+'</span><h2 class="impact-item-title">'+esc(title)+'</h2></div><div class="impact-grid">'+fields+'</div></article>'}
 function renderImpacted(index){const item=evidenceItem(index);if(!item){location.hash='';return}const evidence=evidenceFor(item),headers=evidence.headers||[],rows=evidence.rows||[];$('summaryView').hidden=true;const view=$('impactView');view.hidden=false;document.title=item.recommendation+' - Impacted items';view.innerHTML='<section class="impact-page"><header class="impact-hero"><div class="impact-inner"><h1>'+esc(item.recommendation)+' - Impacted items</h1><p>'+esc(display(item.Title))+'</p><div class="impact-meta"><span>'+rows.length+' extracted evidence row(s)</span>'+(evidence.local_href?'<a class="impact-source-link" href="'+esc(evidence.local_href)+'" target="_blank" rel="noopener">Source file: '+esc(evidence.filename)+'</a>':'<span>Source file: '+esc(evidence.filename)+'</span>')+'</div></div></header><main class="impact-main"><div class="impact-inner"><input class="impact-filter" id="impactFilter" type="search" autocomplete="off" aria-label="Filter impacted items" placeholder="Filter by name, OCID, region, state, or any value"><div class="impact-list" id="impactList"></div></div></main></section>';const filter=$('impactFilter'),list=$('impactList'),paint=()=>{const query=filter.value.trim().toLowerCase();if(evidence.error){list.innerHTML='<p class="impact-empty">'+esc(evidence.error)+'</p>';return}const cards=rows.map((row,position)=>({row,position,search:(headers.join(' ')+' '+row.join(' ')).toLowerCase()})).filter(entry=>!query||entry.search.includes(query));list.innerHTML=cards.length?cards.map(entry=>impactCard(headers,entry.row,entry.position)).join(''):'<p class="impact-empty">No impacted items match this filter.</p>'};filter.addEventListener('input',paint);paint();window.scrollTo(0,0)}function renderSummary(){$('impactView').hidden=true;$('impactView').innerHTML='';$('summaryView').hidden=false;document.title=summaryTitle}function applyRoute(){const match=location.hash.match(/^#impacted-(\d+)$/);if(match&&evidenceItem(Number(match[1]))){renderImpacted(Number(match[1]));return}renderSummary()}function openEvidence(index){const target=location.href.replace(/#.*/,'')+'#impacted-'+index,detailWindow=window.open(target,'_blank');if(detailWindow)detailWindow.opener=null;else location.href=target}function setup(){$('reportMeta').textContent='Tenancy: '+D.meta.tenancy+' • Generated: '+D.meta.generated;$('checkerVersion').textContent='CIS Checker Version: '+D.meta.version+' • Updated: '+D.meta.updated;$('copyright').textContent='© '+new Date().getFullYear()+' Oracle';if(D.obp_findings.length)$('filters').insertAdjacentHTML('afterbegin','<select id="source" onchange="resetSource()"><option value="CIS">CIS OCI Foundations</option><option value="OBP">Oracle Best Practices (OBP)</option></select>');populateSections();refreshCards();render()}window.addEventListener('hashchange',applyRoute);setup();applyRoute();</script></body></html>""")
 
@@ -6436,8 +6464,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Title": recommendation['Title'],
-                self.__primary_framework_name : recommendation[self.__primary_framework_name],
-                self.__other_framework_name : recommendation[self.__other_framework_name],
+                **{name: recommendation.get(name, []) for name in self.__framework_names},
                 "Regions": self.__regions_to_run_in,
                 "Documentation": recommendation['Documentation']
             }
@@ -6751,7 +6778,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             # generate fields
             fields = [key for key in result[0].keys()]
 
-            with open(file_path, mode='w', newline='') as csv_file:
+            with open(file_path, mode='w', newline='', encoding='utf-8') as csv_file:
                 writer = csv.DictWriter(csv_file, fieldnames=fields)
 
                 # write header
@@ -7143,7 +7170,7 @@ def execute_report():
         def add_sheet(book, file, name):
             try:
                 worksheet = book.add_worksheet(name)
-                with open(file, 'rt', encoding='unicode_escape') as f:
+                with open(file, 'rt', encoding='utf-8') as f:
                     reader = csv.reader(f)
                     last_row = 0
                     last_col = 0

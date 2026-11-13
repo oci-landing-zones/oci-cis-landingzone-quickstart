@@ -1,3 +1,29 @@
+# November 13, 2026 Release Notes - 3.5.0
+1. [SQLite Output](#3-5-0-sqlite-output)
+1. [Network Visibility](#3-5-0-network-visibility)
+1. [Dynamic Compliance Mappings](#3-5-0-compliance-mappings)
+1. [Fixes and Updates](#3-5-0-fixes)
+
+## <a name="#3-5-0-sqlite-output">SQLite Output</a>
+- Added SQLite database output with `--output-to-sqlite` and `--raw`, storing data from generated CSV reports in a database alongside the report files. This provides a way for customers to write their own checks against the collected data using SQL queries.
+
+## <a name="#3-5-0-network-visibility">Network Visibility</a>
+- Added DRG route table collection for each Dynamic Routing Gateway.
+- Added details to the network map and network reachability output.
+
+## <a name="#3-5-0-compliance-mappings">Dynamic Compliance Mappings</a>
+- Improved `ComplianceMappings` validation and HTML reporting to use configured framework names dynamically and make framework mappings more prominent. Related external issue: [212](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/212).
+
+## <a name="#3-5-0-fixes">Fixes and Updates</a>
+Updates:
+- Added debug information for event rule checks to help identify failures involving rule placement, notification topics, and active subscriptions. Related external issue: [205](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart/issues/205).
+
+Fixes:
+- Fixed CIS recommendation 4.14 to check Cloud Guard coverage of the root compartment in addition to its enabled status.
+- Fixed CIS recommendation 4.18 reporting a compliant status when there were zero compliant resources and one finding.
+- Fixed missing report file generation for CIS recommendation 4.6.
+- Fixed CIS recommendation 4.17 to evaluate whether Object Storage buckets exist before checking write-log availability, ensuring consistent results for an empty bucket inventory.
+
 # August 14, 2026 Release Notes - 3.4.1
 1. [Fixes and Updates](#3-4-1-fixes)
 

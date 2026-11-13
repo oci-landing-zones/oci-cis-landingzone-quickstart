@@ -11,6 +11,7 @@
 **/vars_*.tfvars
 test/**
 *.csv
+*.sqlite
 *.xlsx
 *.html
 **/creds/**
@@ -19,4 +20,3 @@ test/**
 **/scripts/**/*.pkl
 **/scripts/**/*.png
 *.pyc
-AGENTS.md

@@ -21,6 +21,7 @@ import oci
 import json
 import os
 import csv
+import sqlite3
 import itertools
 from threading import Thread
 import hashlib
@@ -44,9 +45,9 @@ except Exception:
 
 csv.field_size_limit(2**31 - 1)
 
-RELEASE_VERSION = "3.4.2"
-PYTHON_SDK_VERSION = "2.185.2"
-UPDATED_DATE = "September 23, 2026"
+RELEASE_VERSION = "3.5.0"
+PYTHON_SDK_VERSION = "2.191.0"
+UPDATED_DATE = "November 13, 2026"
 
 
 ##########################################################################
@@ -86,7 +87,34 @@ def show_version(verbose=False):
     else:
         print(script_updated)
 
+
+def export_csv_files_to_sqlite(csv_files, database_path):
+    try:
+        if os.path.exists(database_path):
+            os.remove(database_path)
+
+        with sqlite3.connect(database_path) as connection:
+            for csv_file in csv_files:
+                table_name = os.path.splitext(os.path.basename(csv_file))[0]
+                with open(csv_file, newline='', encoding='utf-8') as file:
+                    reader = csv.DictReader(file)
+                    if not reader.fieldnames:
+                        continue
+
+                    columns = ['"' + column.replace('"', '""') + '"' for column in reader.fieldnames]
+                    quoted_table_name = '"' + table_name.replace('"', '""') + '"'
+                    connection.execute(f'CREATE TABLE {quoted_table_name} ({", ".join(column + " TEXT" for column in columns)})')
+                    placeholders = ', '.join('?' for _ in reader.fieldnames)
+                    connection.executemany(
+                        f'INSERT INTO {quoted_table_name} ({", ".join(columns)}) VALUES ({placeholders})',
+                        ([row.get(column, '') for column in reader.fieldnames] for row in reader))
+    except Exception as e:
+        raise Exception("Error exporting CSV files to SQLite: " + str(e.args))
+
+
 class ComplianceMappings:
+    MAPPING_NAMES = ('CIS v8', 'CCCS Guard Rail', 'Oracle SaaS v1')
+
     mappings = {
     'IAM-1' : {'CIS v8' : ['3.12', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['2', '3'], 'Oracle SaaS v1' : []},
     'IAM-2' : {'CIS v8' : ['3.3', '4.7', '5.4', '6.8'], 'CCCS Guard Rail' : ['1', '2', '3'], 'Oracle SaaS v1' : []},
@@ -172,6 +200,34 @@ class ComplianceMappings:
     'CIS-Benchmark' : {'CIS v8' : ['4.1', '16.7'], 'CCCS Guard Rail' : [],  'Oracle SaaS v1' : []}
 }
 
+    @classmethod
+    def get_mapping_names(cls):
+        """Validate the table and return the framework names in report order."""
+        if not cls.mappings:
+            return ()
+        names = tuple(cls.MAPPING_NAMES)
+        if len(names) != len(set(names)):
+            raise ValueError('Duplicate framework names in MAPPING_NAMES')
+
+        errors = []
+        expected = set(names)
+        for key, mappings in cls.mappings.items():
+            if not isinstance(mappings, dict):
+                errors.append(f"{key}: expected a dictionary of framework mappings")
+                continue
+            missing = expected - mappings.keys()
+            extra = mappings.keys() - expected
+            if missing:
+                errors.append(f"{key}: missing framework names {sorted(missing)}")
+            if extra:
+                errors.append(f"{key}: unexpected framework names {sorted(extra)}")
+            for name, values in mappings.items():
+                if not isinstance(values, list):
+                    errors.append(f"{key}: mapping for {name!r} must be a list")
+        if errors:
+            raise ValueError('Inconsistent compliance mappings:\n' + '\n'.join(errors))
+        return names
+
 
 ##########################################################################
 # CIS Reporting Class
@@ -225,7 +281,7 @@ class CIS_Report:
     def __init__(self, config, signer, proxy, output_bucket, report_directory, report_prefix,
                   report_summary_json, print_to_screen, regions_to_run_in, raw_data, obp,
                   redact_output, oci_url=None, debug=False, all_resources=True,
-                  disable_api_keys=False, service_limits=False):
+                  disable_api_keys=False, service_limits=False, output_to_sqlite=False):
 
         # CIS Foundation benchmark 3.1.1
         self.cis_foundations_benchmark_3_0 = { 
@@ -619,7 +675,7 @@ class CIS_Report:
                 "Impact": "There is no performance impact when enabling the above described features, but additional IAM policies will be required.",
                 "Remediation": "Enable the cloud guard by selecting the services in the menu and provide appropriate reporting region and other configurations.",
                 "Recommendation": "",
-                "Observation": "Cloud Guard has not been configured in the root compartment of the tenancy."
+                "Observation": "Cloud Guard is not fully configured in the root compartment of the tenancy."
             },
             "4.15": {
                 "Description": "Cloud Guard detects misconfigured resources and insecure activity within a tenancy and provides security administrators with the visibility to resolve these issues. Upon detection, Cloud Guard generates a Problem. It is recommended to setup an Event Rule and Notification that gets triggered when Oracle Cloud Guard Problems are created, dismissed or remediated. Event Rules are compartment scoped and will detect events in child compartments. It is recommended to create the Event rule at the root compartment level.",
@@ -926,6 +982,18 @@ class CIS_Report:
         self.__network_cpes = []
         self.__network_ipsec_connections = {}  # Indexed by DRG ID
         self.__network_drg_attachments = {}  # Indexed by DRG ID
+        self.__network_route_tables = []
+        self.__network_route_rules = []
+        self.__network_internet_gateways = []
+        self.__network_nat_gateways = []
+        self.__network_service_gateways = []
+        self.__network_local_peering_gateways = []
+        self.__network_remote_peering_connections = []
+        self.__network_drg_route_tables = []
+        self.__network_drg_route_rules = []
+        self.__network_ipsec_tunnels = []
+        self.__network_bgp_received_routes = []
+        self.__network_bgp_advertised_routes = []
 
         # For Autonomous Database Checks
         self.__autonomous_databases = []
@@ -1130,6 +1198,8 @@ class CIS_Report:
 
         # Determining if all raw data will be output
         self.__output_raw_data = raw_data
+        self.__output_to_sqlite = output_to_sqlite and raw_data
+        self.__generated_csv_files = []
 
         # Determining if OCI Best Practices will be checked and output
         self.__obp_checks = obp
@@ -1195,9 +1265,7 @@ class CIS_Report:
         self.__compliance_mappings = ComplianceMappings()
         current_mappings = self.__compliance_mappings.mappings
         
-        # Name of the other compliance framework
-        self.__primary_framework_name  = list(current_mappings['IAM-1'].keys())[0]
-        self.__other_framework_name =  list(current_mappings['IAM-1'].keys())[1]
+        self.__framework_names = ComplianceMappings.get_mapping_names()
     
         for mapping in current_mappings:
             for cis_recommendation in self.cis_foundations_benchmark_3_0:
@@ -2630,6 +2698,117 @@ class CIS_Report:
                 "Error in __network_read_network_capturefilters " + str(e.args))
 
     ##########################################################################
+    # Load Network Map Resources
+    ##########################################################################
+    def __network_read_network_map_resources(self):
+        resource_types = {
+            "InternetGateway": self.__network_internet_gateways,
+            "NatGateway": self.__network_nat_gateways,
+            "ServiceGateway": self.__network_service_gateways,
+            "LocalPeeringGateway": self.__network_local_peering_gateways,
+            "RemotePeeringConnection": self.__network_remote_peering_connections,
+            "Cpe": self.__network_cpes,
+        }
+        try:
+            for region_key, region_values in self.__regions.items():
+                route_tables = self.__search_resource_in_region("RouteTable", region_values)
+                for route_table in route_tables:
+                    try:
+                        route_table_data = region_values['network_client'].get_route_table(route_table.identifier).data
+                        record = {
+                            "id": route_table_data.id,
+                            "display_name": route_table_data.display_name,
+                            "compartment_id": route_table_data.compartment_id,
+                            "vcn_id": route_table_data.vcn_id,
+                            "lifecycle_state": route_table_data.lifecycle_state,
+                            "time_created": self.get_date_iso_format(route_table_data.time_created),
+                            "freeform_tags": route_table_data.freeform_tags,
+                            "defined_tags": route_table_data.defined_tags,
+                            "region": region_key,
+                        }
+                        self.__network_route_tables.append(record)
+                        for rule in route_table_data.route_rules:
+                            self.__network_route_rules.append({
+                                "route_table_id": route_table_data.id,
+                                "vcn_id": route_table_data.vcn_id,
+                                "compartment_id": route_table_data.compartment_id,
+                                "destination": getattr(rule, 'destination', ''),
+                                "destination_type": getattr(rule, 'destination_type', ''),
+                                "network_entity_id": getattr(rule, 'network_entity_id', ''),
+                                "description": getattr(rule, 'description', ''),
+                                "route_type": getattr(rule, 'route_type', ''),
+                                "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                                "region": region_key,
+                            })
+                    except Exception as e:
+                        self.__errors.append({"id": route_table.identifier, "error": "Failed to read route table in " + region_key + ": " + str(e)})
+
+                for resource_type, records in resource_types.items():
+                    for resource in self.__search_resource_in_region(resource_type, region_values):
+                        details = getattr(resource, 'additional_details', {}) or {}
+                        records.append({
+                            "id": resource.identifier,
+                            "display_name": resource.display_name,
+                            "compartment_id": resource.compartment_id,
+                            "vcn_id": details.get('vcnId', ''),
+                            "ip_address": details.get('ipAddress', ''),
+                            "lifecycle_state": resource.lifecycle_state,
+                            "time_created": self.get_date_iso_format(resource.time_created),
+                            "freeform_tags": resource.freeform_tags,
+                            "defined_tags": resource.defined_tags,
+                            "additional_details": details,
+                            "region": region_key,
+                        })
+
+            print("\tProcessed " + str(len(self.__network_route_tables)) + " Route Tables")
+            return self.__network_route_tables
+        except Exception as e:
+            raise RuntimeError("Error in __network_read_network_map_resources " + str(e.args))
+
+    ##########################################################################
+    # Load DRG Route Tables and Rules
+    ##########################################################################
+    def __network_read_drg_route_tables(self, region_key, region_values, drg):
+        try:
+            drg_route_tables = oci.pagination.list_call_get_all_results(
+                region_values['network_client'].list_drg_route_tables,
+                drg_id=drg.id).data
+            for route_table in drg_route_tables:
+                self.__network_drg_route_tables.append({
+                    "id": route_table.id,
+                    "drg_id": drg.id,
+                    "display_name": route_table.display_name,
+                    "compartment_id": route_table.compartment_id,
+                    "is_ecmp_enabled": getattr(route_table, 'is_ecmp_enabled', ''),
+                    "lifecycle_state": route_table.lifecycle_state,
+                    "time_created": self.get_date_iso_format(route_table.time_created),
+                    "freeform_tags": route_table.freeform_tags,
+                    "defined_tags": route_table.defined_tags,
+                    "region": region_key,
+                })
+                try:
+                    rules = oci.pagination.list_call_get_all_results(
+                        region_values['network_client'].list_drg_route_rules,
+                        drg_route_table_id=route_table.id).data
+                    for rule in rules:
+                        self.__network_drg_route_rules.append({
+                            "id": getattr(rule, 'id', ''),
+                            "drg_id": drg.id,
+                            "drg_route_table_id": route_table.id,
+                            "destination": getattr(rule, 'destination', ''),
+                            "destination_type": getattr(rule, 'destination_type', ''),
+                            "next_hop_drg_attachment_id": getattr(rule, 'next_hop_drg_attachment_id', ''),
+                            "route_type": getattr(rule, 'route_type', ''),
+                            "route_provenance": getattr(rule, 'route_provenance', ''),
+                            "is_blackhole": getattr(rule, 'is_blackhole', ''),
+                            "region": region_key,
+                        })
+                except Exception as e:
+                    self.__errors.append({"id": route_table.id, "error": "Failed to read DRG route rules in " + region_key + ": " + str(e)})
+        except Exception as e:
+            self.__errors.append({"id": drg.id, "error": "Failed to read DRG route tables in " + region_key + ": " + str(e)})
+
+    ##########################################################################
     # Load DRG Attachments 
     ##########################################################################
     def __network_read_drg_attachments(self):
@@ -2786,6 +2965,7 @@ class CIS_Report:
                         self.__raw_network_drgs.append(record)
                         # For Checks data
                         self.__network_drgs[drg.id] = record
+                        self.__network_read_drg_route_tables(region_key, region_values, drg)
 
             print("\tProcessed " + str(len(self.__network_drgs)) + " Dynamic Routing Gateways")
             return self.__network_drgs
@@ -2907,6 +3087,34 @@ class CIS_Report:
     ##########################################################################
     # Load IP Sec Connections 
     ##########################################################################
+    def __network_read_ipsec_bgp_routes(self, region_key, region_values, ip_sec, tunnel):
+        directions = (
+            ("CUSTOMER", self.__network_bgp_received_routes),
+            ("ORACLE", self.__network_bgp_advertised_routes),
+        )
+        for advertiser, records in directions:
+            try:
+                routes = oci.pagination.list_call_get_all_results(
+                    region_values['network_client'].list_ip_sec_connection_tunnel_routes,
+                    ipsc_id=ip_sec.identifier,
+                    tunnel_id=tunnel.id,
+                    advertiser=advertiser).data
+                for route in routes:
+                    records.append({
+                        "ipsec_connection_id": ip_sec.identifier,
+                        "tunnel_id": tunnel.id,
+                        "advertiser": advertiser,
+                        "route": getattr(route, 'prefix', ''),
+                        "as_path": getattr(route, 'as_path', ''),
+                        "next_hop": getattr(route, 'next_hop', ''),
+                        "origin_asn": getattr(route, 'origin_asn', ''),
+                        "is_overlapping": getattr(route, 'is_overlapping', ''),
+                        "route_details": oci.util.to_dict(route),
+                        "region": region_key,
+                    })
+            except Exception as e:
+                self.__errors.append({"id": tunnel.id, "error": "Failed to read " + advertiser.lower() + " BGP routes in " + region_key + ": " + str(e)})
+
     def __network_read_ip_sec_connections(self):
         try:
             for region_key, region_values in self.__regions.items():
@@ -2946,6 +3154,9 @@ class CIS_Report:
                                 deep_link = self.__oci_ipsec_uri + ip_sec.identifier + "/tunnels/" + tunnel.id + '?region=' + region_key
                                 tunnel_record = {
                                     "id": tunnel.id,
+                                    "ipsec_connection_id": ip_sec.identifier,
+                                    "cpe_id": ip_sec.additional_details['cpeId'],
+                                    "drg_id": ip_sec.additional_details['drgId'],
                                     "cpe_ip": tunnel.cpe_ip,
                                     "display_name": tunnel.display_name,
                                     "deep_link": self.__generate_csv_hyperlink(deep_link, tunnel.display_name),
@@ -2963,6 +3174,7 @@ class CIS_Report:
                                     "dpd_timeout_in_sec": tunnel.dpd_timeout_in_sec,
                                     "time_created": tunnel.time_created.strftime(self.__iso_time_format),
                                     "time_status_updated": str(tunnel.time_status_updated),
+                                    "region": region_key,
                                     "notes": ""
                                 }
                                 if tunnel_record['status'].upper() == "UP":
@@ -2974,6 +3186,9 @@ class CIS_Report:
                                 else:
                                     record['tunnels_bgp'] = False
                                 record["tunnels"].append(tunnel_record)
+                                self.__network_ipsec_tunnels.append(tunnel_record)
+                                if tunnel_record['routing'].upper() == "BGP":
+                                    self.__network_read_ipsec_bgp_routes(region_key, region_values, ip_sec, tunnel)
                         except Exception:
                             print("\t Unable to tunnels for ip_sec_connection: " + ip_sec.display_name + " id: " + ip_sec.identifier)
                             record['tunnels_up'] = False
@@ -2995,6 +3210,8 @@ class CIS_Report:
                             "tunnels": [],
                             "number_tunnels_up": 0,
                             "tunnels_up": False,
+                            "number_tunnels_bgp": 0,
+                            "tunnels_bgp": False,
                             "notes": ""
                         }
 
@@ -4692,6 +4909,57 @@ class CIS_Report:
         # CIS Total 3.3 Adding - All Instances to CIS Total
         self.cis_foundations_benchmark_3_0['3.3']['Total'] = self.__Instance
 
+    def __event_rule_failure_details(self, check, region):
+        """Explain one candidate without influencing the compliance decision."""
+        required = set(self.cis_monitoring_checks[check])
+        candidates = []
+        for event in self.__event_rules:
+            try:
+                condition = json.loads(event.get('condition', '').lower().replace("'", '"'))
+                types = condition.get('eventtype')
+                if not isinstance(types, list):
+                    continue
+                matching = required.intersection(types)
+                if not matching:
+                    continue
+                missing = sorted(required.difference(types))
+                same_region = event.get('region') == region
+                # Prefer a complete match in the required region, then the closest match.
+                rank = (same_region, not missing, len(matching))
+                candidates.append((rank, str(event.get('id') or event.get('display_name') or ''), event, missing))
+            except (AttributeError, TypeError, ValueError):
+                continue
+
+        if not candidates:
+            return {'region': region, 'reason': 'No matching event rule found.', 'event_rule': ''}
+
+        def candidate_sort_key(candidate):
+            (same_region, complete_match, matching_count), name, _, _ = candidate
+            # Prefer the same region, complete matches, and more matching types; break ties by name or ID.
+            return (not same_region, not complete_match, -matching_count, name)
+
+        candidates.sort(key=candidate_sort_key)
+        _, _, event, missing = candidates[0]
+        if missing:
+            reason = 'Candidate rule is missing event types: ' + ', '.join(missing)
+        elif event.get('region') != region:
+            reason = 'Candidate rule is in a different region: ' + str(event.get('region') or 'unknown')
+        elif event.get('lifecycle_state') != 'ACTIVE':
+            reason = 'Candidate rule is not active.'
+        elif event.get('compartment_id') != self.__tenancy.id:
+            reason = 'Candidate rule is not in the root compartment.'
+        else:
+            actions = event.get('actions') or []
+            if not actions:
+                reason = 'Candidate rule has no actions.'
+            elif not isinstance(actions, list) or any(not isinstance(action, dict) for action in actions):
+                reason = 'Candidate rule contains invalid action data.'
+            elif any(action.get('actionType') == 'ONS' and action.get('topicId') for action in actions):
+                reason = 'Candidate rule has no qualifying action; its ONS topic may lack an active subscription.'
+            else:
+                reason = 'Candidate rule has no qualifying action; its ONS action may be missing a topic ID.'
+        return {'region': region, 'reason': reason, 'event_rule': event.get('display_name') or ''}
+
     def __cis_check_tagging_and_monitoring(self):
         # CIS Check 4.1 - Check for Default Tags in Root Compartment
         # Iterate through tags looking for ${iam.principal.name}
@@ -4788,16 +5056,25 @@ class CIS_Report:
                             print("*** Invalid Event Data for event: " + event['display_name'] + " ***")
 
 
+        # Home-region monitoring checks need a total and a finding when no rule qualifies.
+        home_region_checks = set(self.cis_monitoring_checks) - self.__cis_regional_checks - {'4.15'}
+        for key in sorted(home_region_checks):
+            recommendation = self.cis_foundations_benchmark_3_0[key]
+            recommendation['Total'].append({'region': self.__home_region})
+            if not recommendation['Status']:
+                recommendation['Findings'].append(
+                    self.__event_rule_failure_details(key, self.__home_region))
+
         # ******* Iterating through Regional Checks adding findings
         for key, regions in self.__cis_regional_findings_data.items():
             non_compliant = [region for region, val in regions.items() if val is not True]
             for region in regions:
                 self.cis_foundations_benchmark_3_0[key]['Total'].append({'region' : region})
-            if not non_compliant:
-                self.cis_foundations_benchmark_3_0[key]['Status'] = True
-            else:
+            self.cis_foundations_benchmark_3_0[key]['Status'] = not non_compliant
+            if non_compliant:
                 for region in non_compliant:
-                    self.cis_foundations_benchmark_3_0[key]['Findings'].append({'region' : region})
+                    self.cis_foundations_benchmark_3_0[key]['Findings'].append(
+                        self.__event_rule_failure_details(key, region))
         
         ### Testing ###
         # CIS Check 4.13 - VCN FlowLog enable
@@ -4838,7 +5115,7 @@ class CIS_Report:
                             self.cis_foundations_benchmark_3_0['4.13']['Status'] = False
                             self.cis_foundations_benchmark_3_0['4.13']['Findings'].append(subnet)
 
-                elif self.__all_logs and self.__all_logs['flowlogs'] and \
+                elif self.__all_logs and 'flowlogs' in self.__all_logs and self.__all_logs['flowlogs'] and \
                 'all' in self.__all_logs['flowlogs'] and subnet['id'] in self.__all_logs['flowlogs']['all']:
                     
                     debug(f"__report_cis_analyze_tenancy_data: Flowlogs checking Subnet {subnet['id']} in all")
@@ -4875,12 +5152,43 @@ class CIS_Report:
         # CIS Check 4.13 Total - Adding All Subnets to total
         self.cis_foundations_benchmark_3_0['4.13']['Total'] = self.__network_subnets
 
-        # CIS Check 4.14 - Cloud Guard enabled
-        debug("__report_cis_analyze_tenancy_data Cloud Guard Check: " + str(self.__cloud_guard_config_status))
-        if self.__cloud_guard_config_status == 'ENABLED':
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = True
-        else:
-            self.cis_foundations_benchmark_3_0['4.14']['Status'] = False
+        # CIS Check 4.14 - Cloud Guard enabled and configured at the root target
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check: {self.__cloud_guard_config_status}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        debug(f"__report_cis_analyze_tenancy_data Cloud Guard Check root target:\n{root_target}")
+        root_target = self.__cloud_guard_targets.get(self.__tenancy.id)
+        detector_recipes = (
+            root_target.get('target_detector_recipes') or [] if root_target else []
+        )
+        responder_recipes = (
+            root_target.get('target_responder_recipes') or [] if root_target else []
+        )
+        detectors = {
+            getattr(recipe, 'detector', '').upper()
+            for recipe in detector_recipes
+        }
+        cloud_guard_record = {
+            'cloud_guard_enabled': self.__cloud_guard_config_status == 'ENABLED',
+            'target_at_root': root_target is not None,
+            'target_configuration_detector': 'IAAS_CONFIGURATION_DETECTOR' in detectors,
+            'target_activity_detector': 'IAAS_ACTIVITY_DETECTOR' in detectors,
+            'target_responder_recipes': bool(responder_recipes),
+            'target_id': root_target.get('id', '') if root_target else '',
+            'target_name': root_target.get('display_name', '') if root_target else '',
+        }
+        required_checks = (
+            'cloud_guard_enabled',
+            'target_at_root',
+            'target_configuration_detector',
+            'target_activity_detector',
+            'target_responder_recipes',
+        )
+        self.cis_foundations_benchmark_3_0['4.14']['Total'].append(cloud_guard_record)
+        self.cis_foundations_benchmark_3_0['4.14']['Status'] = all(
+            cloud_guard_record[check] for check in required_checks
+        )
+        if not self.cis_foundations_benchmark_3_0['4.14']['Status']:
+            self.cis_foundations_benchmark_3_0['4.14']['Findings'].append(cloud_guard_record)
 
         # CIS Check 4.16 - Encryption keys over 365
         # Generating list of keys
@@ -4905,9 +5213,9 @@ class CIS_Report:
 
         # CIS Check 4.17 - Object Storage with Logs
         # Generating list of buckets names and need to make sure they have write level bucekt logs
-        if self.__all_logs and 'objectstorage' in self.__all_logs and\
-              'write' in self.__all_logs['objectstorage']:
-            
+        if not self.__buckets:
+            pass    # This keeps the default value (true) for self.cis_foundations_benchmark_3_0['4.17']['Status'] 
+        elif self.__all_logs and 'objectstorage' in self.__all_logs and 'write' in self.__all_logs['objectstorage']:    
             for bucket in self.__buckets:
                 if not (bucket['name'] + "-" + bucket['region'] in self.__all_logs['objectstorage']['write']):
                     self.cis_foundations_benchmark_3_0['4.17']['Status'] = False
@@ -5855,8 +6163,7 @@ class CIS_Report:
                     "Total": (str(len(recommendation['Total'])) if len(recommendation['Total']) > 0 else " "),
                     "Compliance Percentage Per Recommendation": compliance_percentage,
                     "Title": recommendation['Title'],
-                    self.__primary_framework_name : recommendation[self.__primary_framework_name],
-                    self.__other_framework_name : recommendation[self.__other_framework_name],
+                    **{name: recommendation.get(name, []) for name in self.__framework_names},
                     "Regions": self.__regions_to_run_in,
                     "Filename": report_filename if len(recommendation['Findings']) > 0 else " ",
                     "Remediation": self.cis_report_data[key]['Remediation']
@@ -6107,8 +6414,7 @@ class CIS_Report:
                     'Total': '',
                     'Compliance Percentage Per Recommendation': '',
                     'Title': row['Title'],
-                    self.__primary_framework_name: row[self.__primary_framework_name],
-                    self.__other_framework_name: row[self.__other_framework_name],
+                    **{name: row[name] for name in self.__framework_names},
                     'Regions': row['Regions'],
                     'Documentation': row['Documentation'],
                     'source': 'OBP',
@@ -6120,6 +6426,7 @@ class CIS_Report:
                 })
 
             payload = {
+                'frameworks': self.__framework_names,
                 'findings': cis_records,
                 'obp_findings': obp_records,
                 'meta': {
@@ -6142,14 +6449,15 @@ class CIS_Report:
 </style></head><body><div id="summaryView">
 <header class="report-bar"><div class="report-bar-frame"><div class="cwidth"><a class="oracle-wordmark" href="https://www.oracle.com/" aria-label="Oracle home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 30" role="img" aria-label="Oracle"><path fill="#C74634" d="M99.61 19.52h15.24l-8.05-13L92 30h-6.73l18-28.17a4.29 4.29 0 0 1 7-.05L128.32 30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93 5.23V.28h-5.72v26.88a2.76 2.76 0 0 0 .85 2 2.89 2.89 0 0 0 2.08.87h26l3.39-5.25h-26.6M75 20.38A10 10 0 0 0 75 .28H50V30h5.71V5.54h18.94a4.81 4.81 0 0 1 0 9.62H58.54L75.6 30h8.29L72.43 20.38H75M14.88 30h17.27a14.86 14.86 0 0 0 0-29.71H14.88a14.86 14.86 0 1 0 0 29.71m16.88-5.23H15.26a9.62 9.62 0 0 1 0-19.23h16.5a9.62 9.62 0 1 1 0 19.23M140.25 30h17.63l3.34-5.23h-20.58a9.62 9.62 0 1 1 0-19.23h16.75l3.38-5.25h-20.52a14.86 14.86 0 1 0 0 29.71m69.87-5.23a9.62 9.62 0 0 1-9.26-7h24.42l3.36-5.24h-27.64a9.61 9.61 0 0 1 9.26-7h16.76l3.35-5.25h-20.5a14.86 14.86 0 0 0 0 29.71h17.63l3.35-5.23z"/></svg></a></div></div></header>
 <section class="report-title"><div class="cwidth"><h1>OCI CIS Summary Report</h1><p class="subtitle" id="reportMeta"></p><p class="checker-version" id="checkerVersion"></p></div></section>
-<main><div class="cwidth"><div class="cards"><button class="card" onclick="filterStatus('')">All recommendations <b id="all"></b></button><button class="card status-no" onclick="filterStatus('No')">Non-compliant <b id="no"></b></button><button class="card status-yes" onclick="filterStatus('Yes')">Compliant <b id="yes"></b></button><button class="card" onclick="filterEvidence()">Evidence available <b id="evidence"></b></button></div><div class="filters" id="filters"><select id="section" onchange="render()"><option value="">All sections</option></select><select id="status" onchange="render()"><option value="">All statuses</option><option value="Yes">Compliant</option><option value="No">Non-compliant</option><option value="N/A">Not applicable</option></select><select id="impact" onchange="render()"><option value="">All impacted-item availability</option><option value="yes">Evidence available</option><option value="no">No evidence</option></select><input id="search" oninput="render()" placeholder="Search recommendation, title, remediation, or framework mapping"></div><p class="note" id="count"></p><div class="otable"><div class="otable-w1"><table class="otable-w2"><thead><tr><th>Recommendation</th><th>Section</th><th>Compliant</th><th>Finding / coverage</th><th>Remediation</th><th>Impacted items</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></main>
+<main><div class="cwidth"><div class="cards"><button class="card" onclick="filterStatus('')">All recommendations <b id="all"></b></button><button class="card status-no" onclick="filterStatus('No')">Non-compliant <b id="no"></b></button><button class="card status-yes" onclick="filterStatus('Yes')">Compliant <b id="yes"></b></button><button class="card" onclick="filterEvidence()">Evidence available <b id="evidence"></b></button></div><div class="filters" id="filters"><select id="section" onchange="render()"><option value="">All sections</option></select><select id="status" onchange="render()"><option value="">All statuses</option><option value="Yes">Compliant</option><option value="No">Non-compliant</option><option value="N/A">Not applicable</option></select><select id="impact" onchange="render()"><option value="">All impacted-item availability</option><option value="yes">Evidence available</option><option value="no">No evidence</option></select><input id="search" oninput="render()" placeholder="Search recommendation, title, remediation, or framework mapping"></div><p class="note" id="count"></p><div class="otable"><div class="otable-w1"><table class="otable-w2"><thead><tr><th>Recommendation</th><th>Section</th><th>Compliant</th><th>Finding / coverage</th><th>Framework mappings</th><th>Remediation</th><th>Impacted items</th></tr></thead><tbody id="rows"></tbody></table></div></div></div></main>
 <footer><div class="cwidth">CIS OCI Foundations Benchmark &bull; <a target="_blank" rel="noopener" href="https://www.cisecurity.org/benchmark/Oracle_Cloud">Benchmark resources</a> &bull; <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/solutions/oci-best-practices/index.html">OCI best practices guidance</a> &bull; <span id="copyright"></span></div></footer></div><section id="impactView" hidden></section>
 <script>const D=""")
                 html_file.write(json_payload)
-                html_file.write(r""",FRAMEWORKS=['CIS v8','CCCS Guard Rail'];const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));const records=()=>$('source')?.value==='OBP'?D.obp_findings:D.findings,display=value=>String(value??'').trim()||'—',evidenceFor=row=>row.evidence||{headers:[],rows:[],error:'No embedded impacted-item data is available for this recommendation.'},evidenceRows=row=>evidenceFor(row).rows||[];
+                html_file.write(r""",FRAMEWORKS=D.frameworks||[];const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));const records=()=>$('source')?.value==='OBP'?D.obp_findings:D.findings,display=value=>String(value??'').trim()||'—',evidenceFor=row=>row.evidence||{headers:[],rows:[],error:'No embedded impacted-item data is available for this recommendation.'},evidenceRows=row=>evidenceFor(row).rows||[];
 function populateSections(){const current=$('section').value,sections=[...new Set(records().map(row=>row.Section).filter(Boolean))].sort();$('section').innerHTML='<option value="">All sections</option>'+sections.map(section=>'<option value="'+esc(section)+'">'+esc(section)+'</option>').join('');if(sections.includes(current))$('section').value=current}function refreshCards(){const rows=records();$('all').textContent=rows.length;$('no').textContent=rows.filter(row=>row.Compliant==='No').length;$('yes').textContent=rows.filter(row=>row.Compliant==='Yes').length;$('evidence').textContent=rows.filter(row=>evidenceRows(row).length).length}function resetSource(){$('section').value='';$('status').value='';$('impact').value='';populateSections();refreshCards();render()}function filterStatus(status){$('status').value=status;render()}function filterEvidence(){$('impact').value='yes';render()}
-function remediation(row){const mappings=FRAMEWORKS.map(key=>row[key]&&row[key].length?key+': '+(Array.isArray(row[key])?row[key].join(', '):row[key]):'').filter(Boolean).join('\n');const details=Object.entries(row.control_details||{}).filter(([,value])=>String(value??'').trim()).map(([label,value])=>'<b>'+esc(label)+'</b>\n'+esc(value)).join('\n\n');const documentation=row.Documentation?'<a class="doc-link" href="'+esc(row.Documentation)+'" target="_blank" rel="noopener">Oracle documentation</a>':'';if(!row.Remediation&&!details&&!mappings&&!documentation)return '<span class="badge">Not provided</span>';return '<details><summary>Oracle remediation & validation</summary><p>'+(row.Remediation?'<b>Source remediation</b>\n'+esc(display(row.Remediation)):'')+(details?'\n\n<b>Control details</b>\n'+details:'')+(mappings?'\n\n<b>Framework mappings</b>\n'+esc(mappings):'')+'</p>'+documentation+'</details>'}function coverage(row){if(row.source==='OBP')return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+' verified item(s)';return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+(String(row.Total||'').trim()?' / '+esc(row.Total)+' compliant':'')+'<br>'+esc(display(row['Compliance Percentage Per Recommendation']))}
-function render(){const query=$('search').value.toLowerCase(),section=$('section').value,status=$('status').value,impact=$('impact').value,source=$('source')?.value||'CIS',rows=records().filter(row=>(!section||row.Section===section)&&(!status||row.Compliant===status)&&(!impact||(impact==='yes'?evidenceRows(row).length:!evidenceRows(row).length))&&(!query||JSON.stringify(row).toLowerCase().includes(query)));$('count').textContent=rows.length+' of '+records().length+' '+(source==='OBP'?'OBP':'CIS')+' recommendations shown';$('rows').innerHTML=rows.map(row=>{const statusClass=row.Compliant==='Yes'?'status-yes':row.Compliant==='No'?'status-no':'status-na',evidence=evidenceRows(row).length?'<button onclick="openEvidence('+row.index+')">Open '+evidenceRows(row).length+' row(s)</button>':'<span class="badge">None embedded</span>',level=String(row.Level||'').trim()?'<br><span class="badge">Level '+esc(row.Level)+'</span>':'';return '<tr><td><b>'+esc(row['Recommendation #'])+'</b>'+level+'<span class="recommendation-title">'+esc(row.Title)+'</span></td><td>'+esc(display(row.Section))+'</td><td class="'+statusClass+'"><b>'+esc(display(row.Compliant))+'</b></td><td>'+coverage(row)+'</td><td>'+remediation(row)+'</td><td>'+evidence+'</td></tr>'}).join('')}
+function frameworkMappings(row){const mappings=FRAMEWORKS.filter(name=>row[name]&&row[name].length).map(name=>'<div><b>'+esc(name)+':</b> '+esc(Array.isArray(row[name])?row[name].join(', '):row[name])+'</div>');return mappings.join('')||'<span class="badge">None</span>'}
+function remediation(row){const details=Object.entries(row.control_details||{}).filter(([,value])=>String(value??'').trim()).map(([label,value])=>'<b>'+esc(label)+'</b>\n'+esc(value)).join('\n\n');const documentation=row.Documentation?'<a class="doc-link" href="'+esc(row.Documentation)+'" target="_blank" rel="noopener">Oracle documentation</a>':'';if(!row.Remediation&&!details&&!documentation)return '<span class="badge">Not provided</span>';return '<details><summary>Oracle remediation & validation</summary><p>'+(row.Remediation?'<b>Source remediation</b>\n'+esc(display(row.Remediation)):'')+(details?'\n\n<b>Control details</b>\n'+details:'')+'</p>'+documentation+'</details>'}function coverage(row){if(row.source==='OBP')return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+' verified item(s)';return esc(display(row.Findings))+' finding(s)<br>'+esc(display(row['Compliant Items']))+(String(row.Total||'').trim()?' / '+esc(row.Total)+' compliant':'')+'<br>'+esc(display(row['Compliance Percentage Per Recommendation']))}
+function render(){const query=$('search').value.toLowerCase(),section=$('section').value,status=$('status').value,impact=$('impact').value,source=$('source')?.value||'CIS',rows=records().filter(row=>(!section||row.Section===section)&&(!status||row.Compliant===status)&&(!impact||(impact==='yes'?evidenceRows(row).length:!evidenceRows(row).length))&&(!query||JSON.stringify(row).toLowerCase().includes(query)));$('count').textContent=rows.length+' of '+records().length+' '+(source==='OBP'?'OBP':'CIS')+' recommendations shown';$('rows').innerHTML=rows.map(row=>{const statusClass=row.Compliant==='Yes'?'status-yes':row.Compliant==='No'?'status-no':'status-na',evidence=evidenceRows(row).length?'<button onclick="openEvidence('+row.index+')">Open '+evidenceRows(row).length+' row(s)</button>':'<span class="badge">None embedded</span>',level=String(row.Level||'').trim()?'<br><span class="badge">Level '+esc(row.Level)+'</span>':'';return '<tr><td><b>'+esc(row['Recommendation #'])+'</b>'+level+'<span class="recommendation-title">'+esc(row.Title)+'</span></td><td>'+esc(display(row.Section))+'</td><td class="'+statusClass+'"><b>'+esc(display(row.Compliant))+'</b></td><td>'+coverage(row)+'</td><td>'+frameworkMappings(row)+'</td><td>'+remediation(row)+'</td><td>'+evidence+'</td></tr>'}).join('')}
 const summaryTitle=document.title;function evidenceItem(index){return [...D.findings,...D.obp_findings].find(row=>row.index===index)}function impactLabel(header){return String(header??'').replace(/[_-]+/g,' ').toUpperCase()}function structuredValue(value){if(value!==null&&typeof value==='object')return value;const text=String(value??'').trim();if(!(text.startsWith('{')||text.startsWith('[')))return null;try{return JSON.parse(text)}catch(error){return text}}function excelHyperlink(value){const match=String(value??'').match(/^=HYPERLINK\("([^"]+)","([^"]*)"\)$/i);return match&&/^https:\/\//i.test(match[1])?{href:match[1],label:match[2]||match[1]}:null}function impactTitle(headers,row,position){const normalized=headers.map(header=>String(header).toLowerCase().replace(/[^a-z0-9]/g,''));for(const name of ['displayname','name','resourcename','id']){const value=row[normalized.indexOf(name)];if(String(value??'').trim())return String(value)}return 'Impacted item '+(position+1)}function impactCard(headers,row,position){const title=impactTitle(headers,row,position),fields=headers.map((header,column)=>{const value=row[column]??'',structured=structuredValue(value),link=excelHyperlink(value);if(!String(value).trim())return '';if(link)return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value"><a href="'+esc(link.href)+'" target="_blank" rel="noopener">'+esc(link.label)+'</a></div></div>';if(structured!==null)return '<details class="impact-structured"><summary>'+esc(impactLabel(header))+'</summary><pre>'+esc(typeof structured==='string'?structured:JSON.stringify(structured,null,2))+'</pre></details>';return '<div class="impact-field"><div class="impact-field-label">'+esc(impactLabel(header))+'</div><div class="impact-field-value">'+esc(value)+'</div></div>'}).join('');return '<article class="impact-card"><div class="impact-card-header"><span class="impact-item-badge">Impacted item '+(position+1)+'</span><h2 class="impact-item-title">'+esc(title)+'</h2></div><div class="impact-grid">'+fields+'</div></article>'}
 function renderImpacted(index){const item=evidenceItem(index);if(!item){location.hash='';return}const evidence=evidenceFor(item),headers=evidence.headers||[],rows=evidence.rows||[];$('summaryView').hidden=true;const view=$('impactView');view.hidden=false;document.title=item.recommendation+' - Impacted items';view.innerHTML='<section class="impact-page"><header class="impact-hero"><div class="impact-inner"><h1>'+esc(item.recommendation)+' - Impacted items</h1><p>'+esc(display(item.Title))+'</p><div class="impact-meta"><span>'+rows.length+' extracted evidence row(s)</span>'+(evidence.local_href?'<a class="impact-source-link" href="'+esc(evidence.local_href)+'" target="_blank" rel="noopener">Source file: '+esc(evidence.filename)+'</a>':'<span>Source file: '+esc(evidence.filename)+'</span>')+'</div></div></header><main class="impact-main"><div class="impact-inner"><input class="impact-filter" id="impactFilter" type="search" autocomplete="off" aria-label="Filter impacted items" placeholder="Filter by name, OCID, region, state, or any value"><div class="impact-list" id="impactList"></div></div></main></section>';const filter=$('impactFilter'),list=$('impactList'),paint=()=>{const query=filter.value.trim().toLowerCase();if(evidence.error){list.innerHTML='<p class="impact-empty">'+esc(evidence.error)+'</p>';return}const cards=rows.map((row,position)=>({row,position,search:(headers.join(' ')+' '+row.join(' ')).toLowerCase()})).filter(entry=>!query||entry.search.includes(query));list.innerHTML=cards.length?cards.map(entry=>impactCard(headers,entry.row,entry.position)).join(''):'<p class="impact-empty">No impacted items match this filter.</p>'};filter.addEventListener('input',paint);paint();window.scrollTo(0,0)}function renderSummary(){$('impactView').hidden=true;$('impactView').innerHTML='';$('summaryView').hidden=false;document.title=summaryTitle}function applyRoute(){const match=location.hash.match(/^#impacted-(\d+)$/);if(match&&evidenceItem(Number(match[1]))){renderImpacted(Number(match[1]));return}renderSummary()}function openEvidence(index){const target=location.href.replace(/#.*/,'')+'#impacted-'+index,detailWindow=window.open(target,'_blank');if(detailWindow)detailWindow.opener=null;else location.href=target}function setup(){$('reportMeta').textContent='Tenancy: '+D.meta.tenancy+' • Generated: '+D.meta.generated;$('checkerVersion').textContent='CIS Checker Version: '+D.meta.version+' • Updated: '+D.meta.updated;$('copyright').textContent='© '+new Date().getFullYear()+' Oracle';if(D.obp_findings.length)$('filters').insertAdjacentHTML('afterbegin','<select id="source" onchange="resetSource()"><option value="CIS">CIS OCI Foundations</option><option value="OBP">Oracle Best Practices (OBP)</option></select>');populateSections();refreshCards();render()}window.addEventListener('hashchange',applyRoute);setup();applyRoute();</script></body></html>""")
 
@@ -6182,8 +6490,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
                 "OBP": (str(len(recommendation['OBP'])) if len(recommendation['OBP']) > 0 else " "),
                 "Findings": (str(len(recommendation['Findings'])) if len(recommendation['Findings']) > 0 else " "),
                 "Title": recommendation['Title'],
-                self.__primary_framework_name : recommendation[self.__primary_framework_name],
-                self.__other_framework_name : recommendation[self.__other_framework_name],
+                **{name: recommendation.get(name, []) for name in self.__framework_names},
                 "Regions": self.__regions_to_run_in,
                 "Documentation": recommendation['Documentation']
             }
@@ -6250,14 +6557,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             self.__identity_read_availability_domains,
             self.__identity_read_tag_defaults,
             self.__identity_read_tenancy_policies,
-            self.__read_cloud_guard_problems
+            self.__read_cloud_guard_problems,
+            self.__cloud_guard_read_cloud_guard_targets
         ]
 
         # Budgets is global construct
         if self.__obp_checks:
             obp_home_region_functions = [
                 self.__budget_read_budgets,
-                self.__cloud_guard_read_cloud_guard_targets,
                 self.__quota_read,
             ]
         else:
@@ -6306,6 +6613,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         # Oracle Best practice functions
         if self.__obp_checks:
             obp_functions = [
+                self.__network_read_network_map_resources,
                 self.__network_read_fastonnects,
                 self.__network_read_ip_sec_connections,
                 self.__network_read_drgs,
@@ -6366,6 +6674,14 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_subnets": self.__network_subnets,
             "network_vcns": list(self.__network_vcns.values()),
             "network_capture_filters": list(self.__network_capturefilters.values()),
+            "network_route_tables": self.__network_route_tables,
+            "network_route_rules": self.__network_route_rules,
+            "network_internet_gateways": self.__network_internet_gateways,
+            "network_nat_gateways": self.__network_nat_gateways,
+            "network_service_gateways": self.__network_service_gateways,
+            "network_local_peering_gateways": self.__network_local_peering_gateways,
+            "network_remote_peering_connections": self.__network_remote_peering_connections,
+            "network_cpes": self.__network_cpes,
             "autonomous_databases": self.__autonomous_databases,
             "analytics_instances": self.__analytics_instances,
             "integration_instances": self.__integration_instances,
@@ -6384,6 +6700,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             "network_fastconnects": list(itertools.chain.from_iterable(self.__network_fastconnects.values())),
             "network_ipsec_connections": list(itertools.chain.from_iterable(self.__network_ipsec_connections.values())),
             "network_drgs": self.__raw_network_drgs,
+            "network_drg_route_tables": self.__network_drg_route_tables,
+            "network_drg_route_rules": self.__network_drg_route_rules,
+            "network_ipsec_tunnels": self.__network_ipsec_tunnels,
+            "network_bgp_received_routes": self.__network_bgp_received_routes,
+            "network_bgp_advertised_routes": self.__network_bgp_advertised_routes,
             "cloud_guard_target": list(self.__cloud_guard_targets.values()),
             "cloud_guard_problems" : self.__cloud_guard_problems,
             "regions": self.__raw_regions,
@@ -6483,7 +6804,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
             # generate fields
             fields = [key for key in result[0].keys()]
 
-            with open(file_path, mode='w', newline='') as csv_file:
+            with open(file_path, mode='w', newline='', encoding='utf-8') as csv_file:
                 writer = csv.DictWriter(csv_file, fieldnames=fields)
 
                 # write header
@@ -6496,6 +6817,7 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
                     # print(row)
 
             print("CSV: " + file_subject.ljust(22) + " --> " + file_path)
+            self.__generated_csv_files.append(file_path)
             # Used by Upload
 
             return file_path
@@ -6576,6 +6898,11 @@ function renderImpacted(index){const item=evidenceItem(index);if(!item){location
         if error_report_file_name and self.__output_bucket:
             self.__os_copy_report_to_object_storage(
                 self.__output_bucket, error_report_file_name)
+
+        if self.__output_to_sqlite:
+            database_path = os.path.join(self.__report_directory, 'raw_data.sqlite')
+            export_csv_files_to_sqlite(self.__generated_csv_files, database_path)
+            print("SQLite: " + 'raw_data'.ljust(22) + " --> " + database_path)
 
         end_datetime = datetime.datetime.now().replace(tzinfo=pytz.UTC)
         end_time_str = str(end_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
@@ -6817,6 +7144,8 @@ def execute_report():
                         help='Set Output report prefix to allow unique files for better baseline comparison.')
     parser.add_argument('--report-summary-json', action='store_true', default=None, dest='report_summary_json',
                         help='Write summary report as JSON file, too.')
+    parser.add_argument('--output-to-sqlite', action='store_true', default=False, dest='output_to_sqlite',
+                        help='Write all generated CSV reports to raw_data.sqlite. Requires --raw.')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False).')
     parser.add_argument('--level', default=2, dest='level',
@@ -6853,10 +7182,13 @@ def execute_report():
         show_version()
         sys.exit()
 
+    if cmd.output_to_sqlite and not cmd.raw:
+        parser.error('--output-to-sqlite requires --raw.')
+
     config, signer = create_signer(cmd.file_location, cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token, cmd.is_security_token)
     config['retry_strategy'] = oci.retry.DEFAULT_RETRY_STRATEGY
     report = CIS_Report(config, signer, cmd.proxy, cmd.output_bucket, cmd.report_directory, cmd.report_prefix, cmd.report_summary_json, cmd.print_to_screen, \
-                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits)
+                        cmd.regions, cmd.raw, cmd.obp, cmd.redact_output, oci_url=cmd.oci_url, debug=cmd.debug, all_resources=cmd.all_resources, disable_api_keys=cmd.disable_api_usage_check, service_limits=cmd.service_limits, output_to_sqlite=cmd.output_to_sqlite)
     csv_report_directory = report.generate_reports(int(cmd.level))
 
     if OUTPUT_TO_XLSX:
@@ -6864,7 +7196,7 @@ def execute_report():
         def add_sheet(book, file, name):
             try:
                 worksheet = book.add_worksheet(name)
-                with open(file, 'rt', encoding='unicode_escape') as f:
+                with open(file, 'rt', encoding='utf-8') as f:
                     reader = csv.reader(f)
                     last_row = 0
                     last_col = 0
